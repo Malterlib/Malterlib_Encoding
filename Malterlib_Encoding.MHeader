@@ -1,0 +1,66 @@
+// Copyright © 2015 Hansoft AB 
+// Distributed under the MIT license, see license text in LICENSE.Malterlib
+
+Import "../Core/Lib_Malterlib.MTarget"
+
+%Group "{Malterlib}/{Lib_Malterlib_Encoding}"
+{
+	%Group Encoding
+	{
+		%Group Include
+		{
+			Compile.Type "C++"
+			{
+				!!DocumentationEnabled true
+			}
+			%File "Include/Mib/Encoding/^*"
+		}
+		%File "Source/*"
+		%File "Source/Malterlib_Encoding_*JSON*"
+		{
+			Compile.Disabled true
+			{
+				&
+				{
+					MalterlibMSVC2013Compat true
+					Generator VisualStudio2013
+				}
+			}
+		}
+		%Group Documentation
+		{
+			%File "Documentation/*"
+		}
+	}
+}
+
+
+Property
+{
+	MalterlibLibrary_Encoding true
+	{
+		&
+		{
+			MalterlibLibrary_Encoding ""
+			MalterlibLibrary_All true
+		}
+	}
+	MalterlibSubLibraries "Encoding;@(MalterlibSubLibraries)"
+	{
+		!!MalterlibLibrary_Encoding true
+	}
+//	MalterlibSubLibrarySeparate_Lib_Malterlib_Encoding true
+	MalterlibIncludeRoots "@('Include'->MakeAbsolute());@(MalterlibIncludeRoots)"
+	{
+		!!MalterlibLibrary_Encoding true
+	}
+}
+
+Property
+{
+	!!MalterlibEnableInternalTests true
+	
+	MalterlibTests "Malterlib_Encoding;@(MalterlibTests)"
+	MalterlibTestFiles_Malterlib_Encoding "@('Test/*'->MakeAbsolute())"
+}
+
