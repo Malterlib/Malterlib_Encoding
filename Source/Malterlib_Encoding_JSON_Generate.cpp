@@ -157,7 +157,13 @@ namespace NMib
 					o_String += CStr::fs_ToStr(JSONValue.f_Integer());
 					break;
 				case EJSONType_Float:
-					o_String += CStr::fs_ToStr(JSONValue.f_Float());
+					{	
+						auto &Float = JSONValue.f_Float();
+						if (Float.f_IsInvalid())
+							o_String += "null"; // QNaN, Inf etc is not representable in JSON
+						else
+							o_String += CStr::fs_ToStr(JSONValue.f_Float());
+					}
 					break;
 				case EJSONType_Object:
 					fg_GenerateJSONObject(o_String, _Value, _Depth, _pPrettySeparator);
