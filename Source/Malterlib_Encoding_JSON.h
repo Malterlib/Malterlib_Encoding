@@ -39,11 +39,12 @@ namespace NMib
 			typedef NContainer::TCVector<CValue> CArray;
 
 			template <typename tf_CType>
-			explicit TCJSONValue(tf_CType &&_Type);
+			TCJSONValue(tf_CType &&_Type);
 			TCJSONValue();
 			TCJSONValue(TCJSONValue const &_Other);
 			TCJSONValue(TCJSONValue &_Other);
 			TCJSONValue(TCJSONValue &&_Other);
+			TCJSONValue(TCJSONValue const &&_Other);
 			TCJSONValue(EJSONType _Type);
 			TCJSONValue(ch8 const *_pValue);
 

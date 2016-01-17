@@ -31,6 +31,12 @@ namespace NMib
 		}
 
 		template <typename t_CParent>
+		TCJSONValue<t_CParent>::TCJSONValue(TCJSONValue const &&_Other)
+			: t_CParent(static_cast<t_CParent const &>(_Other))
+		{
+		}
+
+		template <typename t_CParent>
 		TCJSONValue<t_CParent>::TCJSONValue(EJSONType _Type)
 		{
 			f_SetType(_Type);

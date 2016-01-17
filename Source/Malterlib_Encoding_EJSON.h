@@ -27,12 +27,13 @@ namespace NMib
 		{
 		public:
 			template <typename tf_CType>
-			explicit TCEJSONValue(tf_CType &&_Type);
+			TCEJSONValue(tf_CType &&_Type);
 			TCEJSONValue();
 			TCEJSONValue(EEJSONType _Type);
 			TCEJSONValue(TCEJSONValue const &_Other);
 			TCEJSONValue(TCEJSONValue &_Other);
 			TCEJSONValue(TCEJSONValue &&_Other);
+			TCEJSONValue(TCEJSONValue const &&_Other);
 
 			using TCJSONValue<t_CParent>::operator = ;
 
