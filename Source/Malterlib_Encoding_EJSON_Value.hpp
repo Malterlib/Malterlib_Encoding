@@ -25,12 +25,6 @@ namespace NMib
 		}
 		
 		template <typename t_CParent>
-		TCEJSONValue<t_CParent>::TCEJSONValue(TCEJSONValue const &&_Other)
-			: TCJSONValue<t_CParent>(static_cast<TCJSONValue<t_CParent> const &>(_Other))
-		{
-		}
-		
-		template <typename t_CParent>
 		TCEJSONValue<t_CParent>::TCEJSONValue(TCEJSONValue &_Other)
 			: TCJSONValue<t_CParent>(static_cast<TCJSONValue<t_CParent> &>(_Other))
 		{

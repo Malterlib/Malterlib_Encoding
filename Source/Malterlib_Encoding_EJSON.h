@@ -31,7 +31,6 @@ namespace NMib
 			TCEJSONValue();
 			TCEJSONValue(EEJSONType _Type);
 			TCEJSONValue(TCEJSONValue const &_Other);
-			TCEJSONValue(TCEJSONValue const &&_Other);
 			TCEJSONValue(TCEJSONValue &_Other);
 			TCEJSONValue(TCEJSONValue &&_Other);
 
