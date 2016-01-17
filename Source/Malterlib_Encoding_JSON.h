@@ -39,6 +39,9 @@ namespace NMib
 			typedef NContainer::TCVector<CValue> CArray;
 
 			template <typename tf_CType>
+#ifndef DCompiler_MSVC
+			explicit
+#endif
 			TCJSONValue(tf_CType &&_Type);
 			TCJSONValue();
 			TCJSONValue(TCJSONValue const &_Other);

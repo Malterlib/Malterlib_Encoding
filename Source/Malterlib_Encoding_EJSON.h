@@ -27,6 +27,9 @@ namespace NMib
 		{
 		public:
 			template <typename tf_CType>
+#ifndef DCompiler_MSVC
+			explicit
+#endif
 			TCEJSONValue(tf_CType &&_Type);
 			TCEJSONValue();
 			TCEJSONValue(EEJSONType _Type);
