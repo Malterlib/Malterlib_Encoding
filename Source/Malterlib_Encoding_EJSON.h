@@ -26,10 +26,7 @@ namespace NMib
 		class TCEJSONValue : public TCJSONValue<t_CParent>
 		{
 		public:
-			template <typename tf_CType>
-#ifndef DCompiler_MSVC
-			explicit
-#endif
+			template <typename tf_CType, TCDisableIfForbidden<tf_CType> * = nullptr>
 			TCEJSONValue(tf_CType &&_Type);
 			TCEJSONValue();
 			TCEJSONValue(EEJSONType _Type);

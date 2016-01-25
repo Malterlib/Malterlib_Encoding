@@ -23,7 +23,7 @@ namespace NMib
 		}
 
 		template <typename t_CParent>
-		template <typename tf_CType>
+		template <typename tf_CType, TCDisableIfForbidden<tf_CType> *>
 		TCJSONValue<t_CParent>::TCJSONValue(tf_CType &&_Type)
 			: t_CParent(fg_Forward<tf_CType>(_Type))
 		{

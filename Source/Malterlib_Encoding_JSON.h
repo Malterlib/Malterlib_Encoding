@@ -38,10 +38,7 @@ namespace NMib
 			typedef TCJSONObject<CValue> CObject;
 			typedef NContainer::TCVector<CValue> CArray;
 
-			template <typename tf_CType>
-#ifndef DCompiler_MSVC
-			explicit
-#endif
+			template <typename tf_CType, TCDisableIfForbidden<tf_CType> * = nullptr>
 			TCJSONValue(tf_CType &&_Type);
 			TCJSONValue();
 			TCJSONValue(TCJSONValue const &_Other);
