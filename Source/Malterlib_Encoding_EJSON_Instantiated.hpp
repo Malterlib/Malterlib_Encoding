@@ -14,168 +14,118 @@ namespace NMib
 
 		typedef TCJSONValue<NPrivate::TCJSONValueBase<TCEJSONValue, NTime::CTime, NContainer::TCVector<uint8>, CEJSONUserType>> CJSONValueEJSON;
 
-		extern template CJSONValueEJSON::TCJSONValue(CNullPtr &&);
 #ifndef DCompiler_MSVC
+		extern template CJSONValueEJSON::TCJSONValue(CNullPtr &&);
 		extern template CJSONValueEJSON::TCJSONValue(CNullPtr &);
 		extern template CJSONValueEJSON::TCJSONValue(CNullPtr const &);
-#endif
 
 		extern template CJSONValueEJSON::TCJSONValue(NStr::CStr &&);
-#ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(NStr::CStr &);
 		extern template CJSONValueEJSON::TCJSONValue(NStr::CStr const &);
-#endif
 
 		extern template CJSONValueEJSON::TCJSONValue(int64 &&);
-#ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(int64 &);
 		extern template CJSONValueEJSON::TCJSONValue(int64 const &);
-#endif
 
 		extern template CJSONValueEJSON::TCJSONValue(int32 &&);
-#ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(int32 &);
 		extern template CJSONValueEJSON::TCJSONValue(int32 const &);
-#endif
 
 		extern template CJSONValueEJSON::TCJSONValue(uint64 &&);
-#ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(uint64 &);
 		extern template CJSONValueEJSON::TCJSONValue(uint64 const &);
-#endif
 
 		extern template CJSONValueEJSON::TCJSONValue(uint32 &&);
-#ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(uint32 &);
 		extern template CJSONValueEJSON::TCJSONValue(uint32 const &);
-#endif
 		
 		extern template CJSONValueEJSON::TCJSONValue(pfp64 &&);
-#ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(pfp64 &);
 		extern template CJSONValueEJSON::TCJSONValue(pfp64 const &);
-#endif
 
 		extern template CJSONValueEJSON::TCJSONValue(pfp32 &&);
-#ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(pfp32 &);
 		extern template CJSONValueEJSON::TCJSONValue(pfp32 const &);
-#endif
 		
 		extern template CJSONValueEJSON::TCJSONValue(fp32 &&);
-#ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(fp32 &);
 		extern template CJSONValueEJSON::TCJSONValue(fp32 const &);
-#endif
 		
 		extern template CJSONValueEJSON::TCJSONValue(fp64 &&);
-#ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(fp64 &);
 		extern template CJSONValueEJSON::TCJSONValue(fp64 const &);
-#endif
 
 #ifdef DMibPUniqueType_int
 		extern template CJSONValueEJSON::TCJSONValue(int &&);
-#ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(int &);
 		extern template CJSONValueEJSON::TCJSONValue(int const &);
 #endif
-#endif
 		extern template CJSONValueEJSON::TCJSONValue(bool &&);
-#ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(bool &);
 		extern template CJSONValueEJSON::TCJSONValue(bool const &);
-#endif
 
 		//
 
 		extern template CEJSON::TCEJSONValue(EJSONType &&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(EJSONType &);
 		extern template CEJSON::TCEJSONValue(EJSONType const &);
-#endif
 
 		extern template CEJSON::TCEJSONValue(ch8 const *&&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(ch8 const *&);
 		extern template CEJSON::TCEJSONValue(ch8 const *const &);
-#endif
 
 		extern template CEJSON::TCEJSONValue(CNullPtr &&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(CNullPtr &);
 		extern template CEJSON::TCEJSONValue(CNullPtr const &);
-#endif
 
 		extern template CEJSON::TCEJSONValue(NStr::CStr &&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(NStr::CStr &);
 		extern template CEJSON::TCEJSONValue(NStr::CStr const &);
-#endif
 
 		extern template CEJSON::TCEJSONValue(int64 &&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(int64 &);
 		extern template CEJSON::TCEJSONValue(int64 const &);
-#endif
 
 		extern template CEJSON::TCEJSONValue(int32 &&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(int32 &);
 		extern template CEJSON::TCEJSONValue(int32 const &);
-#endif
 
 		extern template CEJSON::TCEJSONValue(uint64 &&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(uint64 &);
 		extern template CEJSON::TCEJSONValue(uint64 const &);
-#endif
 
 		extern template CEJSON::TCEJSONValue(uint32 &&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(uint32 &);
 		extern template CEJSON::TCEJSONValue(uint32 const &);
-#endif
 		
 		extern template CEJSON::TCEJSONValue(pfp64 &&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(pfp64 &);
 		extern template CEJSON::TCEJSONValue(pfp64 const &);
-#endif
 
 		extern template CEJSON::TCEJSONValue(pfp32 &&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(pfp32 &);
 		extern template CEJSON::TCEJSONValue(pfp32 const &);
-#endif
 		
 		extern template CEJSON::TCEJSONValue(fp32 &&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(fp32 &);
 		extern template CEJSON::TCEJSONValue(fp32 const &);
-#endif
 		
 		extern template CEJSON::TCEJSONValue(fp64 &&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(fp64 &);
 		extern template CEJSON::TCEJSONValue(fp64 const &);
-#endif
 
 #ifdef DMibPUniqueType_int
 		extern template CEJSON::TCEJSONValue(int &&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(int &);
 		extern template CEJSON::TCEJSONValue(int const &);
 #endif
-#endif
 		extern template CEJSON::TCEJSONValue(bool &&);
-#ifndef DCompiler_MSVC
 		extern template CEJSON::TCEJSONValue(bool &);
 		extern template CEJSON::TCEJSONValue(bool const &);
 #endif
 
 		//
-
+#ifndef DCompiler_MSVC
 		extern template CEJSON &CJSONValueEJSON::f_Insert<NMib::NEncoding::EJSONType>(NMib::NEncoding::EJSONType &&);
 		extern template CEJSON &CJSONValueEJSON::f_Insert<NMib::NEncoding::EJSONType &>(NMib::NEncoding::EJSONType &);
 		extern template CEJSON &CJSONValueEJSON::f_Insert<NMib::NEncoding::EJSONType const &>(NMib::NEncoding::EJSONType const &);
@@ -228,8 +178,8 @@ namespace NMib
 		extern template CEJSON &CJSONValueEJSON::f_Insert<bool>(bool &&);
 		extern template CEJSON &CJSONValueEJSON::f_Insert<bool &>(bool &);
 		extern template CEJSON &CJSONValueEJSON::f_Insert<bool const &>(bool const &);
+#endif
 
-		
 		extern template CEJSON &CJSONValueEJSON::operator = <NMib::NEncoding::EJSONType>(NMib::NEncoding::EJSONType &&);
 		extern template CEJSON &CJSONValueEJSON::operator = <NMib::NEncoding::EJSONType &>(NMib::NEncoding::EJSONType &);
 		extern template CEJSON &CJSONValueEJSON::operator = <NMib::NEncoding::EJSONType const &>(NMib::NEncoding::EJSONType const &);

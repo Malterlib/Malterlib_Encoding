@@ -49,75 +49,53 @@ namespace NMib
 		template class TCJSONObject<CJSON>;
 		template struct NPrivate::TCObjectEntry<CJSON>;
 
-		template CJSON::TCJSONValue(CNullPtr &&);
 #ifndef DCompiler_MSVC
+		template CJSON::TCJSONValue(CNullPtr &&);
 		template CJSON::TCJSONValue(CNullPtr &);
 		template CJSON::TCJSONValue(CNullPtr const &);
-#endif
 
 		template CJSON::TCJSONValue(NStr::CStr &&);
-#ifndef DCompiler_MSVC
 		template CJSON::TCJSONValue(NStr::CStr &);
 		template CJSON::TCJSONValue(NStr::CStr const &);
-#endif
 
 		template CJSON::TCJSONValue(int64 &&);
-#ifndef DCompiler_MSVC
 		template CJSON::TCJSONValue(int64 &);
 		template CJSON::TCJSONValue(int64 const &);
-#endif
 
 		template CJSON::TCJSONValue(int32 &&);
-#ifndef DCompiler_MSVC
 		template CJSON::TCJSONValue(int32 &);
 		template CJSON::TCJSONValue(int32 const &);
-#endif
 
 		template CJSON::TCJSONValue(uint64 &&);
-#ifndef DCompiler_MSVC
 		template CJSON::TCJSONValue(uint64 &);
 		template CJSON::TCJSONValue(uint64 const &);
-#endif
 
 		template CJSON::TCJSONValue(uint32 &&);
-#ifndef DCompiler_MSVC
 		template CJSON::TCJSONValue(uint32 &);
 		template CJSON::TCJSONValue(uint32 const &);
-#endif
 		
 		template CJSON::TCJSONValue(pfp64 &&);
-#ifndef DCompiler_MSVC
 		template CJSON::TCJSONValue(pfp64 &);
 		template CJSON::TCJSONValue(pfp64 const &);
-#endif
 
 		template CJSON::TCJSONValue(pfp32 &&);
-#ifndef DCompiler_MSVC
 		template CJSON::TCJSONValue(pfp32 &);
 		template CJSON::TCJSONValue(pfp32 const &);
-#endif
 		
 		template CJSON::TCJSONValue(fp32 &&);
-#ifndef DCompiler_MSVC
 		template CJSON::TCJSONValue(fp32 &);
 		template CJSON::TCJSONValue(fp32 const &);
-#endif
 		
 		template CJSON::TCJSONValue(fp64 &&);
-#ifndef DCompiler_MSVC
 		template CJSON::TCJSONValue(fp64 &);
 		template CJSON::TCJSONValue(fp64 const &);
-#endif
 
 #ifdef DMibPUniqueType_int
 		template CJSON::TCJSONValue(int &&);
-#ifndef DCompiler_MSVC
 		template CJSON::TCJSONValue(int &);
 		template CJSON::TCJSONValue(int const &);
 #endif
-#endif
 		template CJSON::TCJSONValue(bool &&);
-#ifndef DCompiler_MSVC
 		template CJSON::TCJSONValue(bool &);
 		template CJSON::TCJSONValue(bool const &);
 #endif
@@ -134,6 +112,7 @@ namespace NMib
 		template CJSON &CJSON::f_Insert<NStr::CStr &>(NStr::CStr &);
 		template CJSON &CJSON::f_Insert<NStr::CStr const &>(NStr::CStr const &);
 
+#ifndef DCompiler_MSVC
 		template CJSON &CJSON::f_Insert<int64>(int64 &&);
 		template CJSON &CJSON::f_Insert<int64 &>(int64 &);
 		template CJSON &CJSON::f_Insert<int64 const &>(int64 const &);
@@ -174,7 +153,7 @@ namespace NMib
 		template CJSON &CJSON::f_Insert<bool>(bool &&);
 		template CJSON &CJSON::f_Insert<bool &>(bool &);
 		template CJSON &CJSON::f_Insert<bool const &>(bool const &);
-
+#endif
 		
 		template CJSON &CJSON::operator = <NMib::NEncoding::EJSONType>(NMib::NEncoding::EJSONType &&);
 		template CJSON &CJSON::operator = <NMib::NEncoding::EJSONType &>(NMib::NEncoding::EJSONType &);
