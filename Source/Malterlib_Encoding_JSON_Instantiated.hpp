@@ -12,7 +12,7 @@ namespace NMib
 		extern template struct NPrivate::TCObjectEntry<CJSON>;
 
 #ifndef DCompiler_MSVC
-		extern template CJSON::TCJSONValue<CNullPtr &&>(CNullPtr &&);
+		extern template CJSON::TCJSONValue(CNullPtr &&);
 		extern template CJSON::TCJSONValue(CNullPtr &);
 		extern template CJSON::TCJSONValue(CNullPtr const &);
 
