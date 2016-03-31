@@ -67,7 +67,9 @@ namespace NMib
 		NStr::CStr fg_Base64Decode(NStr::CStr const &_String);
 
 		NStr::CStr fg_Base64Encode(const NContainer::TCVector<uint8> &_Data);
+		NStr::CStrSecure fg_Base64Encode(const NContainer::TCVector<uint8, NMem::CAllocator_HeapSecure> &_Data);
 		void fg_Base64Decode(NStr::CStr const &_String, NContainer::TCVector<uint8> &_Data);
+		void fg_Base64Decode(NStr::CStrSecure const &_String, NContainer::TCVector<uint8, NMem::CAllocator_HeapSecure> &_Data);
 	}
 }
 

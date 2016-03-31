@@ -32,6 +32,7 @@ namespace NMib
 			if (mp_bCurrentDirty)
 				fp_WriteDirty();
 			mp_OpenFlags = NFile::EFileOpen_None;
+			NMem::fg_MemClear(mp_DecryptedData);
 		}
 
 		template <typename t_CStreamType>

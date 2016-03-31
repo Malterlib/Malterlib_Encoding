@@ -81,7 +81,7 @@ namespace NMib
 			Ret.f_SetAt(FLen, 0);
 			return Ret;
 		}
-
+		
 		void fg_Base64Decode(NStr::CStr const &_String, NContainer::TCVector<uint8> &_Data)
 		{
 			if (_String.f_IsEmpty())
@@ -97,6 +97,34 @@ namespace NMib
 			}
 		}
 
+		NStr::CStrSecure fg_Base64Encode(const NContainer::TCVector<uint8, NMem::CAllocator_HeapSecure> &_Data)
+		{
+			NStream::CBinaryStreamMemoryPtr<> Stream;
+			int FLen = ((_Data.f_GetLen()+2) / 3) * 4;
+			NStr::CStrSecure Ret;
+			Stream.f_OpenReadWrite(Ret.f_GetStr(FLen+1), FLen);
+			{
+				TCBinaryStream_Base64<> Base64;
+				Base64.f_Open(&Stream, NFile::EFileOpen_Write);
+				Base64.f_FeedBytes(_Data.f_GetArray(), _Data.f_GetLen());
+			}
+			Ret.f_SetAt(FLen, 0);
+			return Ret;
+		}
 
+		void fg_Base64Decode(NStr::CStrSecure const &_String, NContainer::TCVector<uint8, NMem::CAllocator_HeapSecure> &_Data)
+		{
+			if (_String.f_IsEmpty())
+				return;
+			NStream::CBinaryStreamMemoryPtr<> Stream;
+			Stream.f_OpenRead(_String.f_GetStr(), _String.f_GetLen());
+			{
+				TCBinaryStream_Base64<> Base64;
+				Base64.f_Open(&Stream, NFile::EFileOpen_Read);
+				mint FLen = Base64.f_GetLength();
+				_Data.f_SetLen(FLen);
+				Base64.f_ConsumeBytes(_Data.f_GetArray(), FLen);
+			}
+		}
 	}
 }
