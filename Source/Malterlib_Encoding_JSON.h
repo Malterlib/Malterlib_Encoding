@@ -6,6 +6,7 @@
 #include <Mib/Core/Core>
 #include <Mib/Storage/Variant>
 #include <Mib/Storage/Indirection>
+#include <Mib/Storage/Tuple>
 
 #include "Malterlib_Encoding_JSON_InternalBase.h"
 
@@ -38,6 +39,18 @@ namespace NMib
 			typedef TCJSONObject<CValue> CObject;
 			typedef NContainer::TCVector<CValue> CArray;
 
+			struct CKeyValue
+			{
+				NStr::CStr m_Key;
+				CValue m_Value;
+			};
+			
+			struct CKey
+			{
+				NStr::CStr m_Key;
+				inline_always CKeyValue operator = (CValue &&_Value) &&;
+			};
+			
 			template <typename tf_CType, TCDisableIfForbidden<tf_CType> * = nullptr>
 			TCJSONValue(tf_CType &&_Type);
 			TCJSONValue();
@@ -47,6 +60,8 @@ namespace NMib
 			TCJSONValue(TCJSONValue const &&_Other);
 			TCJSONValue(EJSONType _Type);
 			TCJSONValue(ch8 const *_pValue);
+			TCJSONValue(TCInitializerList<CValue> const &_Init);
+			TCJSONValue(TCInitializerList<CKeyValue> const &_Init);
 
 			template <typename tf_CType>
 			CValue &operator = (tf_CType &&_Value);
@@ -245,6 +260,8 @@ namespace NMib
 		using TCJSON = t_TCValue<NPrivate::TCJSONValueBase<t_TCValue, tp_CTypes...>>;
 
 		using CJSON = TCJSON<TCJSONValue>;
+		
+		CJSON::CKey operator "" __ (const char *_pStr, std::size_t _Len);
 	}
 }
 #include "Malterlib_Encoding_JSON_Uninstantiated.hpp"

@@ -36,6 +36,18 @@ namespace NMib
 		{
 		}
 
+		template <typename t_CParent>
+		TCEJSONValue<t_CParent>::TCEJSONValue(TCInitializerList<CValue> const &_Init)
+			: TCJSONValue<t_CParent>(_Init)
+		{
+		}
+		
+		template <typename t_CParent>
+		TCEJSONValue<t_CParent>::TCEJSONValue(TCInitializerList<CKeyValue> const &_Init)
+			: TCJSONValue<t_CParent>(_Init)
+		{
+		}
+		
 		
 		template <typename t_CParent>
 		TCEJSONValue<t_CParent>::TCEJSONValue(TCEJSONValue const &&_Other)
