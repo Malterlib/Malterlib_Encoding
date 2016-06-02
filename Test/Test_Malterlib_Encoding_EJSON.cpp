@@ -236,6 +236,79 @@ namespace
 					fp_TestParseError("{ \"$binary\": 5 }\n", "Invalid EJSON: $binary value must be a string");
 				};
 			};
+			DMibTestSuite("Initializier list")
+			{
+				CEJSON Value =
+					{
+						"Key"_= "Value"
+						, "KeyTrue"_= true
+						, "KeyFalse"_= false
+						, "KeyNull"_= nullptr
+						, "KeyInt"_= 25
+						, "KeyFloat"_= 167.6
+						, "KeyDate"_= NTime::CTimeConvert::fs_CreateTime(1985, 2, 13, 10, 50, 11)
+						, "KeyBinary"_= NContainer::fg_CreateVector<uint8>(0, 1, 2, 3, 4, 5, 6, 7)
+						, "UserType"_= fg_UserType("TestType", {"TestValue1"__= "Test1", "TestValue2"__= 2})
+						, "UserTypeSimple"_= fg_UserType("oid", "e86c9bc324bbba92f0fd4014")
+						, "Escape1"_= {"$escape"_= 5}
+						, "Escape2"_= {"$date"_= 6}
+						, "Escape3"_= {"$binary"_= 7}
+						, "Escape4"_=
+						{
+							"$type"_= 8
+							, "$value"_= 9
+						}
+						, "NonEscape1"_=
+						{
+							"$escape"_= 10
+							, "OtherKey"_= 10
+						}
+						, "NonEscape2"_=
+						{
+							"$date"_= 11
+							, "OtherKey"_= 11
+						}
+						, "NonEscape3"_=
+						{
+							"$binary"_= 12
+							, "OtherKey"_= 12
+						}
+						, "NonEscape4"_= 
+						{
+							"$type"_= 13
+							, "$value"_= 13
+							, "OtherKey"_= 13
+						}
+						, "RecursiveEscape"_= {"$escape"_= NContainer::fg_CreateVector<uint8>(0, 1, 2, 3, 4, 5, 6, 7)}
+						, "KeyObject"_=
+						{
+							"Key"_= "Value"
+							, "KeyTrue"_= true
+							, "KeyFalse"_= false
+							, "KeyNull"_= nullptr
+							, "KeyInt"_= 25
+							, "KeyFloat"_= 167.6
+							, "KeyArray"_= EJSONType_Array
+							, "KeyObject"_= EJSONType_Object
+						}
+						, "KeyArray"_=
+						{
+							25
+							, 167.6
+							, true
+							, false
+							, EJSONType_Array
+							, 
+							{
+								"KeyInt"_= 25
+								, "KeyFloat"_= 167.6
+							}
+						}
+					}
+				;
+				
+				DMibExpect(Value, ==, fs_GetEJSON());
+			};
 		}
 	};
 

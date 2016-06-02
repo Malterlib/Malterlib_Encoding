@@ -35,6 +35,22 @@ namespace NMib
 			: t_CParent(static_cast<t_CParent const &>(_Other))
 		{
 		}
+		
+		template <typename t_CParent>
+		TCJSONValue<t_CParent>::TCJSONValue(TCInitializerList<CValue> const &_Init)
+		{
+			auto &Array = f_Array();
+			for (auto &Value : _Init)
+				Array.f_Insert(Value);
+		}
+		
+		template <typename t_CParent>
+		TCJSONValue<t_CParent>::TCJSONValue(TCInitializerList<CKeyValue> const &_Init)
+		{
+			auto &Object = f_Object();
+			for (auto &Value : _Init)
+				Object.f_CreateMember(Value.m_Key) = Value.m_Value;
+		}		
 
 		template <typename t_CParent>
 		TCJSONValue<t_CParent>::TCJSONValue(EJSONType _Type)

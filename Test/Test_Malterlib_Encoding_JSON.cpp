@@ -101,6 +101,46 @@ namespace
 				)
 			;
 			SharedTests.f_DoTests();
+			
+			DMibTestSuite("Initializier list")
+			{
+				CJSON Value =
+					{
+						"Key"__= "Value"
+						, "KeyTrue"__= true
+						, "KeyFalse"__= false
+						, "KeyNull"__= nullptr
+						, "KeyInt"__= 25
+						, "KeyFloat"__= 167.6
+						, "KeyObject"__= 
+						{
+							"Key"__= "Value"
+							, "KeyTrue"__= true
+							, "KeyFalse"__= false
+							, "KeyNull"__= nullptr
+							, "KeyInt"__= 25
+							, "KeyFloat"__= 167.6
+							, "KeyArray"__= EJSONType_Array
+							, "KeyObject"__= EJSONType_Object
+						}
+						, "KeyArray"__= 
+						{
+							25
+							, 167.6
+							, true
+							, false
+							, EJSONType_Array
+							, 
+							{
+								"KeyInt"__= 25
+								, "KeyFloat"__= 167.6
+							}
+						}
+					}
+				;
+				
+				DMibExpect(Value, ==, fs_GetJSON());
+			};
 		}
 	};
 

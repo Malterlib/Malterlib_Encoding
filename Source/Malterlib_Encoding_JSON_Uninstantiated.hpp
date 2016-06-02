@@ -82,5 +82,14 @@ namespace NMib
 				o_FormatInto += _Exception.f_GetErrorStr();
 			}
 		}
+
+		template <typename t_CParent>
+		auto TCJSONValue<t_CParent>::CKey::operator = (CValue &&_Value) && -> CKeyValue
+		{
+			CKeyValue Return;
+			Return.m_Key = fg_Move(m_Key);
+			Return.m_Value = fg_Move(_Value);
+			return Return;
+		}
 	}
 }

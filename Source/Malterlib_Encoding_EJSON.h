@@ -15,17 +15,27 @@ namespace NMib
 
 		struct CEJSONUserType
 		{
-			NStr::CStr m_Type;
-			CJSON m_Value;
+			CEJSONUserType();
+			CEJSONUserType(NStr::CStr const &_Type, CJSON const &_Value);
+			CEJSONUserType(NStr::CStr const &_Type, CJSON &&_Value);
 			
 			bool operator == (CEJSONUserType const &_Right) const;
 			bool operator < (CEJSONUserType const &_Right) const;
+
+			NStr::CStr m_Type;
+			CJSON m_Value;
 		};
+		
+		CEJSONUserType fg_UserType(NStr::CStr const &_Type, CJSON const &_Value);
+		CEJSONUserType fg_UserType(NStr::CStr const &_Type, CJSON &&_Value);
 
 		template <typename t_CParent>
 		class TCEJSONValue : public TCJSONValue<t_CParent>
 		{
+			using CValue = typename TCJSONValue<t_CParent>::CValue;
+			using CKeyValue = typename TCJSONValue<t_CParent>::CKeyValue;
 		public:
+			
 			template <typename tf_CType, TCDisableIfForbidden<tf_CType> * = nullptr>
 			TCEJSONValue(tf_CType &&_Type);
 			TCEJSONValue();
@@ -34,6 +44,8 @@ namespace NMib
 			TCEJSONValue(TCEJSONValue &_Other);
 			TCEJSONValue(TCEJSONValue &&_Other);
 			TCEJSONValue(TCEJSONValue const &&_Other);
+			TCEJSONValue(TCInitializerList<CValue> const &_Init);
+			TCEJSONValue(TCInitializerList<CKeyValue> const &_Init);
 
 			using TCJSONValue<t_CParent>::operator = ;
 
@@ -77,6 +89,8 @@ namespace NMib
 		};
 
 		using CEJSON = TCJSON<TCEJSONValue, NTime::CTime, NContainer::TCVector<uint8>, CEJSONUserType>;
+
+		CEJSON::CKey operator "" _ (const char *_pStr, std::size_t _Len);
 	}
 }
 
