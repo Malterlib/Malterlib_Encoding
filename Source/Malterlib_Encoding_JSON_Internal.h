@@ -8,7 +8,64 @@ namespace NMib
 	{
 		namespace NPrivate
 		{
-			template <template <typename t_CParent> class t_TCValue, typename ...tp_CTypes>
+			struct CJSONBoolean
+			{
+				CJSONBoolean() = default;
+				inline_always CJSONBoolean(bool _bValue);
+				inline_always operator bool const &() const;
+				inline_always operator bool &();
+				
+				template <typename tf_CStream>
+				void f_Feed(tf_CStream &_Stream) const;
+				template <typename tf_CStream>
+				void f_Consume(tf_CStream &_Stream);
+
+				bool m_bValue;
+			};
+			
+			struct CJSONNull
+			{
+				CJSONNull() = default;
+				inline_always CJSONNull(CNullPtr _Value);
+				inline_always operator CNullPtr () const;
+				
+				template <typename tf_CStream>
+				void f_Feed(tf_CStream &_Stream) const;
+				template <typename tf_CStream>
+				void f_Consume(tf_CStream &_Stream);
+			};
+			
+			namespace NPrivate
+			{
+				template <typename t_CValue, typename t_CTypes>
+				struct TCGetJSONValueVariant
+				{
+				};
+
+				template <typename t_CValue, typename ...tp_CTypes>
+				struct TCGetJSONValueVariant<t_CValue, NMeta::TCTypeList<tp_CTypes...>>
+				{
+					using CType =
+						NContainer::TCVariantMembers
+						<
+							EJSONType
+							, NContainer::TCVariantMember<void, DMibVariantMember(EJSONType, Invalid)>
+							, NContainer::TCVariantMember<CJSONNull, DMibVariantMember(EJSONType, Null)> 
+							, NContainer::TCVariantMember<NStr::CStr, DMibVariantMember(EJSONType, String)>
+							, NContainer::TCVariantMember<int64, DMibVariantMember(EJSONType, Integer)>
+							, NContainer::TCVariantMember<fp64, DMibVariantMember(EJSONType, Float)>
+							, NContainer::TCVariantMember<CJSONBoolean, DMibVariantMember(EJSONType, Boolean)>
+							, NContainer::TCVariantMember<TCJSONObject<t_CValue>, DMibVariantMember(EJSONType, Object)>
+							, NContainer::TCVariantMember<NContainer::TCVector<t_CValue>, DMibVariantMember(EJSONType, Array)>
+							, tp_CTypes...
+						>
+					;
+				} ;
+				
+				
+			};
+			
+			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
 			class TCJSONValueBase
 			{
 			public:
@@ -23,12 +80,23 @@ namespace NMib
 				TCJSONValueBase(pfp64 _Value);
 				TCJSONValueBase(pfp32 _Value);
 				TCJSONValueBase(fp32 _Value);
+				TCJSONValueBase(bool _Value);
 				TCJSONValueBase();
 				~TCJSONValueBase();
 
+				template <typename tf_CStream>
+				void f_Feed(tf_CStream &_Stream) const;
+				template <typename tf_CStream>
+				void f_Consume(tf_CStream &_Stream);
+				
 			protected:
 				// Members
-				NContainer::TCVariant<void, CNullPtr, NStr::CStr, int64, fp64, bool, TCJSONObject<CValue>, NContainer::TCVector<CValue>, tp_CTypes...> mp_Value;
+				typename NPrivate::TCGetJSONValueVariant<CValue, typename t_CTypes::CTypes>::CType mp_Value;
+			};
+
+			struct CJSONExtraTypes
+			{
+				using CTypes = NMeta::TCTypeList<>;
 			};
 		}
 		

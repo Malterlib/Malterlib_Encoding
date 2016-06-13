@@ -1,6 +1,8 @@
 
 #include <Mib/Encoding/EJSON>
+#include <Mib/Encoding/JSONShortcuts>
 #include <Mib/Test/Exception>
+#include <Mib/Stream/ByteVector>
 #include "Test_Malterlib_Encoding_JSONShared.h"
 
 namespace
@@ -288,8 +290,8 @@ namespace
 							, "KeyNull"_= nullptr
 							, "KeyInt"_= 25
 							, "KeyFloat"_= 167.6
-							, "KeyArray"_= EJSONType_Array
-							, "KeyObject"_= EJSONType_Object
+							, "KeyArray"_= _[_]
+							, "KeyObject"_= {}
 						}
 						, "KeyArray"_=
 						{
@@ -297,7 +299,7 @@ namespace
 							, 167.6
 							, true
 							, false
-							, EJSONType_Array
+							, _.mc_EmptyArray
 							, 
 							{
 								"KeyInt"_= 25
@@ -308,6 +310,10 @@ namespace
 				;
 				
 				DMibExpect(Value, ==, fs_GetEJSON());
+			};
+			DMibTestSuite("Stream")
+			{
+				DMibExpect(NStream::fg_FromByteVector<CEJSON>(NStream::fg_ToByteVector(fs_GetEJSON())), ==, fs_GetEJSON());
 			};
 		}
 	};

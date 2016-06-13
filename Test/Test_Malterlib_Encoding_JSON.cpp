@@ -2,7 +2,9 @@
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Encoding/JSON>
+#include <Mib/Encoding/JSONShortcuts>
 #include <Mib/Test/Exception>
+#include <Mib/Stream/ByteVector>
 #include "Test_Malterlib_Encoding_JSONShared.h"
 
 namespace
@@ -140,6 +142,10 @@ namespace
 				;
 				
 				DMibExpect(Value, ==, fs_GetJSON());
+			};
+			DMibTestSuite("Stream")
+			{
+				DMibExpect(NStream::fg_FromByteVector<CJSON>(NStream::fg_ToByteVector(fs_GetJSON())), ==, fs_GetJSON());
 			};
 		}
 	};

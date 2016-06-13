@@ -12,16 +12,6 @@ namespace NMib
 		template <>
 		NStr::CStr CJSON::f_ToString(ch8 const *_pPrettySeparator) const;
 
-		namespace NPrivate
-		{
-			template <template <typename t_CParent> class t_TCValue, typename ...tp_CTypes>
-			template <typename tf_CType>
-			TCJSONValueBase<t_TCValue, tp_CTypes...>::TCJSONValueBase(tf_CType &&_Value)
-				: mp_Value(fg_Forward<tf_CType>(_Value))
-			{
-			}
-		}
-
 		template <typename t_CParent>
 		template <typename tf_CType, TCDisableIfForbidden<tf_CType> *>
 		TCJSONValue<t_CParent>::TCJSONValue(tf_CType &&_Type)
@@ -90,6 +80,100 @@ namespace NMib
 			Return.m_Key = fg_Move(m_Key);
 			Return.m_Value = fg_Move(_Value);
 			return Return;
+		}
+
+		template <typename t_CParent>
+		auto TCJSONValue<t_CParent>::CKey::operator = (TCInitializerList<CVoidTag> const &_Initializer) && -> CKeyValue
+		{
+			DMibRequire(_Initializer.size() == 0);
+			CKeyValue Return;
+			Return.m_Key = m_Key;
+			Return.m_Value = EJSONType_Object;
+			return Return;
+		}
+		
+		template <typename t_CJSONValue>
+		template <typename tf_CStream>
+		void TCJSONObject<t_CJSONValue>::f_Feed(tf_CStream &_Stream) const
+		{
+			_Stream << mp_Objects;
+		}
+
+		template <typename t_CJSONValue>
+		template <typename tf_CStream>
+		void TCJSONObject<t_CJSONValue>::f_Consume(tf_CStream &_Stream)
+		{
+			_Stream >> mp_Objects;
+			for (auto &Object : mp_Objects)
+			{
+				if (mp_ObjectTree.f_FindEqual(Object.f_Name()))
+					DMibError("Duplicate object in stream");
+				mp_ObjectTree.f_Insert(Object);
+			}
+		}
+		
+		namespace NPrivate
+		{
+			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+			template <typename tf_CType>
+			TCJSONValueBase<t_TCValue, t_CTypes>::TCJSONValueBase(tf_CType &&_Value)
+				: mp_Value(fg_Forward<tf_CType>(_Value))
+			{
+			}
+			
+			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+			template <typename tf_CStream>
+			void TCJSONValueBase<t_TCValue, t_CTypes>::f_Feed(tf_CStream &_Stream) const
+			{
+				_Stream << mp_Value;
+			}
+			
+			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+			template <typename tf_CStream>
+			void TCJSONValueBase<t_TCValue, t_CTypes>::f_Consume(tf_CStream &_Stream)
+			{
+				_Stream >> mp_Value;
+			}
+			
+			template <typename t_CJSONValue>
+			template <typename tf_CStream>
+			void TCObjectEntry<t_CJSONValue>::f_Feed(tf_CStream &_Stream) const
+			{
+				_Stream << mp_Name;
+				_Stream << mp_Value;
+			}
+			
+			template <typename t_CJSONValue>
+			template <typename tf_CStream>
+			void TCObjectEntry<t_CJSONValue>::f_Consume(tf_CStream &_Stream)
+			{
+				_Stream >> mp_Name;
+				_Stream >> mp_Value;
+			}
+			template <typename tf_CStream>
+			void CJSONNull::f_Feed(tf_CStream &_Stream) const
+			{
+			}
+			
+			template <typename tf_CStream>
+			void CJSONNull::f_Consume(tf_CStream &_Stream)
+			{
+			}
+			
+			template <typename tf_CStream>
+			void CJSONBoolean::f_Feed(tf_CStream &_Stream) const
+			{
+				uint8 bValue = !!m_bValue;
+				_Stream << bValue;
+			}
+			
+			template <typename tf_CStream>
+			void CJSONBoolean::f_Consume(tf_CStream &_Stream)
+			{
+				uint8 bValue;
+				_Stream >> bValue;
+				m_bValue = !!bValue;
+			}
 		}
 	}
 }

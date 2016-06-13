@@ -51,6 +51,11 @@ namespace NMib
 				t_CJSONValue &f_Value();
 				t_CJSONValue const &f_Value() const;
 
+				template <typename tf_CStream>
+				void f_Feed(tf_CStream &_Stream) const;
+				template <typename tf_CStream>
+				void f_Consume(tf_CStream &_Stream);
+				
 			protected:
 				t_CJSONValue mp_Value;
 			};

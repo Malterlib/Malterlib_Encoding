@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Malterlib_Encoding_EJSON.h"
 
@@ -6,13 +6,15 @@ namespace NMib
 {
 	namespace NEncoding
 	{
-		extern template class NPrivate::TCJSONValueBase<TCEJSONValue, NTime::CTime, NContainer::TCVector<uint8>, CEJSONUserType>;
-		extern template class TCJSONValue<NPrivate::TCJSONValueBase<TCEJSONValue, NTime::CTime, NContainer::TCVector<uint8>, CEJSONUserType>>;
-		extern template class TCEJSONValue<NPrivate::TCJSONValueBase<TCEJSONValue, NTime::CTime, NContainer::TCVector<uint8>, CEJSONUserType>>;
+		using CEJSONValueBase = NPrivate::TCJSONValueBase<TCEJSONValue, NPrivate::CEJSONExtraTypes>;
+		
+		extern template class NPrivate::TCJSONValueBase<TCEJSONValue, NPrivate::CEJSONExtraTypes>;
+		extern template class TCJSONValue<CEJSONValueBase>;
+		extern template class TCEJSONValue<CEJSONValueBase>;
 		extern template class TCJSONObject<CEJSON>;
 		extern template struct NPrivate::TCObjectEntry<CEJSON>;
 
-		typedef TCJSONValue<NPrivate::TCJSONValueBase<TCEJSONValue, NTime::CTime, NContainer::TCVector<uint8>, CEJSONUserType>> CJSONValueEJSON;
+		typedef TCJSONValue<CEJSONValueBase> CJSONValueEJSON;
 
 #ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(CNullPtr &&);
