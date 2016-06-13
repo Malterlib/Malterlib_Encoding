@@ -43,17 +43,9 @@ namespace NMib
 			return NPrivate::fg_JSONGenerate(*this, _pPrettySeparator);
 		}
 		
-		CJSON::CKey operator "" __ (const char *_pStr, std::size_t _Len)
-		{
-			CJSON::CKey Ret;
-			Ret.m_Key = NStr::CStr(_pStr, _Len);
-			return Ret;
-		}
-		
-		
 #ifdef DMibEncodingJSONExternTemplate
-		template class NPrivate::TCJSONValueBase<TCJSONValue>;
-		template class TCJSONValue<NPrivate::TCJSONValueBase<TCJSONValue>>;
+		template class NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes>;
+		template class TCJSONValue<NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes>>;
 		template class TCJSONObject<CJSON>;
 		template struct NPrivate::TCObjectEntry<CJSON>;
 

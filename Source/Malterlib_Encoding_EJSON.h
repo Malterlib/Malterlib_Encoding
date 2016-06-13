@@ -24,6 +24,11 @@ namespace NMib
 
 			NStr::CStr m_Type;
 			CJSON m_Value;
+			
+			template <typename tf_CStream>
+			void f_Feed(tf_CStream &_Stream) const;
+			template <typename tf_CStream>
+			void f_Consume(tf_CStream &_Stream);
 		};
 		
 		CEJSONUserType fg_UserType(NStr::CStr const &_Type, CJSON const &_Value);
@@ -87,10 +92,27 @@ namespace NMib
 			static void fsp_FromJSON(TCEJSONValue &_Ret, CJSON const &_From);
 			static void fsp_FromJSON_Object(TCEJSONValue &_Ret, CJSON::CObject const &_From);
 		};
+		
+		namespace NPrivate
+		{
+			struct CEJSONExtraTypes
+			{
+				using CTypes = NMeta::TCTypeList
+					<
+						NContainer::TCVariantMember<NTime::CTime, EJSONType, (EJSONType)EEJSONType_Date>
+						, NContainer::TCVariantMember<NContainer::TCVector<uint8>, EJSONType, (EJSONType)EEJSONType_Binary>
+						, NContainer::TCVariantMember<CEJSONUserType, EJSONType, (EJSONType)EEJSONType_UserType>
+					>
+				;
+			};
+		}
 
-		using CEJSON = TCJSON<TCEJSONValue, NTime::CTime, NContainer::TCVector<uint8>, CEJSONUserType>;
-
-		CEJSON::CKey operator "" _ (const char *_pStr, std::size_t _Len);
+		using CEJSON = TCJSON
+			<
+				TCEJSONValue
+				, NPrivate::CEJSONExtraTypes
+			>
+		;
 	}
 }
 

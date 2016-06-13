@@ -95,13 +95,13 @@ namespace NMib
 			switch (_Type)
 			{
 			case EEJSONType_Date:
-				this->mp_Value.template f_Set<EEJSONType_Date>();
+				this->mp_Value.template f_Set<(EJSONType)EEJSONType_Date>();
 				break;
 			case EEJSONType_Binary:
-				this->mp_Value.template f_Set<EEJSONType_Binary>();
+				this->mp_Value.template f_Set<(EJSONType)EEJSONType_Binary>();
 				break;
 			case EEJSONType_UserType:
-				this->mp_Value.template f_Set<EEJSONType_UserType>();
+				this->mp_Value.template f_Set<(EJSONType)EEJSONType_UserType>();
 				break;
 			default:
 				TCJSONValue<t_CParent>::f_SetType((EJSONType)_Type);
@@ -136,42 +136,42 @@ namespace NMib
 		NTime::CTime const &TCEJSONValue<t_CParent>::f_Date() const
 		{
 			this->fp_CheckType(static_cast<EJSONType>(EEJSONType_Date));
-			return this->mp_Value.template f_Get<8>();
+			return this->mp_Value.template f_Get<(EJSONType)EEJSONType_Date>();
 		}
 		
 		template <typename t_CParent>
 		NTime::CTime &TCEJSONValue<t_CParent>::f_Date()
 		{
 			this->fp_PromoteEType(EEJSONType_Date);
-			return this->mp_Value.template f_Get<8>();
+			return this->mp_Value.template f_Get<(EJSONType)EEJSONType_Date>();
 		}
 		
 		template <typename t_CParent>
 		NContainer::TCVector<uint8> const &TCEJSONValue<t_CParent>::f_Binary() const
 		{
 			this->fp_CheckType(static_cast<EJSONType>(EEJSONType_Binary));
-			return this->mp_Value.template f_Get<9>();
+			return this->mp_Value.template f_Get<(EJSONType)EEJSONType_Binary>();
 		}
 		
 		template <typename t_CParent>
 		NContainer::TCVector<uint8> &TCEJSONValue<t_CParent>::f_Binary()
 		{
 			this->fp_PromoteEType(EEJSONType_Binary);
-			return this->mp_Value.template f_Get<9>();
+			return this->mp_Value.template f_Get<(EJSONType)EEJSONType_Binary>();
 		}
 		
 		template <typename t_CParent>
 		CEJSONUserType const &TCEJSONValue<t_CParent>::f_UserType() const
 		{
 			this->fp_CheckType(static_cast<EJSONType>(EEJSONType_UserType));
-			return this->mp_Value.template f_Get<10>();
+			return this->mp_Value.template f_Get<(EJSONType)EEJSONType_UserType>();
 		}
 		
 		template <typename t_CParent>
 		CEJSONUserType &TCEJSONValue<t_CParent>::f_UserType()
 		{
 			this->fp_PromoteEType(EEJSONType_UserType);
-			return this->mp_Value.template f_Get<10>();
+			return this->mp_Value.template f_Get<(EJSONType)EEJSONType_UserType>();
 		}
 		
 		template <typename t_CParent>

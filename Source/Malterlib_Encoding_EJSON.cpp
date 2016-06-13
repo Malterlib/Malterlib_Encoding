@@ -36,13 +36,6 @@ namespace NMib
 			return m_Value < _Right.m_Value;
 		}
 
-		CEJSON::CKey operator "" _ (const char *_pStr, std::size_t _Len)
-		{
-			CEJSON::CKey Ret;
-			Ret.m_Key = NStr::CStr(_pStr, _Len);
-			return Ret;
-		}
-		
 		CEJSONUserType fg_UserType(NStr::CStr const &_Type, CJSON const &_Value)
 		{
 			return CEJSONUserType{_Type, _Value};
@@ -53,10 +46,10 @@ namespace NMib
 			return CEJSONUserType{_Type, fg_Move(_Value)};
 		}
 
-		
-		template class NPrivate::TCJSONValueBase<TCEJSONValue, NTime::CTime, NContainer::TCVector<uint8>, CEJSONUserType>;
-		template class TCJSONValue<NPrivate::TCJSONValueBase<TCEJSONValue, NTime::CTime, NContainer::TCVector<uint8>, CEJSONUserType>>;
-		template class TCEJSONValue<NPrivate::TCJSONValueBase<TCEJSONValue, NTime::CTime, NContainer::TCVector<uint8>, CEJSONUserType>>;
+#ifdef DMibEncodingJSONExternTemplate
+		template class NPrivate::TCJSONValueBase<TCEJSONValue, NPrivate::CEJSONExtraTypes>;
+		template class TCJSONValue<CEJSONValueBase>;
+		template class TCEJSONValue<CEJSONValueBase>;
 		template class TCJSONObject<CEJSON>;
 		template struct NPrivate::TCObjectEntry<CEJSON>;
 
@@ -288,5 +281,8 @@ namespace NMib
 			<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJSON, true>::CLocalOptions>
 			(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJSON, true>::CLocalOptions const&) const
 		;
+#endif
+		
 	}
 }
+

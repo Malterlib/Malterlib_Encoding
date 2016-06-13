@@ -12,5 +12,19 @@ namespace NMib
 			: TCJSONValue<t_CParent>(fg_Forward<tf_CType>(_Type))
 		{
 		}
+	
+		template <typename tf_CStream>
+		void CEJSONUserType::f_Feed(tf_CStream &_Stream) const
+		{
+			_Stream << m_Type;
+			_Stream << m_Value;
+		}
+		
+		template <typename tf_CStream>
+		void CEJSONUserType::f_Consume(tf_CStream &_Stream)
+		{
+			_Stream >> m_Type;
+			_Stream >> m_Value;
+		}
 	}
 }

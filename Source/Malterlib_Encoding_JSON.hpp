@@ -11,50 +11,56 @@ namespace NMib
 	{
 		namespace NPrivate
 		{
-			template <template <typename t_CParent> class t_TCValue, typename ...tp_CTypes>
-			TCJSONValueBase<t_TCValue, tp_CTypes...>::TCJSONValueBase(TCJSONValueBase const &_Value)
+			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+			TCJSONValueBase<t_TCValue, t_CTypes>::TCJSONValueBase(TCJSONValueBase const &_Value)
 				: mp_Value(_Value.mp_Value)
 			{
 			}
 
-			template <template <typename t_CParent> class t_TCValue, typename ...tp_CTypes>
-			TCJSONValueBase<t_TCValue, tp_CTypes...>::TCJSONValueBase(TCJSONValueBase &_Value)
+			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+			TCJSONValueBase<t_TCValue, t_CTypes>::TCJSONValueBase(TCJSONValueBase &_Value)
 				: mp_Value(_Value.mp_Value)
 			{
 			}
 
-			template <template <typename t_CParent> class t_TCValue, typename ...tp_CTypes>
-			TCJSONValueBase<t_TCValue, tp_CTypes...>::TCJSONValueBase(TCJSONValueBase &&_Value)
+			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+			TCJSONValueBase<t_TCValue, t_CTypes>::TCJSONValueBase(TCJSONValueBase &&_Value)
 				: mp_Value(fg_Move(_Value.mp_Value))
 			{
 			}
 
-			template <template <typename t_CParent> class t_TCValue, typename ...tp_CTypes>
-			TCJSONValueBase<t_TCValue, tp_CTypes...>::TCJSONValueBase(pfp64 _Value)
+			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+			TCJSONValueBase<t_TCValue, t_CTypes>::TCJSONValueBase(bool _Value)
+				: mp_Value(CJSONBoolean(_Value))
+			{
+			}
+			
+			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+			TCJSONValueBase<t_TCValue, t_CTypes>::TCJSONValueBase(pfp64 _Value)
 				: mp_Value(fp64(_Value))
 			{
 			}
 			
-			template <template <typename t_CParent> class t_TCValue, typename ...tp_CTypes>
-			TCJSONValueBase<t_TCValue, tp_CTypes...>::TCJSONValueBase(pfp32 _Value)
+			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+			TCJSONValueBase<t_TCValue, t_CTypes>::TCJSONValueBase(pfp32 _Value)
 				: mp_Value(fp64(_Value))
 			{
 			}
 
-			template <template <typename t_CParent> class t_TCValue, typename ...tp_CTypes>
-			TCJSONValueBase<t_TCValue, tp_CTypes...>::TCJSONValueBase(fp32 _Value)
+			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+			TCJSONValueBase<t_TCValue, t_CTypes>::TCJSONValueBase(fp32 _Value)
 				: mp_Value(fp64(_Value))
 			{
 			}
 			
 
-			template <template <typename t_CParent> class t_TCValue, typename ...tp_CTypes>
-			TCJSONValueBase<t_TCValue, tp_CTypes...>::TCJSONValueBase()
+			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+			TCJSONValueBase<t_TCValue, t_CTypes>::TCJSONValueBase()
 			{
 			}
 			
-			template <template <typename t_CParent> class t_TCValue, typename ...tp_CTypes>
-			TCJSONValueBase<t_TCValue, tp_CTypes...>::~TCJSONValueBase()
+			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+			TCJSONValueBase<t_TCValue, t_CTypes>::~TCJSONValueBase()
 			{
 			}
 			
@@ -97,6 +103,30 @@ namespace NMib
 				else if (mp_Name > _Right.mp_Name)
 					return false;
 				return mp_Value < _Right.mp_Value;
+			}
+			
+			CJSONBoolean::CJSONBoolean(bool _bValue)
+				: m_bValue(_bValue)
+			{
+			}
+			
+			CJSONBoolean::operator bool const &() const
+			{
+				return m_bValue;
+			}
+			
+			CJSONBoolean::operator bool &()
+			{
+				return m_bValue;
+			}
+			
+			CJSONNull::CJSONNull(CNullPtr _Value)
+			{
+			}
+			
+			CJSONNull::operator CNullPtr () const
+			{
+				return nullptr;
 			}
 		}
 	}

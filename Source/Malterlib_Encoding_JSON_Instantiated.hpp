@@ -6,8 +6,8 @@ namespace NMib
 {
 	namespace NEncoding
 	{
-		extern template class NPrivate::TCJSONValueBase<TCJSONValue>;
-		extern template class TCJSONValue<NPrivate::TCJSONValueBase<TCJSONValue>>;
+		extern template class NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes>;
+		extern template class TCJSONValue<NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes>>;
 		extern template class TCJSONObject<CJSON>;
 		extern template struct NPrivate::TCObjectEntry<CJSON>;
 

@@ -24,7 +24,7 @@ namespace NMib
 			, EJSONType_Boolean
 			, EJSONType_Object
 			, EJSONType_Array
-			, EJSONType_Max
+			, EJSONType_Max = 32
 		};
 
 		template <typename t_CJSONValue>
@@ -47,8 +47,13 @@ namespace NMib
 			
 			struct CKey
 			{
+				CKey();
+				CKey(CKey &&_Other);
 				NStr::CStr m_Key;
 				inline_always CKeyValue operator = (CValue &&_Value) &&;
+				inline_always CKeyValue operator = (TCInitializerList<CVoidTag> const &_Initializer) &&;
+			private:
+				CKey(CKey const &_Other);
 			};
 			
 			template <typename tf_CType, TCDisableIfForbidden<tf_CType> * = nullptr>
@@ -71,6 +76,7 @@ namespace NMib
 			CValue &operator = (pfp64 _Value);
 			CValue &operator = (pfp32 _Value);
 			CValue &operator = (fp32 _Value);
+			CValue &operator = (bool _Value);
 			CValue &operator = (EJSONType _Type);
 			CValue &operator = (ch8 const *_pValue);
 
@@ -155,7 +161,7 @@ namespace NMib
 
 			static TCJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr());
 			NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t") const;
-
+			
 		protected:
 			inline_always void fp_CheckType(EJSONType _Type) const;
 			inline_always void fp_PromoteType(EJSONType _Type);
@@ -216,6 +222,11 @@ namespace NMib
 
 			typename NIntrusive::TCAVLTree<CLinkTraits, CCompare>::CIterator f_SortedIterator() const;
 			
+			template <typename tf_CStream>
+			void f_Feed(tf_CStream &_Stream) const;
+			template <typename tf_CStream>
+			void f_Consume(tf_CStream &_Stream);
+			
 		private:
 			NContainer::TCLinkedList<CObjectEntry> mp_Objects;
 			NIntrusive::TCAVLTree<CLinkTraits, CCompare> mp_ObjectTree;
@@ -256,14 +267,13 @@ namespace NMib
 {
 	namespace NEncoding
 	{
-		template <template <typename t_CParent> class t_TCValue, typename ...tp_CTypes>
-		using TCJSON = t_TCValue<NPrivate::TCJSONValueBase<t_TCValue, tp_CTypes...>>;
+		template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+		using TCJSON = t_TCValue<NPrivate::TCJSONValueBase<t_TCValue, t_CTypes>>;
 
-		using CJSON = TCJSON<TCJSONValue>;
-		
-		CJSON::CKey operator "" __ (const char *_pStr, std::size_t _Len);
+		using CJSON = TCJSON<TCJSONValue, NPrivate::CJSONExtraTypes>;
 	}
 }
+
 #include "Malterlib_Encoding_JSON_Uninstantiated.hpp"
 
 #define DMibEncodingJSONExternTemplate
