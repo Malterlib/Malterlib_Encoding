@@ -104,30 +104,6 @@ namespace NMib
 					return false;
 				return mp_Value < _Right.mp_Value;
 			}
-			
-			CJSONBoolean::CJSONBoolean(bool _bValue)
-				: m_bValue(_bValue)
-			{
-			}
-			
-			CJSONBoolean::operator bool const &() const
-			{
-				return m_bValue;
-			}
-			
-			CJSONBoolean::operator bool &()
-			{
-				return m_bValue;
-			}
-			
-			CJSONNull::CJSONNull(CNullPtr _Value)
-			{
-			}
-			
-			CJSONNull::operator CNullPtr () const
-			{
-				return nullptr;
-			}
 		}
 	}
 }

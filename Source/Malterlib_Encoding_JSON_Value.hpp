@@ -583,20 +583,19 @@ namespace NMib
 					return false;
 				}
 
+				template <typename tf_CType>
+				bool operator ()(tf_CType const &_Left, tf_CType const &_Right)
+				{
+					return _Left == _Right;
+				}
 				bool operator ()(CVoidTag const &_Left, CVoidTag const &_Right)
 				{
 					return true;
 				}
 
-				bool operator ()(CNullPtr const &_Left, CNullPtr const &_Right)
+				bool operator ()(CJSONNull const &_Left, CJSONNull const &_Right)
 				{
 					return true;
-				}
-
-				template <typename tf_CType>
-				bool operator ()(tf_CType const &_Left, tf_CType const &_Right)
-				{
-					return _Left == _Right;
 				}
 			};
 
@@ -613,7 +612,7 @@ namespace NMib
 					return false;
 				}
 
-				bool operator ()(CNullPtr const &_Left, CNullPtr const &_Right)
+				bool operator ()(CJSONNull const &_Left, CJSONNull const &_Right)
 				{
 					return false;
 				}

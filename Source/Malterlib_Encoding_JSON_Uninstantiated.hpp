@@ -174,6 +174,30 @@ namespace NMib
 				_Stream >> bValue;
 				m_bValue = !!bValue;
 			}
+			
+			inline_always CJSONBoolean::CJSONBoolean(bool _bValue)
+				: m_bValue(_bValue)
+			{
+			}
+			
+			inline_always CJSONBoolean::operator bool const &() const
+			{
+				return m_bValue;
+			}
+			
+			inline_always CJSONBoolean::operator bool &()
+			{
+				return m_bValue;
+			}
+			
+			inline_always CJSONNull::CJSONNull(CNullPtr _Value)
+			{
+			}
+			
+			inline_always CJSONNull::operator CNullPtr () const
+			{
+				return nullptr;
+			}
 		}
 	}
 }
