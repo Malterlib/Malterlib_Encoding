@@ -168,13 +168,13 @@ namespace NMib
 		};
 
 		template <typename tf_CJSONValue>
-		NContainer::NPrivate::TCContainerIterator<typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator> begin(TCJSONObject<tf_CJSONValue> &_JSONObject);
+		typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator begin(TCJSONObject<tf_CJSONValue> &_JSONObject);
 		template <typename tf_CJSONValue>
-		NContainer::NPrivate::TCContainerIterator<typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator> end(TCJSONObject<tf_CJSONValue> &_JSONObject);
+		NContainer::CIteratorEndSentinel end(TCJSONObject<tf_CJSONValue> &_JSONObject);
 		template <typename tf_CJSONValue>
-		NContainer::NPrivate::TCContainerIterator<typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIteratorConst> begin(TCJSONObject<tf_CJSONValue> const &_JSONObject);
+		typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIteratorConst begin(TCJSONObject<tf_CJSONValue> const &_JSONObject);
 		template <typename tf_CJSONValue>
-		NContainer::NPrivate::TCContainerIterator<typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIteratorConst> end(TCJSONObject<tf_CJSONValue> const &_JSONObject);
+		NContainer::CIteratorEndSentinel end(TCJSONObject<tf_CJSONValue> const &_JSONObject);
 		
 		template <typename t_CJSONValue>
 		class TCJSONObject
@@ -189,13 +189,9 @@ namespace NMib
 			};
 
 			template <typename tf_CJSONValue>
-			friend NContainer::NPrivate::TCContainerIterator<typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator> begin(TCJSONObject<tf_CJSONValue> &_JSONObject);
+			friend typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator begin(TCJSONObject<tf_CJSONValue> &_JSONObject);
 			template <typename tf_CJSONValue>
-			friend NContainer::NPrivate::TCContainerIterator<typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator> end(TCJSONObject<tf_CJSONValue> &_JSONObject);
-			template <typename tf_CJSONValue>
-			friend NContainer::NPrivate::TCContainerIterator<typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIteratorConst> begin(TCJSONObject<tf_CJSONValue> const &_JSONObject);
-			template <typename tf_CJSONValue>
-			friend NContainer::NPrivate::TCContainerIterator<typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIteratorConst> end(TCJSONObject<tf_CJSONValue> const &_JSONObject);
+			friend typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIteratorConst begin(TCJSONObject<tf_CJSONValue> const &_JSONObject);
 			
 		public:
 			
@@ -232,28 +228,30 @@ namespace NMib
 			NIntrusive::TCAVLTree<CLinkTraits, CCompare> mp_ObjectTree;
 		};
 		
+		using NContainer::operator==;
+		
 		template <typename tf_CJSONValue>
-		NContainer::NPrivate::TCContainerIterator<typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator> begin(TCJSONObject<tf_CJSONValue> &_JSONObject) 
+		typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator begin(TCJSONObject<tf_CJSONValue> &_JSONObject) 
 		{
-			return NContainer::NPrivate::TCContainerIterator<decltype((_JSONObject.mp_Objects.f_GetIterator()))>(_JSONObject.mp_Objects.f_GetIterator());
+			return _JSONObject.mp_Objects.f_GetIterator();
 		}
 		
 		template <typename tf_CJSONValue>
-		NContainer::NPrivate::TCContainerIterator<typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator> end(TCJSONObject<tf_CJSONValue> &_JSONObject) 
+		NContainer::CIteratorEndSentinel end(TCJSONObject<tf_CJSONValue> &_JSONObject) 
 		{
-			return NContainer::NPrivate::TCContainerIterator<decltype((_JSONObject.mp_Objects.f_GetIterator()))>();
+			return NContainer::CIteratorEndSentinel();
 		}
 		
 		template <typename tf_CJSONValue>
-		NContainer::NPrivate::TCContainerIterator<typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIteratorConst> begin(TCJSONObject<tf_CJSONValue> const &_JSONObject) 
+		typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIteratorConst begin(TCJSONObject<tf_CJSONValue> const &_JSONObject) 
 		{
-			return NContainer::NPrivate::TCContainerIterator<decltype((_JSONObject.mp_Objects.f_GetIterator()))>(_JSONObject.mp_Objects.f_GetIterator());
+			return _JSONObject.mp_Objects.f_GetIterator();
 		}
 		
 		template <typename tf_CJSONValue>
-		NContainer::NPrivate::TCContainerIterator<typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIteratorConst> end(TCJSONObject<tf_CJSONValue> const &_JSONObject)
+		NContainer::CIteratorEndSentinel end(TCJSONObject<tf_CJSONValue> const &_JSONObject)
 		{
-			return NContainer::NPrivate::TCContainerIterator<decltype((_JSONObject.mp_Objects.f_GetIterator()))>();
+			return NContainer::CIteratorEndSentinel();
 		}
 		
 		template <typename t_CJSONObject>
