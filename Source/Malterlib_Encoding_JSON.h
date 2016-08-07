@@ -228,8 +228,6 @@ namespace NMib
 			NIntrusive::TCAVLTree<CLinkTraits, CCompare> mp_ObjectTree;
 		};
 		
-		using NContainer::operator==;
-		
 		template <typename tf_CJSONValue>
 		typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator begin(TCJSONObject<tf_CJSONValue> &_JSONObject) 
 		{
