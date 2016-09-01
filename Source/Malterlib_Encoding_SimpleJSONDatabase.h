@@ -16,6 +16,8 @@ namespace NMib
 			NConcurrency::TCDispatchedActorCall<void> f_Load();
 			NConcurrency::TCDispatchedActorCall<void> f_Save();
 			
+			NStr::CStr const &f_GetFileName() const;
+			
 			CEJSON m_Data;
 			
 		private:

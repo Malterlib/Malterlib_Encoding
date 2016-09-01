@@ -13,6 +13,11 @@ namespace NMib
 			, mp_FileName(_FileName)
 		{
 		}
+		
+		NStr::CStr const &CSimpleJSONDatabase::f_GetFileName() const
+		{
+			return mp_FileName;
+		}
 			
 		NConcurrency::TCDispatchedActorCall<void> CSimpleJSONDatabase::f_Load()
 		{
