@@ -275,6 +275,13 @@ namespace NMib
 			case EEJSONType_Date:
 				{
 					static NTime::CTime EpochStart = NTime::CTimeConvert::fs_CreateTime(1970, 1, 1);
+					
+					if (!f_Date().f_IsValid())
+					{
+						_Ret["$date"] = nullptr;
+						break;
+					}
+					
 					NTime::CTimeSpan TimeSinceEpoch = f_Date() - EpochStart;
 					
 					int64 MillisecondsSinceEpoch = TimeSinceEpoch.f_GetSeconds() * constant_int64(1000) + (TimeSinceEpoch.f_GetFraction() * 1000.0).f_ToInt();
@@ -333,6 +340,11 @@ namespace NMib
 						}
 						else if (Name == "$date")
 						{
+							if (Value.f_IsNull())
+							{
+								_Ret = NTime::CTime();
+								return;
+							}
 							if (Value.f_Type() != EJSONType_Integer)
 								DMibError("Invalid EJSON: $date value must be an integer");
 							
