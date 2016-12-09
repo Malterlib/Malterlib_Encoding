@@ -114,6 +114,15 @@ namespace NMib
 			>
 		;
 	}
+	
+	template <>
+	struct TCIsForbiddenType<NEncoding::CEJSON::CKeyValue>
+	{
+		enum
+		{
+			mc_Value = true
+		};
+	};
 }
 
 #include "Malterlib_Encoding_EJSON_Uninstantiated.hpp"

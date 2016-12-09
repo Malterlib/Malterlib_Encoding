@@ -80,6 +80,20 @@ namespace NMib
 		}
 		
 		template <typename t_CParent>
+		auto TCJSONValue<t_CParent>::operator = (TCInitializerList<CValue> const &_Init) -> CValue &
+		{
+			static_cast<CValue &>(*this) = CValue(_Init);
+			return static_cast<CValue &>(*this);
+		}
+
+		template <typename t_CParent>
+		auto TCJSONValue<t_CParent>::operator = (TCInitializerList<CKeyValue> const &_Init) -> CValue &
+		{
+			static_cast<CValue &>(*this) = CValue(_Init);
+			return static_cast<CValue &>(*this);
+		}		
+		
+		template <typename t_CParent>
 		EJSONType TCJSONValue<t_CParent>::f_Type() const
 		{
 			return (EJSONType)this->mp_Value.f_GetTypeID();

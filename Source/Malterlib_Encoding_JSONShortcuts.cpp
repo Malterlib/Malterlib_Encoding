@@ -16,6 +16,13 @@ namespace NMib
 		constexpr EJSONType CJSONConstants::mc_EmptyArray;
 		constexpr EEJSONType CJSONConstants::mc_InvalidDate;
 		constexpr EEJSONType CJSONConstants::mc_EmptyBinary;
+		
+		CEJSON::CKey CJSONConstants::operator [] (NStr::CStr const &_Key)
+		{
+			CEJSON::CKey Key;
+			Key.m_Key = _Key;
+			return Key;
+		}
 	}
 }
 

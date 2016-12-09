@@ -43,6 +43,11 @@ namespace NMib
 			{
 				NStr::CStr m_Key;
 				CValue m_Value;
+				
+				operator CValue () const
+				{
+					return CValue{*this};
+				}				
 			};
 			
 			struct CKey
@@ -79,6 +84,8 @@ namespace NMib
 			CValue &operator = (bool _Value);
 			CValue &operator = (EJSONType _Type);
 			CValue &operator = (ch8 const *_pValue);
+			CValue &operator = (TCInitializerList<CValue> const &_Init);
+			CValue &operator = (TCInitializerList<CKeyValue> const &_Init);
 
 			bool operator == (TCJSONValue const &_Right) const;
 			bool operator < (TCJSONValue const &_Right) const;
@@ -268,6 +275,15 @@ namespace NMib
 
 		using CJSON = TCJSON<TCJSONValue, NPrivate::CJSONExtraTypes>;
 	}
+	
+	template <>
+	struct TCIsForbiddenType<NEncoding::CJSON::CKeyValue>
+	{
+		enum
+		{
+			mc_Value = true
+		};
+	};
 }
 
 #include "Malterlib_Encoding_JSON_Uninstantiated.hpp"

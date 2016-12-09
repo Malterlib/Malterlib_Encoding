@@ -19,6 +19,7 @@ namespace NMib
 			{
 				return EJSONType_Array;
 			}
+			CEJSON::CKey operator [] (NStr::CStr const &_Key);
 		};
 	}
 }
