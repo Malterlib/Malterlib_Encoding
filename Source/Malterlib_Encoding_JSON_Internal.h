@@ -70,8 +70,9 @@ namespace NMib
 			{
 			public:
 				using CValue = t_TCValue<TCJSONValueBase>;
+				using CVariantType = typename NPrivate::TCGetJSONValueVariant<CValue, typename t_CTypes::CTypes>::CType;
 
-				template <typename tf_CType>
+				template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<CVariantType, void (tf_CType &&)>::mc_Value> * = nullptr>
 				TCJSONValueBase(tf_CType &&_Value);
 				TCJSONValueBase(TCJSONValueBase const &_Value);
 				TCJSONValueBase(TCJSONValueBase &_Value);
@@ -91,7 +92,7 @@ namespace NMib
 				
 			protected:
 				// Members
-				typename NPrivate::TCGetJSONValueVariant<CValue, typename t_CTypes::CTypes>::CType mp_Value;
+				CVariantType mp_Value;
 			};
 
 			struct CJSONExtraTypes

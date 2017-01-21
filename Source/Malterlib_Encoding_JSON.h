@@ -61,7 +61,7 @@ namespace NMib
 				CKey(CKey const &_Other);
 			};
 			
-			template <typename tf_CType, TCDisableIfForbidden<tf_CType> * = nullptr>
+			template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<t_CParent, void (tf_CType &&)>::mc_Value> * = nullptr>
 			TCJSONValue(tf_CType &&_Type);
 			TCJSONValue();
 			TCJSONValue(TCJSONValue const &_Other);
@@ -275,15 +275,6 @@ namespace NMib
 
 		using CJSON = TCJSON<TCJSONValue, NPrivate::CJSONExtraTypes>;
 	}
-	
-	template <>
-	struct TCIsForbiddenType<NEncoding::CJSON::CKeyValue>
-	{
-		enum
-		{
-			mc_Value = true
-		};
-	};
 }
 
 #include "Malterlib_Encoding_JSON_Uninstantiated.hpp"

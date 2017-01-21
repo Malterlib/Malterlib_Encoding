@@ -13,7 +13,7 @@ namespace NMib
 		NStr::CStr CJSON::f_ToString(ch8 const *_pPrettySeparator) const;
 
 		template <typename t_CParent>
-		template <typename tf_CType, TCDisableIfForbidden<tf_CType> *>
+		template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<t_CParent, void (tf_CType &&)>::mc_Value> *>
 		TCJSONValue<t_CParent>::TCJSONValue(tf_CType &&_Type)
 			: t_CParent(fg_Forward<tf_CType>(_Type))
 		{
@@ -115,7 +115,7 @@ namespace NMib
 		namespace NPrivate
 		{
 			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
-			template <typename tf_CType>
+			template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<typename TCJSONValueBase<t_TCValue, t_CTypes>::CVariantType, void (tf_CType &&)>::mc_Value> *>
 			TCJSONValueBase<t_TCValue, t_CTypes>::TCJSONValueBase(tf_CType &&_Value)
 				: mp_Value(fg_Forward<tf_CType>(_Value))
 			{
