@@ -73,7 +73,14 @@ namespace NMib
 				using CVariantType = typename NPrivate::TCGetJSONValueVariant<CValue, typename t_CTypes::CTypes>::CType;
 
 				template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<CVariantType, void (tf_CType &&)>::mc_Value> * = nullptr>
-				TCJSONValueBase(tf_CType &&_Value);
+				TCJSONValueBase(tf_CType &&_Value)
+#ifdef DCompiler_MSVC
+					: mp_Value(fg_Forward<tf_CType>(_Value))
+				{
+				}
+#else
+				;
+#endif
 				TCJSONValueBase(TCJSONValueBase const &_Value);
 				TCJSONValueBase(TCJSONValueBase &_Value);
 				TCJSONValueBase(TCJSONValueBase &&_Value);

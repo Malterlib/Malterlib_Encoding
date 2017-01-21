@@ -62,7 +62,14 @@ namespace NMib
 			};
 			
 			template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<t_CParent, void (tf_CType &&)>::mc_Value> * = nullptr>
-			TCJSONValue(tf_CType &&_Type);
+			TCJSONValue(tf_CType &&_Type)
+#ifdef DCompiler_MSVC
+				: t_CParent(fg_Forward<tf_CType>(_Type))
+			{
+			}
+#else
+			;
+#endif
 			TCJSONValue();
 			TCJSONValue(TCJSONValue const &_Other);
 			TCJSONValue(TCJSONValue &_Other);
