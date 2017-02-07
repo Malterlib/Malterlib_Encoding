@@ -582,7 +582,7 @@ namespace NMib
 		}	
 
 		template <typename t_CParent>
-		void TCJSONValue<t_CParent>::f_RemoveMember(NStr::CStr const &_Name)
+		bool TCJSONValue<t_CParent>::f_RemoveMember(NStr::CStr const &_Name)
 		{
 			return f_Object().f_RemoveMember(_Name);
 		}

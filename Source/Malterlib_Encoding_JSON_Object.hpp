@@ -80,14 +80,16 @@ namespace NMib
 		}
 
 		template <typename t_CJSONValue>
-		void TCJSONObject<t_CJSONValue>::f_RemoveMember(NStr::CStr const &_Name)
+		bool TCJSONObject<t_CJSONValue>::f_RemoveMember(NStr::CStr const &_Name)
 		{
 			auto pFound = mp_ObjectTree.f_FindEqual(_Name);
 			if (pFound)
 			{
 				mp_ObjectTree.f_Remove(pFound);
 				mp_Objects.f_Remove(*pFound);
+				return true;
 			}
+			return false;
 		}
 		
 		template <typename t_CJSONValue>
@@ -133,6 +135,12 @@ namespace NMib
 			return mp_ObjectTree.f_GetIterator();
 		}
 
+		template <typename t_CJSONValue>
+		bool TCJSONObject<t_CJSONValue>::f_IsEmpty() const
+		{
+			return mp_Objects.f_IsEmpty();
+		}
+		
 		template <typename t_CJSONValue>
 		bool TCJSONObject<t_CJSONValue>::operator == (TCJSONObject const &_Right) const
 		{

@@ -141,7 +141,7 @@ namespace NMib
 			CValue *f_GetMember(NStr::CStr const &_Name, EJSONType _Type);
 			CValue &operator [] (NStr::CStr const &_Name);
 			CValue const &operator [] (NStr::CStr const &_Name) const;
-			void f_RemoveMember(NStr::CStr const &_Name);
+			bool f_RemoveMember(NStr::CStr const &_Name);
 
 			//
 			// Array helpers
@@ -222,7 +222,7 @@ namespace NMib
 			t_CJSONValue const *f_GetMember(NStr::CStr const &_Name, EJSONType _Type) const;
 			t_CJSONValue *f_GetMember(NStr::CStr const &_Name, EJSONType _Type);
 			t_CJSONValue &f_CreateMember(NStr::CStr const &_Name);
-			void f_RemoveMember(NStr::CStr const &_Name);
+			bool f_RemoveMember(NStr::CStr const &_Name);
 			void f_RemoveMember(typename NContainer::TCLinkedList<CObjectEntry>::CIteratorConst &_Iterator);
 			void f_RemoveMember(typename NContainer::TCLinkedList<CObjectEntry>::CIterator &_Iterator);
 			void f_RemoveMember(typename NIntrusive::TCAVLTree<CLinkTraits, CCompare>::CIterator &_Iterator);
@@ -231,6 +231,8 @@ namespace NMib
 			typename NContainer::TCLinkedList<CObjectEntry>::CIterator f_OrderedIterator();
 
 			typename NIntrusive::TCAVLTree<CLinkTraits, CCompare>::CIterator f_SortedIterator() const;
+			
+			bool f_IsEmpty() const;
 			
 			template <typename tf_CStream>
 			void f_Feed(tf_CStream &_Stream) const;
