@@ -21,13 +21,15 @@ namespace NMib
 		}
 #endif
 
+#ifndef DCompiler_MSVC
 		template <typename t_CParent>
-		template <typename tf_CType>
+		template <typename tf_CType, TCEnableIfType<NTraits::TCIsOperatorCallableWith_Assign<typename t_CParent::CVariantType, void (tf_CType &&)>::mc_Value> *>
 		auto TCJSONValue<t_CParent>::operator = (tf_CType &&_Value) -> CValue &
 		{
 			this->mp_Value = fg_Forward<tf_CType>(_Value);
 			return static_cast<CValue &>(*this);
 		}
+#endif
 		
 		template <typename t_CParent>
 		template <typename tf_CType>

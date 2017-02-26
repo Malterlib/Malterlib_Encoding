@@ -72,7 +72,6 @@ namespace NMib
 #endif
 			TCJSONValue();
 			TCJSONValue(TCJSONValue const &_Other);
-			TCJSONValue(TCJSONValue &_Other);
 			TCJSONValue(TCJSONValue &&_Other);
 			TCJSONValue(TCJSONValue const &&_Other);
 			TCJSONValue(EJSONType _Type);
@@ -80,10 +79,17 @@ namespace NMib
 			TCJSONValue(TCInitializerList<CValue> const &_Init);
 			TCJSONValue(TCInitializerList<CKeyValue> const &_Init);
 
-			template <typename tf_CType>
-			CValue &operator = (tf_CType &&_Value);
+			template <typename tf_CType, TCEnableIfType<NTraits::TCIsOperatorCallableWith_Assign<typename t_CParent::CVariantType, void (tf_CType &&)>::mc_Value> * = nullptr>
+			CValue &operator = (tf_CType &&_Value)
+#ifdef DCompiler_MSVC
+			{
+				this->mp_Value = fg_Forward<tf_CType>(_Value);
+				return static_cast<CValue &>(*this);
+			}
+#else
+			;
+#endif
 			CValue &operator = (TCJSONValue const &_Value);
-			CValue &operator = (TCJSONValue &_Value);
 			CValue &operator = (TCJSONValue &&_Value);
 			CValue &operator = (pfp64 _Value);
 			CValue &operator = (pfp32 _Value);

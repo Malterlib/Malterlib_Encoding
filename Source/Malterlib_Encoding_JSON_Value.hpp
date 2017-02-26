@@ -24,12 +24,6 @@ namespace NMib
 		}
 
 		template <typename t_CParent>
-		TCJSONValue<t_CParent>::TCJSONValue(TCJSONValue &_Other)
-			: t_CParent(static_cast<t_CParent &>(_Other))
-		{
-		}
-
-		template <typename t_CParent>
 		TCJSONValue<t_CParent>::TCJSONValue(TCJSONValue &&_Other)
 			: t_CParent(fg_Move(static_cast<t_CParent &>(_Other)))
 		{
@@ -460,13 +454,6 @@ namespace NMib
 		
 		template <typename t_CParent>
 		auto TCJSONValue<t_CParent>::operator = (TCJSONValue const &_Value) -> CValue &
-		{
-			this->mp_Value = _Value.mp_Value;
-			return static_cast<CValue &>(*this);
-		}
-
-		template <typename t_CParent>
-		auto TCJSONValue<t_CParent>::operator = (TCJSONValue &_Value) -> CValue &
 		{
 			this->mp_Value = _Value.mp_Value;
 			return static_cast<CValue &>(*this);
