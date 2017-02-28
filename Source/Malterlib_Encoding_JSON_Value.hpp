@@ -550,6 +550,15 @@ namespace NMib
 		}
 		
 		template <typename t_CParent>
+		auto TCJSONValue<t_CParent>::f_GetMemberValue(NStr::CStr const &_Name, CValue const &_Default) const -> CValue
+		{
+			if (!f_IsObject())
+				return _Default;
+			
+			return f_Object().f_GetMemberValue(_Name, _Default);
+		}
+		
+		template <typename t_CParent>
 		auto TCJSONValue<t_CParent>::operator [](NStr::CStr const &_Name) -> CValue &
 		{
 			return f_Object().f_CreateMember(_Name);

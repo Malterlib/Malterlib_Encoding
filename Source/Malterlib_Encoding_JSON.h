@@ -148,6 +148,7 @@ namespace NMib
 			CValue &operator [] (NStr::CStr const &_Name);
 			CValue const &operator [] (NStr::CStr const &_Name) const;
 			bool f_RemoveMember(NStr::CStr const &_Name);
+			CValue f_GetMemberValue(NStr::CStr const &_Name, CValue const &_Default) const;
 
 			//
 			// Array helpers
@@ -227,6 +228,7 @@ namespace NMib
 			t_CJSONValue *f_GetMember(NStr::CStr const &_Name);
 			t_CJSONValue const *f_GetMember(NStr::CStr const &_Name, EJSONType _Type) const;
 			t_CJSONValue *f_GetMember(NStr::CStr const &_Name, EJSONType _Type);
+			t_CJSONValue f_GetMemberValue(NStr::CStr const &_Name, t_CJSONValue const &_Default) const;
 			t_CJSONValue &f_CreateMember(NStr::CStr const &_Name);
 			bool f_RemoveMember(NStr::CStr const &_Name);
 			void f_RemoveMember(typename NContainer::TCLinkedList<CObjectEntry>::CIteratorConst &_Iterator);
