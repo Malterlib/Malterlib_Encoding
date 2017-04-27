@@ -27,14 +27,14 @@ namespace NMib
 
 		namespace NPrivate
 		{
-			CJSON fg_JSONParse(NStr::CStr const &_String, NStr::CStr const &_FileName);
+			CJSON fg_JSONParse(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace);
 			NStr::CStr fg_JSONGenerate(CJSON const &_JSON, ch8 const *_pPrettySeparator);
 		}
 
 		template <>
-		CJSON CJSON::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName)
+		CJSON CJSON::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace)
 		{
-			return NPrivate::fg_JSONParse(_String, _FileName);
+			return NPrivate::fg_JSONParse(_String, _FileName, _bConvertNullToSpace);
 		}
 
 		template <>

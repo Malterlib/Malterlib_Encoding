@@ -180,7 +180,7 @@ namespace NMib
 			// Parsing/generating
 			// ==============
 
-			static TCJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr());
+			static TCJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr(), bool _bConvertNullToSpace = false);
 			NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t") const;
 			
 		protected:

@@ -84,7 +84,7 @@ namespace NMib
 			CJSON f_ToJSON() const;
 			static TCEJSONValue fs_FromJSON(CJSON const &_JSON);
 
-			static TCEJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr());
+			static TCEJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr(), bool _bConvertNullToSpace = false);
 			NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t") const;
 			
 			using TCJSONValue<t_CParent>::f_GetMember;

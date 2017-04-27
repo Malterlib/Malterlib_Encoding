@@ -446,9 +446,9 @@ namespace NMib
 		}
 
 		template <typename t_CParent>
-		TCEJSONValue<t_CParent> TCEJSONValue<t_CParent>::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName)
+		TCEJSONValue<t_CParent> TCEJSONValue<t_CParent>::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace)
 		{
-			CJSON JSON = CJSON::fs_FromString(_String, _FileName);
+			CJSON JSON = CJSON::fs_FromString(_String, _FileName, _bConvertNullToSpace);
 			return CEJSON::fs_FromJSON(JSON);
 		}
 

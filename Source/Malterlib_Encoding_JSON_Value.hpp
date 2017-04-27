@@ -179,7 +179,7 @@ namespace NMib
 		}
 		
 		template <typename t_CParent>
-		auto TCJSONValue<t_CParent>::fs_FromString(NStr::CStr const & _String, NStr::CStr const & _FileName) -> TCJSONValue
+		auto TCJSONValue<t_CParent>::fs_FromString(NStr::CStr const & _String, NStr::CStr const & _FileName, bool _bConvertNullToSpace) -> TCJSONValue
 		{
 			return TCJSONValue();
 		}

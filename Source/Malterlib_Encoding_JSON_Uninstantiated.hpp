@@ -7,7 +7,7 @@ namespace NMib
 	namespace NEncoding
 	{
 		template <>
-		CJSON CJSON::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName);
+		CJSON CJSON::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace);
 
 		template <>
 		NStr::CStr CJSON::f_ToString(ch8 const *_pPrettySeparator) const;

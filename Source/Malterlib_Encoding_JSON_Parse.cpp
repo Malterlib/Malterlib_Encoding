@@ -13,6 +13,7 @@ namespace NMib
 			{
 				NStr::CStr m_FileName;
 				uch8 const *m_pStartParse;
+				bool m_bConvertNullToSpace = false;
 				
 				NStr::CParseLocation f_GetLocation(uch8 const *_pParse) const
 				{
@@ -260,11 +261,16 @@ namespace NMib
 									
 									if (bFailed || *pParseHex)
 										fg_ThrowError(_Context, "Invalid escaped UTF16 value", pParseStart);
-									
+
 									if (HexDigit == 0)
-										fg_ThrowError(_Context, "Null characters not supported in this implementation", pParseStart);
-										
-									EscapedUTF16String.f_AddChar(HexDigit);
+									{
+										if (_Context.m_bConvertNullToSpace)
+											EscapedUTF16String.f_AddChar(' ');
+										else
+											fg_ThrowError(_Context, "Null characters not supported in this implementation", pParseStart);
+									}
+									else
+										EscapedUTF16String.f_AddChar(HexDigit);
 									
 									if (pParse[0] == '\\' && pParse[1] == 'u')
 									{
@@ -460,7 +466,7 @@ namespace NMib
 				}
 			}
 
-			CJSON fg_JSONParse(NStr::CStr const &_String, NStr::CStr const &_FileName)
+			CJSON fg_JSONParse(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace)
 			{
 				using namespace NStr;
 				CJSON Output;
@@ -471,6 +477,7 @@ namespace NMib
 				CParseContext Context;
 				Context.m_pStartParse = pParse;
 				Context.m_FileName = _FileName;
+				Context.m_bConvertNullToSpace = _bConvertNullToSpace;
 
 				fg_ParseWhiteSpace(pParse);
 
