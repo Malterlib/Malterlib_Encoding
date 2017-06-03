@@ -11,6 +11,8 @@ namespace NMib
 		extern template class TCJSONObject<CJSON>;
 		extern template struct NPrivate::TCObjectEntry<CJSON>;
 
+#ifdef DMibEncodingJSONExternTemplate
+		
 #ifndef DCompiler_MSVC
 		extern template CJSON::TCJSONValue(CNullPtr &&);
 		extern template CJSON::TCJSONValue(CNullPtr &);
@@ -181,4 +183,7 @@ namespace NMib
 			(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJSON, true>::CLocalOptions const&) const
 		;
 	}
+	
+#endif
+	
 }

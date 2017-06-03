@@ -296,7 +296,9 @@ namespace NMib
 
 #include "Malterlib_Encoding_JSON_Uninstantiated.hpp"
 
-#define DMibEncodingJSONExternTemplate
+#ifndef DDocumentation_Doxygen
+#	define DMibEncodingJSONExternTemplate
+#endif
 
 #ifdef DMibEncodingJSONExternTemplate
 #	include "Malterlib_Encoding_JSON_Instantiated.hpp"

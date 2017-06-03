@@ -16,6 +16,8 @@ namespace NMib
 
 		typedef TCJSONValue<CEJSONValueBase> CJSONValueEJSON;
 
+#ifdef DMibEncodingJSONExternTemplate
+		
 #ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(CNullPtr &&);
 		extern template CJSONValueEJSON::TCJSONValue(CNullPtr &);
@@ -244,6 +246,7 @@ namespace NMib
 			<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJSON, true>::CLocalOptions>
 			(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJSON, true>::CLocalOptions const&) const
 		;
+#endif
 	}
 }
 

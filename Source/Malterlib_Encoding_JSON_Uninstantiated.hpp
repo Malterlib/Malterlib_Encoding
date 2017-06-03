@@ -6,11 +6,13 @@ namespace NMib
 {
 	namespace NEncoding
 	{
+#ifndef DDocumentation_Doxygen
 		template <>
 		CJSON CJSON::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace);
 
 		template <>
 		NStr::CStr CJSON::f_ToString(ch8 const *_pPrettySeparator) const;
+#endif
 
 #ifndef DCompiler_MSVC
 		template <typename t_CParent>
@@ -77,6 +79,8 @@ namespace NMib
 			}
 		}
 
+#ifndef DDocumentation_Doxygen
+		
 		template <typename t_CParent>
 		auto TCJSONValue<t_CParent>::CKey::operator = (CValue &&_Value) && -> CKeyValue
 		{
@@ -95,6 +99,7 @@ namespace NMib
 			Return.m_Value = EJSONType_Object;
 			return Return;
 		}
+#endif
 		
 		template <typename t_CJSONValue>
 		template <typename tf_CStream>

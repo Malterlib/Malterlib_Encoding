@@ -31,6 +31,7 @@ namespace NMib
 			NStr::CStr fg_JSONGenerate(CJSON const &_JSON, ch8 const *_pPrettySeparator);
 		}
 
+#ifndef DDocumentation_Doxygen
 		template <>
 		CJSON CJSON::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace)
 		{
@@ -42,6 +43,7 @@ namespace NMib
 		{
 			return NPrivate::fg_JSONGenerate(*this, _pPrettySeparator);
 		}
+#endif
 		
 #ifdef DMibEncodingJSONExternTemplate
 		template class NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes>;
