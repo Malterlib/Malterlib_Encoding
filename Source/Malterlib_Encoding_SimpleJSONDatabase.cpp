@@ -54,7 +54,7 @@ namespace NMib
 			return fg_Dispatch
 				(
 					mp_FileActor
-					, [this, FileName = mp_FileName, Data = m_Data]
+					, [FileName = mp_FileName, Data = m_Data]
 					{
 						CFile::fs_CreateDirectory(CFile::fs_GetPath(FileName));
 						EFileAttrib FileAttributes = EFileAttrib_UnixAttributesValid | EFileAttrib_UserRead | EFileAttrib_UserWrite;
