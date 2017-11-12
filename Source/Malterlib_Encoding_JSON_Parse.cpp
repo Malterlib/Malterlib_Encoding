@@ -1,4 +1,4 @@
-﻿// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include "Malterlib_Encoding_JSON.h"
@@ -150,7 +150,7 @@ namespace NMib
 					fg_ParseWhiteSpace(pParse);
 					
 					if (*pParse != ':')
-						fg_ThrowError(_Context, "Expcted : to follow key name in objct", pParse);
+						fg_ThrowError(_Context, "Expected : to follow key name in object", pParse);
 					
 					++pParse;
 					fg_ParseWhiteSpace(pParse);

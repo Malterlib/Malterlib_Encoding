@@ -512,7 +512,7 @@ namespace
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
 					
-					Error.m_Error = "Expcted : to follow key name in objct";
+					Error.m_Error = "Expected : to follow key name in object";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 1;
 					Error.m_Location.m_Column = 9;
