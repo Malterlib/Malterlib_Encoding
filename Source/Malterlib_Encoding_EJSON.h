@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Malterlib_Encoding_JSON.h"
 
@@ -43,7 +43,7 @@ namespace NMib
 			
 			template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<TCJSONValue<t_CParent>, void (tf_CType &&)>::mc_Value> * = nullptr>
 			TCEJSONValue(tf_CType &&_Type)
-#ifdef DCompiler_MSVC
+#ifdef DCompiler_MSVC_Workaround
 				: TCJSONValue<t_CParent>(fg_Forward<tf_CType>(_Type))
 			{
 			}

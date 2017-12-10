@@ -14,7 +14,7 @@ namespace NMib
 		NStr::CStr CJSON::f_ToString(ch8 const *_pPrettySeparator) const;
 #endif
 
-#ifndef DCompiler_MSVC
+#ifndef DCompiler_MSVC_Workaround
 		template <typename t_CParent>
 		template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<t_CParent, void (tf_CType &&)>::mc_Value> *>
 		TCJSONValue<t_CParent>::TCJSONValue(tf_CType &&_Type)
@@ -23,7 +23,7 @@ namespace NMib
 		}
 #endif
 
-#ifndef DCompiler_MSVC
+#ifndef DCompiler_MSVC_Workaround
 		template <typename t_CParent>
 		template <typename tf_CType, TCEnableIfType<NTraits::TCIsOperatorCallableWith_Assign<typename t_CParent::CVariantType, void (tf_CType &&)>::mc_Value> *>
 		auto TCJSONValue<t_CParent>::operator = (tf_CType &&_Value) -> CValue &
@@ -123,7 +123,7 @@ namespace NMib
 		
 		namespace NPrivate
 		{
-#ifndef DCompiler_MSVC
+#ifndef DCompiler_MSVC_Workaround
 			template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
 			template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<typename TCJSONValueBase<t_TCValue, t_CTypes>::CVariantType, void (tf_CType &&)>::mc_Value> *>
 			TCJSONValueBase<t_TCValue, t_CTypes>::TCJSONValueBase(tf_CType &&_Value)

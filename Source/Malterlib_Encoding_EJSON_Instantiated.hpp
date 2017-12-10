@@ -18,7 +18,6 @@ namespace NMib
 
 #ifdef DMibEncodingJSONExternTemplate
 		
-#ifndef DCompiler_MSVC
 		extern template CJSONValueEJSON::TCJSONValue(CNullPtr &&);
 		extern template CJSONValueEJSON::TCJSONValue(CNullPtr &);
 		extern template CJSONValueEJSON::TCJSONValue(CNullPtr const &);
@@ -126,10 +125,8 @@ namespace NMib
 		extern template CEJSON::TCEJSONValue(bool &&);
 		extern template CEJSON::TCEJSONValue(bool &);
 		extern template CEJSON::TCEJSONValue(bool const &);
-#endif
 
 		//
-#ifndef DCompiler_MSVC
 		extern template CEJSON &CJSONValueEJSON::f_Insert<NMib::NEncoding::EJSONType>(NMib::NEncoding::EJSONType &&);
 		extern template CEJSON &CJSONValueEJSON::f_Insert<NMib::NEncoding::EJSONType &>(NMib::NEncoding::EJSONType &);
 		extern template CEJSON &CJSONValueEJSON::f_Insert<NMib::NEncoding::EJSONType const &>(NMib::NEncoding::EJSONType const &);
@@ -246,7 +243,6 @@ namespace NMib
 			<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJSON, true>::CLocalOptions>
 			(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJSON, true>::CLocalOptions const&) const
 		;
-#endif
 	}
 }
 

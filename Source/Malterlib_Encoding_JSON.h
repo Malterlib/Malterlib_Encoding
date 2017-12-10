@@ -1,4 +1,4 @@
-﻿// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #pragma once
@@ -63,7 +63,7 @@ namespace NMib
 			
 			template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<t_CParent, void (tf_CType &&)>::mc_Value> * = nullptr>
 			TCJSONValue(tf_CType &&_Type)
-#ifdef DCompiler_MSVC
+#ifdef DCompiler_MSVC_Workaround
 				: t_CParent(fg_Forward<tf_CType>(_Type))
 			{
 			}
@@ -81,7 +81,7 @@ namespace NMib
 
 			template <typename tf_CType, TCEnableIfType<NTraits::TCIsOperatorCallableWith_Assign<typename t_CParent::CVariantType, void (tf_CType &&)>::mc_Value> * = nullptr>
 			CValue &operator = (tf_CType &&_Value)
-#ifdef DCompiler_MSVC
+#ifdef DCompiler_MSVC_Workaround
 			{
 				this->mp_Value = fg_Forward<tf_CType>(_Value);
 				return static_cast<CValue &>(*this);

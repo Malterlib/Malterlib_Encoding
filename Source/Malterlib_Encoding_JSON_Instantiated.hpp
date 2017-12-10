@@ -13,7 +13,6 @@ namespace NMib
 
 #ifdef DMibEncodingJSONExternTemplate
 		
-#ifndef DCompiler_MSVC
 		extern template CJSON::TCJSONValue(CNullPtr &&);
 		extern template CJSON::TCJSONValue(CNullPtr &);
 		extern template CJSON::TCJSONValue(CNullPtr const &);
@@ -62,7 +61,6 @@ namespace NMib
 		extern template CJSON::TCJSONValue(bool &&);
 		extern template CJSON::TCJSONValue(bool &);
 		extern template CJSON::TCJSONValue(bool const &);
-#endif
 		
 		
 		extern template CJSON &CJSON::f_Insert<NMib::NEncoding::EJSONType>(NMib::NEncoding::EJSONType &&);
@@ -77,7 +75,6 @@ namespace NMib
 		extern template CJSON &CJSON::f_Insert<NStr::CStr &>(NStr::CStr &);
 		extern template CJSON &CJSON::f_Insert<NStr::CStr const &>(NStr::CStr const &);
 
-#ifndef DCompiler_MSVC
 		extern template CJSON &CJSON::f_Insert<int64>(int64 &&);
 		extern template CJSON &CJSON::f_Insert<int64 &>(int64 &);
 		extern template CJSON &CJSON::f_Insert<int64 const &>(int64 const &);
@@ -118,7 +115,6 @@ namespace NMib
 		extern template CJSON &CJSON::f_Insert<bool>(bool &&);
 		extern template CJSON &CJSON::f_Insert<bool &>(bool &);
 		extern template CJSON &CJSON::f_Insert<bool const &>(bool const &);
-#endif
 		
 		extern template CJSON &CJSON::operator = <NMib::NEncoding::EJSONType, nullptr>(NMib::NEncoding::EJSONType &&);
 		extern template CJSON &CJSON::operator = <NMib::NEncoding::EJSONType &, nullptr>(NMib::NEncoding::EJSONType &);

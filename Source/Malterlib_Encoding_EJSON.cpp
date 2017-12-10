@@ -1,4 +1,4 @@
-﻿
+
 #include "Malterlib_Encoding_EJSON.h"
 #include "Malterlib_Encoding_EJSON.hpp"
 
@@ -53,7 +53,6 @@ namespace NMib
 		template class TCJSONObject<CEJSON>;
 		template struct NPrivate::TCObjectEntry<CEJSON>;
 
-#ifndef DCompiler_MSVC
 		template CJSONValueEJSON::TCJSONValue(CNullPtr &&);
 		template CJSONValueEJSON::TCJSONValue(CNullPtr &);
 		template CJSONValueEJSON::TCJSONValue(CNullPtr const &);
@@ -161,10 +160,8 @@ namespace NMib
 		template CEJSON::TCEJSONValue(bool &&);
 		template CEJSON::TCEJSONValue(bool &);
 		template CEJSON::TCEJSONValue(bool const &);
-#endif
 
 		//
-#ifndef DCompiler_MSVC
 		template CEJSON &CJSONValueEJSON::f_Insert<NMib::NEncoding::EJSONType>(NMib::NEncoding::EJSONType &&);
 		template CEJSON &CJSONValueEJSON::f_Insert<NMib::NEncoding::EJSONType &>(NMib::NEncoding::EJSONType &);
 		template CEJSON &CJSONValueEJSON::f_Insert<NMib::NEncoding::EJSONType const &>(NMib::NEncoding::EJSONType const &);
@@ -217,7 +214,6 @@ namespace NMib
 		template CEJSON &CJSONValueEJSON::f_Insert<bool>(bool &&);
 		template CEJSON &CJSONValueEJSON::f_Insert<bool &>(bool &);
 		template CEJSON &CJSONValueEJSON::f_Insert<bool const &>(bool const &);
-#endif
 
 		template CEJSON &CJSONValueEJSON::operator = <NMib::NEncoding::EJSONType>(NMib::NEncoding::EJSONType &&);
 		template CEJSON &CJSONValueEJSON::operator = <NMib::NEncoding::EJSONType &>(NMib::NEncoding::EJSONType &);
@@ -282,7 +278,6 @@ namespace NMib
 			(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJSON, true>::CLocalOptions const&) const
 		;
 #endif
-		
 	}
 }
 

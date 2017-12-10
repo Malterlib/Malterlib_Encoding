@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Malterlib_Encoding_EJSON.h"
 
@@ -6,7 +6,7 @@ namespace NMib
 {
 	namespace NEncoding
 	{
-#ifndef DCompiler_MSVC
+#ifndef DCompiler_MSVC_Workaround
 		template <typename t_CParent>
 		template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<TCJSONValue<t_CParent>, void (tf_CType &&)>::mc_Value> *>
 		TCEJSONValue<t_CParent>::TCEJSONValue(tf_CType &&_Type)

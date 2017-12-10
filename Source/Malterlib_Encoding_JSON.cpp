@@ -1,4 +1,4 @@
-﻿// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include "Malterlib_Encoding_JSON.h"
@@ -51,7 +51,6 @@ namespace NMib
 		template class TCJSONObject<CJSON>;
 		template struct NPrivate::TCObjectEntry<CJSON>;
 
-#ifndef DCompiler_MSVC
 		template CJSON::TCJSONValue(CNullPtr &&);
 		template CJSON::TCJSONValue(CNullPtr &);
 		template CJSON::TCJSONValue(CNullPtr const &);
@@ -100,7 +99,6 @@ namespace NMib
 		template CJSON::TCJSONValue(bool &&);
 		template CJSON::TCJSONValue(bool &);
 		template CJSON::TCJSONValue(bool const &);
-#endif
 		
 		template CJSON &CJSON::f_Insert<NMib::NEncoding::EJSONType>(NMib::NEncoding::EJSONType &&);
 		template CJSON &CJSON::f_Insert<NMib::NEncoding::EJSONType &>(NMib::NEncoding::EJSONType &);
@@ -114,7 +112,6 @@ namespace NMib
 		template CJSON &CJSON::f_Insert<NStr::CStr &>(NStr::CStr &);
 		template CJSON &CJSON::f_Insert<NStr::CStr const &>(NStr::CStr const &);
 
-#ifndef DCompiler_MSVC
 		template CJSON &CJSON::f_Insert<int64>(int64 &&);
 		template CJSON &CJSON::f_Insert<int64 &>(int64 &);
 		template CJSON &CJSON::f_Insert<int64 const &>(int64 const &);
@@ -155,7 +152,6 @@ namespace NMib
 		template CJSON &CJSON::f_Insert<bool>(bool &&);
 		template CJSON &CJSON::f_Insert<bool &>(bool &);
 		template CJSON &CJSON::f_Insert<bool const &>(bool const &);
-#endif
 		
 		template CJSON &CJSON::operator = <NMib::NEncoding::EJSONType>(NMib::NEncoding::EJSONType &&);
 		template CJSON &CJSON::operator = <NMib::NEncoding::EJSONType &>(NMib::NEncoding::EJSONType &);
