@@ -1,4 +1,4 @@
-﻿// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #pragma once
@@ -91,7 +91,7 @@ namespace NMib
 		}
 
 		template <typename t_CStreamType>
-		aint TCBinaryStream_Base64<t_CStreamType>::fp_PrepareBlock(NStream::CFilePos _Pos, bint _bWrite)
+		mint TCBinaryStream_Base64<t_CStreamType>::fp_PrepareBlock(NStream::CFilePos _Pos, bint _bWrite)
 		{
 			if (mp_CurrentLoaded >= 0 && _Pos >=  mp_CurrentLoaded && _Pos < mp_CurrentLoaded + EChunkSizeData)
 			{
@@ -148,8 +148,8 @@ namespace NMib
 			const uint8 *pMem = (const uint8 *)_pMem;
 			while (_nBytes)
 			{
-				aint Pos = fp_PrepareBlock(mp_FilePos, true);
-				aint ThisTime = fg_Min(_nBytes, (mint)EChunkSizeData - Pos);
+				mint Pos = fp_PrepareBlock(mp_FilePos, true);
+				mint ThisTime = fg_Min(_nBytes, (mint)EChunkSizeData - Pos);
 				NMem::fg_MemCopy(mp_DecryptedData + Pos, pMem, ThisTime);
 				mp_bCurrentDirty = true;
 
@@ -170,8 +170,8 @@ namespace NMib
 			uint8 *pMem = (uint8 *)_pMem;
 			while (_nBytes)
 			{
-				aint Pos = fp_PrepareBlock(mp_FilePos, false);
-				aint ThisTime = fg_Min(_nBytes, (mint)EChunkSizeData - Pos);
+				mint Pos = fp_PrepareBlock(mp_FilePos, false);
+				mint ThisTime = fg_Min(_nBytes, (mint)EChunkSizeData - Pos);
 				NMem::fg_MemCopy(pMem, mp_DecryptedData + Pos, ThisTime);
 
 				mp_FilePos += ThisTime;

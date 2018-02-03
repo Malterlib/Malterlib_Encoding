@@ -1,4 +1,4 @@
-﻿// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #pragma once
@@ -17,7 +17,7 @@ namespace NMib
 		{
 		private:
 			void fp_WriteDirty();
-			aint fp_PrepareBlock(NStream::CFilePos _Pos, bint _bWrite);
+			mint fp_PrepareBlock(NStream::CFilePos _Pos, bint _bWrite);
 
 			NStream::CBinaryStream *mp_pStream;
 			NFile::EFileOpen mp_OpenFlags;
