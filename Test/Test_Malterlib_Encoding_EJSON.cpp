@@ -219,7 +219,7 @@ namespace
 			;
 			SharedTests.f_DoTests();
 
-			DMibTestCategory("Parse Exceptions")
+			DMibTestCategoryFlags("Parse Exceptions", ETestCategoryFlag_DisableExceptionFilter)
 			{
 				DMibTestSuite("User type")
 				{

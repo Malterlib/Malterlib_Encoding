@@ -451,7 +451,7 @@ namespace
 				};
 			};
 			
-			DMibTestCategory("Parse Exceptions")
+			DMibTestCategoryFlags("Parse Exceptions", ETestCategoryFlag_DisableExceptionFilter)
 			{
 				DMibTestSuite("Key quoting")
 				{
