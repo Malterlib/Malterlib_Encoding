@@ -8,7 +8,15 @@ namespace NMib
 	{
 		enum EEJSONType : uint8
 		{
-			EEJSONType_Date = EJSONType_Max
+			EEJSONType_Invalid = EJSONType_Invalid
+			, EEJSONType_Null = EJSONType_Null
+			, EEJSONType_String = EJSONType_String
+			, EEJSONType_Integer = EJSONType_Integer
+			, EEJSONType_Float = EJSONType_Float
+			, EEJSONType_Boolean = EJSONType_Boolean
+			, EEJSONType_Object = EJSONType_Object
+			, EEJSONType_Array = EJSONType_Array
+			, EEJSONType_Date = EJSONType_Max
 			, EEJSONType_Binary
 			, EEJSONType_UserType
 		};

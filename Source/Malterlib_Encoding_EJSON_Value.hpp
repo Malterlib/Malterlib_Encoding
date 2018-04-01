@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Malterlib_Encoding_EJSON.h"
 #include <Mib/Encoding/Base64>
@@ -92,7 +92,7 @@ namespace NMib
 		template <typename t_CParent>
 		void TCEJSONValue<t_CParent>::f_SetType(EJSONType _Type)
 		{
-			switch (_Type)
+			switch (EEJSONType(_Type))
 			{
 			case EEJSONType_Date:
 				this->mp_Value.template f_Set<(EJSONType)EEJSONType_Date>();
@@ -244,27 +244,27 @@ namespace NMib
 		template <typename t_CParent>
 		void TCEJSONValue<t_CParent>::fp_ToJSON(CJSON &_Ret) const
 		{
-			switch (this->f_Type())
+			switch (this->f_EType())
 			{
-			case EJSONType_Null:
+			case EEJSONType_Null:
 				_Ret = nullptr;
 				break;
-			case EJSONType_String:
+			case EEJSONType_String:
 				_Ret = this->f_String();
 				break;
-			case EJSONType_Integer:
+			case EEJSONType_Integer:
 				_Ret = this->f_Integer();
 				break;
-			case EJSONType_Float:
+			case EEJSONType_Float:
 				_Ret = this->f_Float();
 				break;
-			case EJSONType_Boolean:
+			case EEJSONType_Boolean:
 				_Ret = this->f_Boolean();
 				break;
-			case EJSONType_Object:
+			case EEJSONType_Object:
 				fsp_ToJSON_Object(_Ret, this->f_Object());
 				break;
-			case EJSONType_Array:
+			case EEJSONType_Array:
 				{
 					_Ret = EJSONType_Array;
 					auto &Array = _Ret.f_Array();
