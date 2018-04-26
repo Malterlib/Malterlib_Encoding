@@ -531,7 +531,7 @@ namespace NMib
 			if (!f_IsObject())
 				return nullptr;
 
-			auto pMember = f_Object().f_GetMember(_Name);
+			auto pMember = f_Object().f_GetMember(_Name, _Type);
 			if (pMember)
 				return pMember;
 			return nullptr;
