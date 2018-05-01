@@ -17,16 +17,6 @@ Import "../Core/Lib_Malterlib.MTarget"
 		}
 		%File "Source/*"
 		%File "Source/Malterlib_Encoding_*JSON*"
-		{
-			Compile.Disabled true
-			{
-				&
-				{
-					MalterlibMSVC2013Compat true
-					Generator VisualStudio2013
-				}
-			}
-		}
 		%Group Documentation
 		{
 			%File "Documentation/*"
