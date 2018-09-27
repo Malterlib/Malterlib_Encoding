@@ -7,6 +7,7 @@
 #include <Mib/Storage/Variant>
 #include <Mib/Storage/Indirection>
 #include <Mib/Storage/Tuple>
+#include <type_traits>
 
 #include "Malterlib_Encoding_JSON_InternalBase.h"
 
@@ -35,6 +36,7 @@ namespace NMib
 		{
 		protected:
 			using CValue = typename t_CParent::CValue;
+			struct CDummy {};
 		public:
 			typedef TCJSONObject<CValue> CObject;
 			typedef NContainer::TCVector<CValue> CArray;
@@ -79,16 +81,8 @@ namespace NMib
 			TCJSONValue(TCInitializerList<CValue> const &_Init);
 			TCJSONValue(TCInitializerList<CKeyValue> const &_Init);
 
-			template <typename tf_CType, TCEnableIfType<NTraits::TCIsOperatorCallableWith_Assign<typename t_CParent::CVariantType, void (tf_CType &&)>::mc_Value> * = nullptr>
-			CValue &operator = (tf_CType &&_Value)
-#ifdef DCompiler_MSVC_Workaround
-			{
-				this->mp_Value = fg_Forward<tf_CType>(_Value);
-				return static_cast<CValue &>(*this);
-			}
-#else
-			;
-#endif
+			template <typename tf_CType>
+			auto operator = (tf_CType &&_Value) -> TCEnableIfType<!NTraits::TCIsSame<decltype(this->mp_Value = fg_Forward<tf_CType>(_Value)), CDummy>::mc_Value, CValue> &;
 			CValue &operator = (TCJSONValue const &_Value);
 			CValue &operator = (TCJSONValue &&_Value);
 			CValue &operator = (pfp64 _Value);

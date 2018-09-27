@@ -116,58 +116,58 @@ namespace NMib
 		extern template CJSON &CJSON::f_Insert<bool &>(bool &);
 		extern template CJSON &CJSON::f_Insert<bool const &>(bool const &);
 		
-		extern template CJSON &CJSON::operator = <NMib::NEncoding::EJSONType, nullptr>(NMib::NEncoding::EJSONType &&);
-		extern template CJSON &CJSON::operator = <NMib::NEncoding::EJSONType &, nullptr>(NMib::NEncoding::EJSONType &);
-		extern template CJSON &CJSON::operator = <NMib::NEncoding::EJSONType const &, nullptr>(NMib::NEncoding::EJSONType const &);
+		extern template CJSON &CJSON::operator = <NMib::NEncoding::EJSONType>(NMib::NEncoding::EJSONType &&);
+		extern template CJSON &CJSON::operator = <NMib::NEncoding::EJSONType &>(NMib::NEncoding::EJSONType &);
+		extern template CJSON &CJSON::operator = <NMib::NEncoding::EJSONType const &>(NMib::NEncoding::EJSONType const &);
 		
-		extern template CJSON &CJSON::operator = <CNullPtr, nullptr>(CNullPtr &&);
-		extern template CJSON &CJSON::operator = <CNullPtr &, nullptr>(CNullPtr &);
-		extern template CJSON &CJSON::operator = <CNullPtr const &, nullptr>(CNullPtr const &);
+		extern template CJSON &CJSON::operator = <CNullPtr>(CNullPtr &&);
+		extern template CJSON &CJSON::operator = <CNullPtr &>(CNullPtr &);
+		extern template CJSON &CJSON::operator = <CNullPtr const &>(CNullPtr const &);
 
-		extern template CJSON &CJSON::operator = <NStr::CStr, nullptr>(NStr::CStr &&);
-		extern template CJSON &CJSON::operator = <NStr::CStr &, nullptr>(NStr::CStr &);
-		extern template CJSON &CJSON::operator = <NStr::CStr const &, nullptr>(NStr::CStr const &);
+		extern template CJSON &CJSON::operator = <NStr::CStr>(NStr::CStr &&);
+		extern template CJSON &CJSON::operator = <NStr::CStr &>(NStr::CStr &);
+		extern template CJSON &CJSON::operator = <NStr::CStr const &>(NStr::CStr const &);
 
-		extern template CJSON &CJSON::operator = <int64, nullptr>(int64 &&);
-		extern template CJSON &CJSON::operator = <int64 &, nullptr>(int64 &);
-		extern template CJSON &CJSON::operator = <int64 const &, nullptr>(int64 const &);
+		extern template CJSON &CJSON::operator = <int64>(int64 &&);
+		extern template CJSON &CJSON::operator = <int64 &>(int64 &);
+		extern template CJSON &CJSON::operator = <int64 const &>(int64 const &);
 
-		extern template CJSON &CJSON::operator = <int32, nullptr>(int32 &&);
-		extern template CJSON &CJSON::operator = <int32 &, nullptr>(int32 &);
-		extern template CJSON &CJSON::operator = <int32 const &, nullptr>(int32 const &);
+		extern template CJSON &CJSON::operator = <int32>(int32 &&);
+		extern template CJSON &CJSON::operator = <int32 &>(int32 &);
+		extern template CJSON &CJSON::operator = <int32 const &>(int32 const &);
 
-		extern template CJSON &CJSON::operator = <uint64, nullptr>(uint64 &&);
-		extern template CJSON &CJSON::operator = <uint64 &, nullptr>(uint64 &);
-		extern template CJSON &CJSON::operator = <uint64 const &, nullptr>(uint64 const &);
+		extern template CJSON &CJSON::operator = <uint64>(uint64 &&);
+		extern template CJSON &CJSON::operator = <uint64 &>(uint64 &);
+		extern template CJSON &CJSON::operator = <uint64 const &>(uint64 const &);
 
-		extern template CJSON &CJSON::operator = <uint32, nullptr>(uint32 &&);
-		extern template CJSON &CJSON::operator = <uint32 &, nullptr>(uint32 &);
-		extern template CJSON &CJSON::operator = <uint32 const &, nullptr>(uint32 const &);
+		extern template CJSON &CJSON::operator = <uint32>(uint32 &&);
+		extern template CJSON &CJSON::operator = <uint32 &>(uint32 &);
+		extern template CJSON &CJSON::operator = <uint32 const &>(uint32 const &);
 		
-		extern template CJSON &CJSON::operator = <pfp64, nullptr>(pfp64 &&);
-		extern template CJSON &CJSON::operator = <pfp64 &, nullptr>(pfp64 &);
-		extern template CJSON &CJSON::operator = <pfp64 const &, nullptr>(pfp64 const &);
+		extern template CJSON &CJSON::operator = <pfp64>(pfp64 &&);
+		extern template CJSON &CJSON::operator = <pfp64 &>(pfp64 &);
+		extern template CJSON &CJSON::operator = <pfp64 const &>(pfp64 const &);
 
-		extern template CJSON &CJSON::operator = <pfp32, nullptr>(pfp32 &&);
-		extern template CJSON &CJSON::operator = <pfp32 &, nullptr>(pfp32 &);
-		extern template CJSON &CJSON::operator = <pfp32 const &, nullptr>(pfp32 const &);
+		extern template CJSON &CJSON::operator = <pfp32>(pfp32 &&);
+		extern template CJSON &CJSON::operator = <pfp32 &>(pfp32 &);
+		extern template CJSON &CJSON::operator = <pfp32 const &>(pfp32 const &);
 		
-		extern template CJSON &CJSON::operator = <fp32, nullptr>(fp32 &&);
-		extern template CJSON &CJSON::operator = <fp32 &, nullptr>(fp32 &);
-		extern template CJSON &CJSON::operator = <fp32 const &, nullptr>(fp32 const &);
+		extern template CJSON &CJSON::operator = <fp32>(fp32 &&);
+		extern template CJSON &CJSON::operator = <fp32 &>(fp32 &);
+		extern template CJSON &CJSON::operator = <fp32 const &>(fp32 const &);
 		
-		extern template CJSON &CJSON::operator = <fp64, nullptr>(fp64 &&);
-		extern template CJSON &CJSON::operator = <fp64 &, nullptr>(fp64 &);
-		extern template CJSON &CJSON::operator = <fp64 const &, nullptr>(fp64 const &);
+		extern template CJSON &CJSON::operator = <fp64>(fp64 &&);
+		extern template CJSON &CJSON::operator = <fp64 &>(fp64 &);
+		extern template CJSON &CJSON::operator = <fp64 const &>(fp64 const &);
 
 #ifdef DMibPUniqueType_int
-		extern template CJSON &CJSON::operator = <int, nullptr>(int &&);
-		extern template CJSON &CJSON::operator = <int &, nullptr>(int &);
-		extern template CJSON &CJSON::operator = <int const &, nullptr>(int const &);
+		extern template CJSON &CJSON::operator = <int>(int &&);
+		extern template CJSON &CJSON::operator = <int &>(int &);
+		extern template CJSON &CJSON::operator = <int const &>(int const &);
 #endif
-		extern template CJSON &CJSON::operator = <bool, nullptr>(bool &&);
-		extern template CJSON &CJSON::operator = <bool &, nullptr>(bool &);
-		extern template CJSON &CJSON::operator = <bool const &, nullptr>(bool const &);
+		extern template CJSON &CJSON::operator = <bool>(bool &&);
+		extern template CJSON &CJSON::operator = <bool &>(bool &);
+		extern template CJSON &CJSON::operator = <bool const &>(bool const &);
 		
 		extern template void CJSON::f_Format
 			<NStr::CStrAggregate, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJSON, true>::CLocalOptions>

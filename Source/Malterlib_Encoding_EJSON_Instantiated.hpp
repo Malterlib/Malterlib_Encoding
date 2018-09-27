@@ -181,58 +181,58 @@ namespace NMib
 		extern template CEJSON &CJSONValueEJSON::f_Insert<bool const &>(bool const &);
 #endif
 
-		extern template CEJSON &CJSONValueEJSON::operator = <NMib::NEncoding::EJSONType, nullptr>(NMib::NEncoding::EJSONType &&);
-		extern template CEJSON &CJSONValueEJSON::operator = <NMib::NEncoding::EJSONType &, nullptr>(NMib::NEncoding::EJSONType &);
-		extern template CEJSON &CJSONValueEJSON::operator = <NMib::NEncoding::EJSONType const &, nullptr>(NMib::NEncoding::EJSONType const &);
+		extern template CEJSON &CJSONValueEJSON::operator = <NMib::NEncoding::EJSONType>(NMib::NEncoding::EJSONType &&);
+		extern template CEJSON &CJSONValueEJSON::operator = <NMib::NEncoding::EJSONType &>(NMib::NEncoding::EJSONType &);
+		extern template CEJSON &CJSONValueEJSON::operator = <NMib::NEncoding::EJSONType const &>(NMib::NEncoding::EJSONType const &);
 
-		extern template CEJSON &CJSONValueEJSON::operator = <CNullPtr, nullptr>(CNullPtr &&);
-		extern template CEJSON &CJSONValueEJSON::operator = <CNullPtr &, nullptr>(CNullPtr &);
-		extern template CEJSON &CJSONValueEJSON::operator = <CNullPtr const &, nullptr>(CNullPtr const &);
+		extern template CEJSON &CJSONValueEJSON::operator = <CNullPtr>(CNullPtr &&);
+		extern template CEJSON &CJSONValueEJSON::operator = <CNullPtr &>(CNullPtr &);
+		extern template CEJSON &CJSONValueEJSON::operator = <CNullPtr const &>(CNullPtr const &);
 
-		extern template CEJSON &CJSONValueEJSON::operator = <NStr::CStr, nullptr>(NStr::CStr &&);
-		extern template CEJSON &CJSONValueEJSON::operator = <NStr::CStr &, nullptr>(NStr::CStr &);
-		extern template CEJSON &CJSONValueEJSON::operator = <NStr::CStr const &, nullptr>(NStr::CStr const &);
+		extern template CEJSON &CJSONValueEJSON::operator = <NStr::CStr>(NStr::CStr &&);
+		extern template CEJSON &CJSONValueEJSON::operator = <NStr::CStr &>(NStr::CStr &);
+		extern template CEJSON &CJSONValueEJSON::operator = <NStr::CStr const &>(NStr::CStr const &);
 
-		extern template CEJSON &CJSONValueEJSON::operator = <int64, nullptr>(int64 &&);
-		extern template CEJSON &CJSONValueEJSON::operator = <int64 &, nullptr>(int64 &);
-		extern template CEJSON &CJSONValueEJSON::operator = <int64 const &, nullptr>(int64 const &);
+		extern template CEJSON &CJSONValueEJSON::operator = <int64>(int64 &&);
+		extern template CEJSON &CJSONValueEJSON::operator = <int64 &>(int64 &);
+		extern template CEJSON &CJSONValueEJSON::operator = <int64 const &>(int64 const &);
 
-		extern template CEJSON &CJSONValueEJSON::operator = <int32, nullptr>(int32 &&);
-		extern template CEJSON &CJSONValueEJSON::operator = <int32 &, nullptr>(int32 &);
-		extern template CEJSON &CJSONValueEJSON::operator = <int32 const &, nullptr>(int32 const &);
+		extern template CEJSON &CJSONValueEJSON::operator = <int32>(int32 &&);
+		extern template CEJSON &CJSONValueEJSON::operator = <int32 &>(int32 &);
+		extern template CEJSON &CJSONValueEJSON::operator = <int32 const &>(int32 const &);
 
-		extern template CEJSON &CJSONValueEJSON::operator = <uint64, nullptr>(uint64 &&);
-		extern template CEJSON &CJSONValueEJSON::operator = <uint64 &, nullptr>(uint64 &);
-		extern template CEJSON &CJSONValueEJSON::operator = <uint64 const &, nullptr>(uint64 const &);
+		extern template CEJSON &CJSONValueEJSON::operator = <uint64>(uint64 &&);
+		extern template CEJSON &CJSONValueEJSON::operator = <uint64 &>(uint64 &);
+		extern template CEJSON &CJSONValueEJSON::operator = <uint64 const &>(uint64 const &);
 
-		extern template CEJSON &CJSONValueEJSON::operator = <uint32, nullptr>(uint32 &&);
-		extern template CEJSON &CJSONValueEJSON::operator = <uint32 &, nullptr>(uint32 &);
-		extern template CEJSON &CJSONValueEJSON::operator = <uint32 const &, nullptr>(uint32 const &);
+		extern template CEJSON &CJSONValueEJSON::operator = <uint32>(uint32 &&);
+		extern template CEJSON &CJSONValueEJSON::operator = <uint32 &>(uint32 &);
+		extern template CEJSON &CJSONValueEJSON::operator = <uint32 const &>(uint32 const &);
 		
-		extern template CEJSON &CJSONValueEJSON::operator = <pfp64, nullptr>(pfp64 &&);
-		extern template CEJSON &CJSONValueEJSON::operator = <pfp64 &, nullptr>(pfp64 &);
-		extern template CEJSON &CJSONValueEJSON::operator = <pfp64 const &, nullptr>(pfp64 const &);
+		extern template CEJSON &CJSONValueEJSON::operator = <pfp64>(pfp64 &&);
+		extern template CEJSON &CJSONValueEJSON::operator = <pfp64 &>(pfp64 &);
+		extern template CEJSON &CJSONValueEJSON::operator = <pfp64 const &>(pfp64 const &);
 
-		extern template CEJSON &CJSONValueEJSON::operator = <pfp32, nullptr>(pfp32 &&);
-		extern template CEJSON &CJSONValueEJSON::operator = <pfp32 &, nullptr>(pfp32 &);
-		extern template CEJSON &CJSONValueEJSON::operator = <pfp32 const &, nullptr>(pfp32 const &);
+		extern template CEJSON &CJSONValueEJSON::operator = <pfp32>(pfp32 &&);
+		extern template CEJSON &CJSONValueEJSON::operator = <pfp32 &>(pfp32 &);
+		extern template CEJSON &CJSONValueEJSON::operator = <pfp32 const &>(pfp32 const &);
 		
-		extern template CEJSON &CJSONValueEJSON::operator = <fp32, nullptr>(fp32 &&);
-		extern template CEJSON &CJSONValueEJSON::operator = <fp32 &, nullptr>(fp32 &);
-		extern template CEJSON &CJSONValueEJSON::operator = <fp32 const &, nullptr>(fp32 const &);
+		extern template CEJSON &CJSONValueEJSON::operator = <fp32>(fp32 &&);
+		extern template CEJSON &CJSONValueEJSON::operator = <fp32 &>(fp32 &);
+		extern template CEJSON &CJSONValueEJSON::operator = <fp32 const &>(fp32 const &);
 		
-		extern template CEJSON &CJSONValueEJSON::operator = <fp64, nullptr>(fp64 &&);
-		extern template CEJSON &CJSONValueEJSON::operator = <fp64 &, nullptr>(fp64 &);
-		extern template CEJSON &CJSONValueEJSON::operator = <fp64 const &, nullptr>(fp64 const &);
+		extern template CEJSON &CJSONValueEJSON::operator = <fp64>(fp64 &&);
+		extern template CEJSON &CJSONValueEJSON::operator = <fp64 &>(fp64 &);
+		extern template CEJSON &CJSONValueEJSON::operator = <fp64 const &>(fp64 const &);
 
 #ifdef DMibPUniqueType_int
-		extern template CEJSON &CJSONValueEJSON::operator = <int, nullptr>(int &&);
-		extern template CEJSON &CJSONValueEJSON::operator = <int &, nullptr>(int &);
-		extern template CEJSON &CJSONValueEJSON::operator = <int const &, nullptr>(int const &);
+		extern template CEJSON &CJSONValueEJSON::operator = <int>(int &&);
+		extern template CEJSON &CJSONValueEJSON::operator = <int &>(int &);
+		extern template CEJSON &CJSONValueEJSON::operator = <int const &>(int const &);
 #endif
-		extern template CEJSON &CJSONValueEJSON::operator = <bool, nullptr>(bool &&);
-		extern template CEJSON &CJSONValueEJSON::operator = <bool &, nullptr>(bool &);
-		extern template CEJSON &CJSONValueEJSON::operator = <bool const &, nullptr>(bool const &);
+		extern template CEJSON &CJSONValueEJSON::operator = <bool>(bool &&);
+		extern template CEJSON &CJSONValueEJSON::operator = <bool &>(bool &);
+		extern template CEJSON &CJSONValueEJSON::operator = <bool const &>(bool const &);
 		
 		extern template void CJSONValueEJSON::f_Format
 			<NStr::CStrAggregate, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJSON, true>::CLocalOptions>
