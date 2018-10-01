@@ -242,5 +242,11 @@ namespace NMib
 			else
 				return mp_FileLen;
 		}
+
+		template <typename t_CStreamType>
+		mint TCBinaryStream_Base64<t_CStreamType>::f_ContainerLengthLimit() const
+		{
+			return NStream::fg_CapLengthLimit(f_GetLength() - f_GetPosition());
+		}
 	}
 }
