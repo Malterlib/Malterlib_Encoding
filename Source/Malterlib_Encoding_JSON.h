@@ -176,7 +176,8 @@ namespace NMib
 
 			static TCJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr(), bool _bConvertNullToSpace = false);
 			NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t") const;
-			
+			NStr::CStr f_ToStringColored(ch8 const *_pPrettySeparator = "\t", bool _bUseColor = true) const;
+
 		protected:
 			inline_always void fp_CheckType(EJSONType _Type) const;
 			inline_always void fp_PromoteType(EJSONType _Type);

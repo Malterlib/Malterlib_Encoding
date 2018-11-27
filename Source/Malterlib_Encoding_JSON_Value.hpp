@@ -191,6 +191,12 @@ namespace NMib
 		}
 
 		template <typename t_CParent>
+		NStr::CStr TCJSONValue<t_CParent>::f_ToStringColored(ch8 const * _pPrettySeparator, bool _bColor) const
+		{
+			return NStr::CStr();
+		}
+
+		template <typename t_CParent>
 		void TCJSONValue<t_CParent>::fp_PromoteType(EJSONType _Type)
 		{
 			DMibRequire(this->f_Type() == EJSONType_Invalid || this->f_Type() == _Type);

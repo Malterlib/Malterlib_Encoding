@@ -12,6 +12,9 @@ namespace NMib
 
 		template <>
 		NStr::CStr CJSON::f_ToString(ch8 const *_pPrettySeparator) const;
+
+		template <>
+		NStr::CStr CJSON::f_ToStringColored(ch8 const *_pPrettySeparator, bool _bUseColor) const;
 #endif
 
 #ifndef DCompiler_MSVC_Workaround

@@ -45,9 +45,9 @@ namespace NMib
 		template <typename t_CParent>
 		class TCEJSONValue : public TCJSONValue<t_CParent>
 		{
+		public:
 			using CValue = typename TCJSONValue<t_CParent>::CValue;
 			using CKeyValue = typename TCJSONValue<t_CParent>::CKeyValue;
-		public:
 			
 			template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<TCJSONValue<t_CParent>, void (tf_CType &&)>::mc_Value> * = nullptr>
 			TCEJSONValue(tf_CType &&_Type)
@@ -94,7 +94,8 @@ namespace NMib
 
 			static TCEJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr(), bool _bConvertNullToSpace = false);
 			NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t") const;
-			
+			NStr::CStr f_ToStringColored(ch8 const *_pPrettySeparator = "\t", bool _bUseColor = true) const;
+
 			using TCJSONValue<t_CParent>::f_GetMember;
 			typename TCJSONValue<t_CParent>::CValue const *f_GetMember(NStr::CStr const &_Name, EEJSONType _Type) const;
 			typename TCJSONValue<t_CParent>::CValue *f_GetMember(NStr::CStr const &_Name, EEJSONType _Type);

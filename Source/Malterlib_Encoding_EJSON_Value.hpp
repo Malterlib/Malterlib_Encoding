@@ -457,5 +457,11 @@ namespace NMib
 		{
 			return f_ToJSON().f_ToString(_pPrettySeparator);
 		}
+
+		template <typename t_CParent>
+		NStr::CStr TCEJSONValue<t_CParent>::f_ToStringColored(ch8 const *_pPrettySeparator, bool _bUseColor) const
+		{
+			return f_ToJSON().f_ToStringColored(_pPrettySeparator, _bUseColor);
+		}
 	}
 }

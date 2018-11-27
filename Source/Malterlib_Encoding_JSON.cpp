@@ -29,6 +29,7 @@ namespace NMib
 		{
 			CJSON fg_JSONParse(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace);
 			NStr::CStr fg_JSONGenerate(CJSON const &_JSON, ch8 const *_pPrettySeparator);
+			NStr::CStr fg_JSONGenerateColored(CJSON const &_JSON, ch8 const *_pPrettySeparator);
 		}
 
 #ifndef DDocumentation_Doxygen
@@ -42,6 +43,15 @@ namespace NMib
 		NStr::CStr CJSON::f_ToString(ch8 const *_pPrettySeparator) const
 		{
 			return NPrivate::fg_JSONGenerate(*this, _pPrettySeparator);
+		}
+
+		template <>
+		NStr::CStr CJSON::f_ToStringColored(ch8 const *_pPrettySeparator, bool _bUseColor) const
+		{
+			if (_bUseColor)
+				return NPrivate::fg_JSONGenerateColored(*this, _pPrettySeparator);
+			else
+				return NPrivate::fg_JSONGenerate(*this, _pPrettySeparator);
 		}
 #endif
 		
