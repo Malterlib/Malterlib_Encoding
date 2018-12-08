@@ -1,4 +1,4 @@
-﻿// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include "Malterlib_Encoding_JSON.h"
@@ -6,23 +6,20 @@
 #include "Malterlib_Encoding_JSONShortcuts.h"
 #include "Malterlib_Encoding_EJSON.hpp"
 
-namespace NMib
+namespace NMib::NEncoding
 {
-	namespace NEncoding
+	constexpr EJSONType CJSONConstants::mc_Null;
+	constexpr EJSONType CJSONConstants::mc_EmptyString;
+	constexpr EJSONType CJSONConstants::mc_EmptyObject;
+	constexpr EJSONType CJSONConstants::mc_EmptyArray;
+	constexpr EEJSONType CJSONConstants::mc_InvalidDate;
+	constexpr EEJSONType CJSONConstants::mc_EmptyBinary;
+
+	CEJSON::CKey CJSONConstants::operator [] (NStr::CStr const &_Key)
 	{
-		constexpr EJSONType CJSONConstants::mc_Null;
-		constexpr EJSONType CJSONConstants::mc_EmptyString;
-		constexpr EJSONType CJSONConstants::mc_EmptyObject;
-		constexpr EJSONType CJSONConstants::mc_EmptyArray;
-		constexpr EEJSONType CJSONConstants::mc_InvalidDate;
-		constexpr EEJSONType CJSONConstants::mc_EmptyBinary;
-		
-		CEJSON::CKey CJSONConstants::operator [] (NStr::CStr const &_Key)
-		{
-			CEJSON::CKey Key;
-			Key.m_Key = _Key;
-			return Key;
-		}
+		CEJSON::CKey Key;
+		Key.m_Key = _Key;
+		return Key;
 	}
 }
 

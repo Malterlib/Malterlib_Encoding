@@ -15,14 +15,14 @@ namespace
 			{
 				for (auto i = 0; i < 4096+1024; ++i)
 				{
-					NMib::NContainer::TCVector<uint8> ToEncode;
+					NMib::NContainer::CByteVector ToEncode;
 					ToEncode.f_SetLen(i);
 					
-					NMib::NStr::CStr Encoded = NMib::NDataProcessing::fg_Base64Encode(ToEncode);
+					NMib::NStr::CStr Encoded = NMib::NEncoding::fg_Base64Encode(ToEncode);
 					Encoded += "\n";
-					NMib::NContainer::TCVector<uint8> Decoded;
+					NMib::NContainer::CByteVector Decoded;
 					NMib::NStr::CStr ToDecode = NMib::NStr::fg_GetStrSep(Encoded, "\n");
-					NMib::NDataProcessing::fg_Base64Decode(ToDecode, Decoded);
+					NMib::NEncoding::fg_Base64Decode(ToDecode, Decoded);
 					
 					DMibTest(DMibExpr(ToEncode) == DMibExpr(Decoded))(ETestFlag_Aggregated | ETestFlag_NoValues);
 										
