@@ -7,7 +7,6 @@
 #include <Mib/Storage/Variant>
 #include <Mib/Storage/Indirection>
 #include <Mib/Storage/Tuple>
-#include <type_traits>
 
 #include "Malterlib_Encoding_JSON_InternalBase.h"
 
