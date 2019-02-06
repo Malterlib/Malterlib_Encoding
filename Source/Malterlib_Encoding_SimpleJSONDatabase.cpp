@@ -23,7 +23,7 @@ namespace NMib::NEncoding
 			(
 				[this, FileName = mp_FileName, FileActor = mp_FileActor]
 				{
-					NConcurrency::TCContinuation<void> Continuation;
+					NConcurrency::TCPromise<void> Promise;
 					fg_Dispatch
 						(
 							FileActor
@@ -34,13 +34,13 @@ namespace NMib::NEncoding
 								return CEJSON::fs_FromString(NFile::CFile::fs_ReadStringFromFile(FileName), FileName);
 							}
 						)
-						> Continuation / [this, Continuation](CEJSON &&_Data)
+						> Promise / [this, Promise](CEJSON &&_Data)
 						{
 							m_Data = fg_Move(_Data);
-							Continuation.f_SetResult();
+							Promise.f_SetResult();
 						}
 					;
-					return Continuation;
+					return Promise.f_MoveFuture();
 				}
 			)
 		;
