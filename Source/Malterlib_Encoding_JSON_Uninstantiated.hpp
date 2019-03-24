@@ -9,10 +9,10 @@ namespace NMib::NEncoding
 	CJSON CJSON::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace);
 
 	template <>
-	NStr::CStr CJSON::f_ToString(ch8 const *_pPrettySeparator) const;
+	NStr::CStr CJSON::f_ToString(ch8 const *_pPrettySeparator, bool _bAllowUndefined) const;
 
 	template <>
-	NStr::CStr CJSON::f_ToStringColored(ch8 const *_pPrettySeparator, bool _bUseColor) const;
+	NStr::CStr CJSON::f_ToStringColored(ch8 const *_pPrettySeparator, bool _bUseColor, bool _bAllowUndefined) const;
 #endif
 
 #ifndef DCompiler_MSVC_Workaround

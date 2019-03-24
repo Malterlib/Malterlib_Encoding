@@ -7,7 +7,7 @@ namespace NMib::NEncoding
 {
 	namespace NPrivate
 	{
-		void fg_GenerateJSONValue(NStr::CStr &o_String, CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator);
+		void fg_GenerateJSONValue(NStr::CStr &o_String, CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator, bool _bAllowUndefined);
 
 		void fg_AddPrefix(NStr::CStr &o_String, mint _Depth, ch8 const *_pPrettySeparator)
 		{
@@ -62,7 +62,7 @@ namespace NMib::NEncoding
 			o_String += "\"";
 		}
 
-		void fg_GenerateJSONObject(NStr::CStr &o_String, CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
+		void fg_GenerateJSONObject(NStr::CStr &o_String, CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator, bool _bAllowUndefined)
 		{
 			auto iChild = _Value.f_Object().f_OrderedIterator();
 			if (!iChild)
@@ -88,7 +88,7 @@ namespace NMib::NEncoding
 					o_String += ": ";
 				else
 					o_String += ":";
-				fg_GenerateJSONValue(o_String, Child.f_Value(), _Depth + 1, _pPrettySeparator);
+				fg_GenerateJSONValue(o_String, Child.f_Value(), _Depth + 1, _pPrettySeparator, _bAllowUndefined);
 				if (_pPrettySeparator)
 				{
 					if (iChild)
@@ -104,7 +104,7 @@ namespace NMib::NEncoding
 			o_String += "}";
 		}
 
-		void fg_GenerateJSONArray(NStr::CStr &o_String, CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
+		void fg_GenerateJSONArray(NStr::CStr &o_String, CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator, bool _bAllowUndefined)
 		{
 			auto iChild = _Value.f_Array().f_GetIterator();
 			if (!iChild)
@@ -124,7 +124,7 @@ namespace NMib::NEncoding
 				++iChild;
 				if (_pPrettySeparator)
 					fg_AddPrefix(o_String, _Depth + 1, _pPrettySeparator);
-				fg_GenerateJSONValue(o_String, Child, _Depth + 1, _pPrettySeparator);
+				fg_GenerateJSONValue(o_String, Child, _Depth + 1, _pPrettySeparator, _bAllowUndefined);
 				if (_pPrettySeparator)
 				{
 					if (iChild)
@@ -140,7 +140,7 @@ namespace NMib::NEncoding
 			o_String += "]";
 		}
 
-		void fg_GenerateJSONValue(NStr::CStr &o_String, CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
+		void fg_GenerateJSONValue(NStr::CStr &o_String, CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator, bool _bAllowUndefined)
 		{
 			using namespace NStr;
 
@@ -164,10 +164,10 @@ namespace NMib::NEncoding
 				}
 				break;
 			case EJSONType_Object:
-				fg_GenerateJSONObject(o_String, _Value, _Depth, _pPrettySeparator);
+				fg_GenerateJSONObject(o_String, _Value, _Depth, _pPrettySeparator, _bAllowUndefined);
 				break;
 			case EJSONType_Array:
-				fg_GenerateJSONArray(o_String, _Value, _Depth, _pPrettySeparator);
+				fg_GenerateJSONArray(o_String, _Value, _Depth, _pPrettySeparator, _bAllowUndefined);
 				break;
 			case EJSONType_Null:
 				o_String += "null";
@@ -178,19 +178,26 @@ namespace NMib::NEncoding
 				else
 					o_String += "false";
 				break;
+			case EJSONType_Invalid:
+				if (_bAllowUndefined)
+				{
+					o_String += "undefined";
+					break;
+				}
+				[[fallthrough]];
 			default:
 				DMibError("Invalid JSON type in value node");
 			break;
 			}
 		}
 
-		NStr::CStr fg_JSONGenerate(CJSON const &_JSON, ch8 const *_pPrettySeparator)
+		NStr::CStr fg_JSONGenerate(CJSON const &_JSON, ch8 const *_pPrettySeparator, bool _bAllowUndefined)
 		{
 			using namespace NStr;
 
 			CStr Return;
 
-			fg_GenerateJSONValue(Return, _JSON, 0, _pPrettySeparator);
+			fg_GenerateJSONValue(Return, _JSON, 0, _pPrettySeparator, _bAllowUndefined);
 
 			if (_pPrettySeparator)
 				Return += "\n";

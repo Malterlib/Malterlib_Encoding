@@ -209,6 +209,13 @@ namespace NMib::NEncoding
 					else
 						o_String += fs_Color("false", EColor_Constant);
 					break;
+				case EJSONType_Invalid:
+					if (m_bAllowUndefined)
+					{
+						o_String += "undefined";
+						break;
+					}
+					[[fallthrough]];
 				default:
 					DMibError("Invalid JSON type in value node");
 				break;
@@ -228,11 +235,15 @@ namespace NMib::NEncoding
 
 				return Return;
 			}
+
+			bool m_bAllowUndefined;
 		};
 
-		NStr::CStr fg_JSONGenerateColored(CJSON const &_JSON, ch8 const *_pPrettySeparator)
+		NStr::CStr fg_JSONGenerateColored(CJSON const &_JSON, ch8 const *_pPrettySeparator, bool _bAllowUndefined)
 		{
 			CJSONColorGenerator Generator;
+			Generator.m_bAllowUndefined = _bAllowUndefined;
+
 			return Generator.f_ToString(_JSON, _pPrettySeparator);
 		}
 	}

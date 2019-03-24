@@ -183,13 +183,13 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCJSONValue<t_CParent>::f_ToString(ch8 const * _pPrettySeparator) const
+	NStr::CStr TCJSONValue<t_CParent>::f_ToString(ch8 const * _pPrettySeparator, bool _bAllowUndefined) const
 	{
 		return NStr::CStr();
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCJSONValue<t_CParent>::f_ToStringColored(ch8 const * _pPrettySeparator, bool _bColor) const
+	NStr::CStr TCJSONValue<t_CParent>::f_ToStringColored(ch8 const * _pPrettySeparator, bool _bColor, bool _bAllowUndefined) const
 	{
 		return NStr::CStr();
 	}

@@ -451,14 +451,14 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCEJSONValue<t_CParent>::f_ToString(ch8 const *_pPrettySeparator) const
+	NStr::CStr TCEJSONValue<t_CParent>::f_ToString(ch8 const *_pPrettySeparator, bool _bAllowUndefined) const
 	{
-		return f_ToJSON().f_ToString(_pPrettySeparator);
+		return f_ToJSON().f_ToString(_pPrettySeparator, _bAllowUndefined);
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCEJSONValue<t_CParent>::f_ToStringColored(ch8 const *_pPrettySeparator, bool _bUseColor) const
+	NStr::CStr TCEJSONValue<t_CParent>::f_ToStringColored(ch8 const *_pPrettySeparator, bool _bUseColor, bool _bAllowUndefined) const
 	{
-		return f_ToJSON().f_ToStringColored(_pPrettySeparator, _bUseColor);
+		return f_ToJSON().f_ToStringColored(_pPrettySeparator, _bUseColor, _bAllowUndefined);
 	}
 }
