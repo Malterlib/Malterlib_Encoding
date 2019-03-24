@@ -65,6 +65,10 @@ namespace NMib::NEncoding
 		TCEJSONValue(TCInitializerList<CValue> const &_Init);
 		TCEJSONValue(TCInitializerList<CKeyValue> const &_Init);
 
+		TCEJSONValue(NContainer::CSecureByteVector const &_Value) = delete;
+		TCEJSONValue(NContainer::CSecureByteVector &_Value) = delete;
+		TCEJSONValue(NContainer::CSecureByteVector &&_Value) = delete;
+
 		using TCJSONValue<t_CParent>::operator = ;
 
 		TCEJSONValue &operator = (TCEJSONValue const &_Value);

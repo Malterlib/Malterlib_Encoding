@@ -76,8 +76,17 @@ namespace NMib::NEncoding
 		TCJSONValue(TCInitializerList<CValue> const &_Init);
 		TCJSONValue(TCInitializerList<CKeyValue> const &_Init);
 
+		TCJSONValue(NContainer::CSecureByteVector const &_Value) = delete;
+		TCJSONValue(NContainer::CSecureByteVector &_Value) = delete;
+		TCJSONValue(NContainer::CSecureByteVector &&_Value) = delete;
+
 		template <typename tf_CType>
 		auto operator = (tf_CType &&_Value) -> TCEnableIfType<!NTraits::TCIsSame<decltype(this->mp_Value = fg_Forward<tf_CType>(_Value)), CDummy>::mc_Value, CValue> &;
+
+		CValue &operator = (NContainer::CSecureByteVector const &_Value) = delete;
+		CValue &operator = (NContainer::CSecureByteVector &_Value) = delete;
+		CValue &operator = (NContainer::CSecureByteVector &&_Value) = delete;
+
 		CValue &operator = (TCJSONValue const &_Value);
 		CValue &operator = (TCJSONValue &&_Value);
 		CValue &operator = (pfp64 _Value);
