@@ -45,14 +45,14 @@ namespace NMib::NEncoding::NPrivate
 				NStorage::TCVariantMembers
 				<
 					EJSONType
-					, NStorage::TCVariantMember<void, DMibVariantMember(EJSONType, Invalid)>
-					, NStorage::TCVariantMember<CJSONNull, DMibVariantMember(EJSONType, Null)>
-					, NStorage::TCVariantMember<NStr::CStr, DMibVariantMember(EJSONType, String)>
-					, NStorage::TCVariantMember<int64, DMibVariantMember(EJSONType, Integer)>
-					, NStorage::TCVariantMember<fp64, DMibVariantMember(EJSONType, Float)>
-					, NStorage::TCVariantMember<CJSONBoolean, DMibVariantMember(EJSONType, Boolean)>
-					, NStorage::TCVariantMember<TCJSONObject<t_CValue>, DMibVariantMember(EJSONType, Object)>
-					, NStorage::TCVariantMember<NContainer::TCVector<t_CValue>, DMibVariantMember(EJSONType, Array)>
+					, NStorage::TCMember<void, EJSONType_Invalid>
+					, NStorage::TCMember<CJSONNull, EJSONType_Null>
+					, NStorage::TCMember<NStr::CStr, EJSONType_String>
+					, NStorage::TCMember<int64, EJSONType_Integer>
+					, NStorage::TCMember<fp64, EJSONType_Float>
+					, NStorage::TCMember<CJSONBoolean, EJSONType_Boolean>
+					, NStorage::TCMember<TCJSONObject<t_CValue>, EJSONType_Object>
+					, NStorage::TCMember<NContainer::TCVector<t_CValue>, EJSONType_Array>
 					, tp_CTypes...
 				>
 			;

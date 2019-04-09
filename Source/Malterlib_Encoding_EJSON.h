@@ -117,9 +117,9 @@ namespace NMib::NEncoding
 		{
 			using CTypes = NMeta::TCTypeList
 				<
-					NStorage::TCVariantMember<NTime::CTime, EJSONType, (EJSONType)EEJSONType_Date>
-					, NStorage::TCVariantMember<NContainer::CByteVector, EJSONType, (EJSONType)EEJSONType_Binary>
-					, NStorage::TCVariantMember<CEJSONUserType, EJSONType, (EJSONType)EEJSONType_UserType>
+					NStorage::TCMember<NTime::CTime, (EJSONType)EEJSONType_Date>
+					, NStorage::TCMember<NContainer::CByteVector, (EJSONType)EEJSONType_Binary>
+					, NStorage::TCMember<CEJSONUserType, (EJSONType)EEJSONType_UserType>
 				>
 			;
 		};
