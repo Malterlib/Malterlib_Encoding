@@ -42,7 +42,7 @@ namespace NMib::NEncoding::NPrivate
 		struct TCGetJSONValueVariant<t_CValue, NMeta::TCTypeList<tp_CTypes...>>
 		{
 			using CType =
-				NStorage::TCVariantMembers
+				NStorage::TCStreamableVariant
 				<
 					EJSONType
 					, NStorage::TCMember<void, EJSONType_Invalid>
