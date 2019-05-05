@@ -315,6 +315,35 @@ namespace
 			{
 				DMibExpect(NStream::fg_FromByteVector<CEJSON>(NStream::fg_ToByteVector(fs_GetEJSON())), ==, fs_GetEJSON());
 			};
+			DMibTestSuite("Date")
+			{
+				auto fTestTimeConversion = [](NTime::CTime const &_Time)
+					{
+						auto OriginalTime = _Time;
+						OriginalTime = NTime::CTimeConvert::fs_FromCreateFromUnixMilliseconds(NTime::CTimeConvert(OriginalTime).f_UnixMilliseconds());
+						CEJSON OriginalEJSON;
+						OriginalEJSON = OriginalTime;
+						CEJSON ConvertedEJSON = CEJSON::fs_FromJSON(OriginalEJSON.f_ToJSON());
+						DMibExpect(ConvertedEJSON.f_Date(), == , OriginalTime);
+					}
+				;
+				{
+					DMibTestPath("0.999...");
+					fTestTimeConversion(NTime::CTimeConvert::fs_CreateTime(2019, 04, 20, 18, 17, 05, 0.9999999999999999));
+				}
+				{
+					DMibTestPath("0.1");
+					fTestTimeConversion(NTime::CTimeConvert::fs_CreateTime(2019, 04, 20, 18, 17, 05, 0.1));
+				}
+				{
+					DMibTestPath("Bug1");
+					fTestTimeConversion(NTime::CTime::fs_Create(constant_int64(237148623722908912), constant_uint64(7627728670263724032)));
+				}
+				{
+					DMibTestPath("Bug2");
+					fTestTimeConversion(NTime::CTime::fs_Create(constant_int64(237148623722908912), constant_uint64(7627728670263725056)));
+				}
+			};
 		}
 	};
 

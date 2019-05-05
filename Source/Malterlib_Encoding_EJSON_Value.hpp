@@ -272,18 +272,13 @@ namespace NMib::NEncoding
 			break;
 		case EEJSONType_Date:
 			{
-				static NTime::CTime EpochStart = NTime::CTimeConvert::fs_CreateTime(1970, 1, 1);
 
 				if (!f_Date().f_IsValid())
 				{
 					_Ret["$date"] = nullptr;
 					break;
 				}
-
-				NTime::CTimeSpan TimeSinceEpoch = f_Date() - EpochStart;
-
-				int64 MillisecondsSinceEpoch = TimeSinceEpoch.f_GetSeconds() * constant_int64(1000) + (TimeSinceEpoch.f_GetFraction() * 1000.0).f_ToInt();
-				_Ret["$date"] = MillisecondsSinceEpoch;
+				_Ret["$date"] = NTime::CTimeConvert(f_Date()).f_UnixMilliseconds();
 			}
 			break;
 		case EEJSONType_Binary:
@@ -313,7 +308,6 @@ namespace NMib::NEncoding
 	void TCEJSONValue<t_CParent>::fsp_FromJSON_Object(TCEJSONValue &_Ret, CJSON::CObject const &_Value)
 	{
 		{
-			static NTime::CTime EpochStart = NTime::CTimeConvert::fs_CreateTime(1970, 1, 1);
 			auto iMember = _Value.f_OrderedIterator();
 			if (!iMember)
 			{
@@ -346,10 +340,7 @@ namespace NMib::NEncoding
 						if (Value.f_Type() != EJSONType_Integer)
 							DMibError("Invalid EJSON: $date value must be an integer");
 
-						int64 SecondsSinceEpoch = Value.f_Integer() / 1000;
-						fp64 Fraction = fp64(Value.f_Integer() - SecondsSinceEpoch * 1000) * 0.001;
-
-						_Ret = EpochStart + NTime::CTimeSpanConvert::fs_CreateSpanFromSeconds(SecondsSinceEpoch, Fraction);
+						_Ret = NTime::CTimeConvert::fs_FromCreateFromUnixMilliseconds(Value.f_Integer());
 						return;
 					}
 					else if (Name == "$binary")
