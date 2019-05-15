@@ -30,7 +30,7 @@ namespace NMib::NEncoding
 		if (mp_bCurrentDirty)
 			fp_WriteDirty();
 		mp_OpenFlags = NFile::EFileOpen_None;
-		NMemory::fg_MemClear(mp_DecryptedData);
+		NMemory::fg_SecureMemClear(mp_DecryptedData);
 	}
 
 	template <typename t_CStreamType>
@@ -107,7 +107,7 @@ namespace NMib::NEncoding
 		if ((BlockPos+4) > mp_pStream->f_GetLength())
 		{
 			if (_bWrite)
-				NMemory::fg_MemClear(mp_DecryptedData);
+				NMemory::fg_SecureMemClear(mp_DecryptedData);
 			else
 				DMibErrorFile("Read past end of file");
 		}
