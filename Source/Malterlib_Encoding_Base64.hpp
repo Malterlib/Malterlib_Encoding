@@ -89,7 +89,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	mint TCBinaryStream_Base64<t_CStreamType>::fp_PrepareBlock(NStream::CFilePos _Pos, bint _bWrite)
+	mint TCBinaryStream_Base64<t_CStreamType>::fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite)
 	{
 		if (mp_CurrentLoaded >= 0 && _Pos >=  mp_CurrentLoaded && _Pos < mp_CurrentLoaded + EChunkSizeData)
 		{
@@ -179,13 +179,13 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	bint TCBinaryStream_Base64<t_CStreamType>::f_IsValid() const
+	bool TCBinaryStream_Base64<t_CStreamType>::f_IsValid() const
 	{
 		return mp_pStream->f_IsValid();
 	}
 
 	template <typename t_CStreamType>
-	bint TCBinaryStream_Base64<t_CStreamType>::f_IsAtEndOfStream() const
+	bool TCBinaryStream_Base64<t_CStreamType>::f_IsAtEndOfStream() const
 	{
 		return mp_pStream->f_IsAtEndOfStream();
 	}
@@ -215,13 +215,13 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	bint TCBinaryStream_Base64<t_CStreamType>::f_IsValidReadPosition(NStream::CFilePos _Pos) const
+	bool TCBinaryStream_Base64<t_CStreamType>::f_IsValidReadPosition(NStream::CFilePos _Pos) const
 	{
 		return mp_pStream->f_IsValidReadPosition(_Pos);
 	}
 
 	template <typename t_CStreamType>
-	void TCBinaryStream_Base64<t_CStreamType>::f_Flush(bint _bLocalCacheOnly)
+	void TCBinaryStream_Base64<t_CStreamType>::f_Flush(bool _bLocalCacheOnly)
 	{
 		return mp_pStream->f_Flush(_bLocalCacheOnly);
 	}

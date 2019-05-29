@@ -15,7 +15,7 @@ namespace NMib::NEncoding
 	{
 	private:
 		void fp_WriteDirty();
-		mint fp_PrepareBlock(NStream::CFilePos _Pos, bint _bWrite);
+		mint fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite);
 
 		NStream::CBinaryStream *mp_pStream;
 		NFile::EFileOpen mp_OpenFlags;
@@ -30,7 +30,7 @@ namespace NMib::NEncoding
 		NStream::CFilePos mp_CurrentLoaded;
 		NStream::CFilePos mp_FileLen;
 		uint8 mp_DecryptedData[EChunkSizeData];
-		bint mp_bCurrentDirty;
+		bool mp_bCurrentDirty;
 
 	protected:
 		DMibStreamImplementProtected(TCBinaryStream_Base64);
@@ -47,14 +47,14 @@ namespace NMib::NEncoding
 		void f_Open(NStream::CBinaryStream *_pStream, NFile::EFileOpen _OpenFlags);
 		void f_FeedBytes(const void *_pMem, mint _nBytes);
 		void f_ConsumeBytes(void *_pMem, mint _nBytes);
-		bint f_IsValid() const;
-		bint f_IsAtEndOfStream() const;
+		bool f_IsValid() const;
+		bool f_IsAtEndOfStream() const;
 		NStream::CFilePos f_GetPosition() const;
 		void f_SetPosition(NStream::CFilePos _Pos);
 		void f_SetPositionFromEnd(NStream::CFilePos _Pos);
 		void f_AddPosition(NStream::CFilePos _Pos);
-		bint f_IsValidReadPosition(NStream::CFilePos _Pos) const;
-		void f_Flush(bint _bLocalCacheOnly);
+		bool f_IsValidReadPosition(NStream::CFilePos _Pos) const;
+		void f_Flush(bool _bLocalCacheOnly);
 		void f_SetCacheSize(mint _CacheSize);
 		NStream::CFilePos f_GetLength() const;
 		mint f_ContainerLengthLimit() const;
