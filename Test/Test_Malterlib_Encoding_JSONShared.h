@@ -482,7 +482,7 @@ namespace
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
 					
-					Error.m_Error = "End of string character '\"' not found for key name string";
+					Error.m_Error = "End of string character \" not found for key name string";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 1;
 					Error.m_Location.m_Column = 3;
@@ -646,7 +646,7 @@ namespace
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
 					
-					Error.m_Error = "End of string character '\"' not found for string";
+					Error.m_Error = "End of string character \" not found for string";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 1;
 					Error.m_Location.m_Column = 1;
