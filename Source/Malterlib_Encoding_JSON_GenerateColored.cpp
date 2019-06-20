@@ -23,15 +23,20 @@ namespace NMib::NEncoding
 				, EColor_Binary
 			};
 
-			static CStr fs_Color(CStr const &_String, EColor _Color)
+			CStr f_Color(CStr const &_String, EColor _Color)
 			{
+				if (!(m_AnsiFlags & EAnsiEncodingFlag_Color))
+					return _String;
+
+				CAnsiEncoding AnsiEncoding(m_AnsiFlags);
+
 				switch (_Color)
 				{
-				case EColor_String: return "{}{}{}"_f << CAnsiEncoding::fs_ForegroundRGB(0x00, 0x9e, 0xff) << _String << CAnsiEncoding::ms_Default;
-				case EColor_Number: return "{}{}{}"_f << CAnsiEncoding::fs_ForegroundRGB(0xff, 0x00, 0x80) << _String << CAnsiEncoding::ms_Default;
-				case EColor_Constant: return "{}{}{}"_f << CAnsiEncoding::fs_ForegroundRGB(0xff, 0x8a, 0xc5) << _String << CAnsiEncoding::ms_Default;
-				case EColor_Date: return "{}{}{}"_f << CAnsiEncoding::fs_ForegroundRGB(0xff, 0x5b, 0xad) << _String << CAnsiEncoding::ms_Default;
-				case EColor_Binary: return "{}{}{}"_f << CAnsiEncoding::fs_ForegroundRGB(0x80, 0x80, 0x80) << _String << CAnsiEncoding::ms_Default;
+				case EColor_String: return "{}{}{}"_f << AnsiEncoding.f_ForegroundRGB(0x00, 0x9e, 0xff) << _String << AnsiEncoding.f_Default();
+				case EColor_Number: return "{}{}{}"_f << AnsiEncoding.f_ForegroundRGB(0xff, 0x00, 0x80) << _String << AnsiEncoding.f_Default();
+				case EColor_Constant: return "{}{}{}"_f << AnsiEncoding.f_ForegroundRGB(0xff, 0x8a, 0xc5) << _String << AnsiEncoding.f_Default();
+				case EColor_Date: return "{}{}{}"_f << AnsiEncoding.f_ForegroundRGB(0xff, 0x5b, 0xad) << _String << AnsiEncoding.f_Default();
+				case EColor_Binary: return "{}{}{}"_f << AnsiEncoding.f_ForegroundRGB(0x80, 0x80, 0x80) << _String << AnsiEncoding.f_Default();
 				default: return _String;
 				}
 			}
@@ -90,7 +95,7 @@ namespace NMib::NEncoding
 
 				String += "\"";
 
-				return fs_Color(String, EColor_String);
+				return f_Color(String, EColor_String);
 			}
 
 			void f_GenerateJSONObject(NStr::CStr &o_String, CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
@@ -183,15 +188,15 @@ namespace NMib::NEncoding
 					o_String += f_GenerateJSONString(JSONValue.f_String());
 					break;
 				case EJSONType_Integer:
-					o_String += fs_Color(CStr::fs_ToStr(JSONValue.f_Integer()), EColor_Number);
+					o_String += f_Color(CStr::fs_ToStr(JSONValue.f_Integer()), EColor_Number);
 					break;
 				case EJSONType_Float:
 					{
 						auto &Float = JSONValue.f_Float();
 						if (Float.f_IsInvalid())
-							o_String += fs_Color("null", EColor_Number); // QNaN, Inf etc is not representable in JSON
+							o_String += f_Color("null", EColor_Number); // QNaN, Inf etc is not representable in JSON
 						else
-							o_String += fs_Color(CStr::fs_ToStr(JSONValue.f_Float()), EColor_Number);
+							o_String += f_Color(CStr::fs_ToStr(JSONValue.f_Float()), EColor_Number);
 					}
 					break;
 				case EJSONType_Object:
@@ -201,13 +206,13 @@ namespace NMib::NEncoding
 					f_GenerateJSONArray(o_String, _Value, _Depth, _pPrettySeparator);
 					break;
 				case EJSONType_Null:
-					o_String += fs_Color("null", EColor_Constant);
+					o_String += f_Color("null", EColor_Constant);
 					break;
 				case EJSONType_Boolean:
 					if (JSONValue.f_Boolean())
-						o_String += fs_Color("true", EColor_Constant);
+						o_String += f_Color("true", EColor_Constant);
 					else
-						o_String += fs_Color("false", EColor_Constant);
+						o_String += f_Color("false", EColor_Constant);
 					break;
 				case EJSONType_Invalid:
 					if (m_bAllowUndefined)
@@ -237,12 +242,14 @@ namespace NMib::NEncoding
 			}
 
 			bool m_bAllowUndefined;
+			NCommandLine::EAnsiEncodingFlag m_AnsiFlags;
 		};
 
-		NStr::CStr fg_JSONGenerateColored(CJSON const &_JSON, ch8 const *_pPrettySeparator, bool _bAllowUndefined)
+		NStr::CStr fg_JSONGenerateColored(CJSON const &_JSON, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, bool _bAllowUndefined)
 		{
 			CJSONColorGenerator Generator;
 			Generator.m_bAllowUndefined = _bAllowUndefined;
+			Generator.m_AnsiFlags = _AnsiFlags;
 
 			return Generator.f_ToString(_JSON, _pPrettySeparator);
 		}

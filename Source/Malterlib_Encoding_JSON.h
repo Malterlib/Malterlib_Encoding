@@ -5,6 +5,7 @@
 
 #include <Mib/Core/Core>
 #include <Mib/Storage/Variant>
+#include <Mib/CommandLine/AnsiEncoding>
 
 #include "Malterlib_Encoding_JSON_InternalBase.h"
 
@@ -180,7 +181,7 @@ namespace NMib::NEncoding
 
 		static TCJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr(), bool _bConvertNullToSpace = false);
 		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", bool _bAllowUndefined = false) const;
-		NStr::CStr f_ToStringColored(ch8 const *_pPrettySeparator = "\t", bool _bUseColor = true, bool _bAllowUndefined = false) const;
+		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", bool _bAllowUndefined = false) const;
 
 	protected:
 		inline_always void fp_CheckType(EJSONType _Type) const;
