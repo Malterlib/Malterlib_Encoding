@@ -10,9 +10,10 @@ namespace NMib::NEncoding
 	{
 	public:
 		CSimpleJSONDatabase(NStr::CStr const &_FileName);
+		~CSimpleJSONDatabase();
 
-		NConcurrency::TCDispatchedActorCall<void> f_Load();
-		NConcurrency::TCDispatchedActorCall<void> f_Save();
+		NConcurrency::TCFuture<void> f_Load();
+		NConcurrency::TCFuture<void> f_Save();
 
 		NStr::CStr const &f_GetFileName() const;
 
@@ -21,6 +22,7 @@ namespace NMib::NEncoding
 	private:
 		NConcurrency::TCActor<NConcurrency::CSeparateThreadActor> mp_FileActor;
 		NStr::CStr mp_FileName;
+		NStorage::TCSharedPointer<bool> mp_pWasDeleted = fg_Construct(false);
 	};
 }
 

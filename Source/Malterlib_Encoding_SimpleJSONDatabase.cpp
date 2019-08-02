@@ -12,47 +12,47 @@ namespace NMib::NEncoding
 	{
 	}
 
+	CSimpleJSONDatabase::~CSimpleJSONDatabase()
+	{
+		*mp_pWasDeleted = true;
+	}
+
 	NStr::CStr const &CSimpleJSONDatabase::f_GetFileName() const
 	{
 		return mp_FileName;
 	}
 
-	NConcurrency::TCDispatchedActorCall<void> CSimpleJSONDatabase::f_Load()
+	NConcurrency::TCFuture<void> CSimpleJSONDatabase::f_Load()
 	{
-		return NConcurrency::fg_Dispatch
+		co_await NConcurrency::ECoroutineFlag_AllowReferences;
+		auto pWasDeleted = mp_pWasDeleted;
+		auto Data = co_await
 			(
-				[this, FileName = mp_FileName, FileActor = mp_FileActor]
+			 	NConcurrency::g_Dispatch(mp_FileActor) / [FileName = mp_FileName]() -> CEJSON
 				{
-					NConcurrency::TCPromise<void> Promise;
-					fg_Dispatch
-						(
-							FileActor
-							, [FileName]
-							{
-								if (!NFile::CFile::fs_FileExists(FileName))
-									return CEJSON();
-								return CEJSON::fs_FromString(NFile::CFile::fs_ReadStringFromFile(FileName), FileName);
-							}
-						)
-						> Promise / [this, Promise](CEJSON &&_Data)
-						{
-							m_Data = fg_Move(_Data);
-							Promise.f_SetResult();
-						}
-					;
-					return Promise.f_MoveFuture();
+					if (!NFile::CFile::fs_FileExists(FileName))
+						return CEJSON();
+					return CEJSON::fs_FromString(NFile::CFile::fs_ReadStringFromFile(FileName), FileName);
 				}
 			)
 		;
+
+		if (*pWasDeleted)
+			co_return {};
+
+		m_Data = fg_Move(Data);
+
+		co_return {};
 	}
 
-	NConcurrency::TCDispatchedActorCall<void> CSimpleJSONDatabase::f_Save()
+	NConcurrency::TCFuture<void> CSimpleJSONDatabase::f_Save()
 	{
+		co_await NConcurrency::ECoroutineFlag_AllowReferences;
 		using namespace NFile;
-		return fg_Dispatch
+
+		co_await
 			(
-				mp_FileActor
-				, [FileName = mp_FileName, Data = m_Data]
+				NConcurrency::g_Dispatch(mp_FileActor) / [FileName = mp_FileName, Data = m_Data]
 				{
 					CFile::fs_CreateDirectory(CFile::fs_GetPath(FileName));
 					EFileAttrib FileAttributes = EFileAttrib_UnixAttributesValid | EFileAttrib_UserRead | EFileAttrib_UserWrite;
@@ -60,5 +60,7 @@ namespace NMib::NEncoding
 				}
 			)
 		;
+
+		co_return {};
 	}
 }
