@@ -82,7 +82,7 @@ namespace NMib::NEncoding::NJSON
 		}
 
 		CStr StartCharacters = "\"";
-		if (tf_CParseContext::mc_bAllowSingleQuote)
+		if constexpr (tf_CParseContext::mc_bAllowSingleQuote)
 			StartCharacters += " or '";
 
 		f_ThrowError("Expected {} to start object key name"_f << StartCharacters, pParse);
