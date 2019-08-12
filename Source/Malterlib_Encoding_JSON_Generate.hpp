@@ -23,23 +23,23 @@ namespace NMib::NEncoding::NJSON
 
 		ch8 const *pParse = _Value;
 
-		ch8 const *pStartWhitespace;
-		bool bInitPrewhitespace = false;
+		tf_CStr PreWhitespace;
+		bool bInitPreWhitespace = false;
 		auto fAddPreWhitespace = [&]()
 			{
 				if constexpr (tf_CParseContext::mc_bAllowMultilineString)
 				{
-					if (!bInitPrewhitespace)
+					if (!bInitPreWhitespace)
 					{
-						bInitPrewhitespace = true;
+						bInitPreWhitespace = true;
 						auto iPrevLine = o_String.f_FindCharReverse('\n', StartOfLine);
 						if (iPrevLine >= 0)
-							pStartWhitespace = o_String.f_GetStr() + iPrevLine + 1;
+							PreWhitespace = o_String.f_Extract(iPrevLine + 1, StartOfLine - (iPrevLine + 1));
 						else
-							pStartWhitespace = o_String.f_GetStr();
+							PreWhitespace = o_String.f_Extract(0, StartOfLine);
 					}
 
-					for (typename tf_CStr::CUnicodeIterator UTFIterator(pStartWhitespace, (o_String.f_GetStr() + StartOfLine) - pStartWhitespace); UTFIterator; ++UTFIterator)
+					for (auto UTFIterator = PreWhitespace.f_GetUnicodeIterator(); UTFIterator; ++UTFIterator)
 					{
 						if (fg_CharIsWhiteSpace(*UTFIterator))
 							o_String.f_AddChar(*UTFIterator);
