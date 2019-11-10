@@ -217,26 +217,29 @@ namespace
 					}
 				)
 			;
-			SharedTests.f_DoTests();
-
-			DMibTestCategoryFlags("Parse Exceptions", ETestCategoryFlag_DisableExceptionFilter)
+			DMibTestCategory("Shared")
 			{
-				DMibTestSuite("User type")
+				SharedTests.f_DoTests();
+			};
+
+			DMibTestCategoryFlags("Parse Exceptions", ETestCategoryFlag_DisableExceptionFilter | ETestCategoryFlag_Tests)
+			{
 				{
+					DMibTestPath("User type");
 					fp_TestParseError("{ \"$type\": 5, \"$value\": 6 }\n", "Invalid EJSON: $type value must be a string");
-				};
-				DMibTestSuite("Escape type")
+				}
 				{
+					DMibTestPath("Escape type");
 					fp_TestParseError("{ \"$escape\": 5 }\n", "Invalid EJSON: $escape value must be an object");
-				};
-				DMibTestSuite("Date type")
+				}
 				{
+					DMibTestPath("Date type");
 					fp_TestParseError("{ \"$date\": \"5\" }\n", "Invalid EJSON: $date value must be an integer");
-				};
-				DMibTestSuite("Binary type")
+				}
 				{
+					DMibTestPath("Binary type");
 					fp_TestParseError("{ \"$binary\": 5 }\n", "Invalid EJSON: $binary value must be a string");
-				};
+				}
 			};
 			DMibTestSuite("Initializier list")
 			{

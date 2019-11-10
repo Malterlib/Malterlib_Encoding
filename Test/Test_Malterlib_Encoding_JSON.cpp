@@ -102,7 +102,10 @@ namespace
 					}
 				)
 			;
-			SharedTests.f_DoTests();
+			DMibTestCategory("Shared")
+			{
+				SharedTests.f_DoTests();
+			};
 			
 			DMibTestSuite("Initializier list")
 			{
