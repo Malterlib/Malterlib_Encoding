@@ -5,22 +5,25 @@
 
 #include "Malterlib_Encoding_JSON.h"
 
+namespace NMib::NEncoding
+{
+	enum EJSONStringType
+	{
+		EJSONStringType_DoubleQuote = 0
+		, EJSONStringType_SingleQuote
+		, EJSONStringType_NoQuote
+		, EJSONStringType_Custom
+	};
+}
+
 namespace NMib::NEncoding::NJSON
 {
-	enum ERegistryStringType
-	{
-		ERegistryStringType_DoubleQuote = 0
-		, ERegistryStringType_SingleQuote
-		, ERegistryStringType_NoQuote
-		, ERegistryStringType_Custom
-	};
-
 	struct CParseContext
 	{
 		virtual NStr::CParseLocation f_GetLocation(uch8 const *_pParse) const;
 
 		template <typename tf_CParseContext>
-		void f_ParseKey(NStr::CStr &o_Key, uch8 const *&o_pParse) const;
+		void f_ParseKey(NStr::CStr &o_Key, uch8 const *&o_pParse);
 		template <typename tf_CParseContext, typename tf_CStr>
 		static void fs_GenerateString(tf_CStr &o_String, tf_CStr const &_Value);
 		template <typename tf_CParseContext, typename tf_CStr>
@@ -31,6 +34,9 @@ namespace NMib::NEncoding::NJSON
 
 
 		NStr::CStr m_FileName;
+		uint32 m_StartLine = 0;
+		uint32 m_StartColumn = 0;
+		uint32 m_StartCharacter = 0;
 		uch8 const *m_pStartParse;
 		bool m_bConvertNullToSpace = false;
 		bool m_bAllowUndefined = false;
@@ -47,13 +53,13 @@ namespace NMib::NEncoding::NJSON
 	};
 
 	template <typename tf_CParseContext>
-	static void fg_ParseJSONArray(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext const &_Context);
+	static void fg_ParseJSONArray(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
 	template <typename tf_CParseContext>
-	static void fg_ParseJSONObject(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext const &_Context);
+	static void fg_ParseJSONObject(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
 	template <uch8 t_QuoteCharacter, bool t_bAllowMultilineString, typename tf_CParseContext>
-	static bool fg_ParseJSONString(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext const &_Context);
+	static bool fg_ParseJSONString(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext &_Context);
 	template <typename tf_CParseContext>
-	static void fg_ParseJSONValue(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext const &_Context);
+	static void fg_ParseJSONValue(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
 }
 
 #include "Malterlib_Encoding_JSON_Parse.hpp"

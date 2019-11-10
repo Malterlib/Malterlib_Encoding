@@ -12,7 +12,9 @@ namespace NMib::NEncoding::NJSON
 		using namespace NStr;
 		CParseLocation Location;
 		Location.m_File = m_FileName;
-		Location.m_Character = _pParse - m_pStartParse;
+		Location.m_Character = (_pParse - m_pStartParse) + m_StartCharacter;
+
+		uint32 StartColumn = m_StartColumn;
 
 		auto *pParse = m_pStartParse;
 		mint Line = 1;
@@ -26,22 +28,23 @@ namespace NMib::NEncoding::NJSON
 
 			if (fg_ParseEndOfLine(pParse))
 			{
+				StartColumn = 0;
 				++Line;
 				pLastLine = pParse;
 			}
 		}
 
-		Location.m_Line = Line;
+		Location.m_Line = Line + m_StartLine;
 		if (_pParse >= pLastLine)
-			Location.m_Column = (_pParse - pLastLine) + 1;
+			Location.m_Column = (_pParse - pLastLine) + StartColumn + 1;
 		else
-			Location.m_Column = 1;
+			Location.m_Column = StartColumn + 1;
 
 		return Location;
 	}
 
 	template <typename tf_CParseContext>
-	void CParseContext::f_ParseKey(NStr::CStr &o_Key, uch8 const *&o_pParse) const
+	void CParseContext::f_ParseKey(NStr::CStr &o_Key, uch8 const *&o_pParse)
 	{
 		using namespace NStr;
 
@@ -75,7 +78,7 @@ namespace NMib::NEncoding::NJSON
 				while (fg_CharIsAlphabetical(*pParse) || *pParse == '$' || *pParse == '_' || fg_CharIsNumber(*pParse))
 					++pParse;
 				o_Key = CStr(pStartString, pParse - pStartString);
-				o_Key.f_SetUserData(ERegistryStringType_NoQuote);
+				o_Key.f_SetUserData(EJSONStringType_NoQuote);
 				o_pParse = pParse;
 				return;
 			}
@@ -93,7 +96,7 @@ namespace NMib::NEncoding::NJSON
 	{
 		if constexpr (tf_CParseContext::mc_bAllowSingleQuote)
 		{
-			if (_Value.f_GetUserData() == ERegistryStringType_SingleQuote)
+			if (_Value.f_GetUserData() == EJSONStringType_SingleQuote)
 			{
 				fg_GenerateJSONString<'\'', tf_CParseContext>(o_String, _Value);
 				return;
@@ -108,7 +111,7 @@ namespace NMib::NEncoding::NJSON
 		using namespace NStr;
 		if constexpr (tf_CParseContext::mc_bAllowKeyWithoutQuote)
 		{
-			if (_Key.f_GetUserData() == ERegistryStringType_NoQuote)
+			if (_Key.f_GetUserData() == EJSONStringType_NoQuote)
 			{
 				auto *pParse = _Key.f_GetStr();
 				if (fg_CharIsAlphabetical(*pParse) || *pParse == '$' || *pParse == '_')
@@ -129,7 +132,7 @@ namespace NMib::NEncoding::NJSON
 	}
 
 	template <typename tf_CParseContext>
-	static void fg_ParseJSONArray(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext const &_Context)
+	static void fg_ParseJSONArray(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
 		DMibRequire(o_Value.f_Type() == EJSONType_Array);
@@ -168,7 +171,7 @@ namespace NMib::NEncoding::NJSON
 	}
 
 	template <typename tf_CParseContext>
-	static void fg_ParseJSONObject(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext const &_Context)
+	static void fg_ParseJSONObject(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
 		DMibRequire(o_Value.f_Type() == EJSONType_Object);
@@ -226,7 +229,7 @@ namespace NMib::NEncoding::NJSON
 	}
 
 	template <uch8 t_QuoteCharacter, bool t_bAllowMultilineString, typename tf_CParseContext>
-	static bool fg_ParseJSONString(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext const &_Context)
+	static bool fg_ParseJSONString(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
 		uch8 const *pParse = o_pParse;
@@ -235,9 +238,9 @@ namespace NMib::NEncoding::NJSON
 				o_pParse = pParse;
 				switch (t_QuoteCharacter)
 				{
-					case '\"': o_String.f_SetUserData(ERegistryStringType_DoubleQuote); break;
-					case '\'': o_String.f_SetUserData(ERegistryStringType_SingleQuote); break;
-					default: o_String.f_SetUserData(ERegistryStringType_Custom); break;
+					case '\"': o_String.f_SetUserData(EJSONStringType_DoubleQuote); break;
+					case '\'': o_String.f_SetUserData(EJSONStringType_SingleQuote); break;
+					default: o_String.f_SetUserData(EJSONStringType_Custom); break;
 				}
 			}
 		;
@@ -392,7 +395,7 @@ namespace NMib::NEncoding::NJSON
 	}
 
 	template <typename tf_CParseContext>
-	static void fg_ParseJSONValue(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext const &_Context)
+	static void fg_ParseJSONValue(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
 

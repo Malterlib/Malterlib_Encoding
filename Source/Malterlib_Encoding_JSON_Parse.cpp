@@ -41,10 +41,8 @@ namespace NMib::NEncoding::NJSON
 		for (auto &Error : _Errors)
 		{
 			Description
-				+= NStr::CStr::CFormat(DMibPFileLineColumnFormat " {}{\n}")
-				<< Error.m_Location.m_File
-				<< Error.m_Location.m_Line
-				<< Error.m_Location.m_Column
+				+= NStr::CStr::CFormat("{} {}{\n}")
+				<< Error.m_Location
 				<< Error.m_Error
 			;
 		}
