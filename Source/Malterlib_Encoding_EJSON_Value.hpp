@@ -293,6 +293,8 @@ namespace NMib::NEncoding
 				_Ret["$value"] = UserType.m_Value;
 			}
 			break;
+		case EEJSONType_Invalid:
+			break; // Leave as default which is invalid
 		}
 	}
 
@@ -413,6 +415,11 @@ namespace NMib::NEncoding
 				for (auto &Member : _From.f_Array())
 					CEJSON::fsp_FromJSON(_Ret.f_Insert(), Member);
 			}
+			break;
+		case EJSONType_Invalid:
+			break; // Default is invalid
+		case EJSONType_Max:
+			DMibNeverGetHere;
 			break;
 		}
 	}
