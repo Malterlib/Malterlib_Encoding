@@ -288,6 +288,20 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
+	NContainer::TCVector<NStr::CStr> TCJSONValue<t_CParent>::f_StringArray() const
+	{
+		auto &SourceArray = f_Array();
+
+		NContainer::TCVector<NStr::CStr> Return;
+		Return.f_Reserve(SourceArray.f_GetLen());
+
+		for (auto &Value : SourceArray)
+			Return.f_Insert(Value.f_String());
+
+		return Return;
+	}
+
+	template <typename t_CParent>
 	auto TCJSONValue<t_CParent>::f_Array() -> typename NContainer::TCVector<CValue> &
 	{
 		fp_PromoteType(EJSONType_Array);

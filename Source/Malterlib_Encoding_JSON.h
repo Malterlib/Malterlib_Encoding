@@ -126,6 +126,7 @@ namespace NMib::NEncoding
 		TCJSONObject<CValue> &f_Object();
 		NContainer::TCVector<CValue> const &f_Array() const;
 		NContainer::TCVector<CValue> &f_Array();
+		NContainer::TCVector<NStr::CStr> f_StringArray() const;
 
 		NStr::CStr f_AsString() const;
 		int64 f_AsInteger() const;
