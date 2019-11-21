@@ -24,10 +24,10 @@ namespace NMib::NEncoding::NJSON
 
 		template <typename tf_CParseContext>
 		void f_ParseKey(NStr::CStr &o_Key, uch8 const *&o_pParse);
-		template <typename tf_CParseContext, typename tf_CStr>
-		static void fs_GenerateString(tf_CStr &o_String, tf_CStr const &_Value);
-		template <typename tf_CParseContext, typename tf_CStr>
-		static void fs_GenerateKeyString(tf_CStr &o_String, tf_CStr const &_Key);
+		template <typename tf_CParseContext, typename tf_CStr, typename tf_CSourceStr>
+		static void fs_GenerateString(tf_CStr &o_String, tf_CSourceStr const &_Value);
+		template <typename tf_CParseContext, typename tf_CStr, typename tf_CSourceStr>
+		static void fs_GenerateKeyString(tf_CStr &o_String, tf_CSourceStr const &_Key);
 
 		void f_ThrowErrors(NContainer::TCVector<NStr::CParseError> const &_Errors) const;
 		void f_ThrowError(NStr::CStr const &_Error, uch8 const *_pLocation) const;
@@ -48,6 +48,7 @@ namespace NMib::NEncoding::NJSON
 		static constexpr bool mc_bAllowMultilineString = false;
 		static constexpr bool mc_bAllowDuplicateKeys = true;
 		static constexpr bool mc_bRecordStringMap = false;
+		static inline constexpr ch8 mc_ConstantEndCharacters[] = ",}]";
 		
 		//bool f_ParseValue(CJSON &o_Value, uch8 const *&o_pParse);
 	};

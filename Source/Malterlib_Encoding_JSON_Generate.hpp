@@ -12,8 +12,8 @@ namespace NMib::NEncoding::NJSON
 			o_String += _pPrettySeparator;
 	}
 
-	template <ch8 t_QuoteCharacter, typename tf_CParseContext, typename tf_CStr>
-	static void fg_GenerateJSONString(tf_CStr &o_String, NStr::CStr const &_Value)
+	template <ch8 t_QuoteCharacter, typename tf_CParseContext, typename tf_CStr, typename tf_CSourceString>
+	static void fg_GenerateJSONString(tf_CStr &o_String, tf_CSourceString const &_Value)
 	{
 		using namespace NStr;
 
@@ -23,7 +23,7 @@ namespace NMib::NEncoding::NJSON
 
 		ch8 const *pParse = _Value;
 
-		tf_CStr PreWhitespace;
+		typename tf_CStr::CDynamicStr PreWhitespace;
 		bool bInitPreWhitespace = false;
 		auto fAddPreWhitespace = [&]()
 			{
@@ -92,7 +92,7 @@ namespace NMib::NEncoding::NJSON
 				break;
 			default:
 				if (UnsignedChar < 32)
-					o_String += CStr::CFormat("\\u{nfh,sf0,sj4}") << UnsignedChar; // Control character, add as hex
+					o_String += typename tf_CStr::CFormat("\\u{nfh,sf0,sj4}") << UnsignedChar; // Control character, add as hex
 				else
 					o_String.f_AddChar(*pParse);
 				break;

@@ -91,8 +91,8 @@ namespace NMib::NEncoding::NJSON
 		f_ThrowError("Expected {} to start object key name"_f << StartCharacters, pParse);
 	}
 
-	template <typename tf_CParseContext, typename tf_CStr>
-	void CParseContext::fs_GenerateString(tf_CStr &o_String, tf_CStr const &_Value)
+	template <typename tf_CParseContext, typename tf_CStr, typename tf_CSourceStr>
+	void CParseContext::fs_GenerateString(tf_CStr &o_String, tf_CSourceStr const &_Value)
 	{
 		if constexpr (tf_CParseContext::mc_bAllowSingleQuote)
 		{
@@ -105,8 +105,8 @@ namespace NMib::NEncoding::NJSON
 		fg_GenerateJSONString<'\"', tf_CParseContext>(o_String, _Value);
 	}
 
-	template <typename tf_CParseContext, typename tf_CStr>
-	void CParseContext::fs_GenerateKeyString(tf_CStr &o_String, tf_CStr const &_Key)
+	template <typename tf_CParseContext, typename tf_CStr, typename tf_CSourceStr>
+	void CParseContext::fs_GenerateKeyString(tf_CStr &o_String, tf_CSourceStr const &_Key)
 	{
 		using namespace NStr;
 		if constexpr (tf_CParseContext::mc_bAllowKeyWithoutQuote)
@@ -505,7 +505,7 @@ namespace NMib::NEncoding::NJSON
 					if (fg_StrStartsWith(pParse, "true"))
 					{
 						pParse += 4;
-						if (!(*pParse) || *pParse == ',' || *pParse == '}' || *pParse == ']' || fg_CharIsWhiteSpace(*pParse))
+						if (!(*pParse) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParse) >= 0 || fg_CharIsWhiteSpace(*pParse))
 						{
 							o_Value = true;
 							return;
@@ -514,7 +514,7 @@ namespace NMib::NEncoding::NJSON
 					else if (fg_StrStartsWith(pParse, "false"))
 					{
 						pParse += 5;
-						if (!(*pParse) || *pParse == ',' || *pParse == '}' || *pParse == ']'  || fg_CharIsWhiteSpace(*pParse))
+						if (!(*pParse) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParse) >= 0 || fg_CharIsWhiteSpace(*pParse))
 						{
 							o_Value = false;
 							return;
@@ -523,7 +523,7 @@ namespace NMib::NEncoding::NJSON
 					else if (fg_StrStartsWith(pParse, "null"))
 					{
 						pParse += 4;
-						if (!(*pParse) || *pParse == ',' || *pParse == '}' || *pParse == ']'  || fg_CharIsWhiteSpace(*pParse))
+						if (!(*pParse) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParse) >= 0 || fg_CharIsWhiteSpace(*pParse))
 						{
 							o_Value = nullptr;
 							return;
@@ -532,7 +532,7 @@ namespace NMib::NEncoding::NJSON
 					else if (_Context.m_bAllowUndefined && fg_StrStartsWith(pParse, "undefined"))
 					{
 						pParse += 9;
-						if (!(*pParse) || *pParse == ',' || *pParse == '}' || *pParse == ']'  || fg_CharIsWhiteSpace(*pParse))
+						if (!(*pParse) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParse) >= 0 || fg_CharIsWhiteSpace(*pParse))
 						{
 							o_Value = CJSON();
 							return;
@@ -545,7 +545,7 @@ namespace NMib::NEncoding::NJSON
 						(
 							pTryParse
 							, int64(0)
-							, ",}]"
+							, tf_CParseContext::mc_ConstantEndCharacters
 							, false
 							, EStrToIntParseMode_Base10
 							, &bFailed
@@ -564,7 +564,7 @@ namespace NMib::NEncoding::NJSON
 						(
 							pTryParse
 							, fp64::fs_Inf()
-							, ",}]"
+							, tf_CParseContext::mc_ConstantEndCharacters
 							, false
 							, "."
 						)
