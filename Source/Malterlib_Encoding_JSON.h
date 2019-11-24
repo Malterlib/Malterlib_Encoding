@@ -108,6 +108,7 @@ namespace NMib::NEncoding
 		bool f_IsValid() const;
 		bool f_IsNull() const;
 		bool f_IsString() const;
+		bool f_IsStringArray() const;
 		bool f_IsInteger() const;
 		bool f_IsFloat() const;
 		bool f_IsBoolean() const;

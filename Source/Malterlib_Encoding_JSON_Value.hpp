@@ -302,6 +302,25 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
+	bool TCJSONValue<t_CParent>::f_IsStringArray() const
+	{
+		if (!f_IsArray())
+			return false;
+		auto &SourceArray = f_Array();
+
+		NContainer::TCVector<NStr::CStr> Return;
+		Return.f_Reserve(SourceArray.f_GetLen());
+
+		for (auto &Value : SourceArray)
+		{
+			if (!Value.f_IsString())
+				return false;
+		}
+
+		return true;
+	}
+
+	template <typename t_CParent>
 	auto TCJSONValue<t_CParent>::f_Array() -> typename NContainer::TCVector<CValue> &
 	{
 		fp_PromoteType(EJSONType_Array);
