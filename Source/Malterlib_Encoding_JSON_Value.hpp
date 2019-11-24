@@ -499,7 +499,8 @@ namespace NMib::NEncoding
 	template <typename t_CParent>
 	auto TCJSONValue<t_CParent>::operator = (TCJSONValue &&_Value) -> CValue &
 	{
-		this->mp_Value = fg_Move(_Value.mp_Value);
+		auto Temp = fg_Move(_Value.mp_Value);
+		this->mp_Value = fg_Move(Temp);
 		return static_cast<CValue &>(*this);
 	}
 
