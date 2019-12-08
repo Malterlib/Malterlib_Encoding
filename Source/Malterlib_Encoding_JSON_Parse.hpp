@@ -384,9 +384,28 @@ namespace NMib::NEncoding::NJSON
 			}
 			else
 			{
-				if (*pParse < 32)
-					_Context.f_ThrowError("Control characters or new lines not allowed in string. Use escaped characters.", pParse);
-				fAddChar(*pParse);
+				auto Character = *pParse;
+				if (Character < 32)
+				{
+					bool bAllowCharacter = false;
+					if constexpr (sizeof(tf_CParseContext::mc_AllowedControlCharacters) > 1)
+					{
+						for (auto AllowdCharacter : tf_CParseContext::mc_AllowedControlCharacters)
+						{
+							if (!AllowdCharacter)
+								continue;
+
+							if (Character == AllowdCharacter)
+							{
+								bAllowCharacter = true;
+								break;
+							}
+						}
+					}
+					if (!bAllowCharacter)
+						_Context.f_ThrowError("Control characters or new lines not allowed in string. Use escaped characters.", pParse);
+				}
+				fAddChar(Character);
 				++pParse;
 			}
 		}
