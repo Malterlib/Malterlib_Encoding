@@ -5,9 +5,9 @@ Import "../Core/Lib_Malterlib.MTarget"
 
 %Group "{Malterlib}/{Lib_Malterlib_Encoding}"
 {
-	%Group Encoding
+	%Group "Encoding"
 	{
-		%Group Include
+		%Group "Include"
 		{
 			Compile.Type "C++"
 			{
@@ -17,7 +17,7 @@ Import "../Core/Lib_Malterlib.MTarget"
 		}
 		%File "Source/*"
 		%File "Source/Malterlib_Encoding_*JSON*"
-		%Group Documentation
+		%Group "Documentation"
 		{
 			%File "Documentation/*"
 		}
