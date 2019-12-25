@@ -87,6 +87,22 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJSONValue>
+	t_CJSONValue const &TCJSONObject<t_CJSONValue>::operator [] (NStr::CStr const &_Name) const
+	{
+		auto pMember = f_GetMember(_Name);
+		if (!pMember)
+			DMibError(fg_Format("Member '{}' not found", _Name));
+
+		return *pMember;
+	}
+
+	template <typename t_CJSONValue>
+	t_CJSONValue &TCJSONObject<t_CJSONValue>::operator [](NStr::CStr const &_Name)
+	{
+		return f_CreateMember(_Name);
+	}
+
+	template <typename t_CJSONValue>
 	bool TCJSONObject<t_CJSONValue>::f_RemoveMember(NStr::CStr const &_Name)
 	{
 		auto pFound = mp_ObjectTree.f_FindEqual(_Name);

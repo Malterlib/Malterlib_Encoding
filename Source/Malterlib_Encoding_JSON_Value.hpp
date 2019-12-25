@@ -711,14 +711,14 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator [](mint _Index) const -> CValue const &
+	auto TCJSONValue<t_CParent>::operator [] (mint _Index) const -> CValue const &
 	{
 		fp_CheckType(EJSONType_Array);
 		return f_Array()[_Index];
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator [](mint _Index) -> CValue &
+	auto TCJSONValue<t_CParent>::operator [] (mint _Index) -> CValue &
 	{
 		fp_CheckType(EJSONType_Array);
 		return f_Array()[_Index];
