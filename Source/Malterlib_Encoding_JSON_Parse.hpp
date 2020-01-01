@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #pragma once
@@ -72,10 +72,10 @@ namespace NMib::NEncoding::NJSON
 
 		if constexpr (tf_CParseContext::mc_bAllowKeyWithoutQuote)
 		{
-			if (fg_CharIsAlphabetical(*pParse) || *pParse == '$' || *pParse == '_')
+			if (fg_CharIsAlphabetical(*pParse) || fg_StrFindChar(tf_CParseContext::mc_AllowedKeyWithoutQuoteCharacters, *pParse) >= 0)
 			{
 				auto pStartString = pParse;
-				while (fg_CharIsAlphabetical(*pParse) || *pParse == '$' || *pParse == '_' || fg_CharIsNumber(*pParse))
+				while (fg_CharIsAlphabetical(*pParse) || fg_CharIsNumber(*pParse) || fg_StrFindChar(tf_CParseContext::mc_AllowedKeyWithoutQuoteCharacters, *pParse) >= 0)
 					++pParse;
 				o_Key = CStr(pStartString, pParse - pStartString);
 				o_Key.f_SetUserData(EJSONStringType_NoQuote);
@@ -114,9 +114,9 @@ namespace NMib::NEncoding::NJSON
 			if (_Key.f_GetUserData() == EJSONStringType_NoQuote)
 			{
 				auto *pParse = _Key.f_GetStr();
-				if (fg_CharIsAlphabetical(*pParse) || *pParse == '$' || *pParse == '_')
+				if (fg_CharIsAlphabetical(*pParse) || fg_StrFindChar(tf_CParseContext::mc_AllowedKeyWithoutQuoteCharacters, *pParse) >= 0)
 				{
-					while (fg_CharIsAlphabetical(*pParse) || *pParse == '$' || *pParse == '_' || fg_CharIsNumber(*pParse))
+					while (fg_CharIsAlphabetical(*pParse) || fg_CharIsNumber(*pParse) || fg_StrFindChar(tf_CParseContext::mc_AllowedKeyWithoutQuoteCharacters, *pParse) >= 0)
 						++pParse;
 
 					if (!*pParse)

@@ -49,6 +49,7 @@ namespace NMib::NEncoding::NJSON
 		static constexpr bool mc_bAllowDuplicateKeys = true;
 		static constexpr bool mc_bRecordStringMap = false;
 		static inline constexpr ch8 mc_AllowedControlCharacters[] = "";
+		static inline constexpr ch8 mc_AllowedKeyWithoutQuoteCharacters[] = "$_";
 		static inline constexpr ch8 mc_ConstantEndCharacters[] = ",}]";
 		
 		//bool f_ParseValue(CJSON &o_Value, uch8 const *&o_pParse);
