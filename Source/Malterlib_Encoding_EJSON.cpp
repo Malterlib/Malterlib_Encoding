@@ -44,6 +44,25 @@ namespace NMib::NEncoding
 		return CEJSONUserType{_Type, fg_Move(_Value)};
 	}
 
+	NStr::CStr fg_EJSONTypeToString(EEJSONType _Type)
+	{
+		using namespace NEncoding;
+		switch (_Type)
+		{
+		case EEJSONType_Null: return "null";
+		case EEJSONType_String: return "string";
+		case EEJSONType_Integer: return "integer";
+		case EEJSONType_Float: return "float";
+		case EEJSONType_Boolean: return "boolean";
+		case EEJSONType_Object: return "object";
+		case EEJSONType_Array: return "array";
+		case EEJSONType_Date: return "date";
+		case EEJSONType_Binary: return "binary";
+		case EEJSONType_UserType: return "user type";
+		default: DMibNeverGetHere; return "unknown";
+		}
+	}
+
 #ifdef DMibEncodingJSONExternTemplate
 	template class NPrivate::TCJSONValueBase<TCEJSONValue, NPrivate::CEJSONExtraTypes>;
 	template class TCJSONValue<CEJSONValueBase>;

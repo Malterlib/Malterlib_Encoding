@@ -42,6 +42,8 @@ namespace NMib::NEncoding
 	CEJSONUserType fg_UserType(NStr::CStr const &_Type, CJSON const &_Value);
 	CEJSONUserType fg_UserType(NStr::CStr const &_Type, CJSON &&_Value);
 
+	NStr::CStr fg_EJSONTypeToString(EEJSONType _Type);
+
 	template <typename t_CParent>
 	class TCEJSONValue : public TCJSONValue<t_CParent>
 	{
