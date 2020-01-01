@@ -353,6 +353,25 @@ namespace
 					fTestTimeConversion(NTime::CTime::fs_Create(constant_int64(237148623722908912), constant_uint64(7627728670263725056)));
 				}
 			};
+			DMibTestSuite("JSONNoConvert")
+			{
+				auto JSON = CJSON::fs_FromString(fs_GetEJSONText());
+				auto EnhancedJSON = CEJSON::fs_FromJSONNoConvert(JSON);
+				DMibExpect(EnhancedJSON, !=, fs_GetEJSON());
+				auto ToJSON = EnhancedJSON.f_ToJSONNoConvert();
+				DMibExpect(ToJSON, ==, JSON);
+			};
+			DMibTestSuite("JSONNoConvert Move")
+			{
+				auto JSON = CJSON::fs_FromString(fs_GetEJSONText());
+				auto OriginalJSON = JSON;
+				auto EnhancedJSON = CEJSON::fs_FromJSONNoConvert(fg_Move(JSON));
+				DMibExpect(EnhancedJSON, !=, fs_GetEJSON());
+				auto OriginalEnhancedJSON = EnhancedJSON;
+				auto ToJSON = fg_Move(EnhancedJSON).f_ToJSONNoConvert();
+				DMibExpect(EnhancedJSON, !=, OriginalEnhancedJSON);
+				DMibExpect(ToJSON, ==, OriginalJSON);
+			};
 		}
 	};
 

@@ -709,4 +709,235 @@ namespace NMib::NEncoding
 	{
 		return f_ToJSON().f_ToStringColored(_AnsiFlags, _pPrettySeparator, _bAllowUndefined);
 	}
+
+
+	template <typename t_CParent>
+	auto TCEJSONValue<t_CParent>::fs_FromJSONNoConvert(CJSON const &_JSON) -> TCEJSONValue
+	{
+		TCEJSONValue Return;
+		fsp_FromJSONNoConvert(Return, _JSON);
+		return Return;
+	}
+
+	template <typename t_CParent>
+	auto TCEJSONValue<t_CParent>::fs_FromJSONNoConvert(CJSON &&_JSON) -> TCEJSONValue
+	{
+		TCEJSONValue Return;
+		fsp_FromJSONNoConvert(Return, fg_Move(_JSON));
+		return Return;
+	}
+
+	template <typename t_CParent>
+	CJSON TCEJSONValue<t_CParent>::f_ToJSONNoConvert() const &
+	{
+		CJSON Return;
+		fp_ToJSONNoConvert(Return);
+		return Return;
+	}
+
+	template <typename t_CParent>
+	CJSON TCEJSONValue<t_CParent>::f_ToJSONNoConvert() &&
+	{
+		CJSON Return;
+		fg_Move(*this).fp_ToJSONNoConvert(Return);
+		return Return;
+	}
+
+	template <typename t_CParent>
+	void TCEJSONValue<t_CParent>::fsp_FromJSONNoConvert_Object(TCEJSONValue &_Ret, CJSON::CObject const &_Value)
+	{
+		auto &RetObject = _Ret.f_Object();
+		for (auto iMember = _Value.f_OrderedIterator(); iMember; ++iMember)
+			CEJSON::fsp_FromJSONNoConvert(RetObject[iMember->f_Name()], iMember->f_Value());
+	}
+
+	template <typename t_CParent>
+	void TCEJSONValue<t_CParent>::fsp_FromJSONNoConvert_Object(TCEJSONValue &_Ret, CJSON::CObject &&_Value)
+	{
+		auto &RetObject = _Ret.f_Object();
+		for (auto iMember = _Value.f_OrderedIterator(); iMember; ++iMember)
+			CEJSON::fsp_FromJSONNoConvert(RetObject[iMember->f_Name()], fg_Move(iMember->f_Value()));
+	}
+
+	template <typename t_CParent>
+	void TCEJSONValue<t_CParent>::fsp_FromJSONNoConvert(TCEJSONValue &_Ret, CJSON const &_From)
+	{
+		switch (_From.f_Type())
+		{
+		case EJSONType_Null:
+			_Ret = nullptr;
+			break;
+		case EJSONType_String:
+			_Ret = _From.f_String();
+			break;
+		case EJSONType_Integer:
+			_Ret = _From.f_Integer();
+			break;
+		case EJSONType_Float:
+			_Ret = _From.f_Float();
+			break;
+		case EJSONType_Boolean:
+			_Ret = _From.f_Boolean();
+			break;
+		case EJSONType_Object:
+			fsp_FromJSONNoConvert_Object(_Ret, _From.f_Object());
+			break;
+		case EJSONType_Array:
+			{
+				_Ret = EJSONType_Array;
+				for (auto &Member : _From.f_Array())
+					CEJSON::fsp_FromJSONNoConvert(_Ret.f_Insert(), Member);
+			}
+			break;
+		case EJSONType_Invalid:
+			break; // Default is invalid
+		case EJSONType_Max:
+			DMibNeverGetHere;
+			break;
+		}
+	}
+
+	template <typename t_CParent>
+	void TCEJSONValue<t_CParent>::fsp_FromJSONNoConvert(TCEJSONValue &_Ret, CJSON &&_From)
+	{
+		switch (_From.f_Type())
+		{
+		case EJSONType_Null:
+			_Ret = nullptr;
+			break;
+		case EJSONType_String:
+			_Ret = fg_Move(_From.f_String());
+			break;
+		case EJSONType_Integer:
+			_Ret = _From.f_Integer();
+			break;
+		case EJSONType_Float:
+			_Ret = _From.f_Float();
+			break;
+		case EJSONType_Boolean:
+			_Ret = _From.f_Boolean();
+			break;
+		case EJSONType_Object:
+			fsp_FromJSONNoConvert_Object(_Ret, fg_Move(_From.f_Object()));
+			break;
+		case EJSONType_Array:
+			{
+				_Ret = EJSONType_Array;
+				for (auto &Member : _From.f_Array())
+					CEJSON::fsp_FromJSONNoConvert(_Ret.f_Insert(), fg_Move(Member));
+			}
+			break;
+		case EJSONType_Invalid:
+			break; // Default is invalid
+		case EJSONType_Max:
+			DMibNeverGetHere;
+			break;
+		}
+	}
+
+	template <typename t_CParent>
+	void TCEJSONValue<t_CParent>::fsp_ToJSONNoConvert_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value)
+	{
+		auto &DestObject = _Ret.f_Object();
+		for (auto iMember = _Value.f_OrderedIterator(); iMember; )
+		{
+			auto &Member = *iMember;
+			++iMember;
+			Member.f_Value().fp_ToJSONNoConvert(DestObject.f_CreateMember(Member.f_Name()));
+		}
+	}
+
+	template <typename t_CParent>
+	void TCEJSONValue<t_CParent>::fsp_ToJSONNoConvert_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value)
+	{
+		auto &DestObject = _Ret.f_Object();
+		for (auto iMember = _Value.f_OrderedIterator(); iMember;)
+		{
+			auto &Member = *iMember;
+			++iMember;
+			fg_Move(Member.f_Value()).fp_ToJSONNoConvert(DestObject.f_CreateMember(Member.f_Name()));
+		}
+	}
+
+	template <typename t_CParent>
+	void TCEJSONValue<t_CParent>::fp_ToJSONNoConvert(CJSON &_Ret) const &
+	{
+		switch (this->f_EType())
+		{
+		case EEJSONType_Null:
+			_Ret = nullptr;
+			break;
+		case EEJSONType_String:
+			_Ret = this->f_String();
+			break;
+		case EEJSONType_Integer:
+			_Ret = this->f_Integer();
+			break;
+		case EEJSONType_Float:
+			_Ret = this->f_Float();
+			break;
+		case EEJSONType_Boolean:
+			_Ret = this->f_Boolean();
+			break;
+		case EEJSONType_Object:
+			fsp_ToJSONNoConvert_Object(_Ret, this->f_Object());
+			break;
+		case EEJSONType_Array:
+			{
+				_Ret = EJSONType_Array;
+				auto &Array = _Ret.f_Array();
+				for (auto &Member : this->f_Array())
+					Member.fp_ToJSONNoConvert(Array.f_Insert());
+			}
+			break;
+		case EEJSONType_Date:
+		case EEJSONType_Binary:
+		case EEJSONType_UserType:
+			DMibError("EJSON contains data that cannot be represented as JSON without conversion");
+			break;
+		case EEJSONType_Invalid:
+			break; // Leave as default which is invalid
+		}
+	}
+
+	template <typename t_CParent>
+	void TCEJSONValue<t_CParent>::fp_ToJSONNoConvert(CJSON &_Ret) &&
+	{
+		switch (this->f_EType())
+		{
+		case EEJSONType_Null:
+			_Ret = nullptr;
+			break;
+		case EEJSONType_String:
+			_Ret = fg_Move(this->f_String());
+			break;
+		case EEJSONType_Integer:
+			_Ret = this->f_Integer();
+			break;
+		case EEJSONType_Float:
+			_Ret = this->f_Float();
+			break;
+		case EEJSONType_Boolean:
+			_Ret = this->f_Boolean();
+			break;
+		case EEJSONType_Object:
+			fg_Move(*this).fsp_ToJSONNoConvert_Object(_Ret, fg_Move(this->f_Object()));
+			break;
+		case EEJSONType_Array:
+			{
+				_Ret = EJSONType_Array;
+				auto &Array = _Ret.f_Array();
+				for (auto &Member : this->f_Array())
+					fg_Move(Member).fp_ToJSONNoConvert(Array.f_Insert());
+			}
+			break;
+		case EEJSONType_Date:
+		case EEJSONType_Binary:
+		case EEJSONType_UserType:
+			DMibError("EJSON contains data that cannot be represented as JSON without conversion");
+			break;
+		case EEJSONType_Invalid:
+			break; // Leave as default which is invalid
+		}
+	}
 }

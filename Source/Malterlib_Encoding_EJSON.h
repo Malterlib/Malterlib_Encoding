@@ -100,6 +100,11 @@ namespace NMib::NEncoding
 		static TCEJSONValue fs_FromJSON(CJSON const &_JSON);
 		static TCEJSONValue fs_FromJSON(CJSON &&_JSON);
 
+		CJSON f_ToJSONNoConvert() const &;
+		CJSON f_ToJSONNoConvert() &&;
+		static TCEJSONValue fs_FromJSONNoConvert(CJSON const &_JSON);
+		static TCEJSONValue fs_FromJSONNoConvert(CJSON &&_JSON);
+
 		static TCEJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr(), bool _bConvertNullToSpace = false);
 		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", bool _bAllowUndefined = false) const;
 		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", bool _bAllowUndefined = false) const;
@@ -122,6 +127,16 @@ namespace NMib::NEncoding
 		static void fsp_ToJSON_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value);
 		static void fsp_FromJSON(TCEJSONValue &_Ret, CJSON &&_From);
 		static void fsp_FromJSON_Object(TCEJSONValue &_Ret, CJSON::CObject &&_From);
+
+		void fp_ToJSONNoConvert(CJSON &_Ret) const &;
+		static void fsp_ToJSONNoConvert_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value);
+		static void fsp_FromJSONNoConvert(TCEJSONValue &_Ret, CJSON const &_From);
+		static void fsp_FromJSONNoConvert_Object(TCEJSONValue &_Ret, CJSON::CObject const &_From);
+
+		void fp_ToJSONNoConvert(CJSON &_Ret) &&;
+		static void fsp_ToJSONNoConvert_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value);
+		static void fsp_FromJSONNoConvert(TCEJSONValue &_Ret, CJSON &&_From);
+		static void fsp_FromJSONNoConvert_Object(TCEJSONValue &_Ret, CJSON::CObject &&_From);
 	};
 
 	namespace NPrivate
