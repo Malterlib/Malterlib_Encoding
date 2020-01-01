@@ -313,6 +313,12 @@ namespace
 				;
 				
 				DMibExpect(Value, ==, fs_GetEJSON());
+
+				auto ConstToJSON = Value.f_ToJSON();
+				DMibExpect(CEJSON::fs_FromJSON(ConstToJSON), ==, fs_GetEJSON());
+
+				auto MoveToJSON = fg_Move(Value).f_ToJSON();
+				DMibExpect(CEJSON::fs_FromJSON(fg_Move(MoveToJSON)), ==, fs_GetEJSON());
 			};
 			DMibTestSuite("Stream")
 			{

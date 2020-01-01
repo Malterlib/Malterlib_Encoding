@@ -196,6 +196,17 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
+	void TCEJSONValue<t_CParent>::fsp_EscapeObject(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value)
+	{
+		auto &Escaped = _Ret["$escape"].f_Object();
+		for (auto iMember = _Value.f_OrderedIterator(); iMember; ++iMember)
+		{
+			auto &Member = *iMember;
+			fg_Move(Member.f_Value()).fp_ToJSON(Escaped.f_CreateMember(Member.f_Name()));
+		}
+	}
+
+	template <typename t_CParent>
 	void TCEJSONValue<t_CParent>::fsp_ToJSON_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value)
 	{
 		auto &DestObject = _Ret.f_Object();
@@ -240,7 +251,51 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fp_ToJSON(CJSON &_Ret) const
+	void TCEJSONValue<t_CParent>::fsp_ToJSON_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value)
+	{
+		auto &DestObject = _Ret.f_Object();
+		bool bFirst = true;
+		for (auto iMember = _Value.f_OrderedIterator(); iMember;)
+		{
+			auto &Member = *iMember;
+			++iMember;
+			auto &Name = Member.f_Name();
+
+			if (bFirst && Name.f_StartsWith("$"))
+			{
+				if (!iMember)
+				{
+					if (Name == "$escape" || Name == "$date" || Name == "$binary")
+					{
+						fsp_EscapeObject(_Ret, fg_Move(_Value));
+						return;
+					}
+				}
+				else
+				{
+					if
+						(
+							(Name == "$type" && iMember->f_Name() == "$value")
+							|| (Name == "$value" && iMember->f_Name() == "$type")
+						)
+					{
+						auto iNext = iMember;
+						++iNext;
+						if (!iNext)
+						{
+							fsp_EscapeObject(_Ret, fg_Move(_Value));
+							return;
+						}
+					}
+				}
+			}
+			bFirst = false;
+			fg_Move(Member.f_Value()).fp_ToJSON(DestObject.f_CreateMember(Member.f_Name()));
+		}
+	}
+
+	template <typename t_CParent>
+	void TCEJSONValue<t_CParent>::fp_ToJSON(CJSON &_Ret) const &
 	{
 		switch (this->f_EType())
 		{
@@ -299,11 +354,78 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	CJSON TCEJSONValue<t_CParent>::f_ToJSON() const
+	void TCEJSONValue<t_CParent>::fp_ToJSON(CJSON &_Ret) &&
+	{
+		switch (this->f_EType())
+		{
+		case EEJSONType_Null:
+			_Ret = nullptr;
+			break;
+		case EEJSONType_String:
+			_Ret = fg_Move(this->f_String());
+			break;
+		case EEJSONType_Integer:
+			_Ret = this->f_Integer();
+			break;
+		case EEJSONType_Float:
+			_Ret = this->f_Float();
+			break;
+		case EEJSONType_Boolean:
+			_Ret = this->f_Boolean();
+			break;
+		case EEJSONType_Object:
+			fg_Move(*this).fsp_ToJSON_Object(_Ret, fg_Move(this->f_Object()));
+			break;
+		case EEJSONType_Array:
+			{
+				_Ret = EJSONType_Array;
+				auto &Array = _Ret.f_Array();
+				for (auto &Member : this->f_Array())
+					fg_Move(Member).fp_ToJSON(Array.f_Insert());
+			}
+			break;
+		case EEJSONType_Date:
+			{
+
+				if (!f_Date().f_IsValid())
+				{
+					_Ret["$date"] = nullptr;
+					break;
+				}
+				_Ret["$date"] = NTime::CTimeConvert(f_Date()).f_UnixMilliseconds();
+			}
+			break;
+		case EEJSONType_Binary:
+			{
+				_Ret["$binary"] = NEncoding::fg_Base64Encode(f_Binary());
+			}
+			break;
+		case EEJSONType_UserType:
+			{
+				auto &UserType = f_UserType();
+				_Ret["$type"] = fg_Move(UserType.m_Type);
+				_Ret["$value"] = fg_Move(UserType.m_Value);
+			}
+			break;
+		case EEJSONType_Invalid:
+			break; // Leave as default which is invalid
+		}
+	}
+
+	template <typename t_CParent>
+	CJSON TCEJSONValue<t_CParent>::f_ToJSON() const &
 	{
 		CJSON Return;
 		fp_ToJSON(Return);
-		return fg_Move(Return);
+		return Return;
+	}
+
+	template <typename t_CParent>
+	CJSON TCEJSONValue<t_CParent>::f_ToJSON() &&
+	{
+		CJSON Return;
+		fg_Move(*this).fp_ToJSON(Return);
+		return Return;
 	}
 
 	template <typename t_CParent>
@@ -382,8 +504,90 @@ namespace NMib::NEncoding
 			}
 		}
 
+		auto &RetObject = _Ret.f_Object();
 		for (auto iMember = _Value.f_OrderedIterator(); iMember; ++iMember)
-			CEJSON::fsp_FromJSON(_Ret[iMember->f_Name()], iMember->f_Value());
+			CEJSON::fsp_FromJSON(RetObject[iMember->f_Name()], iMember->f_Value());
+	}
+
+	template <typename t_CParent>
+	void TCEJSONValue<t_CParent>::fsp_FromJSON_Object(TCEJSONValue &_Ret, CJSON::CObject &&_Value)
+	{
+		{
+			auto iMember = _Value.f_OrderedIterator();
+			if (!iMember)
+			{
+				_Ret = EJSONType_Object;
+				return;
+			}
+			{
+				auto &Member = *iMember;
+				++iMember;
+				auto &Name = Member.f_Name();
+				auto &Value = Member.f_Value();
+
+				if (!iMember)
+				{
+					if (Name == "$escape")
+					{
+						if (Value.f_Type() != EJSONType_Object)
+							DMibError("Invalid EJSON: $escape value must be an object");
+						for (auto iMember = Value.f_Object().f_OrderedIterator(); iMember; ++iMember)
+							CEJSON::fsp_FromJSON(_Ret[iMember->f_Name()], fg_Move(iMember->f_Value()));
+						return;
+					}
+					else if (Name == "$date")
+					{
+						if (Value.f_IsNull())
+						{
+							_Ret = NTime::CTime();
+							return;
+						}
+						if (Value.f_Type() != EJSONType_Integer)
+							DMibError("Invalid EJSON: $date value must be an integer");
+
+						_Ret = NTime::CTimeConvert::fs_FromCreateFromUnixMilliseconds(Value.f_Integer());
+						return;
+					}
+					else if (Name == "$binary")
+					{
+						if (Value.f_Type() != EJSONType_String)
+							DMibError("Invalid EJSON: $binary value must be a string");
+
+						NEncoding::fg_Base64Decode(Value.f_String(), _Ret.f_Binary());
+						return;
+					}
+				}
+				else
+				{
+					if
+						(
+							(Name == "$type" && iMember->f_Name() == "$value")
+							|| (Name == "$value" && iMember->f_Name() == "$type")
+						)
+					{
+						++iMember;
+						if (!iMember)
+						{
+							auto &UserType = _Ret.f_UserType();
+							auto *pType = _Value.f_GetMember("$type");
+							auto *pValue = _Value.f_GetMember("$value");
+							DMibCheck(pType);
+							DMibCheck(pValue);
+							if (pType->f_Type() != EJSONType_String)
+								DMibError("Invalid EJSON: $type value must be a string");
+
+							UserType.m_Type = fg_Move(pType->f_String());
+							UserType.m_Value = fg_Move(*pValue);
+							return;
+						}
+					}
+				}
+			}
+		}
+
+		auto &RetObject = _Ret.f_Object();
+		for (auto iMember = _Value.f_OrderedIterator(); iMember; ++iMember)
+			CEJSON::fsp_FromJSON(RetObject[iMember->f_Name()], fg_Move(iMember->f_Value()));
 	}
 
 	template <typename t_CParent>
@@ -425,10 +629,56 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
+	void TCEJSONValue<t_CParent>::fsp_FromJSON(TCEJSONValue &_Ret, CJSON &&_From)
+	{
+		switch (_From.f_Type())
+		{
+		case EJSONType_Null:
+			_Ret = nullptr;
+			break;
+		case EJSONType_String:
+			_Ret = fg_Move(_From.f_String());
+			break;
+		case EJSONType_Integer:
+			_Ret = _From.f_Integer();
+			break;
+		case EJSONType_Float:
+			_Ret = _From.f_Float();
+			break;
+		case EJSONType_Boolean:
+			_Ret = _From.f_Boolean();
+			break;
+		case EJSONType_Object:
+			fsp_FromJSON_Object(_Ret, fg_Move(_From.f_Object()));
+			break;
+		case EJSONType_Array:
+			{
+				_Ret = EJSONType_Array;
+				for (auto &Member : _From.f_Array())
+					CEJSON::fsp_FromJSON(_Ret.f_Insert(), fg_Move(Member));
+			}
+			break;
+		case EJSONType_Invalid:
+			break; // Default is invalid
+		case EJSONType_Max:
+			DMibNeverGetHere;
+			break;
+		}
+	}
+
+	template <typename t_CParent>
 	auto TCEJSONValue<t_CParent>::fs_FromJSON(CJSON const &_JSON) -> TCEJSONValue
 	{
 		TCEJSONValue Return;
 		fsp_FromJSON(Return, _JSON);
+		return Return;
+	}
+
+	template <typename t_CParent>
+	auto TCEJSONValue<t_CParent>::fs_FromJSON(CJSON &&_JSON) -> TCEJSONValue
+	{
+		TCEJSONValue Return;
+		fsp_FromJSON(Return, fg_Move(_JSON));
 		return Return;
 	}
 
