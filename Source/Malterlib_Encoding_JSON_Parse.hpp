@@ -156,7 +156,7 @@ namespace NMib::NEncoding::NJSON
 			auto &Child = Array.f_Insert();
 			fg_ParseJSONValue(Child, pParse, _Context);
 
-			DMibCheck(Child.f_Type() != EJSONType_Invalid);
+			DMibCheck(Child.f_Type() != EJSONType_Invalid || _Context.m_bAllowUndefined);
 
 			fg_ParseWhiteSpace(pParse);
 			if (*pParse == ',')
@@ -213,7 +213,7 @@ namespace NMib::NEncoding::NJSON
 
 			auto &Child = Object.f_CreateMember(KeyName);
 			fg_ParseJSONValue(Child, pParse, _Context);
-			DMibCheck(Child.f_Type() != EJSONType_Invalid);
+			DMibCheck(Child.f_Type() != EJSONType_Invalid || _Context.m_bAllowUndefined);
 
 			fg_ParseWhiteSpace(pParse);
 
