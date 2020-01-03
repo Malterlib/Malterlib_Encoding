@@ -419,8 +419,14 @@ namespace NMib::NEncoding::NJSON
 		using namespace NStr;
 
 		uch8 const *pParse = o_pParse;
+		bool bSuccessful = false;
 		auto Cleanup = g_OnScopeExit > [&]
 			{
+				if constexpr (tf_CParseContext::mc_bCustomParse)
+				{
+					if (bSuccessful)
+						_Context.f_ParseAfterValue(o_Value, pParse);
+				}
 				o_pParse = pParse;
 			}
 		;
@@ -459,6 +465,7 @@ namespace NMib::NEncoding::NJSON
 					}
 
 					++pParse;
+					bSuccessful = true;
 					return;
 				}
 				break;
@@ -489,6 +496,7 @@ namespace NMib::NEncoding::NJSON
 					}
 
 					++pParse;
+					bSuccessful = true;
 					return;
 				}
 				break;
@@ -501,6 +509,7 @@ namespace NMib::NEncoding::NJSON
 						_Context.f_ThrowError("End of string character \" not found for string", pParseStart);
 
 					o_Value = ParsedString;
+					bSuccessful = true;
 					return;
 				}
 				break;
@@ -517,6 +526,7 @@ namespace NMib::NEncoding::NJSON
 								_Context.f_ThrowError("End of string character ' not found for string", pParseStart);
 
 							o_Value = ParsedString;
+							bSuccessful = true;
 							return;
 						}
 					}
@@ -527,6 +537,7 @@ namespace NMib::NEncoding::NJSON
 						if (!(*pParse) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParse) >= 0 || fg_CharIsWhiteSpace(*pParse))
 						{
 							o_Value = true;
+							bSuccessful = true;
 							return;
 						}
 					}
@@ -536,6 +547,7 @@ namespace NMib::NEncoding::NJSON
 						if (!(*pParse) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParse) >= 0 || fg_CharIsWhiteSpace(*pParse))
 						{
 							o_Value = false;
+							bSuccessful = true;
 							return;
 						}
 					}
@@ -545,6 +557,7 @@ namespace NMib::NEncoding::NJSON
 						if (!(*pParse) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParse) >= 0 || fg_CharIsWhiteSpace(*pParse))
 						{
 							o_Value = nullptr;
+							bSuccessful = true;
 							return;
 						}
 					}
@@ -554,6 +567,7 @@ namespace NMib::NEncoding::NJSON
 						if (!(*pParse) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParse) >= 0 || fg_CharIsWhiteSpace(*pParse))
 						{
 							o_Value = CJSON();
+							bSuccessful = true;
 							return;
 						}
 					}
@@ -575,6 +589,7 @@ namespace NMib::NEncoding::NJSON
 					{
 						pParse = pTryParse;
 						o_Value = Number;
+						bSuccessful = true;
 						return;
 					}
 
@@ -593,13 +608,17 @@ namespace NMib::NEncoding::NJSON
 					{
 						pParse = pTryParse;
 						o_Value = FloatNumber;
+						bSuccessful = true;
 						return;
 					}
 
 					if constexpr (tf_CParseContext::mc_bCustomParse)
 					{
 						if (_Context.f_ParseValue(o_Value, pParse))
+						{
+							bSuccessful = true;
 							return;
+						}
 					}
 
 					_Context.f_ThrowError(fg_Format("Invalid literal starting with: {}", CStr(pParse, 4)), pParseStart);
