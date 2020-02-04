@@ -635,6 +635,18 @@ namespace NMib::NEncoding
 		return f_Object().f_RemoveMember(_Name);
 	}
 
+	template <typename t_CParent>
+	void TCJSONValue<t_CParent>::f_SortObjectsLexicographically()
+	{
+		if (f_IsObject())
+			f_Object().f_SortObjectsLexicographically();
+		else if (f_IsArray())
+		{
+			for (auto &Value : f_Array())
+				Value.f_SortObjectsLexicographically();
+		}
+	}
+
 	namespace NPrivate
 	{
 		struct CJSONEqualsVisitor

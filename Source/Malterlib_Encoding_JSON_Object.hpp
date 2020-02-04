@@ -116,6 +116,14 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJSONValue>
+	void TCJSONObject<t_CJSONValue>::f_SortObjectsLexicographically()
+	{
+		mp_Objects.f_Sort();
+		for (auto &ObjectEntry : mp_Objects)
+			ObjectEntry.mp_Value.f_SortObjectsLexicographically();
+	}
+
+	template <typename t_CJSONValue>
 	void TCJSONObject<t_CJSONValue>::f_RemoveMember(typename NContainer::TCLinkedList<CObjectEntry>::CIteratorConst &_Iterator)
 	{
 		auto pObject = const_cast<CObjectEntry *>(&*_Iterator);

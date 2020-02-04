@@ -151,6 +151,7 @@ namespace NMib::NEncoding
 		CValue const &operator [] (NStr::CStr const &_Name) const;
 		bool f_RemoveMember(NStr::CStr const &_Name);
 		CValue f_GetMemberValue(NStr::CStr const &_Name, CValue const &_Default) const;
+		void f_SortObjectsLexicographically();
 
 		//
 		// Array helpers
@@ -249,6 +250,7 @@ namespace NMib::NEncoding
 		void f_Feed(tf_CStream &_Stream) const;
 		template <typename tf_CStream>
 		void f_Consume(tf_CStream &_Stream);
+		void f_SortObjectsLexicographically();
 
 	private:
 		NContainer::TCLinkedList<CObjectEntry> mp_Objects;
