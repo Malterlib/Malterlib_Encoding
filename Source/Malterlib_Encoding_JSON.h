@@ -81,8 +81,17 @@ namespace NMib::NEncoding
 		TCJSONValue(NContainer::CSecureByteVector &_Value) = delete;
 		TCJSONValue(NContainer::CSecureByteVector &&_Value) = delete;
 
+#ifdef DCompiler_MSVC_Workaround
+		template <typename tf_CType>
+		auto operator = (tf_CType &&_Value) -> TCEnableIfType<!NTraits::TCIsSame<decltype(this->mp_Value = fg_Forward<tf_CType>(_Value)), CDummy>::mc_Value, CValue> &
+		{
+			this->mp_Value = fg_Forward<tf_CType>(_Value);
+			return static_cast<CValue &>(*this);
+		}
+#else
 		template <typename tf_CType>
 		auto operator = (tf_CType &&_Value) -> TCEnableIfType<!NTraits::TCIsSame<decltype(this->mp_Value = fg_Forward<tf_CType>(_Value)), CDummy>::mc_Value, CValue> &;
+#endif
 
 		CValue &operator = (NContainer::CSecureByteVector const &_Value) = delete;
 		CValue &operator = (NContainer::CSecureByteVector &_Value) = delete;

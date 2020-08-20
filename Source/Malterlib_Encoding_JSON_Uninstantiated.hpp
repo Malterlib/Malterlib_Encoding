@@ -24,6 +24,7 @@ namespace NMib::NEncoding
 	}
 #endif
 
+#ifndef DCompiler_MSVC_Workaround
 	template <typename t_CParent>
 	template <typename tf_CType>
 	auto TCJSONValue<t_CParent>::operator = (tf_CType &&_Value) -> TCEnableIfType<!NTraits::TCIsSame<decltype(this->mp_Value = fg_Forward<tf_CType>(_Value)), CDummy>::mc_Value, CValue> &
@@ -31,6 +32,7 @@ namespace NMib::NEncoding
 		this->mp_Value = fg_Forward<tf_CType>(_Value);
 		return static_cast<CValue &>(*this);
 	}
+#endif
 
 	template <typename t_CParent>
 	template <typename tf_CType>
