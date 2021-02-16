@@ -306,6 +306,9 @@ namespace NMib::NEncoding
 	{
 		auto &SourceArray = f_Array();
 
+		if (SourceArray.f_IsEmpty())
+			return {};
+
 		NContainer::TCVector<NStr::CStr> Return;
 		Return.f_Reserve(SourceArray.f_GetLen());
 
@@ -320,12 +323,8 @@ namespace NMib::NEncoding
 	{
 		if (!f_IsArray())
 			return false;
-		auto &SourceArray = f_Array();
 
-		NContainer::TCVector<NStr::CStr> Return;
-		Return.f_Reserve(SourceArray.f_GetLen());
-
-		for (auto &Value : SourceArray)
+		for (auto &Value : f_Array())
 		{
 			if (!Value.f_IsString())
 				return false;
