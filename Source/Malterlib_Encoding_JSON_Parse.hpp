@@ -139,9 +139,12 @@ namespace NMib::NEncoding::NJSON
 
 		auto &Array = o_Value.f_Array();
 
+		++_Context.m_ObjectArrayParseDepth;
+
 		uch8 const *pParse = o_pParse;
 		auto Cleanup = g_OnScopeExit > [&]
 			{
+				--_Context.m_ObjectArrayParseDepth;
 				o_pParse = pParse;
 			}
 		;
@@ -178,9 +181,12 @@ namespace NMib::NEncoding::NJSON
 
 		auto &Object = o_Value.f_Object();
 
+		++_Context.m_ObjectArrayParseDepth;
+
 		uch8 const *pParse = o_pParse;
 		auto Cleanup = g_OnScopeExit > [&]
 			{
+				--_Context.m_ObjectArrayParseDepth;
 				o_pParse = pParse;
 			}
 		;

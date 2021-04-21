@@ -39,11 +39,11 @@ namespace NMib::NEncoding::NJSON
 		void f_ThrowErrors(NContainer::TCVector<NStr::CParseError> const &_Errors) const;
 		void f_ThrowError(NStr::CStr const &_Error, uch8 const *_pLocation) const;
 
-
 		NStr::CStr m_FileName;
 		uint32 m_StartLine = 0;
 		uint32 m_StartColumn = 0;
 		uint32 m_StartCharacter = 0;
+		mint m_ObjectArrayParseDepth = 0;
 		uch8 const *m_pStartParse;
 		bool m_bConvertNullToSpace = false;
 		EJSONDialectFlag m_Flags = EJSONDialectFlag_None;
@@ -58,8 +58,6 @@ namespace NMib::NEncoding::NJSON
 		static inline constexpr ch8 mc_AllowedControlCharacters[] = "";
 		static inline constexpr ch8 mc_AllowedKeyWithoutQuoteCharacters[] = "$_";
 		static inline constexpr ch8 mc_ConstantEndCharacters[] = ",}]";
-		
-		//bool f_ParseValue(CJSON &o_Value, uch8 const *&o_pParse);
 	};
 
 	template <typename tf_CParseContext>
