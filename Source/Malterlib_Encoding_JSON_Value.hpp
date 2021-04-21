@@ -183,13 +183,13 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCJSONValue<t_CParent>::f_ToString(ch8 const * _pPrettySeparator, bool _bAllowUndefined) const
+	NStr::CStr TCJSONValue<t_CParent>::f_ToString(ch8 const * _pPrettySeparator, EJSONDialectFlag _Flags) const
 	{
 		return NStr::CStr();
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCJSONValue<t_CParent>::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const * _pPrettySeparator, bool _bAllowUndefined) const
+	NStr::CStr TCJSONValue<t_CParent>::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const * _pPrettySeparator, EJSONDialectFlag _Flags) const
 	{
 		return NStr::CStr();
 	}
@@ -388,7 +388,23 @@ namespace NMib::NEncoding
 		switch (f_Type())
 		{
 		case EJSONType_String:
-			return f_String().f_ToFloat(fp64::fs_SNan());
+			{
+				auto &String = f_String();
+				if (String == "QNaN")
+					return fp64::fs_QNan();
+				else if (String == "-QNaN")
+					return fp64::fs_NegQNan();
+				else if (String == "SNaN")
+					return fp64::fs_SNan();
+				else if (String == "-SNaN")
+					return fp64::fs_NegSNan();
+				else if (String == "Inf")
+					return fp64::fs_Inf();
+				else if (String == "-Inf")
+					return fp64::fs_NegInf();
+				else
+					return f_String().f_ToFloat(fp64::fs_SNan());
+			}
 		case EJSONType_Integer:
 			return f_Integer();
 		case EJSONType_Float:

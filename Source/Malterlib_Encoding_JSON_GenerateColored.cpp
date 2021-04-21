@@ -177,7 +177,7 @@ namespace NMib::NEncoding
 				case EJSONType_Float:
 					{
 						auto &Float = JSONValue.f_Float();
-						if (Float.f_IsInvalid())
+						if (Float.f_IsInvalid() && !(m_Flags & EJSONDialectFlag_AllowInvalidFloat))
 							o_String += f_Color("null", ESyntaxColor::ESyntaxColor_Number); // QNaN, Inf etc is not representable in JSON
 						else
 							o_String += f_Color(CStr::fs_ToStr(JSONValue.f_Float()), ESyntaxColor::ESyntaxColor_Number);
@@ -199,7 +199,7 @@ namespace NMib::NEncoding
 						o_String += f_Color("false", ESyntaxColor::ESyntaxColor_Constant);
 					break;
 				case EJSONType_Invalid:
-					if (m_bAllowUndefined)
+					if (m_Flags & EJSONDialectFlag_AllowUndefined)
 					{
 						o_String += "undefined";
 						break;
@@ -225,14 +225,14 @@ namespace NMib::NEncoding
 				return Return;
 			}
 
-			bool m_bAllowUndefined;
+			EJSONDialectFlag m_Flags;
 			NCommandLine::EAnsiEncodingFlag m_AnsiFlags;
 		};
 
-		NStr::CStr fg_JSONGenerateColored(CJSON const &_JSON, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, bool _bAllowUndefined)
+		NStr::CStr fg_JSONGenerateColored(CJSON const &_JSON, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJSONDialectFlag _Flags)
 		{
 			CJSONColorGenerator Generator;
-			Generator.m_bAllowUndefined = _bAllowUndefined;
+			Generator.m_Flags = _Flags;
 			Generator.m_AnsiFlags = _AnsiFlags;
 
 			return Generator.f_ToString(_JSON, _pPrettySeparator);

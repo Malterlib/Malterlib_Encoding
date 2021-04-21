@@ -24,6 +24,13 @@ namespace NMib::NEncoding
 		, EJSONType_Max = 32
 	};
 
+	enum EJSONDialectFlag
+	{
+		EJSONDialectFlag_None = 0
+		, EJSONDialectFlag_AllowUndefined = DMibBit(0)
+		, EJSONDialectFlag_AllowInvalidFloat = DMibBit(1)
+	};
+
 	template <typename t_CJSONValue>
 	class TCJSONObject;
 
@@ -193,8 +200,8 @@ namespace NMib::NEncoding
 		// ==============
 
 		static TCJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr(), bool _bConvertNullToSpace = false);
-		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", bool _bAllowUndefined = false) const;
-		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", bool _bAllowUndefined = false) const;
+		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", EJSONDialectFlag _Flags = EJSONDialectFlag_None) const;
+		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJSONDialectFlag _Flags = EJSONDialectFlag_None) const;
 
 	protected:
 		inline_always void fp_CheckType(EJSONType _Type) const;

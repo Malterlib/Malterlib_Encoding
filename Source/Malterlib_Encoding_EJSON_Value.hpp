@@ -699,15 +699,15 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCEJSONValue<t_CParent>::f_ToString(ch8 const *_pPrettySeparator, bool _bAllowUndefined) const
+	NStr::CStr TCEJSONValue<t_CParent>::f_ToString(ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags) const
 	{
-		return f_ToJSON().f_ToString(_pPrettySeparator, _bAllowUndefined);
+		return f_ToJSON().f_ToString(_pPrettySeparator, _Flags);
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCEJSONValue<t_CParent>::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, bool _bAllowUndefined) const
+	NStr::CStr TCEJSONValue<t_CParent>::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags) const
 	{
-		return f_ToJSON().f_ToStringColored(_AnsiFlags, _pPrettySeparator, _bAllowUndefined);
+		return f_ToJSON().f_ToStringColored(_AnsiFlags, _pPrettySeparator, _Flags);
 	}
 
 

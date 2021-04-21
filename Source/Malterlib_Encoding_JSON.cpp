@@ -26,8 +26,8 @@ namespace NMib::NEncoding
 	namespace NPrivate
 	{
 		CJSON fg_JSONParse(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace);
-		NStr::CStr fg_JSONGenerate(CJSON const &_JSON, ch8 const *_pPrettySeparator, bool _bAllowUndefined);
-		NStr::CStr fg_JSONGenerateColored(CJSON const &_JSON, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, bool _bAllowUndefined);
+		NStr::CStr fg_JSONGenerate(CJSON const &_JSON, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags);
+		NStr::CStr fg_JSONGenerateColored(CJSON const &_JSON, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJSONDialectFlag _Flags);
 	}
 
 #ifndef DDocumentation_Doxygen
@@ -38,18 +38,18 @@ namespace NMib::NEncoding
 	}
 
 	template <>
-	NStr::CStr CJSON::f_ToString(ch8 const *_pPrettySeparator, bool _bAllowUndefined) const
+	NStr::CStr CJSON::f_ToString(ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags) const
 	{
-		return NPrivate::fg_JSONGenerate(*this, _pPrettySeparator, _bAllowUndefined);
+		return NPrivate::fg_JSONGenerate(*this, _pPrettySeparator, _Flags);
 	}
 
 	template <>
-	NStr::CStr CJSON::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, bool _bAllowUndefined) const
+	NStr::CStr CJSON::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags) const
 	{
 		if (_AnsiFlags & NCommandLine::EAnsiEncodingFlag_Color)
-			return NPrivate::fg_JSONGenerateColored(*this, _pPrettySeparator, _AnsiFlags, _bAllowUndefined);
+			return NPrivate::fg_JSONGenerateColored(*this, _pPrettySeparator, _AnsiFlags, _Flags);
 		else
-			return NPrivate::fg_JSONGenerate(*this, _pPrettySeparator, _bAllowUndefined);
+			return NPrivate::fg_JSONGenerate(*this, _pPrettySeparator, _Flags);
 	}
 #endif
 

@@ -23,7 +23,7 @@ namespace NMib::NEncoding::NJSON
 		{
 			fg_ParseToEndOfLine(pParse);
 
-			if (pParse > _pParse)
+			if (pParse >= _pParse)
 				break;
 
 			if (fg_ParseEndOfLine(pParse))
@@ -52,7 +52,7 @@ namespace NMib::NEncoding::NJSON
 		if (*pParse == '"')
 		{
 			auto pStartString = pParse;
-			if (!fg_ParseJSONString<'\"', tf_CParseContext::mc_bAllowMultilineString>(o_Key, pParse, *this))
+			if (!fg_ParseJSONString<'\"', tf_CParseContext::mc_ParseJSONStringFlags>(o_Key, pParse, *this))
 				f_ThrowError("End of string character \" not found for key name string", pStartString);
 			o_pParse = pParse;
 			return;
@@ -63,7 +63,7 @@ namespace NMib::NEncoding::NJSON
 			if (*pParse == '\'')
 			{
 				auto pStartString = pParse;
-				if (!fg_ParseJSONString<'\'', tf_CParseContext::mc_bAllowMultilineString>(o_Key, pParse, *this))
+				if (!fg_ParseJSONString<'\'', tf_CParseContext::mc_ParseJSONStringFlags>(o_Key, pParse, *this))
 					f_ThrowError("End of string character ' not found for key name string", pStartString);
 				o_pParse = pParse;
 				return;
@@ -156,7 +156,7 @@ namespace NMib::NEncoding::NJSON
 			auto &Child = Array.f_Insert();
 			fg_ParseJSONValue(Child, pParse, _Context);
 
-			DMibCheck(Child.f_Type() != EJSONType_Invalid || _Context.m_bAllowUndefined);
+			DMibCheck(Child.f_Type() != EJSONType_Invalid || (_Context.m_Flags & EJSONDialectFlag_AllowUndefined));
 
 			fg_ParseWhiteSpace(pParse);
 			if (*pParse == ',')
@@ -213,7 +213,7 @@ namespace NMib::NEncoding::NJSON
 
 			auto &Child = Object.f_CreateMember(KeyName);
 			fg_ParseJSONValue(Child, pParse, _Context);
-			DMibCheck(Child.f_Type() != EJSONType_Invalid || _Context.m_bAllowUndefined);
+			DMibCheck(Child.f_Type() != EJSONType_Invalid || (_Context.m_Flags & EJSONDialectFlag_AllowUndefined));
 
 			fg_ParseWhiteSpace(pParse);
 
@@ -228,8 +228,8 @@ namespace NMib::NEncoding::NJSON
 		}
 	}
 
-	template <uch8 t_QuoteCharacter, bool t_bAllowMultilineString, typename tf_CParseContext>
-	static bool fg_ParseJSONString(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	template <uch8 t_QuoteCharacter, EParseJSONStringFlag t_Flags, typename tf_CParseContext, typename tf_FExtraParse>
+	static bool fg_ParseJSONString(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext &_Context, tf_FExtraParse &&_fExtraParse)
 	{
 		using namespace NStr;
 		uch8 const *pParse = o_pParse;
@@ -245,8 +245,11 @@ namespace NMib::NEncoding::NJSON
 			}
 		;
 
-		DMibRequire(*pParse == t_QuoteCharacter);
-		++pParse;
+		if constexpr ((t_Flags & EParseJSONStringFlag_NoQuotes) == EParseJSONStringFlag_None)
+		{
+			DMibRequire(*pParse == t_QuoteCharacter);
+			++pParse;
+		}
 
 		auto fAddChar = [&](uch8 _Character)
 			{
@@ -261,7 +264,7 @@ namespace NMib::NEncoding::NJSON
 			if (*pParse == t_QuoteCharacter)
 			{
 				++pParse;
-				if constexpr (t_bAllowMultilineString)
+				if constexpr (t_Flags & EParseJSONStringFlag_AllowMultiLine)
 				{
 					if (*pParse == '\\')
 					{
@@ -384,6 +387,12 @@ namespace NMib::NEncoding::NJSON
 			}
 			else
 			{
+				if constexpr (!NTraits::TCIsSame<typename NTraits::TCRemoveReference<tf_FExtraParse>::CType, bool>::mc_Value)
+				{
+					if (_fExtraParse(pParse))
+						continue;
+				}
+
 				auto Character = *pParse;
 				if (Character < 32)
 				{
@@ -410,7 +419,10 @@ namespace NMib::NEncoding::NJSON
 			}
 		}
 
-		return false;
+		if constexpr ((t_Flags & EParseJSONStringFlag_NoQuotes) != EParseJSONStringFlag_None)
+			return true;
+		else
+			return false;
 	}
 
 	template <typename tf_CParseContext>
@@ -420,7 +432,7 @@ namespace NMib::NEncoding::NJSON
 
 		uch8 const *pParse = o_pParse;
 		bool bSuccessful = false;
-		auto Cleanup = g_OnScopeExit > [&]
+		auto Cleanup = g_OnScopeExitWithException > [&]
 			{
 				if constexpr (tf_CParseContext::mc_bCustomParse)
 				{
@@ -505,7 +517,7 @@ namespace NMib::NEncoding::NJSON
 					// String
 					CStr ParsedString;
 					auto pParseStart = pParse;
-					if (!fg_ParseJSONString<'\"', tf_CParseContext::mc_bAllowMultilineString>(ParsedString, pParse, _Context))
+					if (!fg_ParseJSONString<'\"', tf_CParseContext::mc_ParseJSONStringFlags>(ParsedString, pParse, _Context))
 						_Context.f_ThrowError("End of string character \" not found for string", pParseStart);
 
 					o_Value = ParsedString;
@@ -522,7 +534,7 @@ namespace NMib::NEncoding::NJSON
 							// String
 							CStr ParsedString;
 							auto pParseStart = pParse;
-							if (!fg_ParseJSONString<'\'', tf_CParseContext::mc_bAllowMultilineString>(ParsedString, pParse, _Context))
+							if (!fg_ParseJSONString<'\'', tf_CParseContext::mc_ParseJSONStringFlags>(ParsedString, pParse, _Context))
 								_Context.f_ThrowError("End of string character ' not found for string", pParseStart);
 
 							o_Value = ParsedString;
@@ -533,9 +545,11 @@ namespace NMib::NEncoding::NJSON
 					auto pParseStart = pParse;
 					if (fg_StrStartsWith(pParse, "true"))
 					{
-						pParse += 4;
-						if (!(*pParse) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParse) >= 0 || fg_CharIsWhiteSpace(*pParse))
+						auto pParseTemp = pParse;
+						pParseTemp += 4;
+						if (!(*pParseTemp) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParseTemp) >= 0 || fg_CharIsWhiteSpace(*pParseTemp))
 						{
+							pParse = pParseTemp;
 							o_Value = true;
 							bSuccessful = true;
 							return;
@@ -543,9 +557,11 @@ namespace NMib::NEncoding::NJSON
 					}
 					else if (fg_StrStartsWith(pParse, "false"))
 					{
-						pParse += 5;
-						if (!(*pParse) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParse) >= 0 || fg_CharIsWhiteSpace(*pParse))
+						auto pParseTemp = pParse;
+						pParseTemp += 5;
+						if (!(*pParseTemp) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParseTemp) >= 0 || fg_CharIsWhiteSpace(*pParseTemp))
 						{
+							pParse = pParseTemp;
 							o_Value = false;
 							bSuccessful = true;
 							return;
@@ -553,22 +569,102 @@ namespace NMib::NEncoding::NJSON
 					}
 					else if (fg_StrStartsWith(pParse, "null"))
 					{
-						pParse += 4;
-						if (!(*pParse) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParse) >= 0 || fg_CharIsWhiteSpace(*pParse))
+						auto pParseTemp = pParse;
+						pParseTemp += 4;
+						if (!(*pParseTemp) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParseTemp) >= 0 || fg_CharIsWhiteSpace(*pParseTemp))
 						{
+							pParse = pParseTemp;
 							o_Value = nullptr;
 							bSuccessful = true;
 							return;
 						}
 					}
-					else if (_Context.m_bAllowUndefined && fg_StrStartsWith(pParse, "undefined"))
+					else if ((_Context.m_Flags & EJSONDialectFlag_AllowUndefined) && fg_StrStartsWith(pParse, "undefined"))
 					{
-						pParse += 9;
-						if (!(*pParse) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParse) >= 0 || fg_CharIsWhiteSpace(*pParse))
+						auto pParseTemp = pParse;
+						pParseTemp += 9;
+						if (!(*pParseTemp) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParseTemp) >= 0 || fg_CharIsWhiteSpace(*pParseTemp))
 						{
+							pParse = pParseTemp;
 							o_Value = CJSON();
 							bSuccessful = true;
 							return;
+						}
+					}
+
+					if (_Context.m_Flags & EJSONDialectFlag_AllowInvalidFloat)
+					{
+						if (fg_StrStartsWith(pParse, "QNaN"))
+						{
+							auto pParseTemp = pParse;
+							pParseTemp += 4;
+							if (!(*pParseTemp) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParseTemp) >= 0 || fg_CharIsWhiteSpace(*pParseTemp))
+							{
+								pParse = pParseTemp;
+								o_Value = fp64::fs_QNan();
+								bSuccessful = true;
+								return;
+							}
+						}
+						else if (fg_StrStartsWith(pParse, "-QNaN"))
+						{
+							auto pParseTemp = pParse;
+							pParseTemp += 5;
+							if (!(*pParseTemp) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParseTemp) >= 0 || fg_CharIsWhiteSpace(*pParseTemp))
+							{
+								pParse = pParseTemp;
+								o_Value = fp64::fs_NegQNan();
+								bSuccessful = true;
+								return;
+							}
+						}
+						else if (fg_StrStartsWith(pParse, "SNaN"))
+						{
+							auto pParseTemp = pParse;
+							pParseTemp += 4;
+							if (!(*pParseTemp) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParseTemp) >= 0 || fg_CharIsWhiteSpace(*pParseTemp))
+							{
+								pParse = pParseTemp;
+								o_Value = fp64::fs_SNan();
+								bSuccessful = true;
+								return;
+							}
+						}
+						else if (fg_StrStartsWith(pParse, "-SNaN"))
+						{
+							auto pParseTemp = pParse;
+							pParseTemp += 5;
+							if (!(*pParseTemp) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParseTemp) >= 0 || fg_CharIsWhiteSpace(*pParseTemp))
+							{
+								pParse = pParseTemp;
+								o_Value = fp64::fs_NegSNan();
+								bSuccessful = true;
+								return;
+							}
+						}
+						else if (fg_StrStartsWith(pParse, "Inf"))
+						{
+							auto pParseTemp = pParse;
+							pParseTemp += 3;
+							if (!(*pParseTemp) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParseTemp) >= 0 || fg_CharIsWhiteSpace(*pParseTemp))
+							{
+								pParse = pParseTemp;
+								o_Value = fp64::fs_Inf();
+								bSuccessful = true;
+								return;
+							}
+						}
+						else if (fg_StrStartsWith(pParse, "-Inf"))
+						{
+							auto pParseTemp = pParse;
+							pParseTemp += 4;
+							if (!(*pParseTemp) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParseTemp) >= 0 || fg_CharIsWhiteSpace(*pParseTemp))
+							{
+								pParse = pParseTemp;
+								o_Value = fp64::fs_NegInf();
+								bSuccessful = true;
+								return;
+							}
 						}
 					}
 
@@ -594,6 +690,7 @@ namespace NMib::NEncoding::NJSON
 					}
 
 					pTryParse = pParse;
+
 					fp64 FloatNumber = fg_StrToFloatParse
 						(
 							pTryParse

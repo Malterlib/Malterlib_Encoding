@@ -7,13 +7,13 @@
 
 namespace NMib::NEncoding::NPrivate
 {
-	NStr::CStr fg_JSONGenerate(CJSON const &_JSON, ch8 const *_pPrettySeparator, bool _bAllowUndefined)
+	NStr::CStr fg_JSONGenerate(CJSON const &_JSON, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags)
 	{
 		using namespace NStr;
 
 		CStr Return;
 
-		NJSON::fg_GenerateJSONValue<NJSON::CParseContext>(Return, _JSON, 0, _pPrettySeparator, _bAllowUndefined);
+		NJSON::fg_GenerateJSONValue<NJSON::CParseContext>(Return, _JSON, 0, _pPrettySeparator, _Flags);
 
 		if (_pPrettySeparator)
 			Return += "\n";

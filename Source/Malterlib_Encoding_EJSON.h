@@ -106,8 +106,8 @@ namespace NMib::NEncoding
 		static TCEJSONValue fs_FromJSONNoConvert(CJSON &&_JSON);
 
 		static TCEJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr(), bool _bConvertNullToSpace = false);
-		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", bool _bAllowUndefined = false) const;
-		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", bool _bAllowUndefined = false) const;
+		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", EJSONDialectFlag _Flags = EJSONDialectFlag_None) const;
+		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJSONDialectFlag _Flags = EJSONDialectFlag_None) const;
 
 		using TCJSONValue<t_CParent>::f_GetMember;
 		typename TCJSONValue<t_CParent>::CValue const *f_GetMember(NStr::CStr const &_Name, EEJSONType _Type) const;
