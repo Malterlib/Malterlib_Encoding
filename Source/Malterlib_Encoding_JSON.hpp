@@ -25,6 +25,7 @@ namespace NMib::NEncoding
 		TCJSONValueBase<t_TCValue, t_CTypes>::TCJSONValueBase(TCJSONValueBase &&_Value)
 			: mp_Value(fg_Move(_Value.mp_Value))
 		{
+			_Value.mp_Value.template f_Set<EJSONType_Invalid>();
 		}
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
