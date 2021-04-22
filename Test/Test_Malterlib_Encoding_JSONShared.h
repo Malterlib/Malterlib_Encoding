@@ -499,8 +499,8 @@ namespace
 					
 					Error.m_Error = "Control characters or new lines not allowed in string. Use escaped characters.";
 					Error.m_Location.m_File = mp_TestFilePath;
-					Error.m_Location.m_Line = 2;
-					Error.m_Location.m_Column = 1;
+					Error.m_Location.m_Line = 1;
+					Error.m_Location.m_Column = 7;
 					Error.m_Location.m_Character = 6;
 					
 					fp_TestParseError(Data, Errors);
