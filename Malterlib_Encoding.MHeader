@@ -27,20 +27,13 @@ Import "../Core/Lib_Malterlib.MTarget"
 
 Property
 {
-	MalterlibLibrary_Encoding true
-	{
-		&
-		{
-			MalterlibLibrary_Encoding ""
-			MalterlibLibrary_All true
-		}
-	}
-	MalterlibSubLibraries "Encoding;@(MalterlibSubLibraries)"
+	MalterlibLibrary_Encoding define bool = MalterlibLibrary_All
+	MalterlibSubLibraries =+ "Encoding"
 	{
 		!!MalterlibLibrary_Encoding true
 	}
-//	MalterlibSubLibrarySeparate_Lib_Malterlib_Encoding true
-	MalterlibIncludeRoots "@('Include'->MakeAbsolute());@(MalterlibIncludeRoots)"
+//	MalterlibSubLibrarySeparate_Lib_Malterlib_Encoding define bool = true
+	MalterlibIncludeRoots =+ "Include"->MakeAbsolute()
 	{
 		!!MalterlibLibrary_Encoding true
 	}
@@ -50,7 +43,7 @@ Property
 {
 	!!MalterlibEnableInternalTests true
 	
-	MalterlibTests "Malterlib_Encoding;@(MalterlibTests)"
-	MalterlibTestFiles_Malterlib_Encoding "@('Test/*'->MakeAbsolute())"
+	MalterlibTests =+ "Malterlib_Encoding"
+	MalterlibTestFiles_Malterlib_Encoding define [type(CEntity)] = ["Test/*"->MakeAbsolute()]
 }
 
