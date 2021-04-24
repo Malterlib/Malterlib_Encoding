@@ -37,7 +37,7 @@ namespace NMib::NEncoding::NJSON
 {
 	void CParseContext::f_ThrowErrors(NContainer::TCVector<NStr::CParseError> const &_Errors) const
 	{
-		NStr::CStr Description = NStr::CStr::CFormat("JSON parse error:{\n}");
+		NStr::CStr Description;
 		for (auto &Error : _Errors)
 		{
 			Description
@@ -46,6 +46,8 @@ namespace NMib::NEncoding::NJSON
 				<< Error.m_Error
 			;
 		}
+		if (Description.f_IsEmpty())
+			Description = "JSON Parse error";
 		DMibErrorParse(Description, _Errors);
 	}
 
