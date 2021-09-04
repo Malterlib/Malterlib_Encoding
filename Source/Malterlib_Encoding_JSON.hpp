@@ -95,13 +95,12 @@ namespace NMib::NEncoding
 		}
 
 		template <typename t_CJSONValue>
-		bool TCObjectEntry<t_CJSONValue>::operator < (TCObjectEntry const &_Right) const
+		COrdering_Partial TCObjectEntry<t_CJSONValue>::operator <=> (TCObjectEntry const &_Right) const
 		{
-			if (mp_Name < _Right.mp_Name)
-				return true;
-			else if (mp_Name > _Right.mp_Name)
-				return false;
-			return mp_Value < _Right.mp_Value;
+			if (auto Result = mp_Name <=> _Right.mp_Name; Result != 0)
+				return Result;
+
+			return mp_Value <=> _Right.mp_Value;
 		}
 	}
 }

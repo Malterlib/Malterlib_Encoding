@@ -116,7 +116,7 @@ namespace NMib::NEncoding
 		CValue &operator = (TCInitializerList<CKeyValue> const &_Init);
 
 		bool operator == (TCJSONValue const &_Right) const;
-		bool operator < (TCJSONValue const &_Right) const;
+		COrdering_Partial operator <=> (TCJSONValue const &_Right) const;
 
 		EJSONType f_Type() const;
 		void f_SetType(EJSONType _Type);
@@ -238,7 +238,7 @@ namespace NMib::NEncoding
 		TCJSONObject(TCJSONObject &&_Other);
 
 		bool operator == (TCJSONObject const &_Right) const;
-		bool operator < (TCJSONObject const &_Right) const;
+		COrdering_Partial operator <=> (TCJSONObject const &_Right) const;
 
 		t_CJSONValue const *f_GetMember(NStr::CStr const &_Name) const;
 		t_CJSONValue *f_GetMember(NStr::CStr const &_Name);

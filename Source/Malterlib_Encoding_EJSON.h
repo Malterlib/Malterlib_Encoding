@@ -28,7 +28,7 @@ namespace NMib::NEncoding
 		CEJSONUserType(NStr::CStr const &_Type, CJSON &&_Value);
 
 		bool operator == (CEJSONUserType const &_Right) const;
-		bool operator < (CEJSONUserType const &_Right) const;
+		COrdering_Partial operator <=> (CEJSONUserType const &_Right) const;
 
 		NStr::CStr m_Type;
 		CJSON m_Value;

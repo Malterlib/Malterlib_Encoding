@@ -44,7 +44,7 @@ namespace NMib::NEncoding::NPrivate
 		TCObjectEntry();
 
 		bool operator == (TCObjectEntry const &_Right) const;
-		bool operator < (TCObjectEntry const &_Right) const;
+		COrdering_Partial operator <=> (TCObjectEntry const &_Right) const;
 
 		NStr::CStr const &f_Name() const;
 		t_CJSONValue &f_Value();

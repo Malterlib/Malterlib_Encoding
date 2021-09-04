@@ -183,8 +183,8 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJSONValue>
-	bool TCJSONObject<t_CJSONValue>::operator < (TCJSONObject const &_Right) const
+	COrdering_Partial TCJSONObject<t_CJSONValue>::operator <=> (TCJSONObject const &_Right) const
 	{
-		return mp_Objects < _Right.mp_Objects;
+		return mp_Objects <=> _Right.mp_Objects;
 	}
 }

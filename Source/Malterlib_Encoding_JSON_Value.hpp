@@ -689,28 +689,28 @@ namespace NMib::NEncoding
 			}
 		};
 
-		struct CJSONLessThanVisitor
+		struct CJSONSpaceshipVisitor
 		{
 			template <typename tf_CTypeLeft, typename tf_CTypeRight>
-			bool operator ()(tf_CTypeLeft const &, tf_CTypeRight const &)
+			COrdering_Partial operator ()(tf_CTypeLeft const &, tf_CTypeRight const &)
 			{
-				return false;
+				return COrdering_Partial::unordered;
 			}
 
-			bool operator ()(CVoidTag const &_Left, CVoidTag const &_Right)
+			COrdering_Partial operator ()(CVoidTag const &_Left, CVoidTag const &_Right)
 			{
-				return false;
+				return COrdering_Partial::equivalent;
 			}
 
-			bool operator ()(CJSONNull const &_Left, CJSONNull const &_Right)
+			COrdering_Partial operator ()(CJSONNull const &_Left, CJSONNull const &_Right)
 			{
-				return false;
+				return COrdering_Partial::equivalent;
 			}
 
 			template <typename tf_CType>
-			bool operator ()(tf_CType const &_Left, tf_CType const &_Right)
+			COrdering_Partial operator ()(tf_CType const &_Left, tf_CType const &_Right)
 			{
-				return _Left < _Right;
+				return _Left <=> _Right;
 			}
 		};
 	}
@@ -724,13 +724,12 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::operator < (TCJSONValue const &_Right) const
+	COrdering_Partial TCJSONValue<t_CParent>::operator <=> (TCJSONValue const &_Right) const
 	{
-		if (this->f_Type() < _Right.f_Type())
-			return true;
-		else if (this->f_Type() > _Right.f_Type())
-			return false;
-		return fg_VisitRet<bool>(NPrivate::CJSONLessThanVisitor(), this->mp_Value, _Right.mp_Value);
+		if (auto Result = this->f_Type() <=> _Right.f_Type(); Result != 0)
+			return Result;
+
+		return fg_VisitRet<COrdering_Partial>(NPrivate::CJSONSpaceshipVisitor(), this->mp_Value, _Right.mp_Value);
 	}
 
 	template <typename t_CParent>

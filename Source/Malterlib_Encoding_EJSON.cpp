@@ -25,13 +25,12 @@ namespace NMib::NEncoding
 		return m_Value == _Right.m_Value;
 	}
 
-	bool CEJSONUserType::operator < (CEJSONUserType const &_Right) const
+	COrdering_Partial CEJSONUserType::operator <=> (CEJSONUserType const &_Right) const
 	{
-		if (m_Type < _Right.m_Type)
-			return true;
-		else if (m_Type > _Right.m_Type)
-			return false;
-		return m_Value < _Right.m_Value;
+		if (auto Result = m_Type <=> _Right.m_Type; Result != 0)
+			return Result;
+
+		return m_Value <=> _Right.m_Value;
 	}
 
 	CEJSONUserType fg_UserType(NStr::CStr const &_Type, CJSON const &_Value)
