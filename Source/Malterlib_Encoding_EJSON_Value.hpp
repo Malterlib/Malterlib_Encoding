@@ -464,7 +464,7 @@ namespace NMib::NEncoding
 						if (Value.f_Type() != EJSONType_Integer)
 							DMibError("Invalid EJSON: $date value must be an integer");
 
-						_Ret = NTime::CTimeConvert::fs_FromCreateFromUnixMilliseconds(Value.f_Integer());
+						_Ret = NTime::CTimeConvert::fs_FromUnixMilliseconds(Value.f_Integer());
 						return;
 					}
 					else if (Name == "$binary")
@@ -545,7 +545,7 @@ namespace NMib::NEncoding
 						if (Value.f_Type() != EJSONType_Integer)
 							DMibError("Invalid EJSON: $date value must be an integer");
 
-						_Ret = NTime::CTimeConvert::fs_FromCreateFromUnixMilliseconds(Value.f_Integer());
+						_Ret = NTime::CTimeConvert::fs_FromUnixMilliseconds(Value.f_Integer());
 						return;
 					}
 					else if (Name == "$binary")

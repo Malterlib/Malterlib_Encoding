@@ -329,7 +329,7 @@ namespace
 				auto fTestTimeConversion = [](NTime::CTime const &_Time)
 					{
 						auto OriginalTime = _Time;
-						OriginalTime = NTime::CTimeConvert::fs_FromCreateFromUnixMilliseconds(NTime::CTimeConvert(OriginalTime).f_UnixMilliseconds());
+						OriginalTime = NTime::CTimeConvert::fs_FromUnixMilliseconds(NTime::CTimeConvert(OriginalTime).f_UnixMilliseconds());
 						CEJSON OriginalEJSON;
 						OriginalEJSON = OriginalTime;
 						CEJSON ConvertedEJSON = CEJSON::fs_FromJSON(OriginalEJSON.f_ToJSON());
