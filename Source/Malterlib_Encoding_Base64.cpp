@@ -14,7 +14,7 @@ namespace NMib::NEncoding
 		'=' // Padding
 	};
 
-	ch8 g_Base64EncodingTableReverse[256] =
+	int8 g_Base64EncodingTableReverse[256] =
 	{
 		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,

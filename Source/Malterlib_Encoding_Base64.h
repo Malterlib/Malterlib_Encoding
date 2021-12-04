@@ -8,7 +8,7 @@
 namespace NMib::NEncoding
 {
 	extern ch8 g_Base64EncodingTable[65];
-	extern ch8 g_Base64EncodingTableReverse[256];
+	extern int8 g_Base64EncodingTableReverse[256];
 
 	template <typename t_CStreamType = NStream::CBinaryStreamDefault>
 	class TCBinaryStream_Base64 : public t_CStreamType
@@ -69,9 +69,6 @@ namespace NMib::NEncoding
 	NStr::CStrSecure fg_Base64Encode(const NContainer::CSecureByteVector &_Data);
 	void fg_Base64Decode(NStr::CStr const &_String, NContainer::CByteVector &_Data);
 	void fg_Base64Decode(NStr::CStrSecure const &_String, NContainer::CSecureByteVector &_Data);
-
-	extern ch8 g_Base64EncodingTable[65];
-	extern ch8 g_Base64EncodingTableReverse[256];
 }
 
 #include "Malterlib_Encoding_Base64.hpp"
