@@ -273,6 +273,7 @@ namespace NMib::NEncoding
 		NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry> mp_ObjectTree;
 	};
 
+#ifndef DDocumentation_Doxygen
 	template <typename tf_CJSONValue>
 	typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator begin(TCJSONObject<tf_CJSONValue> &_JSONObject)
 	{
@@ -296,6 +297,7 @@ namespace NMib::NEncoding
 	{
 		return NContainer::CIteratorEndSentinel();
 	}
+#endif
 
 	template <typename t_CJSONObject>
 	bool fg_ValidateType(t_CJSONObject const *_pObject, EJSONType _Type);
@@ -313,9 +315,7 @@ namespace NMib::NEncoding
 
 #include "Malterlib_Encoding_JSON_Uninstantiated.hpp"
 
-#ifndef DDocumentation_Doxygen
-#	define DMibEncodingJSONExternTemplate
-#endif
+#define DMibEncodingJSONExternTemplate
 
 #ifdef DMibEncodingJSONExternTemplate
 #	include "Malterlib_Encoding_JSON_Instantiated.hpp"

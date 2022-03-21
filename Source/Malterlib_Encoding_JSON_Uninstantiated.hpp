@@ -4,7 +4,6 @@
 
 namespace NMib::NEncoding
 {
-#ifndef DDocumentation_Doxygen
 	template <>
 	CJSON CJSON::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace);
 
@@ -13,7 +12,6 @@ namespace NMib::NEncoding
 
 	template <>
 	NStr::CStr CJSON::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags) const;
-#endif
 
 #ifndef DCompiler_MSVC_Workaround
 	template <typename t_CParent>
@@ -80,8 +78,6 @@ namespace NMib::NEncoding
 		}
 	}
 
-#ifndef DDocumentation_Doxygen
-
 	template <typename t_CParent>
 	auto TCJSONValue<t_CParent>::CKey::operator = (CValue &&_Value) && -> CKeyValue
 	{
@@ -100,7 +96,6 @@ namespace NMib::NEncoding
 		Return.m_Value = EJSONType_Object;
 		return Return;
 	}
-#endif
 
 	template <typename t_CJSONValue>
 	template <typename tf_CStream>

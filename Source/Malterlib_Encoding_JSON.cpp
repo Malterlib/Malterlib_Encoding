@@ -30,7 +30,6 @@ namespace NMib::NEncoding
 		NStr::CStr fg_JSONGenerateColored(CJSON const &_JSON, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJSONDialectFlag _Flags);
 	}
 
-#ifndef DDocumentation_Doxygen
 	template <>
 	CJSON CJSON::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace)
 	{
@@ -51,7 +50,6 @@ namespace NMib::NEncoding
 		else
 			return NPrivate::fg_JSONGenerate(*this, _pPrettySeparator, _Flags);
 	}
-#endif
 
 #ifdef DMibEncodingJSONExternTemplate
 	template class NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes>;
