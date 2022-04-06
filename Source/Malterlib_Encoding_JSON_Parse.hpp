@@ -142,7 +142,7 @@ namespace NMib::NEncoding::NJSON
 		++_Context.m_ObjectArrayParseDepth;
 
 		uch8 const *pParse = o_pParse;
-		auto Cleanup = g_OnScopeExit > [&]
+		auto Cleanup = g_OnScopeExit / [&]
 			{
 				--_Context.m_ObjectArrayParseDepth;
 				o_pParse = pParse;
@@ -184,7 +184,7 @@ namespace NMib::NEncoding::NJSON
 		++_Context.m_ObjectArrayParseDepth;
 
 		uch8 const *pParse = o_pParse;
-		auto Cleanup = g_OnScopeExit > [&]
+		auto Cleanup = g_OnScopeExit / [&]
 			{
 				--_Context.m_ObjectArrayParseDepth;
 				o_pParse = pParse;
@@ -239,7 +239,7 @@ namespace NMib::NEncoding::NJSON
 	{
 		using namespace NStr;
 		uch8 const *pParse = o_pParse;
-		auto Cleanup = g_OnScopeExit > [&]
+		auto Cleanup = g_OnScopeExit / [&]
 			{
 				o_pParse = pParse;
 				switch (t_QuoteCharacter)
@@ -438,7 +438,7 @@ namespace NMib::NEncoding::NJSON
 
 		uch8 const *pParse = o_pParse;
 		bool bSuccessful = false;
-		auto Cleanup = g_OnScopeExitWithException > [&]
+		auto Cleanup = g_OnScopeExitWithException / [&]
 			{
 				if constexpr (tf_CParseContext::mc_bCustomParse)
 				{
