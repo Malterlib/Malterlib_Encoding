@@ -5,6 +5,8 @@
 
 #include "Malterlib_Encoding_JSON_Parse.h"
 
+#include <Mib/String/Appender>
+
 namespace NMib::NEncoding::NJSON
 {
 	template <typename tf_CStr>
@@ -21,8 +23,10 @@ namespace NMib::NEncoding::NJSON
 
 		mint StartOfLine = o_String.f_GetLen();
 
+		typename tf_CStr::CAppender StringAppender(o_String);
+
 		if constexpr (tf_bAddQuotes)
-			o_String.f_AddChar(t_QuoteCharacter);
+			StringAppender += t_QuoteCharacter;
 		else
 			--StartOfLine;
 
@@ -36,6 +40,8 @@ namespace NMib::NEncoding::NJSON
 				{
 					if (!bInitPreWhitespace)
 					{
+						StringAppender.f_Commit();
+
 						bInitPreWhitespace = true;
 						auto iPrevLine = o_String.f_FindCharReverse('\n', StartOfLine);
 						if (iPrevLine >= 0)
@@ -47,9 +53,12 @@ namespace NMib::NEncoding::NJSON
 					for (auto UTFIterator = PreWhitespace.f_GetUnicodeIterator(); UTFIterator; ++UTFIterator)
 					{
 						if (fg_CharIsWhiteSpace(*UTFIterator))
-							o_String.f_AddChar(*UTFIterator);
+						{
+							DMibFastCheck(*UTFIterator < 127);
+							StringAppender += ch8(*UTFIterator);
+						}
 						else
-							o_String.f_AddChar(' ');
+							StringAppender += ' ';
 					}
 				}
 			}
@@ -61,52 +70,69 @@ namespace NMib::NEncoding::NJSON
 			switch (UnsignedChar)
 			{
 			case t_QuoteCharacter:
-				o_String += "\\";
-				o_String.f_AddChar(t_QuoteCharacter);
+				StringAppender += '\\';
+				StringAppender += t_QuoteCharacter;
 				break;
 			case '\\':
-				o_String += "\\\\";
+				StringAppender += '\\';
+				StringAppender += '\\';
 				break;
 			case 0x08:
-				o_String += "\\b";
+				StringAppender += '\\';
+				StringAppender += 'b';
 				break;
 			case 0x0C:
-				o_String += "\\f";
+				StringAppender += '\\';
+				StringAppender += 'f';
 				break;
 			case 0x0A:
 			case 0x0D:
 				if (UnsignedChar == 0x0A)
-					o_String += "\\n";
+				{
+					StringAppender += '\\';
+					StringAppender += 'n';
+				}
 				else
-					o_String += "\\r";
+				{
+					StringAppender += '\\';
+					StringAppender += 'r';
+				}
+
 				if constexpr (tf_CParseContext::mc_ParseJSONStringFlags & EParseJSONStringFlag_AllowMultiLine)
 				{
 					if (fg_StrStartsWith(pParse, "\r\n"))
 					{
-						o_String += "\\n";
+						StringAppender += '\\';
+						StringAppender += 'n';
 						++pParse;
 					}
-					o_String.f_AddChar(t_QuoteCharacter);
-					o_String += "\\\n";
+					StringAppender += t_QuoteCharacter;
+					StringAppender += '\\';
+					StringAppender += '\n';
 					fAddPreWhitespace();
-					o_String.f_AddChar(t_QuoteCharacter);
+					StringAppender += t_QuoteCharacter;
 				}
 				break;
 			case 0x09:
-				o_String += "\\t";
+				StringAppender += '\\';
+				StringAppender += 't';
 				break;
 			default:
 				if (UnsignedChar < 32)
+				{
+					StringAppender.f_Commit();
 					o_String += typename tf_CStr::CFormat("\\u{nfh,sf0,sj4}") << UnsignedChar; // Control character, add as hex
+					StringAppender.f_Reset();
+				}
 				else
-					o_String.f_AddChar(*pParse);
+					StringAppender += *pParse;
 				break;
 			}
 			++pParse;
 		}
 
 		if constexpr (tf_bAddQuotes)
-			o_String.f_AddChar(t_QuoteCharacter);
+			StringAppender += t_QuoteCharacter;
 	}
 
 	template <typename tf_CParseContext, typename tf_CStr>

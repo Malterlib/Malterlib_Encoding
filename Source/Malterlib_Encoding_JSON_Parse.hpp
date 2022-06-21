@@ -5,6 +5,8 @@
 
 #include "Malterlib_Encoding_JSON_Generate.h"
 
+#include <Mib/String/Appender>
+
 namespace NMib::NEncoding::NJSON
 {
 	inline NStr::CParseLocation CParseContext::f_GetLocation(uch8 const *_pParse) const
@@ -239,6 +241,7 @@ namespace NMib::NEncoding::NJSON
 	{
 		using namespace NStr;
 		uch8 const *pParse = o_pParse;
+
 		auto Cleanup = g_OnScopeExit / [&]
 			{
 				o_pParse = pParse;
@@ -257,11 +260,14 @@ namespace NMib::NEncoding::NJSON
 			++pParse;
 		}
 
+		NStr::CStr::CAppender StringAppender(o_String);
+
 		auto fAddChar = [&](uch8 _Character)
 			{
-				o_String.f_AddChar(_Character);
+				StringAppender += _Character;
+
 				if constexpr (tf_CParseContext::mc_bRecordStringMap)
-					_Context.f_MapCharacter(o_String.f_GetLen() - 1, pParse - _Context.m_pStartParse, 1);
+					_Context.f_MapCharacter(StringAppender.f_GetStrLen() - 1, pParse - _Context.m_pStartParse, 1);
 			}
 		;
 
@@ -376,6 +382,8 @@ namespace NMib::NEncoding::NJSON
 							break;
 						}
 
+						StringAppender.f_Commit();
+
 						if constexpr (tf_CParseContext::mc_bRecordStringMap)
 						{
 							auto StartLen = o_String.f_GetLen();
@@ -384,6 +392,8 @@ namespace NMib::NEncoding::NJSON
 						}
 						else
 							o_String += EscapedUTF16String;
+
+						StringAppender.f_Reset();
 					}
 					break;
 				default:
@@ -395,8 +405,12 @@ namespace NMib::NEncoding::NJSON
 			{
 				if constexpr (!NTraits::TCIsSame<typename NTraits::TCRemoveReference<tf_FExtraParse>::CType, bool>::mc_Value)
 				{
+					StringAppender.f_Commit();
 					if (_fExtraParse(pParse))
+					{
+						StringAppender.f_Reset();
 						continue;
+					}
 				}
 
 				auto Character = *pParse;
