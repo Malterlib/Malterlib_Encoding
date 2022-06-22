@@ -15,7 +15,7 @@ namespace
 	public:
 		CEJSON_Tests()
 		{
-			mp_TestFilePath = NFile::CFile::fs_GetProgramDirectory() + "/Test.json";
+			mp_TestFilePath = NFile::CFile::fs_GetProgramDirectory() + "/TestEJSON.json";
 		}
 
 		static CEJSON fs_GetEJSON()
@@ -187,6 +187,8 @@ namespace
 
 		void fp_TestParseError(NStr::CStr const &_ToParse, NStr::CStr const &_ExpectedError)
 		{
+			fg_TestAddCleanupPath(mp_TestFilePath);
+
 			NFile::CFile::fs_WriteStringToFile(mp_TestFilePath, _ToParse);
 			NException::CException Exception = fg_Move(DMibErrorInstance(""));
 			try

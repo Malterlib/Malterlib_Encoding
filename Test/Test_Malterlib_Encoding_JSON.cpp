@@ -13,13 +13,7 @@ namespace
 	using namespace NMib::NEncoding;
 	class CJSON_Tests : public NTest::CTest
 	{
-		NStr::CStr mp_TestFilePath;
 	public:
-		CJSON_Tests()
-		{
-			mp_TestFilePath = NFile::CFile::fs_GetProgramDirectory() + "/Test.json";
-		}
-
 		static CJSON fs_GetJSON()
 		{
 			CJSON ToReturn(EJSONType_Object);

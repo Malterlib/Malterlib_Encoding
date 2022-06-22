@@ -18,7 +18,9 @@ namespace
 			, mp_JSONReferenceText(_ReferenceText)
 			, mp_fParse(_fParse)
 		{
-			mp_TestFilePath = NMib::NFile::CFile::fs_GetProgramDirectory() + "/Test.json";
+			using namespace NMib::NStr;
+
+			mp_TestFilePath = NMib::NFile::CFile::fs_GetProgramDirectory() / ("Test{nfh}.json"_f << NMib::fg_GetTypeHash<t_CJSON>());
 		}
 
 		void f_DoTests()
@@ -698,6 +700,8 @@ namespace
 			NMib::NStr::CExceptionParse Exception = DMibImpExceptionInstanceSpecific(NMib::NStr::CExceptionParse, "JSON Error", NMib::fg_Default());
 			try
 			{
+				fg_TestAddCleanupPath(mp_TestFilePath);
+
 				mp_fParse(_ToParse, mp_TestFilePath);
 			}
 			catch (NMib::NStr::CExceptionParse const &_Exception)
