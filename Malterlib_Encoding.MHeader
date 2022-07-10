@@ -3,6 +3,62 @@
 
 Import "../Core/Lib_Malterlib.MTarget"
 
+%Repository "rapidjson"
+{
+	!!MalterlibEnableThirdPartyComparisonTests true
+
+	Repository
+	{
+		Type "External"
+		Remotes =+ {Name: "upstream", URL: "https://github.com/Tencent/rapidjson.git"}
+	}
+}
+
+%Repository "daw_json_link"
+{
+	!!MalterlibEnableThirdPartyComparisonTests true
+
+	Repository
+	{
+		Type "External"
+		DefaultUpstreamBranch "release"
+		Remotes =+ {Name: "upstream", URL: "https://github.com/beached/daw_json_link.git"}
+	}
+}
+
+%Repository "header_libraries"
+{
+	!!MalterlibEnableThirdPartyComparisonTests true
+
+	Repository
+	{
+		Type "External"
+		Remotes =+ {Name: "upstream", URL: "https://github.com/beached/header_libraries.git"}
+	}
+}
+
+%Repository "utf_range"
+{
+	!!MalterlibEnableThirdPartyComparisonTests true
+
+	Repository
+	{
+		Type "External"
+		Remotes =+ {Name: "upstream", URL: "https://github.com/beached/utf_range.git"}
+	}
+}
+
+%Repository "json"
+{
+	!!MalterlibEnableThirdPartyComparisonTests true
+
+	Repository
+	{
+		Type "External"
+		Remotes =+ {Name: "upstream", URL: "https://github.com/nlohmann/json.git"}
+	}
+}
+
 %Group "{Malterlib}/{Lib_Malterlib_Encoding}"
 {
 	%Group "Encoding"
@@ -24,7 +80,6 @@ Import "../Core/Lib_Malterlib.MTarget"
 	}
 }
 
-
 Property
 {
 	MalterlibLibrary_Encoding define bool = MalterlibLibrary_All
@@ -39,11 +94,36 @@ Property
 	}
 }
 
+%Group "{Test}/{Malterlib_Encoding}"
+{
+	Compile
+	{
+		&
+		{
+			CompileDialect "C"
+			MalterlibEnableThirdPartyComparisonTests true
+		}
+
+		SearchPath =+ "../../External/rapidjson/include"->MakeAbsolute()
+		SearchPath =+ "../../External/json/include"->MakeAbsolute()
+
+		SearchPath =+ [
+			"../../External/daw_json_link/include"->MakeAbsolute()
+			, "../../External/header_libraries/include"->MakeAbsolute()
+			, "../../External/utf_range/include"->MakeAbsolute()
+		]
+
+		PreprocessorDefines += "DMalterlibEnableThirdPartyComparisonTests"
+	}
+
+	Property.MalterlibLinkWithBoringSSL true
+}
+
 Property
 {
 	!!MalterlibEnableInternalTests true
 	
 	MalterlibTests =+ "Malterlib_Encoding"
 	MalterlibTestFiles_Malterlib_Encoding define [type(CEntity)] = ["Test/*"->MakeAbsolute()]
+	MalterlibTestExtraGroups_Malterlib_Encoding define [string] = ["{Test}/{Malterlib_Encoding}"]
 }
-
