@@ -180,7 +180,7 @@ namespace NMib::NEncoding
 						if (Float.f_IsInvalid() && !(m_Flags & EJSONDialectFlag_AllowInvalidFloat))
 							o_String += f_Color("null", ESyntaxColor::ESyntaxColor_Number); // QNaN, Inf etc is not representable in JSON
 						else
-							o_String += f_Color(CStr::fs_ToStr(JSONValue.f_Float()), ESyntaxColor::ESyntaxColor_Number);
+							o_String += f_Color(CStr(CStr::CFormat("{ffs}") << JSONValue.f_Float()), ESyntaxColor::ESyntaxColor_Number);
 					}
 					break;
 				case EJSONType_Object:

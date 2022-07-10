@@ -240,7 +240,12 @@ namespace NMib::NEncoding::NJSON
 			tf_CParseContext::template fs_GenerateString<tf_CParseContext>(o_String, JSONValue.f_String());
 			break;
 		case EJSONType_Integer:
-			o_String += CStr::fs_ToStr(JSONValue.f_Integer());
+			{
+				typedef typename TCStringFormatterAll<typename tf_CStr::CFormat, int64>::CFormatType CFormatType;
+				aint CurrentLen = o_String.f_GetLen();
+				CFormatType::fs_AddToStrStatic(o_String, CurrentLen, typename CFormatType::CType(JSONValue.f_Integer()));
+				o_String.f_SetStrLen(CurrentLen);
+			}
 			break;
 		case EJSONType_Float:
 			{
@@ -248,7 +253,16 @@ namespace NMib::NEncoding::NJSON
 				if (Float.f_IsInvalid() && !(_Flags & EJSONDialectFlag_AllowInvalidFloat))
 					o_String += "null"; // QNaN, Inf etc is not representable in JSON
 				else
-					o_String += CStr::fs_ToStr(JSONValue.f_Float());
+				{
+					typedef typename TCStringFormatterAll<typename tf_CStr::CFormat, fp64>::CFormatType CFormatType;
+					aint CurrentLen = o_String.f_GetLen();
+
+					typename CFormatType::COptionsFloat Options;
+					Options.m_FloatFormat = CFormatType::COptionsFloat::EFloatFormat_Shortest;
+
+					CFormatType::fs_AddToStrStatic(o_String, CurrentLen, typename CFormatType::CType(JSONValue.f_Float()), Options);
+					o_String.f_SetStrLen(CurrentLen);
+				}
 			}
 			break;
 		case EJSONType_Object:
