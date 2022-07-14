@@ -12,12 +12,14 @@ namespace NMib::NEncoding::NPrivate
 		using namespace NStr;
 
 		CStr Return;
+		{
+			CStr::CAppender StringAppender(Return);
 
-		NJSON::fg_GenerateJSONValue<NJSON::CParseContext>(Return, _JSON, 0, _pPrettySeparator, _Flags);
+			NJSON::fg_GenerateJSONValue<NJSON::CParseContext>(StringAppender, _JSON, 0, _pPrettySeparator, _Flags);
 
-		if (_pPrettySeparator)
-			Return += "\n";
-
+			if (_pPrettySeparator)
+				StringAppender += "\n";
+		}		
 		return Return;
 	}
 }

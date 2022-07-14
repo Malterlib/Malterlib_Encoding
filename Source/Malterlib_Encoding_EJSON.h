@@ -159,6 +159,12 @@ namespace NMib::NEncoding
 			, NPrivate::CEJSONExtraTypes
 		>
 	;
+
+	template <>
+	CEJSON CEJSON::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace);
+
+	template <>
+	NStr::CStr CEJSON::f_ToString(ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags) const;
 }
 
 #include "Malterlib_Encoding_EJSON_Uninstantiated.hpp"

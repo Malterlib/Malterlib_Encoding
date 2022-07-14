@@ -133,8 +133,8 @@ namespace NMib::NEncoding::NJSON
 		return tf_CParseContext::template fs_GenerateString<tf_CParseContext>(o_String, _Key);
 	}
 
-	template <typename tf_CParseContext>
-	static void fg_ParseJSONArray(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	template <typename tf_COutValue, typename tf_CParseContext>
+	static void fg_ParseJSONArray(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
 		DMibRequire(o_Value.f_Type() == EJSONType_Array);
@@ -175,8 +175,8 @@ namespace NMib::NEncoding::NJSON
 		}
 	}
 
-	template <typename tf_CParseContext>
-	static void fg_ParseJSONObject(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	template <typename tf_COutValue, typename tf_CParseContext>
+	static void fg_ParseJSONObject(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
 		DMibRequire(o_Value.f_Type() == EJSONType_Object);
@@ -382,18 +382,18 @@ namespace NMib::NEncoding::NJSON
 							break;
 						}
 
-						StringAppender.f_Commit();
-
-						if constexpr (tf_CParseContext::mc_bRecordStringMap)
 						{
-							auto StartLen = o_String.f_GetLen();
-							o_String += EscapedUTF16String;
-							_Context.f_MapCharacter(StartLen, pStart - o_pParse, o_String.f_GetLen());
-						}
-						else
-							o_String += EscapedUTF16String;
+							auto Committed = StringAppender.f_Commit();
 
-						StringAppender.f_Reset();
+							if constexpr (tf_CParseContext::mc_bRecordStringMap)
+							{
+								auto StartLen = Committed.m_String.f_GetLen();
+								Committed.m_String += EscapedUTF16String;
+								_Context.f_MapCharacter(StartLen, pStart - o_pParse, Committed.m_String.f_GetLen());
+							}
+							else
+								Committed.m_String += EscapedUTF16String;
+						}
 					}
 					break;
 				default:
@@ -405,12 +405,11 @@ namespace NMib::NEncoding::NJSON
 			{
 				if constexpr (!NTraits::TCIsSame<typename NTraits::TCRemoveReference<tf_FExtraParse>::CType, bool>::mc_Value)
 				{
-					StringAppender.f_Commit();
+					auto Committed = StringAppender.f_Commit();
 					if (_fExtraParse(pParse))
-					{
-						StringAppender.f_Reset();
 						continue;
-					}
+					else
+						Committed.f_Abort();
 				}
 
 				auto Character = *pParse;
@@ -445,8 +444,8 @@ namespace NMib::NEncoding::NJSON
 			return false;
 	}
 
-	template <typename tf_CParseContext>
-	static void fg_ParseJSONValue(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	template <typename tf_COutValue, typename tf_CParseContext>
+	static void fg_ParseJSONValue(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
 
@@ -606,7 +605,7 @@ namespace NMib::NEncoding::NJSON
 						if (!(*pParseTemp) || fg_StrFindChar(tf_CParseContext::mc_ConstantEndCharacters, *pParseTemp) >= 0 || fg_CharIsWhiteSpace(*pParseTemp))
 						{
 							pParse = pParseTemp;
-							o_Value = CJSON();
+							o_Value = tf_COutValue();
 							bSuccessful = true;
 							return;
 						}

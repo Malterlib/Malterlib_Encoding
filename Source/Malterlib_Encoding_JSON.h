@@ -29,6 +29,9 @@ namespace NMib::NEncoding
 		EJSONDialectFlag_None = 0
 		, EJSONDialectFlag_AllowUndefined = DMibBit(0)
 		, EJSONDialectFlag_AllowInvalidFloat = DMibBit(1)
+		, EJSONDialectFlag_HighPrecisionFloat = DMibBit(2)
+
+		, EJSONDialectFlag_All = EJSONDialectFlag_AllowUndefined | EJSONDialectFlag_AllowInvalidFloat | EJSONDialectFlag_HighPrecisionFloat
 	};
 
 	template <typename t_CJSONValue>

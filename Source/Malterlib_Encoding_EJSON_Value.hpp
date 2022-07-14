@@ -327,7 +327,6 @@ namespace NMib::NEncoding
 			break;
 		case EEJSONType_Date:
 			{
-
 				if (!f_Date().f_IsValid())
 				{
 					_Ret["$date"] = nullptr;
@@ -694,8 +693,7 @@ namespace NMib::NEncoding
 	template <typename t_CParent>
 	TCEJSONValue<t_CParent> TCEJSONValue<t_CParent>::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace)
 	{
-		CJSON JSON = CJSON::fs_FromString(_String, _FileName, _bConvertNullToSpace);
-		return CEJSON::fs_FromJSON(JSON);
+		return CEJSON::fs_FromJSON(CJSON::fs_FromString(_String, _FileName, _bConvertNullToSpace));
 	}
 
 	template <typename t_CParent>

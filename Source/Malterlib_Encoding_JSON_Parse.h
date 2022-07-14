@@ -60,14 +60,14 @@ namespace NMib::NEncoding::NJSON
 		static inline constexpr ch8 mc_ConstantEndCharacters[] = ",}]";
 	};
 
-	template <typename tf_CParseContext>
-	static void fg_ParseJSONArray(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
-	template <typename tf_CParseContext>
-	static void fg_ParseJSONObject(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
+	template <typename tf_COutValue, typename tf_CParseContext>
+	static void fg_ParseJSONArray(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
+	template <typename tf_COutValue, typename tf_CParseContext>
+	static void fg_ParseJSONObject(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
 	template <uch8 t_QuoteCharacter, EParseJSONStringFlag t_Flags, typename tf_CParseContext, typename tf_FExtraParse = bool>
 	static bool fg_ParseJSONString(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext &_Context, tf_FExtraParse &&_fExtraParse = false);
-	template <typename tf_CParseContext>
-	static void fg_ParseJSONValue(CJSON &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
+	template <typename tf_COutValue, typename tf_CParseContext>
+	static void fg_ParseJSONValue(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
 }
 
 #include "Malterlib_Encoding_JSON_Parse.hpp"

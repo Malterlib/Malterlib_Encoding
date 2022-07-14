@@ -68,9 +68,9 @@ namespace NMib::NEncoding
 			if (!this->f_IsValid())
 				o_FormatInto += "INVALID";
 			else if (_Options.m_LocalOptions.m_PrettySeparator[0])
-				o_FormatInto += static_cast<CValue const &>(*this).f_ToString(_Options.m_LocalOptions.m_PrettySeparator);
+				o_FormatInto += static_cast<CValue const &>(*this).f_ToString(_Options.m_LocalOptions.m_PrettySeparator, EJSONDialectFlag_AllowUndefined | EJSONDialectFlag_AllowInvalidFloat);
 			else
-				o_FormatInto += static_cast<CValue const &>(*this).f_ToString(nullptr);
+				o_FormatInto += static_cast<CValue const &>(*this).f_ToString(nullptr, EJSONDialectFlag_AllowUndefined | EJSONDialectFlag_AllowInvalidFloat);
 		}
 		catch (NException::CException const &_Exception)
 		{
