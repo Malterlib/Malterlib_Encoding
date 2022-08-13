@@ -10,14 +10,18 @@
 #include <Mib/Test/Performance>
 #include <Mib/Cryptography/RandomID>
 
+#ifdef DCompiler_MSVC
+#pragma warning(disable:4996)
+#endif
+
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
 #include <string>
-
 #include <daw/json/daw_json_iterator.h>
 #include <daw/json/daw_json_link.h>
+
 #include <nlohmann/json.hpp>
 
 struct CCoordinate
