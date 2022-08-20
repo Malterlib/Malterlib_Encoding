@@ -75,6 +75,15 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJSONValue>
+	t_CJSONValue TCJSONObject<t_CJSONValue>::f_GetMemberValue(NStr::CStr const &_Name, t_CJSONValue &&_Default) const
+	{
+		auto pFound = mp_ObjectTree.f_FindEqual(_Name);
+		if (pFound && pFound->f_Value().f_Type() == _Default.f_Type())
+			return pFound->f_Value();
+		return fg_Move(_Default);
+	}
+
+	template <typename t_CJSONValue>
 	t_CJSONValue &TCJSONObject<t_CJSONValue>::f_CreateMember(NStr::CStr const &_Name)
 	{
 		auto pFound = mp_ObjectTree.f_FindEqual(_Name);

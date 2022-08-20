@@ -170,6 +170,7 @@ namespace NMib::NEncoding
 		CValue const &operator [] (NStr::CStr const &_Name) const;
 		bool f_RemoveMember(NStr::CStr const &_Name);
 		CValue f_GetMemberValue(NStr::CStr const &_Name, CValue const &_Default) const;
+		CValue f_GetMemberValue(NStr::CStr const &_Name, CValue &&_Default) const;
 		void f_SortObjectsLexicographically();
 
 		//
@@ -248,6 +249,7 @@ namespace NMib::NEncoding
 		t_CJSONValue const *f_GetMember(NStr::CStr const &_Name, EJSONType _Type) const;
 		t_CJSONValue *f_GetMember(NStr::CStr const &_Name, EJSONType _Type);
 		t_CJSONValue f_GetMemberValue(NStr::CStr const &_Name, t_CJSONValue const &_Default) const;
+		t_CJSONValue f_GetMemberValue(NStr::CStr const &_Name, t_CJSONValue &&_Default) const;
 		t_CJSONValue &f_CreateMember(NStr::CStr const &_Name);
 
 		t_CJSONValue &operator [](NStr::CStr const &_Name);
