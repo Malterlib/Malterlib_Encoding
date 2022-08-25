@@ -5,12 +5,6 @@
 namespace NMib::NEncoding
 {
 	template <>
-	CJSON CJSON::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace);
-
-	template <>
-	NStr::CStr CJSON::f_ToString(ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags) const;
-
-	template <>
 	NStr::CStr CJSON::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags) const;
 
 #ifndef DCompiler_MSVC_Workaround
@@ -97,23 +91,26 @@ namespace NMib::NEncoding
 		return Return;
 	}
 
-	template <typename t_CJSONValue>
+	template <typename t_CJSONValue, bool t_bOrdered>
 	template <typename tf_CStream>
-	void TCJSONObject<t_CJSONValue>::f_Feed(tf_CStream &_Stream) const
+	void TCJSONObject<t_CJSONValue, t_bOrdered>::f_Feed(tf_CStream &_Stream) const
 	{
 		_Stream << mp_Objects;
 	}
 
-	template <typename t_CJSONValue>
+	template <typename t_CJSONValue, bool t_bOrdered>
 	template <typename tf_CStream>
-	void TCJSONObject<t_CJSONValue>::f_Consume(tf_CStream &_Stream)
+	void TCJSONObject<t_CJSONValue, t_bOrdered>::f_Consume(tf_CStream &_Stream)
 	{
 		_Stream >> mp_Objects;
-		for (auto &Object : mp_Objects)
+		if constexpr (t_bOrdered)
 		{
-			if (mp_ObjectTree.f_FindEqual(Object.f_Name()))
-				DMibError("Duplicate object in stream");
-			mp_ObjectTree.f_Insert(Object);
+			for (auto &Object : mp_Objects)
+			{
+				if (mp_ObjectTree.f_FindEqual(Object.f_Name()))
+					DMibError("Duplicate object in stream");
+				mp_ObjectTree.f_Insert(Object);
+			}
 		}
 	}
 }
@@ -121,41 +118,43 @@ namespace NMib::NEncoding
 namespace NMib::NEncoding::NPrivate
 {
 #ifndef DCompiler_MSVC_Workaround
-	template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
-	template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<typename TCJSONValueBase<t_TCValue, t_CTypes>::CVariantType, void (tf_CType &&)>::mc_Value> *>
-	TCJSONValueBase<t_TCValue, t_CTypes>::TCJSONValueBase(tf_CType &&_Value)
+	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
+	template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<typename TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::CVariantType, void (tf_CType &&)>::mc_Value> *>
+	TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJSONValueBase(tf_CType &&_Value)
 		: mp_Value(fg_Forward<tf_CType>(_Value))
 	{
 	}
 #endif
 
-	template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
 	template <typename tf_CStream>
-	void TCJSONValueBase<t_TCValue, t_CTypes>::f_Feed(tf_CStream &_Stream) const
+	void TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::f_Feed(tf_CStream &_Stream) const
 	{
 		_Stream << mp_Value;
 	}
 
-	template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
+	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
 	template <typename tf_CStream>
-	void TCJSONValueBase<t_TCValue, t_CTypes>::f_Consume(tf_CStream &_Stream)
+	void TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::f_Consume(tf_CStream &_Stream)
 	{
 		_Stream >> mp_Value;
 	}
 
-	template <typename t_CJSONValue>
+	template <typename t_CJSONValue, bool t_bOrdered>
 	template <typename tf_CStream>
-	void TCObjectEntry<t_CJSONValue>::f_Feed(tf_CStream &_Stream) const
+	void TCObjectEntry<t_CJSONValue, t_bOrdered>::f_Feed(tf_CStream &_Stream) const
 	{
-		_Stream << mp_Name;
+		if constexpr (t_bOrdered)
+			_Stream << this->mp_Name;
 		_Stream << mp_Value;
 	}
 
-	template <typename t_CJSONValue>
+	template <typename t_CJSONValue, bool t_bOrdered>
 	template <typename tf_CStream>
-	void TCObjectEntry<t_CJSONValue>::f_Consume(tf_CStream &_Stream)
+	void TCObjectEntry<t_CJSONValue, t_bOrdered>::f_Consume(tf_CStream &_Stream)
 	{
-		_Stream >> mp_Name;
+		if constexpr (t_bOrdered)
+			_Stream >> this->mp_Name;
 		_Stream >> mp_Value;
 	}
 	template <typename tf_CStream>

@@ -128,7 +128,7 @@ namespace NMib::NEncoding::NJSON
 	template <typename tf_CParseContext, typename tf_CStr, typename tf_CJson>
 	static void fg_GenerateJSONObject(tf_CStr &o_String, tf_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags)
 	{
-		auto iChild = _Value.f_Object().f_OrderedIterator();
+		auto iChild = _Value.f_OrderedIterator();
 		if (!iChild)
 		{
 			// Empty object
@@ -175,7 +175,7 @@ namespace NMib::NEncoding::NJSON
 	template <typename tf_CParseContext, typename tf_CStr, typename tf_CJson>
 	static void fg_GenerateJSONArray(tf_CStr &o_String, tf_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags)
 	{
-		auto iChild = _Value.f_Array().f_GetIterator();
+		auto iChild = _Value.f_GetIterator();
 		if (!iChild)
 		{
 			// Empty array
@@ -231,7 +231,7 @@ namespace NMib::NEncoding::NJSON
 			break;
 		case EJSONType_Integer:
 			{
-				typedef typename TCStringFormatterAll<typename tf_CStr::CString::CFormat, int64>::CFormatType CFormatType;
+				using CFormatType = typename TCStringFormatterAll<typename tf_CStr::CString::CFormat, int64>::CFormatType;
 				auto Committed = o_String.f_Commit();
 				aint CurrentLen = Committed.m_String.f_GetLen();
 				CFormatType::fs_AddToStrStatic(Committed.m_String, CurrentLen, typename CFormatType::CType(JSONValue.f_Integer()));
@@ -246,7 +246,7 @@ namespace NMib::NEncoding::NJSON
 				else
 				{
 					auto Committed = o_String.f_Commit();
-					typedef typename TCStringFormatterAll<typename tf_CStr::CString::CFormat, fp64>::CFormatType CFormatType;
+					using CFormatType = typename TCStringFormatterAll<typename tf_CStr::CString::CFormat, fp64>::CFormatType;
 					aint CurrentLen = Committed.m_String.f_GetLen();
 
 					typename CFormatType::COptionsFloat Options;
@@ -260,10 +260,10 @@ namespace NMib::NEncoding::NJSON
 			}
 			break;
 		case EJSONType_Object:
-			fg_GenerateJSONObject<tf_CParseContext>(o_String, _Value, _Depth, _pPrettySeparator, _Flags & EJSONDialectFlag_All);
+			fg_GenerateJSONObject<tf_CParseContext>(o_String, _Value.f_Object(), _Depth, _pPrettySeparator, _Flags & EJSONDialectFlag_All);
 			break;
 		case EJSONType_Array:
-			fg_GenerateJSONArray<tf_CParseContext>(o_String, _Value, _Depth, _pPrettySeparator, _Flags & EJSONDialectFlag_All);
+			fg_GenerateJSONArray<tf_CParseContext>(o_String, _Value.f_Array(), _Depth, _pPrettySeparator, _Flags & EJSONDialectFlag_All);
 			break;
 		case EJSONType_Null:
 			o_String += "null";
@@ -285,5 +285,26 @@ namespace NMib::NEncoding::NJSON
 			DMibError("Invalid JSON type in value node");
 		break;
 		}
+	}
+
+}
+
+namespace NMib::NEncoding
+{
+	template <typename t_CParent>
+	NStr::CStr TCJSONValue<t_CParent>::f_ToString(ch8 const * _pPrettySeparator, EJSONDialectFlag _Flags) const
+	{
+		using namespace NStr;
+
+		CStr Return;
+		{
+			CStr::CAppender StringAppender(Return);
+
+			NJSON::fg_GenerateJSONValue<NJSON::CParseContext>(StringAppender, *this, 0, _pPrettySeparator, _Flags);
+
+			if (_pPrettySeparator)
+				StringAppender += "\n";
+		}
+		return Return;
 	}
 }

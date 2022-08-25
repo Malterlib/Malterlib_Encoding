@@ -2,9 +2,17 @@
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #ifdef DMalterlibEnableThirdPartyComparisonTests
+#define RAPIDJSON_USE_MEMBERSMAP 1
 
 #include <Mib/Encoding/JSON>
-#include <Mib/Encoding/JSONShortcuts>
+#include <Mib/Encoding/JSONImpl>
+#include <Mib/Encoding/EJSON>
+#include <Mib/Encoding/EJSONImpl>
+#include <Mib/Encoding/EJSONParse>
+#include <Mib/Encoding/EJSONGenerate>
+#include <Mib/Encoding/JSONParse>
+#include <Mib/Encoding/JSONParse>
+#include <Mib/Encoding/JSONGenerate>
 #include <Mib/Test/Exception>
 #include <Mib/Stream/ByteVector>
 #include <Mib/Test/Performance>
@@ -90,7 +98,7 @@ namespace
 
 		CStr fp_GenerateTestData(bool _bFloat, CCoordinate &o_Average)
 		{
-			CJSON Data;
+			CJSONSorted Data;
 			auto &OutArray = Data["coordinates"].f_Array();
 			for (mint i = 0; i < 512 * 1024; ++i)
 			{
@@ -185,7 +193,7 @@ namespace
 				}
 				mint MalterlibLen = 0;
 				{
-					auto const Document = NEncoding::CJSON::fs_FromString(JSONString);
+					auto const Document = NEncoding::CJSONSorted::fs_FromString(JSONString);
 
 					CTestPerformanceMeasure Measure("Malterlib");
 					for (mint i = 0; i < nIterations; ++i)
@@ -204,7 +212,7 @@ namespace
 				}
 				mint MalterlibEJSONLen = 0;
 				{
-					auto const Document = NEncoding::CEJSON::fs_FromString(JSONString);
+					auto const Document = NEncoding::CEJSONSorted::fs_FromString(JSONString);
 
 					CTestPerformanceMeasure Measure("MalterlibEJSON");
 					for (mint i = 0; i < nIterations; ++i)
@@ -396,7 +404,7 @@ namespace
 						Measure.f_Start();
 						MalterlibResult = [&]() inline_never -> CCoordinate
 							{
-								auto const Document = NEncoding::CJSON::fs_FromString(JSONString);
+								auto const Document = NEncoding::CJSONSorted::fs_FromString(JSONString);
 
 								if constexpr (tf_bDoCalculation)
 								{
@@ -431,7 +439,7 @@ namespace
 						Measure.f_Start();
 						MalterlibEJSONResult = [&]() inline_never -> CCoordinate
 							{
-								auto const Document = NEncoding::CEJSON::fs_FromString(JSONString);
+								auto const Document = NEncoding::CEJSONSorted::fs_FromString(JSONString);
 
 								if constexpr (tf_bDoCalculation)
 								{

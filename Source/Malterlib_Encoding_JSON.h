@@ -34,17 +34,17 @@ namespace NMib::NEncoding
 		, EJSONDialectFlag_All = EJSONDialectFlag_AllowUndefined | EJSONDialectFlag_AllowInvalidFloat | EJSONDialectFlag_HighPrecisionFloat
 	};
 
-	template <typename t_CJSONValue>
-	class TCJSONObject;
+	template <typename t_CJSONValue, bool t_bOrdered>
+	struct TCJSONObject;
 
 	template <typename t_CParent>
-	class TCJSONValue : public t_CParent
+	struct TCJSONValue : public t_CParent
 	{
 	protected:
 		using CValue = typename t_CParent::CValue;
 		struct CDummy {};
 	public:
-		typedef TCJSONObject<CValue> CObject;
+		typedef TCJSONObject<CValue, t_CParent::mc_bOrdered> CObject;
 		typedef NContainer::TCVector<CValue> CArray;
 
 		struct CKeyValue
@@ -142,8 +142,8 @@ namespace NMib::NEncoding
 		fp64 &f_Float();
 		bool const &f_Boolean() const;
 		bool &f_Boolean();
-		TCJSONObject<CValue> const &f_Object() const;
-		TCJSONObject<CValue> &f_Object();
+		CObject const &f_Object() const;
+		CObject &f_Object();
 		NContainer::TCVector<CValue> const &f_Array() const;
 		NContainer::TCVector<CValue> &f_Array();
 		NContainer::TCVector<NStr::CStr> f_StringArray() const &;
@@ -203,7 +203,7 @@ namespace NMib::NEncoding
 		// Parsing/generating
 		// ==============
 
-		static TCJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr(), bool _bConvertNullToSpace = false);
+		static CValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr(), bool _bConvertNullToSpace = false);
 		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", EJSONDialectFlag _Flags = EJSONDialectFlag_None) const;
 		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJSONDialectFlag _Flags = EJSONDialectFlag_None) const;
 
@@ -212,30 +212,24 @@ namespace NMib::NEncoding
 		inline_always void fp_PromoteType(EJSONType _Type);
 	};
 
-	template <typename tf_CJSONValue>
-	typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator begin(TCJSONObject<tf_CJSONValue> &_JSONObject);
-	template <typename tf_CJSONValue>
-	NContainer::CIteratorEndSentinel end(TCJSONObject<tf_CJSONValue> &_JSONObject);
-	template <typename tf_CJSONValue>
-	typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIteratorConst begin(TCJSONObject<tf_CJSONValue> const &_JSONObject);
-	template <typename tf_CJSONValue>
-	NContainer::CIteratorEndSentinel end(TCJSONObject<tf_CJSONValue> const &_JSONObject);
-
-	template <typename t_CJSONValue>
-	class TCJSONObject
+	template <typename t_CJSONValue, bool t_bOrdered>
+	struct TCJSONObject
 	{
 	public:
-		typedef NPrivate::TCObjectEntry<t_CJSONValue> CObjectEntry;
+		typedef NPrivate::TCObjectEntry<t_CJSONValue, t_bOrdered> CObjectEntry;
 	private:
 		typedef typename NPrivate::CObjectEntryBase::CCompare CCompare;
 
-		template <typename tf_CJSONValue>
-		friend typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator begin(TCJSONObject<tf_CJSONValue> &_JSONObject);
-		template <typename tf_CJSONValue>
-		friend typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIteratorConst begin(TCJSONObject<tf_CJSONValue> const &_JSONObject);
+		using CObjects = typename TCChooseType<t_bOrdered, NContainer::TCLinkedList<CObjectEntry>, NContainer::TCMap<NStr::CStr, CObjectEntry>>::CType;
+		using CObjectsTree = typename TCChooseType
+			<
+				t_bOrdered
+				, NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>
+				, CEmpty
+			>::CType
+		;
 
 	public:
-
 		TCJSONObject();
 		~TCJSONObject();
 		TCJSONObject(TCJSONObject const &_Other);
@@ -256,14 +250,20 @@ namespace NMib::NEncoding
 		t_CJSONValue const &operator [] (NStr::CStr const &_Name) const;
 
 		bool f_RemoveMember(NStr::CStr const &_Name);
-		void f_RemoveMember(typename NContainer::TCLinkedList<CObjectEntry>::CIteratorConst &_Iterator);
-		void f_RemoveMember(typename NContainer::TCLinkedList<CObjectEntry>::CIterator &_Iterator);
-		void f_RemoveMember(typename NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>::CIterator &_Iterator);
+		void f_RemoveMember(typename CObjects::CIteratorConst &_Iterator)
+			requires (t_bOrdered)
+		;
+		void f_RemoveMember(typename CObjects::CIterator &_Iterator);
+		void f_RemoveMember(typename NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>::CIterator &_Iterator)
+			requires (t_bOrdered)
+		;
 
-		typename NContainer::TCLinkedList<CObjectEntry>::CIteratorConst f_OrderedIterator() const;
-		typename NContainer::TCLinkedList<CObjectEntry>::CIterator f_OrderedIterator();
+		typename CObjects::CIteratorConst f_OrderedIterator() const;
+		typename CObjects::CIterator f_OrderedIterator();
 
-		typename NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>::CIterator f_SortedIterator() const;
+		typename NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>::CIterator f_SortedIterator() const
+			requires (t_bOrdered)
+		;
 
 		bool f_IsEmpty() const;
 
@@ -274,31 +274,31 @@ namespace NMib::NEncoding
 		void f_SortObjectsLexicographically();
 
 	private:
-		NContainer::TCLinkedList<CObjectEntry> mp_Objects;
-		NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry> mp_ObjectTree;
+		CObjects mp_Objects;
+		[[no_unique_address]] CObjectsTree mp_ObjectTree;
 	};
 
 #ifndef DDocumentation_Doxygen
-	template <typename tf_CJSONValue>
-	typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIterator begin(TCJSONObject<tf_CJSONValue> &_JSONObject)
+	template <typename tf_CJSONValue, bool tf_bOrdered>
+	auto begin(TCJSONObject<tf_CJSONValue, tf_bOrdered> &_JSONObject)
 	{
-		return _JSONObject.mp_Objects.f_GetIterator();
+		return _JSONObject.f_OrderedIterator();
 	}
 
-	template <typename tf_CJSONValue>
-	NContainer::CIteratorEndSentinel end(TCJSONObject<tf_CJSONValue> &_JSONObject)
+	template <typename tf_CJSONValue, bool tf_bOrdered>
+	NContainer::CIteratorEndSentinel end(TCJSONObject<tf_CJSONValue, tf_bOrdered> &_JSONObject)
 	{
 		return NContainer::CIteratorEndSentinel();
 	}
 
-	template <typename tf_CJSONValue>
-	typename NContainer::TCLinkedList<NPrivate::TCObjectEntry<tf_CJSONValue>>::CIteratorConst begin(TCJSONObject<tf_CJSONValue> const &_JSONObject)
+	template <typename tf_CJSONValue, bool tf_bOrdered>
+	auto begin(TCJSONObject<tf_CJSONValue, tf_bOrdered> const &_JSONObject)
 	{
-		return _JSONObject.mp_Objects.f_GetIterator();
+		return _JSONObject.f_OrderedIterator();
 	}
 
-	template <typename tf_CJSONValue>
-	NContainer::CIteratorEndSentinel end(TCJSONObject<tf_CJSONValue> const &_JSONObject)
+	template <typename tf_CJSONValue, bool tf_bOrdered>
+	NContainer::CIteratorEndSentinel end(TCJSONObject<tf_CJSONValue, tf_bOrdered> const &_JSONObject)
 	{
 		return NContainer::CIteratorEndSentinel();
 	}
@@ -312,10 +312,11 @@ namespace NMib::NEncoding
 
 namespace NMib::NEncoding
 {
-	template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
-	using TCJSON = t_TCValue<NPrivate::TCJSONValueBase<t_TCValue, t_CTypes>>;
+	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
+	using TCJSON = t_TCValue<NPrivate::TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>>;
 
-	using CJSON = TCJSON<TCJSONValue, NPrivate::CJSONExtraTypes>;
+	using CJSON = TCJSON<TCJSONValue, NPrivate::CJSONExtraTypes, true>;
+	using CJSONSorted = TCJSON<TCJSONValue, NPrivate::CJSONExtraTypes, false>;
 }
 
 #include "Malterlib_Encoding_JSON_Uninstantiated.hpp"

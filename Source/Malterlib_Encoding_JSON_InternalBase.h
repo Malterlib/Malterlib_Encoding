@@ -4,16 +4,16 @@
 
 namespace NMib::NEncoding
 {
-	template <typename t_CJSONValue>
-	class TCJSONObject;
+	template <typename t_CJSONValue, bool t_bOrdered>
+	struct TCJSONObject;
 }
 
 namespace NMib::NEncoding::NPrivate
 {
-	class CObjectEntryBase
+	struct CObjectEntryBase
 	{
-		template <typename t_CJSONValue>
-		friend class NEncoding::TCJSONObject;
+		template <typename t_CJSONValue, bool t_bOrdered>
+		friend struct NEncoding::TCJSONObject;
 
 	protected:
 
@@ -24,7 +24,7 @@ namespace NMib::NEncoding::NPrivate
 		CObjectEntryBase(CObjectEntryBase const &_Other);
 		CObjectEntryBase(CObjectEntryBase &&_Other);
 
-		class CCompare
+		struct CCompare
 		{
 		public:
 			inline_small NStr::CStr const &operator () (CObjectEntryBase const &_Node) const
@@ -34,14 +34,15 @@ namespace NMib::NEncoding::NPrivate
 		};
 	};
 
-	template <typename t_CJSONValue>
-	struct TCObjectEntry : public CObjectEntryBase
+	template <typename t_CJSONValue, bool t_bOrdered>
+	struct TCObjectEntry : public TCChooseType<t_bOrdered, CObjectEntryBase, CEmpty>::CType
 	{
-		template <typename t_CJSONValue2>
-		friend class NEncoding::TCJSONObject;
+		template <typename t_CJSONValue2, bool t_bOrdered2>
+		friend struct NEncoding::TCJSONObject;
 
 	public:
 		TCObjectEntry();
+		~TCObjectEntry() = default;
 
 		bool operator == (TCObjectEntry const &_Right) const;
 		COrdering_Partial operator <=> (TCObjectEntry const &_Right) const;

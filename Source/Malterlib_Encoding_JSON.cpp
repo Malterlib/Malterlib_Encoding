@@ -2,6 +2,8 @@
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include "Malterlib_Encoding_JSON.h"
+#include "Malterlib_Encoding_JSON_Parse.h"
+#include "Malterlib_Encoding_JSON_Generate.h"
 #include "Malterlib_Encoding_JSON.hpp"
 
 namespace NMib::NEncoding
@@ -25,21 +27,7 @@ namespace NMib::NEncoding
 
 	namespace NPrivate
 	{
-		CJSON fg_JSONParse(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace);
-		NStr::CStr fg_JSONGenerate(CJSON const &_JSON, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags);
 		NStr::CStr fg_JSONGenerateColored(CJSON const &_JSON, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJSONDialectFlag _Flags);
-	}
-
-	template <>
-	CJSON CJSON::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace)
-	{
-		return NPrivate::fg_JSONParse(_String, _FileName, _bConvertNullToSpace);
-	}
-
-	template <>
-	NStr::CStr CJSON::f_ToString(ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags) const
-	{
-		return NPrivate::fg_JSONGenerate(*this, _pPrettySeparator, _Flags);
 	}
 
 	template <>
@@ -48,14 +36,14 @@ namespace NMib::NEncoding
 		if (_AnsiFlags & NCommandLine::EAnsiEncodingFlag_Color)
 			return NPrivate::fg_JSONGenerateColored(*this, _pPrettySeparator, _AnsiFlags, _Flags);
 		else
-			return NPrivate::fg_JSONGenerate(*this, _pPrettySeparator, _Flags);
+			return f_ToString(_pPrettySeparator, _Flags);
 	}
 
 #ifdef DMibEncodingJSONExternTemplate
-	template class NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes>;
-	template class TCJSONValue<NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes>>;
-	template class TCJSONObject<CJSON>;
-	template struct NPrivate::TCObjectEntry<CJSON>;
+	template struct NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes, true>;
+	template struct TCJSONValue<NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes, true>>;
+	template struct TCJSONObject<CJSON, true>;
+	template struct NPrivate::TCObjectEntry<CJSON, true>;
 
 	template CJSON::TCJSONValue(CNullPtr &&);
 	template CJSON::TCJSONValue(CNullPtr &);

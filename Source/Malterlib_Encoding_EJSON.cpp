@@ -1,9 +1,17 @@
 
 #include "Malterlib_Encoding_EJSON.h"
 #include "Malterlib_Encoding_EJSON.hpp"
+#include "Malterlib_Encoding_EJSON_Generate.h"
+#include "Malterlib_Encoding_EJSON_Parse.h"
 
 namespace NMib::NEncoding
 {
+	constinit NStr::CStr const CEJSONConstStrings::mc_Date = NStr::gc_Str<"$date">;
+	constinit NStr::CStr const CEJSONConstStrings::mc_Binary = NStr::gc_Str<"$binary">;
+	constinit NStr::CStr const CEJSONConstStrings::mc_Type = NStr::gc_Str<"$type">;
+	constinit NStr::CStr const CEJSONConstStrings::mc_Value = NStr::gc_Str<"$value">;
+	constinit NStr::CStr const CEJSONConstStrings::mc_Escape = NStr::gc_Str<"$escape">;
+
 	CEJSONUserType::CEJSONUserType() = default;
 
 	CEJSONUserType::CEJSONUserType(NStr::CStr const &_Type, CJSON const &_Value)
@@ -43,6 +51,45 @@ namespace NMib::NEncoding
 		return CEJSONUserType{_Type, fg_Move(_Value)};
 	}
 
+	CEJSONUserTypeSorted::CEJSONUserTypeSorted() = default;
+
+	CEJSONUserTypeSorted::CEJSONUserTypeSorted(NStr::CStr const &_Type, CJSONSorted const &_Value)
+		: m_Type(_Type)
+		, m_Value(_Value)
+	{
+	}
+
+	CEJSONUserTypeSorted::CEJSONUserTypeSorted(NStr::CStr const &_Type, CJSONSorted &&_Value)
+		: m_Type(_Type)
+		, m_Value(fg_Move(_Value))
+	{
+	}
+
+	bool CEJSONUserTypeSorted::operator == (CEJSONUserTypeSorted const &_Right) const
+	{
+		if (m_Type != _Right.m_Type)
+			return false;
+		return m_Value == _Right.m_Value;
+	}
+
+	COrdering_Partial CEJSONUserTypeSorted::operator <=> (CEJSONUserTypeSorted const &_Right) const
+	{
+		if (auto Result = m_Type <=> _Right.m_Type; Result != 0)
+			return Result;
+
+		return m_Value <=> _Right.m_Value;
+	}
+
+	CEJSONUserTypeSorted fg_UserTypeSorted(NStr::CStr const &_Type, CJSONSorted const &_Value)
+	{
+		return CEJSONUserTypeSorted{_Type, _Value};
+	}
+
+	CEJSONUserTypeSorted fg_UserTypeSorted(NStr::CStr const &_Type, CJSONSorted &&_Value)
+	{
+		return CEJSONUserTypeSorted{_Type, fg_Move(_Value)};
+	}
+
 	NStr::CStr fg_EJSONTypeToString(EEJSONType _Type)
 	{
 		using namespace NEncoding;
@@ -63,11 +110,11 @@ namespace NMib::NEncoding
 	}
 
 #ifdef DMibEncodingJSONExternTemplate
-	template class NPrivate::TCJSONValueBase<TCEJSONValue, NPrivate::CEJSONExtraTypes>;
-	template class TCJSONValue<CEJSONValueBase>;
-	template class TCEJSONValue<CEJSONValueBase>;
-	template class TCJSONObject<CEJSON>;
-	template struct NPrivate::TCObjectEntry<CEJSON>;
+	template struct NPrivate::TCJSONValueBase<TCEJSONValue, NPrivate::CEJSONExtraTypes, true>;
+	template struct TCJSONValue<CEJSONValueBase>;
+	template struct TCEJSONValue<CEJSONValueBase>;
+	template struct TCJSONObject<CEJSON, true>;
+	template struct NPrivate::TCObjectEntry<CEJSON, true>;
 
 	template CJSONValueEJSON::TCJSONValue(CNullPtr &&);
 	template CJSONValueEJSON::TCJSONValue(CNullPtr &);

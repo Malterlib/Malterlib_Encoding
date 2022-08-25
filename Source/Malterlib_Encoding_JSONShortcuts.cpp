@@ -23,17 +23,32 @@ namespace NMib::NEncoding
 	}
 }
 
-NMib::NEncoding::CEJSON::CKey operator "" _ (const char *_pStr, std::size_t _Len)
+NMib::NEncoding::CEJSON::CKey operator ""_ (const char *_pStr, std::size_t _Len)
 {
 	NMib::NEncoding::CEJSON::CKey Ret;
 	Ret.m_Key = NMib::NStr::CStr(_pStr, _Len);
 	return Ret;
 }
-	
 
-NMib::NEncoding::CJSON::CKey operator "" __ (const char *_pStr, std::size_t _Len)
+
+NMib::NEncoding::CJSON::CKey operator ""__ (const char *_pStr, std::size_t _Len)
 {
 	NMib::NEncoding::CJSON::CKey Ret;
+	Ret.m_Key = NMib::NStr::CStr(_pStr, _Len);
+	return Ret;
+}
+
+NMib::NEncoding::CEJSONSorted::CKey operator ""_s (const char *_pStr, std::size_t _Len)
+{
+	NMib::NEncoding::CEJSONSorted::CKey Ret;
+	Ret.m_Key = NMib::NStr::CStr(_pStr, _Len);
+	return Ret;
+}
+
+
+NMib::NEncoding::CJSONSorted::CKey operator ""__s (const char *_pStr, std::size_t _Len)
+{
+	NMib::NEncoding::CJSONSorted::CKey Ret;
 	Ret.m_Key = NMib::NStr::CStr(_pStr, _Len);
 	return Ret;
 }

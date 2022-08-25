@@ -177,18 +177,6 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::fs_FromString(NStr::CStr const & _String, NStr::CStr const & _FileName, bool _bConvertNullToSpace) -> TCJSONValue
-	{
-		return TCJSONValue();
-	}
-
-	template <typename t_CParent>
-	NStr::CStr TCJSONValue<t_CParent>::f_ToString(ch8 const * _pPrettySeparator, EJSONDialectFlag _Flags) const
-	{
-		return NStr::CStr();
-	}
-
-	template <typename t_CParent>
 	NStr::CStr TCJSONValue<t_CParent>::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const * _pPrettySeparator, EJSONDialectFlag _Flags) const
 	{
 		return NStr::CStr();
@@ -267,14 +255,14 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::f_Object() const -> TCJSONObject<CValue> const &
+	auto TCJSONValue<t_CParent>::f_Object() const -> CObject const &
 	{
 		fp_CheckType(EJSONType_Object);
 		return this->mp_Value.template f_Get<EJSONType_Object>();
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::f_Object() -> TCJSONObject<CValue> &
+	auto TCJSONValue<t_CParent>::f_Object() -> CObject &
 	{
 		fp_PromoteType(EJSONType_Object);
 		return this->mp_Value.template f_Get<EJSONType_Object>();

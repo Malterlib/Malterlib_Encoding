@@ -33,13 +33,13 @@ namespace NMib::NEncoding::NPrivate
 
 	namespace NPrivate
 	{
-		template <typename t_CValue, typename t_CTypes>
+		template <typename t_CValue, bool t_bOrdered, typename t_CTypes>
 		struct TCGetJSONValueVariant
 		{
 		};
 
-		template <typename t_CValue, typename ...tp_CTypes>
-		struct TCGetJSONValueVariant<t_CValue, NMeta::TCTypeList<tp_CTypes...>>
+		template <typename t_CValue, bool t_bOrdered, typename ...tp_CTypes>
+		struct TCGetJSONValueVariant<t_CValue, t_bOrdered, NMeta::TCTypeList<tp_CTypes...>>
 		{
 			using CType =
 				NStorage::TCStreamableVariant
@@ -51,7 +51,7 @@ namespace NMib::NEncoding::NPrivate
 					, NStorage::TCMember<int64, EJSONType_Integer>
 					, NStorage::TCMember<fp64, EJSONType_Float>
 					, NStorage::TCMember<CJSONBoolean, EJSONType_Boolean>
-					, NStorage::TCMember<TCJSONObject<t_CValue>, EJSONType_Object>
+					, NStorage::TCMember<TCJSONObject<t_CValue, t_bOrdered>, EJSONType_Object>
 					, NStorage::TCMember<NContainer::TCVector<t_CValue>, EJSONType_Array>
 					, tp_CTypes...
 				>
@@ -61,12 +61,13 @@ namespace NMib::NEncoding::NPrivate
 
 	};
 
-	template <template <typename t_CParent> class t_TCValue, typename t_CTypes>
-	class TCJSONValueBase
+	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
+	struct TCJSONValueBase
 	{
-	public:
+		static constexpr bool mc_bOrdered = t_bOrdered;
+
 		using CValue = t_TCValue<TCJSONValueBase>;
-		using CVariantType = typename NPrivate::TCGetJSONValueVariant<CValue, typename t_CTypes::CTypes>::CType;
+		using CVariantType = typename NPrivate::TCGetJSONValueVariant<CValue, t_bOrdered, typename t_CTypes::CTypes>::CType;
 
 		template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<CVariantType, void (tf_CType &&)>::mc_Value> * = nullptr>
 		TCJSONValueBase(tf_CType &&_Value)

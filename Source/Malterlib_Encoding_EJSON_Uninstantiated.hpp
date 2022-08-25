@@ -26,4 +26,18 @@ namespace NMib::NEncoding
 		_Stream >> m_Type;
 		_Stream >> m_Value;
 	}
+
+	template <typename tf_CStream>
+	void CEJSONUserTypeSorted::f_Feed(tf_CStream &_Stream) const
+	{
+		_Stream << m_Type;
+		_Stream << m_Value;
+	}
+
+	template <typename tf_CStream>
+	void CEJSONUserTypeSorted::f_Consume(tf_CStream &_Stream)
+	{
+		_Stream >> m_Type;
+		_Stream >> m_Value;
+	}
 }

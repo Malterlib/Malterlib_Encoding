@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Malterlib_Encoding_JSON.h"
+#include <Mib/Storage/Indirection>
 
 #include <Mib/CommandLine/AnsiEncoding>
 
@@ -39,17 +40,48 @@ namespace NMib::NEncoding
 		void f_Consume(tf_CStream &_Stream);
 	};
 
+	struct CEJSONUserTypeSorted
+	{
+		CEJSONUserTypeSorted();
+		CEJSONUserTypeSorted(NStr::CStr const &_Type, CJSONSorted const &_Value);
+		CEJSONUserTypeSorted(NStr::CStr const &_Type, CJSONSorted &&_Value);
+
+		bool operator == (CEJSONUserTypeSorted const &_Right) const;
+		COrdering_Partial operator <=> (CEJSONUserTypeSorted const &_Right) const;
+
+		NStr::CStr m_Type;
+		CJSONSorted m_Value;
+
+		template <typename tf_CStream>
+		void f_Feed(tf_CStream &_Stream) const;
+		template <typename tf_CStream>
+		void f_Consume(tf_CStream &_Stream);
+	};
+
 	CEJSONUserType fg_UserType(NStr::CStr const &_Type, CJSON const &_Value);
 	CEJSONUserType fg_UserType(NStr::CStr const &_Type, CJSON &&_Value);
 
+	CEJSONUserTypeSorted fg_UserTypeSorted(NStr::CStr const &_Type, CJSONSorted const &_Value);
+	CEJSONUserTypeSorted fg_UserTypeSorted(NStr::CStr const &_Type, CJSONSorted &&_Value);
+
 	NStr::CStr fg_EJSONTypeToString(EEJSONType _Type);
 
-	template <typename t_CParent>
-	class TCEJSONValue : public TCJSONValue<t_CParent>
+	struct CEJSONConstStrings
 	{
-	public:
+		static NStr::CStr const mc_Date;
+		static NStr::CStr const mc_Binary;
+		static NStr::CStr const mc_Type;
+		static NStr::CStr const mc_Value;
+		static NStr::CStr const mc_Escape;
+	};
+
+	template <typename t_CParent>
+	struct TCEJSONValue : public TCJSONValue<t_CParent>
+	{
 		using CValue = typename TCJSONValue<t_CParent>::CValue;
 		using CKeyValue = typename TCJSONValue<t_CParent>::CKeyValue;
+		using CUserType = typename TCChooseType<CValue::mc_bOrdered, CEJSONUserType, CEJSONUserTypeSorted>::CType;
+		using CJSON = typename TCChooseType<CValue::mc_bOrdered, CJSON, CJSONSorted>::CType;
 
 		template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<TCJSONValue<t_CParent>, void (tf_CType &&)>::mc_Value> * = nullptr>
 		TCEJSONValue(tf_CType &&_Type)
@@ -92,8 +124,8 @@ namespace NMib::NEncoding
 		NTime::CTime &f_Date();
 		NContainer::CByteVector const &f_Binary() const;
 		NContainer::CByteVector &f_Binary();
-		CEJSONUserType const &f_UserType() const;
-		CEJSONUserType &f_UserType();
+		CUserType const &f_UserType() const;
+		CUserType &f_UserType();
 
 		CJSON f_ToJSON() const &;
 		CJSON f_ToJSON() &&;
@@ -110,8 +142,8 @@ namespace NMib::NEncoding
 		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJSONDialectFlag _Flags = EJSONDialectFlag_None) const;
 
 		using TCJSONValue<t_CParent>::f_GetMember;
-		typename TCJSONValue<t_CParent>::CValue const *f_GetMember(NStr::CStr const &_Name, EEJSONType _Type) const;
-		typename TCJSONValue<t_CParent>::CValue *f_GetMember(NStr::CStr const &_Name, EEJSONType _Type);
+		CValue const *f_GetMember(NStr::CStr const &_Name, EEJSONType _Type) const;
+		CValue *f_GetMember(NStr::CStr const &_Name, EEJSONType _Type);
 
 	protected:
 		void fp_PromoteEType(EEJSONType _Type);
@@ -120,23 +152,23 @@ namespace NMib::NEncoding
 		static void fsp_EscapeObject(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value);
 		static void fsp_ToJSON_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value);
 		static void fsp_FromJSON(TCEJSONValue &_Ret, CJSON const &_From);
-		static void fsp_FromJSON_Object(TCEJSONValue &_Ret, CJSON::CObject const &_From);
+		static void fsp_FromJSON_Object(TCEJSONValue &_Ret, typename CJSON::CObject const &_From);
 
 		void fp_ToJSON(CJSON &_Ret) &&;
 		static void fsp_EscapeObject(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value);
 		static void fsp_ToJSON_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value);
 		static void fsp_FromJSON(TCEJSONValue &_Ret, CJSON &&_From);
-		static void fsp_FromJSON_Object(TCEJSONValue &_Ret, CJSON::CObject &&_From);
+		static void fsp_FromJSON_Object(TCEJSONValue &_Ret, typename CJSON::CObject &&_From);
 
 		void fp_ToJSONNoConvert(CJSON &_Ret) const &;
 		static void fsp_ToJSONNoConvert_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value);
 		static void fsp_FromJSONNoConvert(TCEJSONValue &_Ret, CJSON const &_From);
-		static void fsp_FromJSONNoConvert_Object(TCEJSONValue &_Ret, CJSON::CObject const &_From);
+		static void fsp_FromJSONNoConvert_Object(TCEJSONValue &_Ret, typename CJSON::CObject const &_From);
 
 		void fp_ToJSONNoConvert(CJSON &_Ret) &&;
 		static void fsp_ToJSONNoConvert_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value);
 		static void fsp_FromJSONNoConvert(TCEJSONValue &_Ret, CJSON &&_From);
-		static void fsp_FromJSONNoConvert_Object(TCEJSONValue &_Ret, CJSON::CObject &&_From);
+		static void fsp_FromJSONNoConvert_Object(TCEJSONValue &_Ret, typename CJSON::CObject &&_From);
 	};
 
 	namespace NPrivate
@@ -147,24 +179,25 @@ namespace NMib::NEncoding
 				<
 					NStorage::TCMember<NTime::CTime, (EJSONType)EEJSONType_Date>
 					, NStorage::TCMember<NContainer::CByteVector, (EJSONType)EEJSONType_Binary>
-					, NStorage::TCMember<CEJSONUserType, (EJSONType)EEJSONType_UserType>
+					, NStorage::TCMember<NStorage::TCIndirection<CEJSONUserType>, (EJSONType)EEJSONType_UserType>
+				>
+			;
+		};
+
+		struct CEJSONExtraTypesSorted
+		{
+			using CTypes = NMeta::TCTypeList
+				<
+					NStorage::TCMember<NStorage::TCIndirection<NTime::CTime>, (EJSONType)EEJSONType_Date>
+					, NStorage::TCMember<NContainer::CByteVector, (EJSONType)EEJSONType_Binary>
+					, NStorage::TCMember<NStorage::TCIndirection<CEJSONUserTypeSorted>, (EJSONType)EEJSONType_UserType>
 				>
 			;
 		};
 	}
 
-	using CEJSON = TCJSON
-		<
-			TCEJSONValue
-			, NPrivate::CEJSONExtraTypes
-		>
-	;
-
-	template <>
-	CEJSON CEJSON::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace);
-
-	template <>
-	NStr::CStr CEJSON::f_ToString(ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags) const;
+	using CEJSON = TCJSON<TCEJSONValue, NPrivate::CEJSONExtraTypes, true>;
+	using CEJSONSorted = TCJSON<TCEJSONValue, NPrivate::CEJSONExtraTypesSorted, false>;
 }
 
 #include "Malterlib_Encoding_EJSON_Uninstantiated.hpp"

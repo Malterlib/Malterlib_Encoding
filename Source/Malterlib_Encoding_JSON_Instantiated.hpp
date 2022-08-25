@@ -4,10 +4,10 @@
 
 namespace NMib::NEncoding
 {
-	extern template class NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes>;
-	extern template class TCJSONValue<NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes>>;
-	extern template class TCJSONObject<CJSON>;
-	extern template struct NPrivate::TCObjectEntry<CJSON>;
+	extern template struct NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes, true>;
+	extern template struct TCJSONValue<NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes, true>>;
+	extern template struct TCJSONObject<CJSON, true>;
+	extern template struct NPrivate::TCObjectEntry<CJSON, true>;
 
 #ifdef DMibEncodingJSONExternTemplate
 

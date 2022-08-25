@@ -16,40 +16,40 @@ namespace NMib::NEncoding::NPrivate
 
 		NContainer::TCVector<mint> m_InEscapeParseDepth;
 
-		template <typename tf_CParseContext, typename tf_CStr>
-		static bool fs_GenerateValue(tf_CStr &o_String, NEncoding::CEJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags)
+		template <typename tf_CParseContext, typename tf_CJSON, typename tf_CStr>
+		static bool fs_GenerateValue(tf_CStr &o_String, tf_CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags)
 		{
 			switch (_Value.f_EType())
 			{
 			case EEJSONType_Date:
 				{
-					CJSON TempObject;
+					typename tf_CJSON::CJSON TempObject;
 					auto &Date = _Value.f_Date();
 					if (!Date.f_IsValid())
-						TempObject["$date"] = nullptr;
+						TempObject[CEJSONConstStrings::mc_Date] = nullptr;
 					else
-						TempObject["$date"] = NTime::CTimeConvert(Date).f_UnixMilliseconds();
+						TempObject[CEJSONConstStrings::mc_Date] = NTime::CTimeConvert(Date).f_UnixMilliseconds();
 
-					NJSON::fg_GenerateJSONObject<NJSON::CParseContext>(o_String, TempObject, _Depth, _pPrettySeparator, _Flags);
+					NJSON::fg_GenerateJSONObject<NJSON::CParseContext>(o_String, TempObject.f_Object(), _Depth, _pPrettySeparator, _Flags);
 					return true;
 				}
 			case EEJSONType_Binary:
 				{
-					CJSON TempObject;
-					TempObject["$binary"] = NEncoding::fg_Base64Encode(_Value.f_Binary());
+					typename tf_CJSON::CJSON TempObject;
+					TempObject[CEJSONConstStrings::mc_Binary] = NEncoding::fg_Base64Encode(_Value.f_Binary());
 
-					NJSON::fg_GenerateJSONObject<NJSON::CParseContext>(o_String, TempObject, _Depth, _pPrettySeparator, _Flags);
+					NJSON::fg_GenerateJSONObject<NJSON::CParseContext>(o_String, TempObject.f_Object(), _Depth, _pPrettySeparator, _Flags);
 					return true;
 				}
 			case EEJSONType_UserType:
 				{
-					CJSON TempObject;
+					typename tf_CJSON::CJSON TempObject;
 
 					auto &UserType = _Value.f_UserType();
-					TempObject["$type"] = UserType.m_Type;
-					TempObject["$value"] = UserType.m_Value;
+					TempObject[CEJSONConstStrings::mc_Type] = UserType.m_Type;
+					TempObject[CEJSONConstStrings::mc_Value] = UserType.m_Value;
 
-					NJSON::fg_GenerateJSONObject<NJSON::CParseContext>(o_String, TempObject, _Depth, _pPrettySeparator, _Flags);
+					NJSON::fg_GenerateJSONObject<NJSON::CParseContext>(o_String, TempObject.f_Object(), _Depth, _pPrettySeparator, _Flags);
 					return true;
 				}
 			case EEJSONType_Object:
@@ -70,15 +70,15 @@ namespace NMib::NEncoding::NPrivate
 
 					if (!iMember)
 					{
-						if (!(Name == "$escape" || Name == "$date" || Name == "$binary"))
+						if (!(Name == CEJSONConstStrings::mc_Escape || Name == CEJSONConstStrings::mc_Date || Name == CEJSONConstStrings::mc_Binary))
 							return false;
 					}
 					else
 					{
 						if
 							(
-								(Name == "$type" && iMember->f_Name() == "$value")
-								|| (Name == "$value" && iMember->f_Name() == "$type")
+								(Name == CEJSONConstStrings::mc_Type && iMember->f_Name() == CEJSONConstStrings::mc_Value)
+								|| (Name == CEJSONConstStrings::mc_Value && iMember->f_Name() == CEJSONConstStrings::mc_Type)
 							)
 						{
 							auto iNext = iMember;
@@ -98,7 +98,7 @@ namespace NMib::NEncoding::NPrivate
 					else
 						o_String += "{";
 
-					tf_CParseContext::template fs_GenerateKeyString<tf_CParseContext>(o_String, "$escape");
+					tf_CParseContext::template fs_GenerateKeyString<tf_CParseContext>(o_String, CEJSONConstStrings::mc_Escape);
 
 					if (_pPrettySeparator)
 						o_String += ": ";
@@ -122,7 +122,8 @@ namespace NMib::NEncoding::NPrivate
 			return false;
 		}
 
-		bool f_ParseValue(NEncoding::CEJSON &o_Value, uch8 const *&o_pParse)
+		template <typename tf_CJSON>
+		bool f_ParseValue(tf_CJSON &o_Value, uch8 const *&o_pParse)
 		{
 			return false;
 		}
@@ -132,7 +133,7 @@ namespace NMib::NEncoding::NPrivate
 		{
 			NJSON::CParseContext::f_ParseKey<tf_CParseContext>(o_Key, o_pParse);
 
-			if (o_Key != "$escape")
+			if (o_Key != CEJSONConstStrings::mc_Escape)
 				return;
 
 			if (!m_InEscapeParseDepth.f_IsEmpty() && m_InEscapeParseDepth.f_GetLast() == (m_ObjectArrayParseDepth - 1))
@@ -141,7 +142,8 @@ namespace NMib::NEncoding::NPrivate
 			m_InEscapeParseDepth.f_Insert(m_ObjectArrayParseDepth);
 		}
 
-		void f_ParseAfterValue(NEncoding::CEJSON &o_Value, uch8 const *&o_pParse)
+		template <typename tf_CJSON>
+		void f_ParseAfterValue(tf_CJSON &o_Value, uch8 const *&o_pParse)
 		{
 			if (!o_Value.f_IsObject())
 				return;
@@ -157,7 +159,7 @@ namespace NMib::NEncoding::NPrivate
 
 			if (!iMember)
 			{
-				if (Name == "$escape")
+				if (Name == CEJSONConstStrings::mc_Escape)
 				{
 					if (m_InEscapeParseDepth.f_IsEmpty())
 						return;
@@ -170,14 +172,14 @@ namespace NMib::NEncoding::NPrivate
 					if (Value.f_Type() != EJSONType_Object)
 						DMibError("Invalid EJSON: $escape value must be an object");
 					auto ValueTemp = fg_Move(Value);
-					o_Value = NEncoding::CEJSON();
+					o_Value = tf_CJSON();
 					o_Value = EJSONType_Object;
 					for (auto iMember = ValueTemp.f_Object().f_OrderedIterator(); iMember; ++iMember)
 						o_Value[iMember->f_Name()] = fg_Move(iMember->f_Value());
 
 					return;
 				}
-				else if (Name == "$date")
+				else if (Name == CEJSONConstStrings::mc_Date)
 				{
 					if (!m_InEscapeParseDepth.f_IsEmpty() && m_InEscapeParseDepth.f_GetLast() == m_ObjectArrayParseDepth)
 						return;
@@ -193,7 +195,7 @@ namespace NMib::NEncoding::NPrivate
 					o_Value = NTime::CTimeConvert::fs_FromUnixMilliseconds(Value.f_Integer());
 					return;
 				}
-				else if (Name == "$binary")
+				else if (Name == CEJSONConstStrings::mc_Binary)
 				{
 					if (!m_InEscapeParseDepth.f_IsEmpty() && m_InEscapeParseDepth.f_GetLast() == m_ObjectArrayParseDepth)
 						return;
@@ -214,17 +216,17 @@ namespace NMib::NEncoding::NPrivate
 
 				if
 					(
-						(Name == "$type" && iMember->f_Name() == "$value")
-						|| (Name == "$value" && iMember->f_Name() == "$type")
+						(Name == CEJSONConstStrings::mc_Type && iMember->f_Name() == CEJSONConstStrings::mc_Value)
+						|| (Name == CEJSONConstStrings::mc_Value && iMember->f_Name() == CEJSONConstStrings::mc_Type)
 					)
 				{
 					++iMember;
 					if (!iMember)
 					{
-						NEncoding::CEJSON Temp;
+						tf_CJSON Temp;
 						auto &UserType = Temp.f_UserType();
-						auto *pType = o_Value.f_GetMember("$type");
-						auto *pValue = o_Value.f_GetMember("$value");
+						auto *pType = o_Value.f_GetMember(CEJSONConstStrings::mc_Type);
+						auto *pValue = o_Value.f_GetMember(CEJSONConstStrings::mc_Value);
 						DMibCheck(pType);
 						DMibCheck(pValue);
 						if (pType->f_Type() != EJSONType_String)
@@ -239,4 +241,34 @@ namespace NMib::NEncoding::NPrivate
 			}
 		}
 	};
+}
+
+namespace NMib::NEncoding
+{
+	template <typename t_CParent>
+	TCEJSONValue<t_CParent> TCEJSONValue<t_CParent>::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace)
+	{
+		using namespace NStr;
+		TCEJSONValue<t_CParent> Output;
+		CStr ToParse = _String;
+
+		uch8 const *pParse = reinterpret_cast<uch8 const *>(ToParse.f_GetStr());
+
+		NPrivate::CEJSONParseContext Context;
+		Context.m_pStartParse = pParse;
+		Context.m_FileName = _FileName;
+		Context.m_bConvertNullToSpace = _bConvertNullToSpace;
+
+		fg_ParseWhiteSpace(pParse);
+
+		// Any value is allowed at root
+		NJSON::fg_ParseJSONValue(Output, pParse, Context);
+
+		fg_ParseWhiteSpace(pParse);
+
+		if (*pParse)
+			Context.f_ThrowError("Unexpected character after root value", pParse);
+
+		return fg_Move(Output);
+	}
 }
