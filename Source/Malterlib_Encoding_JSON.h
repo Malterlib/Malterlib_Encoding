@@ -275,7 +275,7 @@ namespace NMib::NEncoding
 
 	private:
 		CObjects mp_Objects;
-		[[no_unique_address]] CObjectsTree mp_ObjectTree;
+		DMibNoUniqueAddress CObjectsTree mp_ObjectTree;
 	};
 
 #ifndef DDocumentation_Doxygen
