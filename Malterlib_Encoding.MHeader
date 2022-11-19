@@ -82,12 +82,12 @@ Import "../Core/Lib_Malterlib.MTarget"
 
 Property
 {
-	MalterlibLibrary_Encoding define bool = MalterlibLibrary_All
+	MalterlibLibrary_Encoding: bool = MalterlibLibrary_All
 	MalterlibSubLibraries =+ "Encoding"
 	{
 		!!MalterlibLibrary_Encoding true
 	}
-//	MalterlibSubLibrarySeparate_Lib_Malterlib_Encoding define bool = true
+//	MalterlibSubLibrarySeparate_Lib_Malterlib_Encoding: bool = true
 	MalterlibIncludeRoots =+ "Include"->MakeAbsolute()
 	{
 		!!MalterlibLibrary_Encoding true
@@ -116,7 +116,10 @@ Property
 		PreprocessorDefines += "DMalterlibEnableThirdPartyComparisonTests"
 	}
 
-	Property.MalterlibLinkWithBoringSSL true
+	%Dependency "Lib_BoringSSL_crypto"
+	{
+		!DocumentationEnabled true
+	}
 }
 
 Property
@@ -124,6 +127,6 @@ Property
 	!!MalterlibEnableInternalTests true
 	
 	MalterlibTests =+ "Malterlib_Encoding"
-	MalterlibTestFiles_Malterlib_Encoding define [type(CEntity)] = ["Test/*"->MakeAbsolute()]
-	MalterlibTestExtraGroups_Malterlib_Encoding define [string] = ["{Test}/{Malterlib_Encoding}"]
+	MalterlibTestFiles_Malterlib_Encoding: [type(CEntity)] = ["Test/*"->MakeAbsolute()]
+	MalterlibTestExtraGroups_Malterlib_Encoding: [string] = ["{Test}/{Malterlib_Encoding}"]
 }

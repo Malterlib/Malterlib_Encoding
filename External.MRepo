@@ -1,5 +1,17 @@
-../../External/daw_json_link 14f343c36b1fc53ea2af98e837c2e615464d719f
-../../External/header_libraries 4219a1e77e7e7f8a1c79a76e26b01fe5252eb7cd
-../../External/json bc889afb4c5bf1c0d8ee29ef35eaaf4c8bef8a5d
-../../External/rapidjson 1ce516e50bec548eb3273e5b8563d97a18ba233c
-../../External/utf_range a4533a3f8d439d46125e67ebda1e4e55e1ba75aa
+{
+	"../../External/daw_json_link": {
+		"Hash": "14f343c36b1fc53ea2af98e837c2e615464d719f"
+	},
+	"../../External/header_libraries": {
+		"Hash": "4219a1e77e7e7f8a1c79a76e26b01fe5252eb7cd"
+	},
+	"../../External/json": {
+		"Hash": "bc889afb4c5bf1c0d8ee29ef35eaaf4c8bef8a5d"
+	},
+	"../../External/rapidjson": {
+		"Hash": "1ce516e50bec548eb3273e5b8563d97a18ba233c"
+	},
+	"../../External/utf_range": {
+		"Hash": "a4533a3f8d439d46125e67ebda1e4e55e1ba75aa"
+	}
+}
