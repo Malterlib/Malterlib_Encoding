@@ -219,6 +219,32 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJSONValue, bool t_bOrdered>
+	template <typename tf_FOnObject>
+	void TCJSONObject<t_CJSONValue, t_bOrdered>::f_ExtractAll(tf_FOnObject &&_fOnObject)
+	{
+		if constexpr (t_bOrdered)
+		{
+			for (auto &Object : mp_Objects)
+			{
+				mp_ObjectTree.f_Remove(Object);
+				_fOnObject(fg_Move(Object.mp_Name), fg_Move(Object.f_Value()));
+			}
+			mp_Objects.f_Clear();
+		}
+		else
+		{
+			mp_Objects.f_ExtractAll
+				(
+					[&_fOnObject](auto &&_NodeHandle)
+					{
+						_fOnObject(fg_Move(_NodeHandle.f_Key()), fg_Move(_NodeHandle.f_Value().f_Value()));
+					}
+				)
+			;
+		}
+	}
+
+	template <typename t_CJSONValue, bool t_bOrdered>
 	void TCJSONObject<t_CJSONValue, t_bOrdered>::f_RemoveMember(typename CObjects::CIterator &_Iterator)
 	{
 		if constexpr (t_bOrdered)

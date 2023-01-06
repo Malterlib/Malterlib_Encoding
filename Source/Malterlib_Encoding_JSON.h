@@ -265,6 +265,9 @@ namespace NMib::NEncoding
 			requires (t_bOrdered)
 		;
 
+		template <typename tf_FOnObject>
+		void f_ExtractAll(tf_FOnObject &&_fOnObject);
+
 		bool f_IsEmpty() const;
 
 		template <typename tf_CStream>
