@@ -24,7 +24,7 @@ namespace NMib::NEncoding
 		, EJSONType_Max = 32
 	};
 
-	enum EJSONDialectFlag
+	enum EJSONDialectFlag : uint32
 	{
 		EJSONDialectFlag_None = 0
 		, EJSONDialectFlag_AllowUndefined = DMibBit(0)

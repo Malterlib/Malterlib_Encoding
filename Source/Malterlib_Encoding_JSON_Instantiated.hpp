@@ -177,5 +177,4 @@ namespace NMib::NEncoding
 		(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJSON, true>::CLocalOptions const&) const
 	;
 #endif
-
 }

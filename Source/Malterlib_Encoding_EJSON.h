@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Malterlib_Encoding_JSON.h"
+
 #include <Mib/Storage/Indirection>
 
 #include <Mib/CommandLine/AnsiEncoding>
