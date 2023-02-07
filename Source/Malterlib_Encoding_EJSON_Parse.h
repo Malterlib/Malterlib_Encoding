@@ -143,6 +143,16 @@ namespace NMib::NEncoding::NPrivate
 		}
 
 		template <typename tf_CJSON>
+		void f_PreParse(tf_CJSON &o_Value, uch8 const *&o_pParse)
+		{
+		}
+
+		template <typename tf_CJSON>
+		void f_PostParse(tf_CJSON &o_Value, uch8 const *&o_pParse)
+		{
+		}
+
+		template <typename tf_CJSON>
 		void f_ParseAfterValue(tf_CJSON &o_Value, uch8 const *&o_pParse)
 		{
 			if (!o_Value.f_IsObject())

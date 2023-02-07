@@ -451,6 +451,9 @@ namespace NMib::NEncoding::NJSON
 
 		uch8 const *pParse = o_pParse;
 		bool bSuccessful = false;
+		if constexpr (tf_CParseContext::mc_bCustomParse)
+			_Context.f_PreParse(o_Value, pParse);
+
 		auto Cleanup = g_OnScopeExitWithException / [&]
 			{
 				if constexpr (tf_CParseContext::mc_bCustomParse)
@@ -458,6 +461,8 @@ namespace NMib::NEncoding::NJSON
 					if (bSuccessful)
 						_Context.f_ParseAfterValue(o_Value, pParse);
 				}
+				if constexpr (tf_CParseContext::mc_bCustomParse)
+					_Context.f_PostParse(o_Value, pParse);
 				o_pParse = pParse;
 			}
 		;
