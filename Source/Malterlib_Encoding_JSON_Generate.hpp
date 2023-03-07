@@ -302,7 +302,7 @@ namespace NMib::NEncoding
 
 			NJSON::fg_GenerateJSONValue<NJSON::CParseContext>(StringAppender, *this, 0, _pPrettySeparator, _Flags);
 
-			if (_pPrettySeparator)
+			if (_pPrettySeparator && !(_Flags & EJSONDialectFlag_TrimWhitespace))
 				StringAppender += "\n";
 		}
 		return Return;

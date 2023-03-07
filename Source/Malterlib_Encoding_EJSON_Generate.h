@@ -16,7 +16,7 @@ namespace NMib::NEncoding
 
 			NJSON::fg_GenerateJSONValue<NPrivate::CEJSONParseContext>(StringAppender, *this, 0, _pPrettySeparator, _Flags);
 
-			if (_pPrettySeparator)
+			if (_pPrettySeparator && !(_Flags & EJSONDialectFlag_TrimWhitespace))
 				StringAppender += "\n";
 		}
 		return Return;

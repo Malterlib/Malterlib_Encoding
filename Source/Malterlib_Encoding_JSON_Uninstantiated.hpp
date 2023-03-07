@@ -59,12 +59,14 @@ namespace NMib::NEncoding
 	{
 		try
 		{
+			constexpr static auto c_Flags = EJSONDialectFlag_AllowUndefined | EJSONDialectFlag_AllowInvalidFloat | EJSONDialectFlag_TrimWhitespace;
+
 			if (!this->f_IsValid())
 				o_FormatInto += "INVALID";
 			else if (_Options.m_LocalOptions.m_PrettySeparator[0])
-				o_FormatInto += static_cast<CValue const &>(*this).f_ToString(_Options.m_LocalOptions.m_PrettySeparator, EJSONDialectFlag_AllowUndefined | EJSONDialectFlag_AllowInvalidFloat);
+				o_FormatInto += static_cast<CValue const &>(*this).f_ToString(_Options.m_LocalOptions.m_PrettySeparator, c_Flags);
 			else
-				o_FormatInto += static_cast<CValue const &>(*this).f_ToString(nullptr, EJSONDialectFlag_AllowUndefined | EJSONDialectFlag_AllowInvalidFloat);
+				o_FormatInto += static_cast<CValue const &>(*this).f_ToString(nullptr, c_Flags);
 		}
 		catch (NException::CException const &_Exception)
 		{

@@ -224,7 +224,7 @@ namespace NMib::NEncoding
 
 				f_GenerateJSONValue(Return, _JSON, 0, _pPrettySeparator);
 
-				if (_pPrettySeparator)
+				if (_pPrettySeparator && !(m_Flags & EJSONDialectFlag_TrimWhitespace))
 					Return += "\n";
 
 				return Return;

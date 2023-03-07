@@ -30,8 +30,9 @@ namespace NMib::NEncoding
 		, EJSONDialectFlag_AllowUndefined = DMibBit(0)
 		, EJSONDialectFlag_AllowInvalidFloat = DMibBit(1)
 		, EJSONDialectFlag_HighPrecisionFloat = DMibBit(2)
+		, EJSONDialectFlag_TrimWhitespace = DMibBit(3)
 
-		, EJSONDialectFlag_All = EJSONDialectFlag_AllowUndefined | EJSONDialectFlag_AllowInvalidFloat | EJSONDialectFlag_HighPrecisionFloat
+		, EJSONDialectFlag_All = EJSONDialectFlag_AllowUndefined | EJSONDialectFlag_AllowInvalidFloat | EJSONDialectFlag_HighPrecisionFloat | EJSONDialectFlag_TrimWhitespace
 	};
 
 	template <typename t_CJSONValue, bool t_bOrdered>
