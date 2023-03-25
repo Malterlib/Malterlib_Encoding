@@ -28,7 +28,7 @@ namespace NMib::NEncoding
 		auto pWasDeleted = mp_pWasDeleted;
 		auto Data = co_await
 			(
-			 	NConcurrency::g_Dispatch(mp_FileActor) / [FileName = mp_FileName]() -> CEJSON
+				NConcurrency::g_Dispatch(mp_FileActor) / [FileName = mp_FileName]() -> CEJSON
 				{
 					if (!NFile::CFile::fs_FileExists(FileName))
 						return CEJSON();

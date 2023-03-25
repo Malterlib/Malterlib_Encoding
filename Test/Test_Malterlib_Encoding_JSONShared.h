@@ -132,7 +132,7 @@ namespace
 				}
 				{
 					DMibTestPath("Remove by string");
- 					t_CJSON JSON;
+					t_CJSON JSON;
 					
 					JSON["Test0"] = "52";
 					JSON["Test1"] = "53";

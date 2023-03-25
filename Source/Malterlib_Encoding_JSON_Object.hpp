@@ -258,7 +258,7 @@ namespace NMib::NEncoding
 	template <typename t_CJSONValue, bool t_bOrdered>
 	void TCJSONObject<t_CJSONValue, t_bOrdered>::f_RemoveMember
 		(
-		 	typename NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>::CIterator &_Iterator
+			typename NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>::CIterator &_Iterator
 		)
 		requires (t_bOrdered)
 	{
