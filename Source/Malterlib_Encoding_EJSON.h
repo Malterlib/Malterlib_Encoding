@@ -99,8 +99,8 @@ namespace NMib::NEncoding
 		TCEJSONValue(TCEJSONValue &_Other);
 		TCEJSONValue(TCEJSONValue &&_Other);
 		TCEJSONValue(TCEJSONValue const &&_Other);
-		TCEJSONValue(TCInitializerList<CValue> const &_Init);
-		TCEJSONValue(TCInitializerList<CKeyValue> const &_Init);
+		TCEJSONValue(std::initializer_list<CValue> const &_Init);
+		TCEJSONValue(std::initializer_list<CKeyValue> const &_Init);
 
 		TCEJSONValue(NContainer::CSecureByteVector const &_Value) = delete;
 		TCEJSONValue(NContainer::CSecureByteVector &_Value) = delete;

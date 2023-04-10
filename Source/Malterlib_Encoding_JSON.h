@@ -64,7 +64,7 @@ namespace NMib::NEncoding
 			CKey(CKey &&_Other);
 			NStr::CStr m_Key;
 			inline_always CKeyValue operator = (CValue &&_Value) &&;
-			inline_always CKeyValue operator = (TCInitializerList<CVoidTag> const &_Initializer) &&;
+			inline_always CKeyValue operator = (std::initializer_list<CVoidTag> const &_Initializer) &&;
 		private:
 			CKey(CKey const &_Other);
 		};
@@ -84,8 +84,8 @@ namespace NMib::NEncoding
 		TCJSONValue(TCJSONValue const &&_Other);
 		TCJSONValue(EJSONType _Type);
 		TCJSONValue(ch8 const *_pValue);
-		TCJSONValue(TCInitializerList<CValue> const &_Init);
-		TCJSONValue(TCInitializerList<CKeyValue> const &_Init);
+		TCJSONValue(std::initializer_list<CValue> const &_Init);
+		TCJSONValue(std::initializer_list<CKeyValue> const &_Init);
 
 		TCJSONValue(NContainer::CSecureByteVector const &_Value) = delete;
 		TCJSONValue(NContainer::CSecureByteVector &_Value) = delete;
@@ -115,8 +115,8 @@ namespace NMib::NEncoding
 		CValue &operator = (bool _Value);
 		CValue &operator = (EJSONType _Type);
 		CValue &operator = (ch8 const *_pValue);
-		CValue &operator = (TCInitializerList<CValue> const &_Init);
-		CValue &operator = (TCInitializerList<CKeyValue> const &_Init);
+		CValue &operator = (std::initializer_list<CValue> const &_Init);
+		CValue &operator = (std::initializer_list<CKeyValue> const &_Init);
 
 		bool operator == (TCJSONValue const &_Right) const;
 		COrdering_Partial operator <=> (TCJSONValue const &_Right) const;

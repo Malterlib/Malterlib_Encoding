@@ -82,7 +82,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::CKey::operator = (TCInitializerList<CVoidTag> const &_Initializer) && -> CKeyValue
+	auto TCJSONValue<t_CParent>::CKey::operator = (std::initializer_list<CVoidTag> const &_Initializer) && -> CKeyValue
 	{
 		DMibRequire(_Initializer.size() == 0);
 		CKeyValue Return;
