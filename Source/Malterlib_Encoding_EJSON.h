@@ -23,7 +23,7 @@ namespace NMib::NEncoding
 		, EEJSONType_UserType
 	};
 
-	struct CEJSONUserType
+	struct CEJSONUserType final
 	{
 		CEJSONUserType();
 		CEJSONUserType(NStr::CStr const &_Type, CJSON const &_Value);
@@ -41,7 +41,7 @@ namespace NMib::NEncoding
 		void f_Consume(tf_CStream &_Stream);
 	};
 
-	struct CEJSONUserTypeSorted
+	struct CEJSONUserTypeSorted final
 	{
 		CEJSONUserTypeSorted();
 		CEJSONUserTypeSorted(NStr::CStr const &_Type, CJSONSorted const &_Value);
