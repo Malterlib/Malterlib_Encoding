@@ -18,7 +18,7 @@ namespace NMib::NEncoding
 
 	template <typename tf_CValue>
 	CEJSON fg_ToJson(tf_CValue &&_Value)
-		requires (NTraits::TCIsEnum<tf_CValue>::mc_Value)
+		requires (NTraits::TCIsEnum<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CValue>::CType>::mc_Value)
 	;
 
 	CEJSON fg_ToJson(CJSON const &_Value);
