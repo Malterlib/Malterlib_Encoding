@@ -233,7 +233,7 @@ namespace NMib::NEncoding::NPrivate
 							DMibError("Invalid EJSON: $type value must be a string");
 
 						UserType.m_Type = fg_Move(pType->f_String());
-						UserType.m_Value = fg_Move(*pValue).f_ToJSONNoConvert();
+						UserType.m_Value = fg_Move(*pValue).f_ToJsonNoConvert();
 						o_Value = fg_Move(Temp);
 						return;
 					}

@@ -316,11 +316,11 @@ namespace
 				
 				DMibExpect(Value, ==, fs_GetEJSON());
 
-				auto ConstToJSON = Value.f_ToJSON();
-				DMibExpect(CEJSON::fs_FromJSON(ConstToJSON), ==, fs_GetEJSON());
+				auto ConstToJson = Value.f_ToJson();
+				DMibExpect(CEJSON::fs_FromJson(ConstToJson), ==, fs_GetEJSON());
 
-				auto MoveToJSON = fg_Move(Value).f_ToJSON();
-				DMibExpect(CEJSON::fs_FromJSON(fg_Move(MoveToJSON)), ==, fs_GetEJSON());
+				auto MoveToJson = fg_Move(Value).f_ToJson();
+				DMibExpect(CEJSON::fs_FromJson(fg_Move(MoveToJson)), ==, fs_GetEJSON());
 			};
 			DMibTestSuite("Stream")
 			{
@@ -334,7 +334,7 @@ namespace
 						OriginalTime = NTime::CTimeConvert::fs_FromUnixMilliseconds(NTime::CTimeConvert(OriginalTime).f_UnixMilliseconds());
 						CEJSON OriginalEJSON;
 						OriginalEJSON = OriginalTime;
-						CEJSON ConvertedEJSON = CEJSON::fs_FromJSON(OriginalEJSON.f_ToJSON());
+						CEJSON ConvertedEJSON = CEJSON::fs_FromJson(OriginalEJSON.f_ToJson());
 						DMibExpect(ConvertedEJSON.f_Date(), == , OriginalTime);
 					}
 				;
@@ -358,21 +358,21 @@ namespace
 			DMibTestSuite("JSONNoConvert")
 			{
 				auto JSON = CJSON::fs_FromString(fs_GetEJSONText());
-				auto EnhancedJSON = CEJSON::fs_FromJSONNoConvert(JSON);
+				auto EnhancedJSON = CEJSON::fs_FromJsonNoConvert(JSON);
 				DMibExpect(EnhancedJSON, !=, fs_GetEJSON());
-				auto ToJSON = EnhancedJSON.f_ToJSONNoConvert();
-				DMibExpect(ToJSON, ==, JSON);
+				auto ToJson = EnhancedJSON.f_ToJsonNoConvert();
+				DMibExpect(ToJson, ==, JSON);
 			};
 			DMibTestSuite("JSONNoConvert Move")
 			{
 				auto JSON = CJSON::fs_FromString(fs_GetEJSONText());
 				auto OriginalJSON = JSON;
-				auto EnhancedJSON = CEJSON::fs_FromJSONNoConvert(fg_Move(JSON));
+				auto EnhancedJSON = CEJSON::fs_FromJsonNoConvert(fg_Move(JSON));
 				DMibExpect(EnhancedJSON, !=, fs_GetEJSON());
 				auto OriginalEnhancedJSON = EnhancedJSON;
-				auto ToJSON = fg_Move(EnhancedJSON).f_ToJSONNoConvert();
+				auto ToJson = fg_Move(EnhancedJSON).f_ToJsonNoConvert();
 				DMibExpect(EnhancedJSON, !=, OriginalEnhancedJSON);
-				DMibExpect(ToJSON, ==, OriginalJSON);
+				DMibExpect(ToJson, ==, OriginalJSON);
 			};
 		}
 	};

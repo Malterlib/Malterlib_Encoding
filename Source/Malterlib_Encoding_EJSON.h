@@ -128,15 +128,15 @@ namespace NMib::NEncoding
 		CUserType const &f_UserType() const;
 		CUserType &f_UserType();
 
-		CJSON f_ToJSON() const &;
-		CJSON f_ToJSON() &&;
-		static TCEJSONValue fs_FromJSON(CJSON const &_JSON);
-		static TCEJSONValue fs_FromJSON(CJSON &&_JSON);
+		CJSON f_ToJson() const &;
+		CJSON f_ToJson() &&;
+		static TCEJSONValue fs_FromJson(CJSON const &_JSON);
+		static TCEJSONValue fs_FromJson(CJSON &&_JSON);
 
-		CJSON f_ToJSONNoConvert() const &;
-		CJSON f_ToJSONNoConvert() &&;
-		static TCEJSONValue fs_FromJSONNoConvert(CJSON const &_JSON);
-		static TCEJSONValue fs_FromJSONNoConvert(CJSON &&_JSON);
+		CJSON f_ToJsonNoConvert() const &;
+		CJSON f_ToJsonNoConvert() &&;
+		static TCEJSONValue fs_FromJsonNoConvert(CJSON const &_JSON);
+		static TCEJSONValue fs_FromJsonNoConvert(CJSON &&_JSON);
 
 		static TCEJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = NStr::CStr(), bool _bConvertNullToSpace = false);
 		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", EJSONDialectFlag _Flags = EJSONDialectFlag_None) const;
@@ -149,27 +149,27 @@ namespace NMib::NEncoding
 	protected:
 		void fp_PromoteEType(EEJSONType _Type);
 
-		void fp_ToJSON(CJSON &_Ret) const &;
+		void fp_ToJson(CJSON &_Ret) const &;
 		static void fsp_EscapeObject(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value);
-		static void fsp_ToJSON_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value);
-		static void fsp_FromJSON(TCEJSONValue &_Ret, CJSON const &_From);
-		static void fsp_FromJSON_Object(TCEJSONValue &_Ret, typename CJSON::CObject const &_From);
+		static void fsp_ToJson_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value);
+		static void fsp_FromJson(TCEJSONValue &_Ret, CJSON const &_From);
+		static void fsp_FromJson_Object(TCEJSONValue &_Ret, typename CJSON::CObject const &_From);
 
-		void fp_ToJSON(CJSON &_Ret) &&;
+		void fp_ToJson(CJSON &_Ret) &&;
 		static void fsp_EscapeObject(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value);
-		static void fsp_ToJSON_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value);
-		static void fsp_FromJSON(TCEJSONValue &_Ret, CJSON &&_From);
-		static void fsp_FromJSON_Object(TCEJSONValue &_Ret, typename CJSON::CObject &&_From);
+		static void fsp_ToJson_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value);
+		static void fsp_FromJson(TCEJSONValue &_Ret, CJSON &&_From);
+		static void fsp_FromJson_Object(TCEJSONValue &_Ret, typename CJSON::CObject &&_From);
 
-		void fp_ToJSONNoConvert(CJSON &_Ret) const &;
-		static void fsp_ToJSONNoConvert_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value);
-		static void fsp_FromJSONNoConvert(TCEJSONValue &_Ret, CJSON const &_From);
-		static void fsp_FromJSONNoConvert_Object(TCEJSONValue &_Ret, typename CJSON::CObject const &_From);
+		void fp_ToJsonNoConvert(CJSON &_Ret) const &;
+		static void fsp_ToJsonNoConvert_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value);
+		static void fsp_FromJsonNoConvert(TCEJSONValue &_Ret, CJSON const &_From);
+		static void fsp_FromJsonNoConvert_Object(TCEJSONValue &_Ret, typename CJSON::CObject const &_From);
 
-		void fp_ToJSONNoConvert(CJSON &_Ret) &&;
-		static void fsp_ToJSONNoConvert_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value);
-		static void fsp_FromJSONNoConvert(TCEJSONValue &_Ret, CJSON &&_From);
-		static void fsp_FromJSONNoConvert_Object(TCEJSONValue &_Ret, typename CJSON::CObject &&_From);
+		void fp_ToJsonNoConvert(CJSON &_Ret) &&;
+		static void fsp_ToJsonNoConvert_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value);
+		static void fsp_FromJsonNoConvert(TCEJSONValue &_Ret, CJSON &&_From);
+		static void fsp_FromJsonNoConvert_Object(TCEJSONValue &_Ret, typename CJSON::CObject &&_From);
 	};
 
 	namespace NPrivate
