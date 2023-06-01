@@ -169,6 +169,7 @@ namespace NMib::NEncoding
 		CValue *f_GetMember(NStr::CStr const &_Name, EJSONType _Type);
 		CValue &operator [] (NStr::CStr const &_Name);
 		CValue const &operator [] (NStr::CStr const &_Name) const;
+		CValue &operator () (NStr::CStr const &_Name);
 		bool f_RemoveMember(NStr::CStr const &_Name);
 		CValue f_GetMemberValue(NStr::CStr const &_Name, CValue const &_Default) const;
 		CValue f_GetMemberValue(NStr::CStr const &_Name, CValue &&_Default) const;
@@ -247,8 +248,9 @@ namespace NMib::NEncoding
 		t_CJSONValue f_GetMemberValue(NStr::CStr const &_Name, t_CJSONValue &&_Default) const;
 		t_CJSONValue &f_CreateMember(NStr::CStr const &_Name);
 
-		t_CJSONValue &operator [](NStr::CStr const &_Name);
+		t_CJSONValue &operator [] (NStr::CStr const &_Name);
 		t_CJSONValue const &operator [] (NStr::CStr const &_Name) const;
+		t_CJSONValue &operator () (NStr::CStr const &_Name);
 
 		bool f_RemoveMember(NStr::CStr const &_Name);
 		void f_RemoveMember(typename CObjects::CIteratorConst &_Iterator)

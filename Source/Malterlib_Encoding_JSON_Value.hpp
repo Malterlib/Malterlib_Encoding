@@ -643,6 +643,19 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
+	auto TCJSONValue<t_CParent>::operator () (NStr::CStr const &_Name) -> CValue &
+	{
+		if (!f_IsObject())
+			DMibError("Not an object");
+
+		auto pMember = f_Object().f_GetMember(_Name);
+		if (!pMember)
+			DMibError(fg_Format("Member '{}' not found", _Name));
+
+		return *pMember;
+	}
+
+	template <typename t_CParent>
 	bool TCJSONValue<t_CParent>::f_RemoveMember(NStr::CStr const &_Name)
 	{
 		return f_Object().f_RemoveMember(_Name);

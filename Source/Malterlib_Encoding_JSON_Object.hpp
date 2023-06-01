@@ -174,9 +174,20 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJSONValue, bool t_bOrdered>
-	t_CJSONValue &TCJSONObject<t_CJSONValue, t_bOrdered>::operator [](NStr::CStr const &_Name)
+	t_CJSONValue &TCJSONObject<t_CJSONValue, t_bOrdered>::operator [] (NStr::CStr const &_Name)
 	{
 		return f_CreateMember(_Name);
+	}
+
+
+	template <typename t_CJSONValue, bool t_bOrdered>
+	t_CJSONValue &TCJSONObject<t_CJSONValue, t_bOrdered>::operator () (NStr::CStr const &_Name)
+	{
+		auto pMember = f_GetMember(_Name);
+		if (!pMember)
+			DMibError(fg_Format("Member '{}' not found", _Name));
+
+		return *pMember;
 	}
 
 	template <typename t_CJSONValue, bool t_bOrdered>
