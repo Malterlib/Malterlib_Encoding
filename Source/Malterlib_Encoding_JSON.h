@@ -9,6 +9,8 @@
 
 #include "Malterlib_Encoding_JSON_InternalBase.h"
 
+#define DMibEncodingJSONExternTemplate
+
 namespace NMib::NEncoding
 {
 	enum EJSONType : uint8
@@ -70,7 +72,16 @@ namespace NMib::NEncoding
 			CKey(CKey const &_Other);
 		};
 
-		template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<t_CParent, void (tf_CType &&)>::mc_Value> * = nullptr>
+		template
+		<
+			typename tf_CType
+			, TCEnableIfType
+			<
+				NTraits::TCIsConstructorCallableWith<t_CParent, void (tf_CType &&)>::mc_Value
+				&& !NPrivate::TCIsTCJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
+				&& !NPrivate::TCIsTCEJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
+			> * = nullptr
+		>
 		TCJSONValue(tf_CType &&_Type)
 #ifdef DCompiler_MSVC_Workaround
 			: t_CParent(fg_Forward<tf_CType>(_Type))
@@ -92,21 +103,27 @@ namespace NMib::NEncoding
 		TCJSONValue(NContainer::CSecureByteVector &_Value) = delete;
 		TCJSONValue(NContainer::CSecureByteVector &&_Value) = delete;
 
-#ifdef DCompiler_MSVC_Workaround
 		template <typename tf_CType>
 		auto operator = (tf_CType &&_Value) -> TCEnableIfType<!NTraits::TCIsSame<decltype(this->mp_Value = fg_Forward<tf_CType>(_Value)), CDummy>::mc_Value, CValue> &
+#ifdef DCompiler_MSVC_Workaround
 		{
 			this->mp_Value = fg_Forward<tf_CType>(_Value);
 			return static_cast<CValue &>(*this);
 		}
 #else
-		template <typename tf_CType>
-		auto operator = (tf_CType &&_Value) -> TCEnableIfType<!NTraits::TCIsSame<decltype(this->mp_Value = fg_Forward<tf_CType>(_Value)), CDummy>::mc_Value, CValue> &;
+		;
 #endif
 
 		CValue &operator = (NContainer::CSecureByteVector const &_Value) = delete;
 		CValue &operator = (NContainer::CSecureByteVector &_Value) = delete;
 		CValue &operator = (NContainer::CSecureByteVector &&_Value) = delete;
+
+		template <typename tf_CParent>
+		static TCJSONValue fs_FromCompatible(TCJSONValue<tf_CParent> const &_Other);
+		template <typename tf_CParent>
+		static TCJSONValue fs_FromCompatible(TCJSONValue<tf_CParent> &&_Other);
+		template <typename tf_CParent>
+		static TCJSONValue fs_FromCompatible(TCJSONValue<tf_CParent> const &&_Other);
 
 		CValue &operator = (TCJSONValue const &_Value);
 		CValue &operator = (TCJSONValue &&_Value);
@@ -210,6 +227,19 @@ namespace NMib::NEncoding
 		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJSONDialectFlag _Flags = EJSONDialectFlag_None) const;
 
 	protected:
+		template <typename t_CJSONValue2, bool t_bOrdered2>
+		friend struct TCJSONObject;
+
+		template <template <typename t_CParent2> class t_TCValue2, typename t_CTypes2, bool t_bOrdered2>
+		friend struct NPrivate::TCJSONValueBase;
+
+		template <typename tf_CParent>
+		explicit TCJSONValue(TCJSONValue<tf_CParent> const &_Other);
+		template <typename tf_CParent>
+		explicit TCJSONValue(TCJSONValue<tf_CParent> &&_Other);
+		template <typename tf_CParent>
+		explicit TCJSONValue(TCJSONValue<tf_CParent> const &&_Other);
+
 		inline_always void fp_CheckType(EJSONType _Type) const;
 		inline_always void fp_PromoteType(EJSONType _Type);
 	};
@@ -236,6 +266,11 @@ namespace NMib::NEncoding
 		~TCJSONObject();
 		TCJSONObject(TCJSONObject const &_Other);
 		TCJSONObject(TCJSONObject &&_Other);
+
+		template <typename tf_CJSONValue, bool tf_bOrdered>
+		explicit TCJSONObject(TCJSONObject<tf_CJSONValue, tf_bOrdered> const &_Other);
+		template <typename tf_CJSONValue, bool tf_bOrdered>
+		explicit TCJSONObject(TCJSONObject<tf_CJSONValue, tf_bOrdered> &&_Other);
 
 		bool operator == (TCJSONObject const &_Right) const;
 		COrdering_Partial operator <=> (TCJSONObject const &_Right) const;
@@ -321,16 +356,23 @@ namespace NMib::NEncoding
 	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
 	using TCJSON = t_TCValue<NPrivate::TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>>;
 
-	using CJSON = TCJSON<TCJSONValue, NPrivate::CJSONExtraTypes, true>;
+	using CJSONOrdered = TCJSON<TCJSONValue, NPrivate::CJSONExtraTypes, true>;
 	using CJSONSorted = TCJSON<TCJSONValue, NPrivate::CJSONExtraTypes, false>;
+
+#ifdef DMibEncodingJSONExternTemplate
+	using CJSONValueBaseOrdered = NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes, true>;
+	using CJSONValueJSONOrdered = TCJSONValue<CJSONValueBaseOrdered>;
+
+	using CJSONValueBaseSorted = NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes, false>;
+	using CJSONValueJSONSorted = TCJSONValue<CJSONValueBaseSorted>;
+#endif
 }
 
 #include "Malterlib_Encoding_JSON_Uninstantiated.hpp"
 
-#define DMibEncodingJSONExternTemplate
-
 #ifdef DMibEncodingJSONExternTemplate
 #	include "Malterlib_Encoding_JSON_Instantiated.hpp"
+#	include "Malterlib_Encoding_JSON_InstantiatedSorted.hpp"
 #else
 #	include "Malterlib_Encoding_JSON.hpp"
 #endif

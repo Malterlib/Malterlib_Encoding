@@ -28,11 +28,11 @@ namespace NMib::NEncoding
 		auto pWasDeleted = mp_pWasDeleted;
 		auto Data = co_await
 			(
-				NConcurrency::g_Dispatch(mp_FileActor) / [FileName = mp_FileName]() -> CEJSON
+				NConcurrency::g_Dispatch(mp_FileActor) / [FileName = mp_FileName]() -> CEJSONSorted
 				{
 					if (!NFile::CFile::fs_FileExists(FileName))
-						return CEJSON();
-					return CEJSON::fs_FromString(NFile::CFile::fs_ReadStringFromFile(FileName), FileName);
+						return CEJSONSorted();
+					return CEJSONSorted::fs_FromString(NFile::CFile::fs_ReadStringFromFile(FileName), FileName);
 				}
 			)
 		;

@@ -1,3 +1,6 @@
+// Copyright © 2023 Favro Holding AB 
+// Distributed under the MIT license, see license text in LICENSE.Malterlib
+
 #pragma once
 
 #include "Malterlib_Encoding_JSON.h"
@@ -61,10 +64,17 @@ namespace NMib::NEncoding::NPrivate
 
 	};
 
+	template <typename t_CParent>
+	struct TCJSONValue;
+
+	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
+	struct TCJSONValueBase;
+
 	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
 	struct TCJSONValueBase
 	{
 		static constexpr bool mc_bOrdered = t_bOrdered;
+		static constexpr bool mc_bHasDefaultTypes = NMeta::TCTypeList_Len<typename t_CTypes::CTypes>::mc_Value == 0;
 
 		using CValue = t_TCValue<TCJSONValueBase>;
 		using CVariantType = typename NPrivate::TCGetJSONValueVariant<CValue, t_bOrdered, typename t_CTypes::CTypes>::CType;
@@ -82,6 +92,13 @@ namespace NMib::NEncoding::NPrivate
 		TCJSONValueBase(TCJSONValueBase &_Value);
 		TCJSONValueBase(TCJSONValueBase &&_Value);
 
+		template <template <typename t_CParent> class tf_TCValue, typename tf_CTypes, bool tf_bOrdered>
+		explicit TCJSONValueBase(TCJSONValueBase<tf_TCValue, tf_CTypes, tf_bOrdered> const &_Value);
+		template <template <typename t_CParent> class tf_TCValue, typename tf_CTypes, bool tf_bOrdered>
+		explicit TCJSONValueBase(TCJSONValueBase<tf_TCValue, tf_CTypes, tf_bOrdered> &_Value);
+		template <template <typename t_CParent> class tf_TCValue, typename tf_CTypes, bool tf_bOrdered>
+		explicit TCJSONValueBase(TCJSONValueBase<tf_TCValue, tf_CTypes, tf_bOrdered> &&_Value);
+
 		TCJSONValueBase(pfp64 _Value);
 		TCJSONValueBase(pfp32 _Value);
 		TCJSONValueBase(fp32 _Value);
@@ -95,6 +112,12 @@ namespace NMib::NEncoding::NPrivate
 		void f_Consume(tf_CStream &_Stream);
 
 	protected:
+		template <typename t_CParent2>
+		friend struct TCJSONValue;
+
+		template <template <typename t_CParent2> class t_TCValue2, typename t_CTypes2, bool t_bOrdered2>
+		friend struct TCJSONValueBase;
+		
 		// Members
 		CVariantType mp_Value;
 	};

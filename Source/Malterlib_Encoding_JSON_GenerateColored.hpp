@@ -12,7 +12,8 @@ namespace NMib::NEncoding
 		using namespace NStr;
 		using namespace NCommandLine;
 
-		struct CJSONColorGenerator
+		template <typename t_CJSON>
+		struct TCJSONColorGenerator
 		{
 			using ESyntaxColor = CAnsiEncoding::ESyntaxColor;
 
@@ -82,7 +83,7 @@ namespace NMib::NEncoding
 				return f_Color(String, ESyntaxColor::ESyntaxColor_String);
 			}
 
-			void f_GenerateJSONObject(NStr::CStr &o_String, CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
+			void f_GenerateJSONObject(NStr::CStr &o_String, t_CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
 			{
 				auto iChild = _Value.f_Object().f_OrderedIterator();
 				if (!iChild)
@@ -124,7 +125,7 @@ namespace NMib::NEncoding
 				o_String += "}";
 			}
 
-			void f_GenerateJSONArray(NStr::CStr &o_String, CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
+			void f_GenerateJSONArray(NStr::CStr &o_String, t_CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
 			{
 				auto iChild = _Value.f_Array().f_GetIterator();
 				if (!iChild)
@@ -160,7 +161,7 @@ namespace NMib::NEncoding
 				o_String += "]";
 			}
 
-			void f_GenerateJSONValue(NStr::CStr &o_String, CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
+			void f_GenerateJSONValue(NStr::CStr &o_String, t_CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
 			{
 				using namespace NStr;
 
@@ -216,7 +217,7 @@ namespace NMib::NEncoding
 				}
 			}
 
-			NStr::CStr f_ToString(CJSON const &_JSON, ch8 const *_pPrettySeparator)
+			NStr::CStr f_ToString(t_CJSON const &_JSON, ch8 const *_pPrettySeparator)
 			{
 				using namespace NStr;
 
@@ -234,9 +235,10 @@ namespace NMib::NEncoding
 			NCommandLine::EAnsiEncodingFlag m_AnsiFlags;
 		};
 
-		NStr::CStr fg_JSONGenerateColored(CJSON const &_JSON, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJSONDialectFlag _Flags)
+		template <typename tf_CJSON>
+		NStr::CStr fg_JSONGenerateColored(tf_CJSON const &_JSON, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJSONDialectFlag _Flags)
 		{
-			CJSONColorGenerator Generator;
+			TCJSONColorGenerator<tf_CJSON> Generator;
 			Generator.m_Flags = _Flags;
 			Generator.m_AnsiFlags = _AnsiFlags;
 

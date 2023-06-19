@@ -1,3 +1,6 @@
+// Copyright © 2023 Favro Holding AB 
+// Distributed under the MIT license, see license text in LICENSE.Malterlib
+
 #pragma once
 
 #include "Malterlib_Encoding_JSON.h"
@@ -30,6 +33,26 @@ namespace NMib::NEncoding
 		: mp_Objects(fg_Move(_Other.mp_Objects))
 		, mp_ObjectTree(fg_Move(_Other.mp_ObjectTree))
 	{
+	}
+
+	template <typename t_CJSONValue, bool t_bOrdered>
+	template <typename tf_CJSONValue, bool tf_bOrdered>
+	TCJSONObject<t_CJSONValue, t_bOrdered>::TCJSONObject(TCJSONObject<tf_CJSONValue, tf_bOrdered> const &_Other)
+	{
+		static_assert(t_bOrdered != tf_bOrdered);
+
+		for (auto &Object : _Other)
+			f_CreateMember(Object.f_Name()) = t_CJSONValue(Object.f_Value());
+	}
+
+	template <typename t_CJSONValue, bool t_bOrdered>
+	template <typename tf_CJSONValue, bool tf_bOrdered>
+	TCJSONObject<t_CJSONValue, t_bOrdered>::TCJSONObject(TCJSONObject<tf_CJSONValue, tf_bOrdered> &&_Other)
+	{
+		static_assert(t_bOrdered != tf_bOrdered);
+
+		for (auto &Object : _Other)
+			f_CreateMember(Object.f_Name()) = t_CJSONValue(fg_Move(Object.f_Value()));
 	}
 
 	template <typename t_CJSONValue, bool t_bOrdered>

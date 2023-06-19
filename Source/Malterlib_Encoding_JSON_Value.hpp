@@ -1,3 +1,6 @@
+// Copyright © 2023 Favro Holding AB 
+// Distributed under the MIT license, see license text in LICENSE.Malterlib
+
 #pragma once
 
 #include "Malterlib_Encoding_JSON.h"
@@ -31,6 +34,48 @@ namespace NMib::NEncoding
 	TCJSONValue<t_CParent>::TCJSONValue(TCJSONValue const &&_Other)
 		: t_CParent(static_cast<t_CParent const &>(_Other))
 	{
+	}
+
+	template <typename t_CParent>
+	template <typename tf_CParent>
+	TCJSONValue<t_CParent>::TCJSONValue(TCJSONValue<tf_CParent> const &_Other)
+		: t_CParent(static_cast<tf_CParent const &>(_Other))
+	{
+	}
+
+	template <typename t_CParent>
+	template <typename tf_CParent>
+	TCJSONValue<t_CParent>::TCJSONValue(TCJSONValue<tf_CParent> &&_Other)
+		: t_CParent(fg_Move(static_cast<tf_CParent &>(_Other)))
+	{
+	}
+
+	template <typename t_CParent>
+	template <typename tf_CParent>
+	TCJSONValue<t_CParent>::TCJSONValue(TCJSONValue<tf_CParent> const &&_Other)
+		: t_CParent(static_cast<tf_CParent const &>(_Other))
+	{
+	}
+
+	template <typename t_CParent>
+	template <typename tf_CParent>
+	auto TCJSONValue<t_CParent>::fs_FromCompatible(TCJSONValue<tf_CParent> const &_Other) -> TCJSONValue
+	{
+		return TCJSONValue(_Other);
+	}
+
+	template <typename t_CParent>
+	template <typename tf_CParent>
+	auto TCJSONValue<t_CParent>::fs_FromCompatible(TCJSONValue<tf_CParent> &&_Other) -> TCJSONValue
+	{
+		return TCJSONValue(_Other);
+	}
+
+	template <typename t_CParent>
+	template <typename tf_CParent>
+	auto TCJSONValue<t_CParent>::fs_FromCompatible(TCJSONValue<tf_CParent> const &&_Other) -> TCJSONValue
+	{
+		return TCJSONValue(_Other);
 	}
 
 	template <typename t_CParent>
@@ -174,12 +219,6 @@ namespace NMib::NEncoding
 	bool TCJSONValue<t_CParent>::f_IsArray() const
 	{
 		return this->f_Type() == EJSONType_Array;
-	}
-
-	template <typename t_CParent>
-	NStr::CStr TCJSONValue<t_CParent>::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const * _pPrettySeparator, EJSONDialectFlag _Flags) const
-	{
-		return NStr::CStr();
 	}
 
 	template <typename t_CParent>
@@ -773,5 +812,23 @@ namespace NMib::NEncoding
 	{
 		fp_CheckType(EJSONType_Array);
 		return f_Array()[_Index];
+	}
+
+	namespace NPrivate
+	{
+		template <typename tf_CJSON>
+		NStr::CStr fg_JSONGenerateColored(tf_CJSON const &_JSON, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJSONDialectFlag _Flags);
+	}
+
+	template <typename t_CParent>
+	NStr::CStr TCJSONValue<t_CParent>::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags) const
+	{
+		if constexpr (t_CParent::mc_bHasDefaultTypes)
+		{
+			if (_AnsiFlags & NCommandLine::EAnsiEncodingFlag_Color)
+				return NPrivate::fg_JSONGenerateColored(*this, _pPrettySeparator, _AnsiFlags, _Flags);
+		}
+
+		return f_ToString(_pPrettySeparator, _Flags);
 	}
 }

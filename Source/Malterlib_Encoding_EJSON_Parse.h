@@ -23,7 +23,7 @@ namespace NMib::NEncoding::NPrivate
 			{
 			case EEJSONType_Date:
 				{
-					typename tf_CJSON::CJSON TempObject;
+					typename tf_CJSON::CJSONType TempObject;
 					auto &Date = _Value.f_Date();
 					if (!Date.f_IsValid())
 						TempObject[CEJSONConstStrings::mc_Date] = nullptr;
@@ -35,7 +35,7 @@ namespace NMib::NEncoding::NPrivate
 				}
 			case EEJSONType_Binary:
 				{
-					typename tf_CJSON::CJSON TempObject;
+					typename tf_CJSON::CJSONType TempObject;
 					TempObject[CEJSONConstStrings::mc_Binary] = NEncoding::fg_Base64Encode(_Value.f_Binary());
 
 					NJSON::fg_GenerateJSONObject<NJSON::CParseContext>(o_String, TempObject.f_Object(), _Depth, _pPrettySeparator, _Flags);
@@ -43,7 +43,7 @@ namespace NMib::NEncoding::NPrivate
 				}
 			case EEJSONType_UserType:
 				{
-					typename tf_CJSON::CJSON TempObject;
+					typename tf_CJSON::CJSONType TempObject;
 
 					auto &UserType = _Value.f_UserType();
 					TempObject[CEJSONConstStrings::mc_Type] = UserType.m_Type;

@@ -1,15 +1,24 @@
+// Copyright © 2023 Favro Holding AB 
+// Distributed under the MIT license, see license text in LICENSE.Malterlib
+
 #pragma once
 
 #include "Malterlib_Encoding_JSON.h"
 
 namespace NMib::NEncoding
 {
-	template <>
-	NStr::CStr CJSON::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags) const;
-
 #ifndef DCompiler_MSVC_Workaround
 	template <typename t_CParent>
-	template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<t_CParent, void (tf_CType &&)>::mc_Value> *>
+	template
+	<
+		typename tf_CType
+		, TCEnableIfType
+		<
+			NTraits::TCIsConstructorCallableWith<t_CParent, void (tf_CType &&)>::mc_Value
+			&& !NPrivate::TCIsTCJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
+			&& !NPrivate::TCIsTCEJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
+		> *
+	>
 	TCJSONValue<t_CParent>::TCJSONValue(tf_CType &&_Type)
 		: t_CParent(fg_Forward<tf_CType>(_Type))
 	{

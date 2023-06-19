@@ -144,6 +144,7 @@ namespace
 					
 					DMibExpect(JSON, ==, JSONRemoved);
 				}
+				if constexpr (t_CJSON::mc_bOrdered)
 				{
 					DMibTestPath("Remove by ordered const iterator");
 					t_CJSON JSON;
@@ -186,6 +187,7 @@ namespace
 					
 					DMibExpect(JSON, ==, JSONRemoved);
 				}
+				if constexpr (t_CJSON::mc_bOrdered)
 				{
 					DMibTestPath("Remove by sorted iterator");
 					t_CJSON JSON;

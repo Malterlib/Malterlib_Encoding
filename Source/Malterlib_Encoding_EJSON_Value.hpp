@@ -1,3 +1,6 @@
+// Copyright © 2023 Favro Holding AB 
+// Distributed under the MIT license, see license text in LICENSE.Malterlib
+
 #pragma once
 
 #include "Malterlib_Encoding_EJSON.h"
@@ -185,7 +188,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_EscapeObject(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value)
+	void TCEJSONValue<t_CParent>::fsp_EscapeObject(CJSONType &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value)
 	{
 		auto &Escaped = _Ret[CEJSONConstStrings::mc_Escape].f_Object();
 		for (auto iMember = _Value.f_OrderedIterator(); iMember; ++iMember)
@@ -196,7 +199,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_EscapeObject(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value)
+	void TCEJSONValue<t_CParent>::fsp_EscapeObject(CJSONType &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value)
 	{
 		auto &Escaped = _Ret[CEJSONConstStrings::mc_Escape].f_Object();
 		for (auto iMember = _Value.f_OrderedIterator(); iMember; ++iMember)
@@ -207,7 +210,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_ToJson_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value)
+	void TCEJSONValue<t_CParent>::fsp_ToJson_Object(CJSONType &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value)
 	{
 		auto &DestObject = _Ret.f_Object();
 		bool bFirst = true;
@@ -251,7 +254,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_ToJson_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value)
+	void TCEJSONValue<t_CParent>::fsp_ToJson_Object(CJSONType &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value)
 	{
 		auto &DestObject = _Ret.f_Object();
 		bool bFirst = true;
@@ -295,7 +298,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fp_ToJson(CJSON &_Ret) const &
+	void TCEJSONValue<t_CParent>::fp_ToJson(CJSONType &_Ret) const &
 	{
 		switch (this->f_EType())
 		{
@@ -355,7 +358,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fp_ToJson(CJSON &_Ret) &&
+	void TCEJSONValue<t_CParent>::fp_ToJson(CJSONType &_Ret) &&
 	{
 		switch (this->f_EType())
 		{
@@ -416,23 +419,23 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCEJSONValue<t_CParent>::f_ToJson() const & -> CJSON
+	auto TCEJSONValue<t_CParent>::f_ToJson() const & -> CJSONType
 	{
-		CJSON Return;
+		CJSONType Return;
 		fp_ToJson(Return);
 		return Return;
 	}
 
 	template <typename t_CParent>
-	auto TCEJSONValue<t_CParent>::f_ToJson() && -> CJSON
+	auto TCEJSONValue<t_CParent>::f_ToJson() && -> CJSONType
 	{
-		CJSON Return;
+		CJSONType Return;
 		fg_Move(*this).fp_ToJson(Return);
 		return Return;
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_FromJson_Object(TCEJSONValue &_Ret, typename CJSON::CObject const &_Value)
+	void TCEJSONValue<t_CParent>::fsp_FromJson_Object(TCEJSONValue &_Ret, typename CJSONType::CObject const &_Value)
 	{
 		{
 			auto iMember = _Value.f_OrderedIterator();
@@ -513,7 +516,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_FromJson_Object(TCEJSONValue &_Ret, typename CJSON::CObject &&_Value)
+	void TCEJSONValue<t_CParent>::fsp_FromJson_Object(TCEJSONValue &_Ret, typename CJSONType::CObject &&_Value)
 	{
 		{
 			auto iMember = _Value.f_OrderedIterator();
@@ -594,7 +597,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_FromJson(TCEJSONValue &_Ret, CJSON const &_From)
+	void TCEJSONValue<t_CParent>::fsp_FromJson(TCEJSONValue &_Ret, CJSONType const &_From)
 	{
 		switch (_From.f_Type())
 		{
@@ -632,7 +635,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_FromJson(TCEJSONValue &_Ret, CJSON &&_From)
+	void TCEJSONValue<t_CParent>::fsp_FromJson(TCEJSONValue &_Ret, CJSONType &&_From)
 	{
 		switch (_From.f_Type())
 		{
@@ -670,7 +673,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCEJSONValue<t_CParent>::fs_FromJson(CJSON const &_JSON) -> TCEJSONValue
+	auto TCEJSONValue<t_CParent>::fs_FromJson(CJSONType const &_JSON) -> TCEJSONValue
 	{
 		TCEJSONValue Return;
 		fsp_FromJson(Return, _JSON);
@@ -678,7 +681,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCEJSONValue<t_CParent>::fs_FromJson(CJSON &&_JSON) -> TCEJSONValue
+	auto TCEJSONValue<t_CParent>::fs_FromJson(CJSONType &&_JSON) -> TCEJSONValue
 	{
 		TCEJSONValue Return;
 		fsp_FromJson(Return, fg_Move(_JSON));
@@ -701,7 +704,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCEJSONValue<t_CParent>::fs_FromJsonNoConvert(CJSON const &_JSON) -> TCEJSONValue
+	auto TCEJSONValue<t_CParent>::fs_FromJsonNoConvert(CJSONType const &_JSON) -> TCEJSONValue
 	{
 		TCEJSONValue Return;
 		fsp_FromJsonNoConvert(Return, _JSON);
@@ -709,7 +712,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCEJSONValue<t_CParent>::fs_FromJsonNoConvert(CJSON &&_JSON) -> TCEJSONValue
+	auto TCEJSONValue<t_CParent>::fs_FromJsonNoConvert(CJSONType &&_JSON) -> TCEJSONValue
 	{
 		TCEJSONValue Return;
 		fsp_FromJsonNoConvert(Return, fg_Move(_JSON));
@@ -717,23 +720,23 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCEJSONValue<t_CParent>::f_ToJsonNoConvert() const & -> CJSON
+	auto TCEJSONValue<t_CParent>::f_ToJsonNoConvert() const & -> CJSONType
 	{
-		CJSON Return;
+		CJSONType Return;
 		fp_ToJsonNoConvert(Return);
 		return Return;
 	}
 
 	template <typename t_CParent>
-	auto TCEJSONValue<t_CParent>::f_ToJsonNoConvert() && -> CJSON
+	auto TCEJSONValue<t_CParent>::f_ToJsonNoConvert() && -> CJSONType
 	{
-		CJSON Return;
+		CJSONType Return;
 		fg_Move(*this).fp_ToJsonNoConvert(Return);
 		return Return;
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_FromJsonNoConvert_Object(TCEJSONValue &_Ret, typename CJSON::CObject const &_Value)
+	void TCEJSONValue<t_CParent>::fsp_FromJsonNoConvert_Object(TCEJSONValue &_Ret, typename CJSONType::CObject const &_Value)
 	{
 		auto &RetObject = _Ret.f_Object();
 		for (auto iMember = _Value.f_OrderedIterator(); iMember; ++iMember)
@@ -741,7 +744,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_FromJsonNoConvert_Object(TCEJSONValue &_Ret, typename CJSON::CObject &&_Value)
+	void TCEJSONValue<t_CParent>::fsp_FromJsonNoConvert_Object(TCEJSONValue &_Ret, typename CJSONType::CObject &&_Value)
 	{
 		auto &RetObject = _Ret.f_Object();
 		for (auto iMember = _Value.f_OrderedIterator(); iMember; ++iMember)
@@ -749,7 +752,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_FromJsonNoConvert(TCEJSONValue &_Ret, CJSON const &_From)
+	void TCEJSONValue<t_CParent>::fsp_FromJsonNoConvert(TCEJSONValue &_Ret, CJSONType const &_From)
 	{
 		switch (_From.f_Type())
 		{
@@ -787,7 +790,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_FromJsonNoConvert(TCEJSONValue &_Ret, CJSON &&_From)
+	void TCEJSONValue<t_CParent>::fsp_FromJsonNoConvert(TCEJSONValue &_Ret, CJSONType &&_From)
 	{
 		switch (_From.f_Type())
 		{
@@ -825,7 +828,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_ToJsonNoConvert_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value)
+	void TCEJSONValue<t_CParent>::fsp_ToJsonNoConvert_Object(CJSONType &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value)
 	{
 		auto &DestObject = _Ret.f_Object();
 		for (auto iMember = _Value.f_OrderedIterator(); iMember; )
@@ -837,7 +840,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fsp_ToJsonNoConvert_Object(CJSON &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value)
+	void TCEJSONValue<t_CParent>::fsp_ToJsonNoConvert_Object(CJSONType &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value)
 	{
 		auto &DestObject = _Ret.f_Object();
 		for (auto iMember = _Value.f_OrderedIterator(); iMember;)
@@ -849,7 +852,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fp_ToJsonNoConvert(CJSON &_Ret) const &
+	void TCEJSONValue<t_CParent>::fp_ToJsonNoConvert(CJSONType &_Ret) const &
 	{
 		switch (this->f_EType())
 		{
@@ -890,7 +893,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	void TCEJSONValue<t_CParent>::fp_ToJsonNoConvert(CJSON &_Ret) &&
+	void TCEJSONValue<t_CParent>::fp_ToJsonNoConvert(CJSONType &_Ret) &&
 	{
 		switch (this->f_EType())
 		{
@@ -929,4 +932,47 @@ namespace NMib::NEncoding
 			break; // Leave as default which is invalid
 		}
 	}
+
+	template <typename t_CParent>
+	template <typename tf_CParent>
+	auto TCEJSONValue<t_CParent>::fs_FromCompatible(TCEJSONValue<tf_CParent> const &_Other) -> TCEJSONValue
+	{
+		return TCEJSONValue(_Other);
+	}
+
+	template <typename t_CParent>
+	template <typename tf_CParent>
+	auto TCEJSONValue<t_CParent>::fs_FromCompatible(TCEJSONValue<tf_CParent> &&_Other) -> TCEJSONValue
+	{
+		return TCEJSONValue(_Other);
+	}
+
+	template <typename t_CParent>
+	template <typename tf_CParent>
+	auto TCEJSONValue<t_CParent>::fs_FromCompatible(TCEJSONValue<tf_CParent> const &&_Other) -> TCEJSONValue
+	{
+		return TCEJSONValue(_Other);
+	}
+
+	template <typename t_CParent>
+	template <typename tf_CParent>
+	TCEJSONValue<t_CParent>::TCEJSONValue(TCEJSONValue<tf_CParent> const &_Other)
+		: TCJSONValue<t_CParent>(static_cast<TCJSONValue<tf_CParent> const &>(_Other))
+	{
+	}
+
+	template <typename t_CParent>
+	template <typename tf_CParent>
+	TCEJSONValue<t_CParent>::TCEJSONValue(TCEJSONValue<tf_CParent> &&_Other)
+		: TCJSONValue<t_CParent>(static_cast<TCJSONValue<tf_CParent> &&>(_Other))
+	{
+	}
+
+	template <typename t_CParent>
+	template <typename tf_CParent>
+	TCEJSONValue<t_CParent>::TCEJSONValue(TCEJSONValue<tf_CParent> const &&_Other)
+		: TCJSONValue<t_CParent>(static_cast<TCJSONValue<tf_CParent> const &>(_Other))
+	{
+	}
+
 }

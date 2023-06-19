@@ -14,9 +14,9 @@ namespace
 	class CJSON_Tests : public NTest::CTest
 	{
 	public:
-		static CJSON fs_GetJSON()
+		static CJSONOrdered fs_GetJSON()
 		{
-			CJSON ToReturn(EJSONType_Object);
+			CJSONOrdered ToReturn(EJSONType_Object);
 
 			ToReturn["Key"] = "Value";
 			ToReturn["KeyTrue"] = true;
@@ -49,7 +49,7 @@ namespace
 			return fg_Move(ToReturn);
 		}
 		
-		static NStr::CStr fs_GetJSONText()
+		static NStr::CStr fs_GetJSONTextOrdered()
 		{
 			return
 				"{\n"
@@ -84,26 +84,75 @@ namespace
 			;
 		}
 
+		static NStr::CStr fs_GetJSONTextSorted()
+		{
+			return
+				"{\n"
+				"	\"Key\": \"Value\",\n"
+				"	\"KeyArray\": [\n"
+				"		25,\n"
+				"		167.6,\n"
+				"		true,\n"
+				"		false,\n"
+				"		[],\n"
+				"		{\n"
+				"			\"KeyFloat\": 167.6,\n"
+				"			\"KeyInt\": 25\n"
+				"		}\n"
+				"	],\n"
+				"	\"KeyFalse\": false,\n"
+				"	\"KeyFloat\": 167.6,\n"
+				"	\"KeyInt\": 25,\n"
+				"	\"KeyNull\": null,\n"
+				"	\"KeyObject\": {\n"
+				"		\"Key\": \"Value\",\n"
+				"		\"KeyArray\": [],\n"
+				"		\"KeyFalse\": false,\n"
+				"		\"KeyFloat\": 167.6,\n"
+				"		\"KeyInt\": 25,\n"
+				"		\"KeyNull\": null,\n"
+				"		\"KeyObject\": {},\n"
+				"		\"KeyTrue\": true\n"
+				"	},\n"
+				"	\"KeyTrue\": true\n"
+				"}\n"
+			;
+		}
+
 		void f_DoTests()
 		{
-			TCJSONTests<CJSON> SharedTests
-				(
-					fs_GetJSON()
-					, fs_GetJSONText()
-					, [](NStr::CStr const &_ToParse, NStr::CStr const &_FileName) -> CJSON
-					{
-						return CJSON::fs_FromString(_ToParse, _FileName);
-					}
-				)
-			;
-			DMibTestCategory("Shared")
+			DMibTestCategory("Shared Sorted")
 			{
+				TCJSONTests<CJSONSorted> SharedTests
+					(
+						CJSONSorted::fs_FromCompatible(fs_GetJSON())
+						, fs_GetJSONTextSorted()
+						, [](NStr::CStr const &_ToParse, NStr::CStr const &_FileName) -> CJSONSorted
+						{
+							return CJSONSorted::fs_FromString(_ToParse, _FileName);
+						}
+					)
+				;
+				SharedTests.f_DoTests();
+			};
+			DMibTestCategory("Shared Ordered")
+			{
+				TCJSONTests<CJSONOrdered> SharedTests
+					(
+						fs_GetJSON()
+						, fs_GetJSONTextOrdered()
+						, [](NStr::CStr const &_ToParse, NStr::CStr const &_FileName) -> CJSONOrdered
+						{
+							return CJSONOrdered::fs_FromString(_ToParse, _FileName);
+						}
+					)
+				;
 				SharedTests.f_DoTests();
 			};
 			
 			DMibTestSuite("Initializier list")
 			{
-				CJSON Value =
+				CJSONSorted Value =
 					{
 						"Key"__= "Value"
 						, "KeyTrue"__= true
@@ -138,11 +187,11 @@ namespace
 					}
 				;
 				
-				DMibExpect(Value, ==, fs_GetJSON());
+				DMibExpect(Value, ==, CJSONSorted::fs_FromCompatible(fs_GetJSON()));
 			};
 			DMibTestSuite("Stream")
 			{
-				DMibExpect(NStream::fg_FromByteVector<CJSON>(NStream::fg_ToByteVector(fs_GetJSON())), ==, fs_GetJSON());
+				DMibExpect(NStream::fg_FromByteVector<CJSONSorted>(NStream::fg_ToByteVector(fs_GetJSON())), ==, CJSONSorted::fs_FromCompatible(fs_GetJSON()));
 			};
 		}
 	};

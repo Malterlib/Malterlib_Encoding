@@ -1,3 +1,6 @@
+// Copyright © 2023 Favro Holding AB 
+// Distributed under the MIT license, see license text in LICENSE.Malterlib
+
 #pragma once
 
 #include "Malterlib_Encoding_JSON.h"
@@ -6,6 +9,12 @@ namespace NMib::NEncoding
 {
 	template <typename t_CJSONValue, bool t_bOrdered>
 	struct TCJSONObject;
+
+	template <typename t_CParent>
+	struct TCJSONValue;
+
+	template <typename t_CParent>
+	struct TCEJSONValue;
 }
 
 namespace NMib::NEncoding::NPrivate
@@ -58,5 +67,29 @@ namespace NMib::NEncoding::NPrivate
 
 	protected:
 		t_CJSONValue mp_Value;
+	};
+
+	template <typename t_CType>
+	struct TCIsTCJSONValue
+	{
+		constexpr static bool mc_Value = false;
+	};
+
+	template <typename t_CParent>
+	struct TCIsTCJSONValue<TCJSONValue<t_CParent>>
+	{
+		constexpr static bool mc_Value = true;
+	};
+
+	template <typename t_CType>
+	struct TCIsTCEJSONValue
+	{
+		constexpr static bool mc_Value = false;
+	};
+
+	template <typename t_CParent>
+	struct TCIsTCEJSONValue<TCEJSONValue<t_CParent>>
+	{
+		constexpr static bool mc_Value = true;
 	};
 }

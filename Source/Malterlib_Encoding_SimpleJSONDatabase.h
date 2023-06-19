@@ -17,7 +17,7 @@ namespace NMib::NEncoding
 
 		NStr::CStr const &f_GetFileName() const;
 
-		CEJSON m_Data;
+		CEJSONSorted m_Data;
 
 	private:
 		NConcurrency::TCActor<NConcurrency::CSeparateThreadActor> mp_FileActor;
