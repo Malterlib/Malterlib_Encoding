@@ -6,6 +6,11 @@
 
 namespace NMib::NEncoding
 {
+	namespace
+	{
+		constexpr EJSONDialectFlag gc_JsonDialectFlags = EJSONDialectFlag_AllowUndefined | EJSONDialectFlag_AllowInvalidFloat;
+	}
+
 	CSimpleJSONDatabase::CSimpleJSONDatabase(NStr::CStr const &_FileName)
 		: mp_FileActor(NConcurrency::fg_ConstructActor<NConcurrency::CSeparateThreadActor>(fg_Construct("JSONDatabase")))
 		, mp_FileName(_FileName)
@@ -32,7 +37,7 @@ namespace NMib::NEncoding
 				{
 					if (!NFile::CFile::fs_FileExists(FileName))
 						return CEJSONSorted();
-					return CEJSONSorted::fs_FromString(NFile::CFile::fs_ReadStringFromFile(FileName), FileName);
+					return CEJSONSorted::fs_FromString(NFile::CFile::fs_ReadStringFromFile(FileName), FileName, false, gc_JsonDialectFlags);
 				}
 			)
 		;
@@ -56,7 +61,7 @@ namespace NMib::NEncoding
 				{
 					CFile::fs_CreateDirectory(CFile::fs_GetPath(FileName));
 					EFileAttrib FileAttributes = EFileAttrib_UnixAttributesValid | EFileAttrib_UserRead | EFileAttrib_UserWrite;
-					CFile::fs_WriteStringToFile(FileName, Data.f_ToString(), true, FileAttributes);
+					CFile::fs_WriteStringToFile(FileName, Data.f_ToString("\t", gc_JsonDialectFlags), true, FileAttributes);
 				}
 			)
 		;
