@@ -727,6 +727,12 @@ namespace NMib::NEncoding
 			{
 				return _Left == _Right;
 			}
+
+			bool operator ()(fp64 const &_Left, fp64 const &_Right)
+			{
+				return _Left.f_EqualIncludingNan(_Right);
+			}
+
 			bool operator ()(CVoidTag const &_Left, CVoidTag const &_Right)
 			{
 				return true;
@@ -754,6 +760,11 @@ namespace NMib::NEncoding
 			COrdering_Partial operator ()(CJSONNull const &_Left, CJSONNull const &_Right)
 			{
 				return COrdering_Partial::equivalent;
+			}
+
+			COrdering_Partial operator ()(fp64 const &_Left, fp64 const &_Right)
+			{
+				return _Left.f_SpaceshipIncludingNan(_Right);
 			}
 
 			template <typename tf_CType>
