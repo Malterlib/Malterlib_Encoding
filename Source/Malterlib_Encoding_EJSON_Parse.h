@@ -256,7 +256,7 @@ namespace NMib::NEncoding::NPrivate
 namespace NMib::NEncoding
 {
 	template <typename t_CParent>
-	TCEJSONValue<t_CParent> TCEJSONValue<t_CParent>::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace)
+	TCEJSONValue<t_CParent> TCEJSONValue<t_CParent>::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, bool _bConvertNullToSpace, EJSONDialectFlag _Flags)
 	{
 		using namespace NStr;
 		TCEJSONValue<t_CParent> Output;
@@ -268,6 +268,7 @@ namespace NMib::NEncoding
 		Context.m_pStartParse = pParse;
 		Context.m_FileName = _FileName;
 		Context.m_bConvertNullToSpace = _bConvertNullToSpace;
+		Context.m_Flags = _Flags;
 
 		fg_ParseWhiteSpace(pParse);
 
