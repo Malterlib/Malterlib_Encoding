@@ -672,7 +672,7 @@ namespace NMib::NEncoding
 	auto TCJSONValue<t_CParent>::operator [] (NStr::CStr const &_Name) const -> CValue const &
 	{
 		if (!f_IsObject())
-			DMibError("Not an object");
+			DMibError(fg_Format("Not an object when getting member '{}'", _Name));
 
 		auto pMember = f_Object().f_GetMember(_Name);
 		if (!pMember)
@@ -685,7 +685,7 @@ namespace NMib::NEncoding
 	auto TCJSONValue<t_CParent>::operator () (NStr::CStr const &_Name) -> CValue &
 	{
 		if (!f_IsObject())
-			DMibError("Not an object");
+			DMibError(fg_Format("Not an object when getting member '{}'", _Name));
 
 		auto pMember = f_Object().f_GetMember(_Name);
 		if (!pMember)
