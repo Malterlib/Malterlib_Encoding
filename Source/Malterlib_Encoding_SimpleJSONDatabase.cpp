@@ -37,7 +37,7 @@ namespace NMib::NEncoding
 				{
 					if (!NFile::CFile::fs_FileExists(FileName))
 						return CEJSONSorted();
-					return CEJSONSorted::fs_FromString(NFile::CFile::fs_ReadStringFromFile(FileName), FileName, false, gc_JsonDialectFlags);
+					return CEJSONSorted::fs_FromString(NFile::CFile::fs_ReadStringFromFile(FileName, true), FileName, false, gc_JsonDialectFlags);
 				}
 			)
 		;
