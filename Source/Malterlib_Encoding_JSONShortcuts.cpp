@@ -31,7 +31,7 @@ NMib::NEncoding::CEJSONOrdered::CKey operator ""_o (const char *_pStr, std::size
 }
 
 
-NMib::NEncoding::CJSONOrdered::CKey operator ""__o (const char *_pStr, std::size_t _Len)
+NMib::NEncoding::CJSONOrdered::CKey operator ""_jo (const char *_pStr, std::size_t _Len)
 {
 	NMib::NEncoding::CJSONOrdered::CKey Ret;
 	Ret.m_Key = NMib::NStr::CStr(_pStr, _Len);
@@ -46,7 +46,7 @@ NMib::NEncoding::CEJSONSorted::CKey operator ""_ (const char *_pStr, std::size_t
 }
 
 
-NMib::NEncoding::CJSONSorted::CKey operator ""__ (const char *_pStr, std::size_t _Len)
+NMib::NEncoding::CJSONSorted::CKey operator ""_j (const char *_pStr, std::size_t _Len)
 {
 	NMib::NEncoding::CJSONSorted::CKey Ret;
 	Ret.m_Key = NMib::NStr::CStr(_pStr, _Len);

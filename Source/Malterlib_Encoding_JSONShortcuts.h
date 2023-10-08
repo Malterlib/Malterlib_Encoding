@@ -40,10 +40,10 @@ namespace NMib::NEncoding
 }
 
 NMib::NEncoding::CEJSONOrdered::CKey operator ""_o (const char *_pStr, std::size_t _Len);
-NMib::NEncoding::CJSONOrdered::CKey operator ""__o (const char *_pStr, std::size_t _Len);
+NMib::NEncoding::CJSONOrdered::CKey operator ""_jo (const char *_pStr, std::size_t _Len);
 
 NMib::NEncoding::CEJSONSorted::CKey operator ""_ (const char *_pStr, std::size_t _Len);
-NMib::NEncoding::CJSONSorted::CKey operator ""__ (const char *_pStr, std::size_t _Len);
+NMib::NEncoding::CJSONSorted::CKey operator ""_j (const char *_pStr, std::size_t _Len);
 
 extern NMib::NEncoding::CJSONConstantsOrdered _o;
 extern NMib::NEncoding::CJSONConstantsSorted _;

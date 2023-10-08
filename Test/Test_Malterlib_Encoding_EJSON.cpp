@@ -376,7 +376,7 @@ namespace
 						, "KeyFloat"_= 167.6
 						, "KeyDate"_= NTime::CTimeConvert::fs_CreateTime(1985, 2, 13, 10, 50, 11)
 						, "KeyBinary"_= NContainer::fg_CreateVector<uint8>(0, 1, 2, 3, 4, 5, 6, 7)
-						, "UserType"_= fg_UserTypeSorted("TestType", {"TestValue1"__= "Test1", "TestValue2"__= 2})
+						, "UserType"_= fg_UserTypeSorted("TestType", {"TestValue1"_j= "Test1", "TestValue2"_j= 2})
 						, "UserTypeSimple"_= fg_UserTypeSorted("oid", "e86c9bc324bbba92f0fd4014")
 						, "Escape1"_= {"$escape"_= 5}
 						, "Escape2"_= {"$date"_= 6}

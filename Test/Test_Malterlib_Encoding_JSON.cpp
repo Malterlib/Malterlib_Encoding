@@ -154,24 +154,24 @@ namespace
 			{
 				CJSONSorted Value =
 					{
-						"Key"__= "Value"
-						, "KeyTrue"__= true
-						, "KeyFalse"__= false
-						, "KeyNull"__= nullptr
-						, "KeyInt"__= 25
-						, "KeyFloat"__= 167.6
-						, "KeyObject"__= 
+						"Key"_j= "Value"
+						, "KeyTrue"_j= true
+						, "KeyFalse"_j= false
+						, "KeyNull"_j= nullptr
+						, "KeyInt"_j= 25
+						, "KeyFloat"_j= 167.6
+						, "KeyObject"_j=
 						{
-							"Key"__= "Value"
-							, "KeyTrue"__= true
-							, "KeyFalse"__= false
-							, "KeyNull"__= nullptr
-							, "KeyInt"__= 25
-							, "KeyFloat"__= 167.6
-							, "KeyArray"__= EJSONType_Array
-							, "KeyObject"__= EJSONType_Object
+							"Key"_j= "Value"
+							, "KeyTrue"_j= true
+							, "KeyFalse"_j= false
+							, "KeyNull"_j= nullptr
+							, "KeyInt"_j= 25
+							, "KeyFloat"_j= 167.6
+							, "KeyArray"_j= EJSONType_Array
+							, "KeyObject"_j= EJSONType_Object
 						}
-						, "KeyArray"__= 
+						, "KeyArray"_j=
 						{
 							25
 							, 167.6
@@ -180,8 +180,8 @@ namespace
 							, EJSONType_Array
 							, 
 							{
-								"KeyInt"__= 25
-								, "KeyFloat"__= 167.6
+								"KeyInt"_j= 25
+								, "KeyFloat"_j= 167.6
 							}
 						}
 					}
