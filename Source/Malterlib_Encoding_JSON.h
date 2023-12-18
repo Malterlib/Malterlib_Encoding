@@ -72,17 +72,14 @@ namespace NMib::NEncoding
 			CKey(CKey const &_Other);
 		};
 
-		template
-		<
-			typename tf_CType
-			, TCEnableIfType
-			<
-				NTraits::TCIsConstructorCallableWith<t_CParent, void (tf_CType &&)>::mc_Value
+		template <typename tf_CType>
+		TCJSONValue(tf_CType &&_Type)
+			requires
+			(
+				NTraits::cConstructibleWith<t_CParent, tf_CType &&>
 				&& !NPrivate::TCIsTCJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
 				&& !NPrivate::TCIsTCEJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
-			> * = nullptr
-		>
-		TCJSONValue(tf_CType &&_Type)
+			)
 #ifdef DCompiler_MSVC_Workaround
 			: t_CParent(fg_Forward<tf_CType>(_Type))
 		{

@@ -79,8 +79,9 @@ namespace NMib::NEncoding::NPrivate
 		using CValue = t_TCValue<TCJSONValueBase>;
 		using CVariantType = typename NPrivate::TCGetJSONValueVariant<CValue, t_bOrdered, typename t_CTypes::CTypes>::CType;
 
-		template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<CVariantType, void (tf_CType &&)>::mc_Value> * = nullptr>
+		template <typename tf_CType>
 		TCJSONValueBase(tf_CType &&_Value)
+			requires (NTraits::cConstructibleWith<CVariantType, tf_CType &&>)
 #ifdef DCompiler_MSVC_Workaround
 			: mp_Value(fg_Forward<tf_CType>(_Value))
 		{

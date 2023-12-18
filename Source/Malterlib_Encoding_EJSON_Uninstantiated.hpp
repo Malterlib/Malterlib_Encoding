@@ -9,17 +9,14 @@ namespace NMib::NEncoding
 {
 #ifndef DCompiler_MSVC_Workaround
 	template <typename t_CParent>
-	template
-	<
-		typename tf_CType
-		, TCEnableIfType
-		<
-			NTraits::TCIsConstructorCallableWith<TCJSONValue<t_CParent>, void (tf_CType &&)>::mc_Value
+	template <typename tf_CType>
+	TCEJSONValue<t_CParent>::TCEJSONValue(tf_CType &&_Type)
+		requires
+		(
+			NTraits::cConstructibleWith<TCJSONValue<t_CParent>, tf_CType &&>
 			&& !NPrivate::TCIsTCJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
 			&& !NPrivate::TCIsTCEJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
-		> *
-	>
-	TCEJSONValue<t_CParent>::TCEJSONValue(tf_CType &&_Type)
+		)
 		: TCJSONValue<t_CParent>(fg_Forward<tf_CType>(_Type))
 	{
 	}

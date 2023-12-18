@@ -98,17 +98,14 @@ namespace NMib::NEncoding
 		using CUserType = typename TCChooseType<CValue::mc_bOrdered, CEJSONUserTypeOrdered, CEJSONUserTypeSorted>::CType;
 		using CJSONType = typename TCChooseType<CValue::mc_bOrdered, CJSONOrdered, CJSONSorted>::CType;
 
-		template
-		<
-			typename tf_CType
-			, TCEnableIfType
-			<
-				NTraits::TCIsConstructorCallableWith<TCJSONValue<t_CParent>, void (tf_CType &&)>::mc_Value
+		template <typename tf_CType>
+		TCEJSONValue(tf_CType &&_Type)
+			requires
+			(
+				NTraits::cConstructibleWith<TCJSONValue<t_CParent>, tf_CType &&>
 				&& !NPrivate::TCIsTCJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
 				&& !NPrivate::TCIsTCEJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
-			> * = nullptr
-		>
-		TCEJSONValue(tf_CType &&_Type)
+			)
 #ifdef DCompiler_MSVC_Workaround
 			: TCJSONValue<t_CParent>(fg_Forward<tf_CType>(_Type))
 		{

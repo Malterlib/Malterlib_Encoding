@@ -9,17 +9,14 @@ namespace NMib::NEncoding
 {
 #ifndef DCompiler_MSVC_Workaround
 	template <typename t_CParent>
-	template
-	<
-		typename tf_CType
-		, TCEnableIfType
-		<
-			NTraits::TCIsConstructorCallableWith<t_CParent, void (tf_CType &&)>::mc_Value
+	template <typename tf_CType>
+	TCJSONValue<t_CParent>::TCJSONValue(tf_CType &&_Type)
+		requires
+		(
+			NTraits::cConstructibleWith<t_CParent, tf_CType &&>
 			&& !NPrivate::TCIsTCJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
 			&& !NPrivate::TCIsTCEJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
-		> *
-	>
-	TCJSONValue<t_CParent>::TCJSONValue(tf_CType &&_Type)
+		)
 		: t_CParent(fg_Forward<tf_CType>(_Type))
 	{
 	}
@@ -130,8 +127,9 @@ namespace NMib::NEncoding::NPrivate
 {
 #ifndef DCompiler_MSVC_Workaround
 	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
-	template <typename tf_CType, TCEnableIfType<NTraits::TCIsConstructorCallableWith<typename TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::CVariantType, void (tf_CType &&)>::mc_Value> *>
+	template <typename tf_CType>
 	TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJSONValueBase(tf_CType &&_Value)
+		requires (NTraits::cConstructibleWith<typename TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::CVariantType, tf_CType &&>)
 		: mp_Value(fg_Forward<tf_CType>(_Value))
 	{
 	}
