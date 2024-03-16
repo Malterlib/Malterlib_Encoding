@@ -3,6 +3,7 @@
 
 #include "Malterlib_Encoding_SimpleJSONDatabase.h"
 #include <Mib/Concurrency/ConcurrencyManager>
+#include <Mib/Cryptography/RandomID>
 
 namespace NMib::NEncoding
 {
@@ -12,8 +13,7 @@ namespace NMib::NEncoding
 	}
 
 	CSimpleJSONDatabase::CSimpleJSONDatabase(NStr::CStr const &_FileName)
-		: mp_FileActor(NConcurrency::fg_ConstructActor<NConcurrency::CSeparateThreadActor>(fg_Construct("JSONDatabase")))
-		, mp_FileName(_FileName)
+		: mp_FileName(_FileName)
 	{
 	}
 
@@ -31,9 +31,10 @@ namespace NMib::NEncoding
 	{
 		co_await NConcurrency::ECoroutineFlag_AllowReferences;
 		auto pWasDeleted = mp_pWasDeleted;
+		auto BlockingActorCheckout = NConcurrency::fg_BlockingActor();
 		auto Data = co_await
 			(
-				NConcurrency::g_Dispatch(mp_FileActor) / [FileName = mp_FileName]() -> CEJSONSorted
+				NConcurrency::g_Dispatch(BlockingActorCheckout) / [FileName = mp_FileName]() -> CEJSONSorted
 				{
 					if (!NFile::CFile::fs_FileExists(FileName))
 						return CEJSONSorted();
@@ -54,14 +55,20 @@ namespace NMib::NEncoding
 	{
 		co_await NConcurrency::ECoroutineFlag_AllowReferences;
 		using namespace NFile;
+		using namespace NStr;
 
+		auto SequenceSubscription = co_await mp_WriteSequencer.f_Sequence();
+
+		auto BlockingActorCheckout = NConcurrency::fg_BlockingActor();
 		co_await
 			(
-				NConcurrency::g_Dispatch(mp_FileActor) / [FileName = mp_FileName, Data = m_Data]
+				NConcurrency::g_Dispatch(BlockingActorCheckout) / [FileName = mp_FileName, Data = m_Data]
 				{
 					CFile::fs_CreateDirectory(CFile::fs_GetPath(FileName));
 					EFileAttrib FileAttributes = EFileAttrib_UnixAttributesValid | EFileAttrib_UserRead | EFileAttrib_UserWrite;
-					CFile::fs_WriteStringToFile(FileName, Data.f_ToString("\t", gc_JsonDialectFlags), true, FileAttributes);
+					CStr TempFileName = "{}.{}"_f << FileName << NCryptography::fg_RandomID();
+					CFile::fs_WriteStringToFile(TempFileName, Data.f_ToString("\t", gc_JsonDialectFlags), true, FileAttributes);
+					CFile::fs_AtomicReplaceFile(TempFileName, FileName);
 				}
 			)
 		;

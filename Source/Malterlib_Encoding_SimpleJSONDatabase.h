@@ -3,6 +3,7 @@
 
 #include <Mib/Encoding/EJSON>
 #include <Mib/Concurrency/ConcurrencyDefines>
+#include <Mib/Concurrency/ActorSequencerActor>
 
 namespace NMib::NEncoding
 {
@@ -20,9 +21,9 @@ namespace NMib::NEncoding
 		CEJSONSorted m_Data;
 
 	private:
-		NConcurrency::TCActor<NConcurrency::CSeparateThreadActor> mp_FileActor;
 		NStr::CStr mp_FileName;
 		NStorage::TCSharedPointer<bool> mp_pWasDeleted = fg_Construct(false);
+		NConcurrency::CSequencer mp_WriteSequencer{"JSONDatabaseSequencer"};
 	};
 }
 
