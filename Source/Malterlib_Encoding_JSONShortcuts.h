@@ -20,7 +20,16 @@ namespace NMib::NEncoding
 		{
 			return EJSONType_Array;
 		}
-		CEJSONSorted::CKey operator [] (NStr::CStr const &_Key);
+		CEJSONSorted::CKey operator () (NStr::CStr const &_Key) const;
+#if 0 // Not yet supported on MSVC
+		template <typename ...tfp_CValue>
+		NContainer::TCVector<CEJSONSorted> operator [] (tfp_CValue && ... p_Values) const
+		{
+			NContainer::TCVector<CEJSONSorted> Return;
+			((void)Return.f_Insert(fg_Forward<tfp_CValue>(p_Values)), ...);
+			return Return;
+		}
+#endif
 	};
 
 	struct CJSONConstantsOrdered
@@ -35,7 +44,16 @@ namespace NMib::NEncoding
 		{
 			return EJSONType_Array;
 		}
-		CEJSONOrdered::CKey operator [] (NStr::CStr const &_Key);
+#if 0 // Not yet supported on MSVC
+		template <typename ...tfp_CValue>
+		NContainer::TCVector<CEJSONOrdered> operator [] (tfp_CValue && ... p_Values) const
+		{
+			NContainer::TCVector<CEJSONOrdered> Return;
+			((void)Return.f_Insert(fg_Forward<tfp_CValue>(p_Values)), ...);
+			return Return;
+		}
+#endif
+		CEJSONOrdered::CKey operator () (NStr::CStr const &_Key) const;
 	};
 }
 
@@ -45,8 +63,8 @@ NMib::NEncoding::CJSONOrdered::CKey operator ""_jo (const char *_pStr, std::size
 NMib::NEncoding::CEJSONSorted::CKey operator ""_ (const char *_pStr, std::size_t _Len);
 NMib::NEncoding::CJSONSorted::CKey operator ""_j (const char *_pStr, std::size_t _Len);
 
-extern NMib::NEncoding::CJSONConstantsOrdered _o;
-extern NMib::NEncoding::CJSONConstantsSorted _;
+extern NMib::NEncoding::CJSONConstantsOrdered const _o;
+extern NMib::NEncoding::CJSONConstantsSorted const _;
 
 #ifndef DMibPNoShortCuts
 	using namespace NMib::NEncoding;

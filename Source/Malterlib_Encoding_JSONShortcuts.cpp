@@ -8,14 +8,14 @@
 
 namespace NMib::NEncoding
 {
-	CEJSONOrdered::CKey CJSONConstantsOrdered::operator [] (NStr::CStr const &_Key)
+	CEJSONOrdered::CKey CJSONConstantsOrdered::operator () (NStr::CStr const &_Key) const
 	{
 		CEJSONOrdered::CKey Key;
 		Key.m_Key = _Key;
 		return Key;
 	}
 
-	CEJSONSorted::CKey CJSONConstantsSorted::operator [] (NStr::CStr const &_Key)
+	CEJSONSorted::CKey CJSONConstantsSorted::operator () (NStr::CStr const &_Key) const
 	{
 		CEJSONSorted::CKey Key;
 		Key.m_Key = _Key;
@@ -53,5 +53,5 @@ NMib::NEncoding::CJSONSorted::CKey operator ""_j (const char *_pStr, std::size_t
 	return Ret;
 }
 
-NMib::NEncoding::CJSONConstantsOrdered _o;
-NMib::NEncoding::CJSONConstantsSorted _;
+constinit NMib::NEncoding::CJSONConstantsOrdered const _o;
+constinit NMib::NEncoding::CJSONConstantsSorted const _;
