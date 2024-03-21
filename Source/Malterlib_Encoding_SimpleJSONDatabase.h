@@ -20,6 +20,8 @@ namespace NMib::NEncoding
 
 		CEJSONSorted m_Data;
 
+		NConcurrency::TCFuture<void> f_Destroy() &&;
+
 	private:
 		NStr::CStr mp_FileName;
 		NStorage::TCSharedPointer<bool> mp_pWasDeleted = fg_Construct(false);

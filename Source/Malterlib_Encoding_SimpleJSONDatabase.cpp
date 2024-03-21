@@ -3,6 +3,7 @@
 
 #include "Malterlib_Encoding_SimpleJSONDatabase.h"
 #include <Mib/Concurrency/ConcurrencyManager>
+#include <Mib/Concurrency/LogError>
 #include <Mib/Cryptography/RandomID>
 
 namespace NMib::NEncoding
@@ -20,6 +21,17 @@ namespace NMib::NEncoding
 	CSimpleJSONDatabase::~CSimpleJSONDatabase()
 	{
 		*mp_pWasDeleted = true;
+	}
+
+	NConcurrency::TCFuture<void> CSimpleJSONDatabase::f_Destroy() &&
+	{
+		co_await NConcurrency::ECoroutineFlag_AllowReferences;
+
+		auto WriteSequencer = fg_Move(mp_WriteSequencer);
+
+		co_await fg_Move(WriteSequencer).f_Destroy().f_Wrap() > NConcurrency::fg_LogError("SimpleJSONDatabase", "Failed to destroy sequencer");
+
+		co_return {};
 	}
 
 	NStr::CStr const &CSimpleJSONDatabase::f_GetFileName() const
