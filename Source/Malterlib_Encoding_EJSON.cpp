@@ -134,4 +134,9 @@ namespace NMib::NEncoding
 		default: DMibNeverGetHere; return "unknown";
 		}
 	}
+
+	NStr::CStr fg_JSONTypeToString(EEJSONType _Type)
+	{
+		return fg_EJSONTypeToString(_Type);
+	}
 }

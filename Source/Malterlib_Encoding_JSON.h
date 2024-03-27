@@ -344,6 +344,8 @@ namespace NMib::NEncoding
 
 	template <typename t_CJSONObject>
 	bool fg_ValidateType(t_CJSONObject const *_pObject, EJSONType _Type);
+
+	NStr::CStr fg_JSONTypeToString(EJSONType _Type);
 }
 
 #include "Malterlib_Encoding_JSON_Internal.h"

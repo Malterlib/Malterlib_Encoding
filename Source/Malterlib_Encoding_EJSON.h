@@ -80,6 +80,7 @@ namespace NMib::NEncoding
 	CEJSONUserTypeSorted fg_UserTypeSorted(NStr::CStr const &_Type, CJSONSorted &&_Value);
 
 	NStr::CStr fg_EJSONTypeToString(EEJSONType _Type);
+	NStr::CStr fg_JSONTypeToString(EEJSONType _Type);
 
 	struct CEJSONConstStrings
 	{

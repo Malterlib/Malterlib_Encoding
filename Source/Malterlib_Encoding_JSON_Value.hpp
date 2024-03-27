@@ -233,8 +233,10 @@ namespace NMib::NEncoding
 	template <typename t_CParent>
 	void TCJSONValue<t_CParent>::fp_CheckType(EJSONType _Type) const
 	{
+		using namespace NStr;
+		
 		if (this->f_Type() != _Type)
-			DMibError("Trying to access by wrong type");
+			DMibError("Trying to access by wrong type. {} != {}"_f << fg_JSONTypeToString(this->f_Type()) << fg_JSONTypeToString(_Type));
 	}
 
 	template <typename t_CParent>

@@ -24,4 +24,20 @@ namespace NMib::NEncoding
 		{
 		}
 	}
+
+	NStr::CStr fg_JSONTypeToString(EJSONType _Type)
+	{
+		using namespace NEncoding;
+		switch (_Type)
+		{
+		case EJSONType_Null: return "null";
+		case EJSONType_String: return "string";
+		case EJSONType_Integer: return "integer";
+		case EJSONType_Float: return "float";
+		case EJSONType_Boolean: return "boolean";
+		case EJSONType_Object: return "object";
+		case EJSONType_Array: return "array";
+		default: DMibNeverGetHere; return "unknown";
+		}
+	}
 }
