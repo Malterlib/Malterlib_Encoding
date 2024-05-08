@@ -116,10 +116,7 @@ Property
 		PreprocessorDefines += "DMalterlibEnableThirdPartyComparisonTests"
 	}
 
-	%Dependency "Lib_BoringSSL_crypto"
-	{
-		!DocumentationEnabled true
-	}
+	Target.ExtraGroups =+ "{Malterlib}/{Lib_Malterlib_Cryptography}/{DependOnBoringSSL}"
 }
 
 Property
