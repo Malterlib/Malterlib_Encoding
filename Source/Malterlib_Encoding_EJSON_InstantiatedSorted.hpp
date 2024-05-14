@@ -7,13 +7,13 @@
 
 namespace NMib::NEncoding
 {
+#ifdef DMibEncodingJSONExternTemplate
 	extern template struct NPrivate::TCJSONValueBase<TCEJSONValue, NPrivate::CEJSONExtraTypesSorted, false>;
 	extern template struct TCJSONValue<CEJSONValueBaseSorted>;
 	extern template struct TCEJSONValue<CEJSONValueBaseSorted>;
 	extern template struct TCJSONObject<CEJSONSorted, false>;
 	extern template struct NPrivate::TCObjectEntry<CEJSONSorted, false>;
 
-#ifdef DMibEncodingJSONExternTemplate
 	extern template CJSONValueEJSONSorted::TCJSONValue(CEJSONValueBaseOrdered const &);
 	extern template CJSONValueEJSONSorted::TCJSONValue(CEJSONValueBaseOrdered const &&);
 	extern template CJSONValueEJSONSorted::TCJSONValue(CEJSONValueBaseOrdered &&);
