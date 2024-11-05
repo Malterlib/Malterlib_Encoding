@@ -23,10 +23,8 @@ namespace NMib::NEncoding
 		*mp_pWasDeleted = true;
 	}
 
-	NConcurrency::TCFuture<void> CSimpleJSONDatabase::f_Destroy() &&
+	NConcurrency::TCUnsafeFuture<void> CSimpleJSONDatabase::f_Destroy() &&
 	{
-		co_await NConcurrency::ECoroutineFlag_AllowReferences;
-
 		auto WriteSequencer = fg_Move(mp_WriteSequencer);
 
 		co_await fg_Move(WriteSequencer).f_Destroy().f_Wrap() > NConcurrency::fg_LogError("SimpleJSONDatabase", "Failed to destroy sequencer");
@@ -39,9 +37,8 @@ namespace NMib::NEncoding
 		return mp_FileName;
 	}
 
-	NConcurrency::TCFuture<void> CSimpleJSONDatabase::f_Load()
+	NConcurrency::TCUnsafeFuture<void> CSimpleJSONDatabase::f_Load()
 	{
-		co_await NConcurrency::ECoroutineFlag_AllowReferences;
 		auto pWasDeleted = mp_pWasDeleted;
 		auto BlockingActorCheckout = NConcurrency::fg_BlockingActor();
 		auto Data = co_await
@@ -63,9 +60,8 @@ namespace NMib::NEncoding
 		co_return {};
 	}
 
-	NConcurrency::TCFuture<void> CSimpleJSONDatabase::f_Save()
+	NConcurrency::TCUnsafeFuture<void> CSimpleJSONDatabase::f_Save()
 	{
-		co_await NConcurrency::ECoroutineFlag_AllowReferences;
 		using namespace NFile;
 		using namespace NStr;
 

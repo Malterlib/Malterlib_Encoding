@@ -13,14 +13,14 @@ namespace NMib::NEncoding
 		CSimpleJSONDatabase(NStr::CStr const &_FileName);
 		~CSimpleJSONDatabase();
 
-		NConcurrency::TCFuture<void> f_Load();
-		NConcurrency::TCFuture<void> f_Save();
+		NConcurrency::TCUnsafeFuture<void> f_Load();
+		NConcurrency::TCUnsafeFuture<void> f_Save();
 
 		NStr::CStr const &f_GetFileName() const;
 
 		CEJSONSorted m_Data;
 
-		NConcurrency::TCFuture<void> f_Destroy() &&;
+		NConcurrency::TCUnsafeFuture<void> f_Destroy() &&;
 
 	private:
 		NStr::CStr mp_FileName;
