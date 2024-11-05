@@ -91,16 +91,23 @@ namespace
 	using namespace NMib::NEncoding;
 	using namespace NMib::NStr;
 
-	class CJSONPerfomance_Tests : public NTest::CTest
+	class CJSONPerformance_Tests : public NTest::CTest
 	{
 	public:
+
+#if defined(DMibDebug) || defined(DMibSanitizerEnabled)
+		static constexpr mint mc_TestDataLength = 16 * 1024;
+		static constexpr mint mc_ArrayLength = 16 * 1024;
+#else
+		static constexpr mint mc_TestDataLength = 512 * 1024;
 		static constexpr mint mc_ArrayLength = 512 * 1024;
+#endif
 
 		CStr fp_GenerateTestData(bool _bFloat, CCoordinate &o_Average)
 		{
 			CJSONSorted Data;
 			auto &OutArray = Data["coordinates"].f_Array();
-			for (mint i = 0; i < 512 * 1024; ++i)
+			for (mint i = 0; i < mc_TestDataLength; ++i)
 			{
 				auto &Entry = OutArray.f_Insert();
 				Entry["name"] = "{} {}"_f << NCryptography::fg_RandomID(6) << (NMisc::fg_Random().f_GetValue<uint32>() % 10000);
@@ -509,7 +516,7 @@ namespace
 		}
 	};
 
-	DMibTestRegister(CJSONPerfomance_Tests, Malterlib::Encoding);
+	DMibTestRegister(CJSONPerformance_Tests, Malterlib::Encoding);
 }
 
 #endif
