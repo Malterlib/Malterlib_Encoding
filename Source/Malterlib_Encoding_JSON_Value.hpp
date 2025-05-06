@@ -79,25 +79,6 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	TCJSONValue<t_CParent>::TCJSONValue(std::initializer_list<CValue> const &_Init)
-	{
-		auto &Array = f_Array();
-		for (auto &Value : _Init)
-			Array.f_Insert(Value);
-	}
-
-	template <typename t_CParent>
-	TCJSONValue<t_CParent>::TCJSONValue(std::initializer_list<CKeyValue> const &_Init)
-	{
-		auto &Object = f_Object();
-		for (auto &Value : _Init)
-		{
-			DMibCheck(!Object.f_GetMember(Value.m_Key));
-			Object.f_CreateMember(Value.m_Key) = Value.m_Value;
-		}
-	}
-
-	template <typename t_CParent>
 	TCJSONValue<t_CParent>::TCJSONValue(EJSONType _Type)
 	{
 		f_SetType(_Type);
@@ -113,20 +94,6 @@ namespace NMib::NEncoding
 	auto TCJSONValue<t_CParent>::operator = (ch8 const *_pValue) -> CValue &
 	{
 		this->mp_Value = _pValue;
-		return static_cast<CValue &>(*this);
-	}
-
-	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator = (std::initializer_list<CValue> const &_Init) -> CValue &
-	{
-		static_cast<CValue &>(*this) = CValue(_Init);
-		return static_cast<CValue &>(*this);
-	}
-
-	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator = (std::initializer_list<CKeyValue> const &_Init) -> CValue &
-	{
-		static_cast<CValue &>(*this) = CValue(_Init);
 		return static_cast<CValue &>(*this);
 	}
 

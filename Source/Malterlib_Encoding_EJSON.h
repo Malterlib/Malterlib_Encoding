@@ -121,8 +121,11 @@ namespace NMib::NEncoding
 		TCEJSONValue(TCEJSONValue &_Other);
 		TCEJSONValue(TCEJSONValue &&_Other);
 		TCEJSONValue(TCEJSONValue const &&_Other);
-		TCEJSONValue(std::initializer_list<CValue> const &_Init);
-		TCEJSONValue(std::initializer_list<CKeyValue> const &_Init);
+
+		template <typename ...tfp_CValues>
+		TCEJSONValue(tfp_CValues && ...p_Values)
+			requires ((NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiersType<tfp_CValues>, CKeyValue> && (sizeof...(p_Values) > 0)) && ...)
+		;
 
 		TCEJSONValue(NContainer::CSecureByteVector const &_Value) = delete;
 		TCEJSONValue(NContainer::CSecureByteVector &_Value) = delete;

@@ -22,6 +22,14 @@ namespace NMib::NEncoding
 	}
 #endif
 
+	template <typename t_CParent>
+	template <typename ...tfp_CValues>
+	TCEJSONValue<t_CParent>::TCEJSONValue(tfp_CValues && ...p_Values)
+		requires ((NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiersType<tfp_CValues>, CKeyValue> && (sizeof...(p_Values) > 0)) && ...)
+		: TCJSONValue<t_CParent>(fg_Forward<tfp_CValues>(p_Values)...)
+	{
+	}
+
 	template <typename tf_CStream>
 	void CEJSONUserTypeOrdered::f_Feed(tf_CStream &_Stream) const
 	{

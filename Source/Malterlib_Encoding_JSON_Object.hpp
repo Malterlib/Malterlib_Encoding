@@ -187,6 +187,23 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJSONValue, bool t_bOrdered>
+	t_CJSONValue &TCJSONObject<t_CJSONValue, t_bOrdered>::f_CreateMember(NStr::CStr &&_Name)
+	{
+		if constexpr (t_bOrdered)
+		{
+			auto pFound = mp_ObjectTree.f_FindEqual(_Name);
+			if (pFound)
+				return pFound->f_Value();
+			auto &NewMember = mp_Objects.f_Insert();
+			NewMember.mp_Name = fg_Move(_Name);
+			mp_ObjectTree.f_Insert(NewMember);
+			return NewMember.f_Value();
+		}
+		else
+			return mp_Objects[fg_Move(_Name)].f_Value();
+	}
+
+	template <typename t_CJSONValue, bool t_bOrdered>
 	t_CJSONValue const &TCJSONObject<t_CJSONValue, t_bOrdered>::operator [] (NStr::CStr const &_Name) const
 	{
 		auto pMember = f_GetMember(_Name);

@@ -33,6 +33,27 @@ namespace NMib::NEncoding
 #endif
 
 	template <typename t_CParent>
+	template <typename ...tfp_CValues>
+	TCJSONValue<t_CParent>::TCJSONValue(tfp_CValues && ...p_Values)
+		requires ((NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiersType<tfp_CValues>, CKeyValue> && (sizeof...(p_Values) > 0)) && ...)
+	{
+		auto &Object = f_Object();
+		(
+
+			[&]
+			{
+				DMibCheck(!Object.f_GetMember(p_Values.m_Key));
+				if constexpr (NTraits::TCIsRValueReference<tfp_CValues &&>::mc_Value)
+					Object.f_CreateMember(fg_Move(p_Values.m_Key)) = fg_Move(p_Values.m_Value);
+				else
+					Object.f_CreateMember(p_Values.m_Key) = p_Values.m_Value;
+			}
+			()
+			, ...
+		);
+	}
+	
+	template <typename t_CParent>
 	template <typename tf_CType>
 	auto TCJSONValue<t_CParent>::f_Insert(tf_CType &&_Value) -> CValue &
 	{
@@ -86,6 +107,15 @@ namespace NMib::NEncoding
 		CKeyValue Return;
 		Return.m_Key = fg_Move(m_Key);
 		Return.m_Value = fg_Move(_Value);
+		return Return;
+	}
+
+	template <typename t_CParent>
+	auto TCJSONValue<t_CParent>::CKey::operator = (CValue const &_Value) && -> CKeyValue
+	{
+		CKeyValue Return;
+		Return.m_Key = fg_Move(m_Key);
+		Return.m_Value = _Value;
 		return Return;
 	}
 

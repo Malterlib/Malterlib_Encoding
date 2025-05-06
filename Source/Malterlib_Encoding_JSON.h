@@ -54,11 +54,6 @@ namespace NMib::NEncoding
 		{
 			NStr::CStr m_Key;
 			CValue m_Value;
-
-			operator CValue () const
-			{
-				return CValue{*this};
-			}
 		};
 
 		struct CKey
@@ -67,6 +62,7 @@ namespace NMib::NEncoding
 			CKey(CKey &&_Other);
 			NStr::CStr m_Key;
 			inline_always CKeyValue operator = (CValue &&_Value) &&;
+			inline_always CKeyValue operator = (CValue const &_Value) &&;
 			inline_always CKeyValue operator = (std::initializer_list<CVoidTag> const &_Initializer) &&;
 		private:
 			CKey(CKey const &_Other);
@@ -93,8 +89,11 @@ namespace NMib::NEncoding
 		TCJSONValue(TCJSONValue const &&_Other);
 		TCJSONValue(EJSONType _Type);
 		TCJSONValue(ch8 const *_pValue);
-		TCJSONValue(std::initializer_list<CValue> const &_Init);
-		TCJSONValue(std::initializer_list<CKeyValue> const &_Init);
+
+		template <typename ...tfp_CValues>
+		TCJSONValue(tfp_CValues && ...p_Values)
+			requires ((NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiersType<tfp_CValues>, CKeyValue> && (sizeof...(p_Values) > 0)) && ...)
+		;
 
 		TCJSONValue(NContainer::CSecureByteVector const &_Value) = delete;
 		TCJSONValue(NContainer::CSecureByteVector &_Value) = delete;
@@ -130,8 +129,6 @@ namespace NMib::NEncoding
 		CValue &operator = (bool _Value);
 		CValue &operator = (EJSONType _Type);
 		CValue &operator = (ch8 const *_pValue);
-		CValue &operator = (std::initializer_list<CValue> const &_Init);
-		CValue &operator = (std::initializer_list<CKeyValue> const &_Init);
 
 		bool operator == (TCJSONValue const &_Right) const;
 		COrdering_Partial operator <=> (TCJSONValue const &_Right) const;
@@ -279,6 +276,7 @@ namespace NMib::NEncoding
 		t_CJSONValue f_GetMemberValue(NStr::CStr const &_Name, t_CJSONValue const &_Default) const;
 		t_CJSONValue f_GetMemberValue(NStr::CStr const &_Name, t_CJSONValue &&_Default) const;
 		t_CJSONValue &f_CreateMember(NStr::CStr const &_Name);
+		t_CJSONValue &f_CreateMember(NStr::CStr &&_Name);
 
 		t_CJSONValue &operator [] (NStr::CStr const &_Name);
 		t_CJSONValue const &operator [] (NStr::CStr const &_Name) const;

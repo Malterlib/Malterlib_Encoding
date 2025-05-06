@@ -38,19 +38,6 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	TCEJSONValue<t_CParent>::TCEJSONValue(std::initializer_list<CValue> const &_Init)
-		: TCJSONValue<t_CParent>(_Init)
-	{
-	}
-
-	template <typename t_CParent>
-	TCEJSONValue<t_CParent>::TCEJSONValue(std::initializer_list<CKeyValue> const &_Init)
-		: TCJSONValue<t_CParent>(_Init)
-	{
-	}
-
-
-	template <typename t_CParent>
 	TCEJSONValue<t_CParent>::TCEJSONValue(TCEJSONValue const &&_Other)
 		: TCJSONValue<t_CParent>(static_cast<TCJSONValue<t_CParent> const &>(_Other))
 	{

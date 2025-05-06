@@ -8,19 +8,18 @@
 
 namespace NMib::NEncoding
 {
-	CEJSONOrdered::CKey CJSONConstantsOrdered::operator () (NStr::CStr const &_Key) const
+	template <typename tf_CJson>
+	typename tf_CJson::CKey TCJSONConstants<tf_CJson>::operator () (NStr::CStr const &_Key) const
 	{
-		CEJSONOrdered::CKey Key;
+		typename tf_CJson::CKey Key;
 		Key.m_Key = _Key;
 		return Key;
 	}
 
-	CEJSONSorted::CKey CJSONConstantsSorted::operator () (NStr::CStr const &_Key) const
-	{
-		CEJSONSorted::CKey Key;
-		Key.m_Key = _Key;
-		return Key;
-	}
+	template CEJSONOrdered::CKey TCJSONConstants<CEJSONOrdered>::operator () (NStr::CStr const &_Key) const;
+	template CEJSONSorted::CKey TCJSONConstants<CEJSONSorted>::operator () (NStr::CStr const &_Key) const;
+	template CJSONOrdered::CKey TCJSONConstants<CJSONOrdered>::operator () (NStr::CStr const &_Key) const;
+	template CJSONSorted::CKey TCJSONConstants<CJSONSorted>::operator () (NStr::CStr const &_Key) const;
 }
 
 NMib::NEncoding::CEJSONOrdered::CKey operator ""_o (const char *_pStr, std::size_t _Len)
@@ -53,5 +52,9 @@ NMib::NEncoding::CJSONSorted::CKey operator ""_j (const char *_pStr, std::size_t
 	return Ret;
 }
 
-constinit NMib::NEncoding::CJSONConstantsOrdered const _o;
-constinit NMib::NEncoding::CJSONConstantsSorted const _;
+constinit NMib::NEncoding::TCJSONConstants<NMib::NEncoding::CEJSONOrdered> const _o;
+constinit NMib::NEncoding::TCJSONConstants<NMib::NEncoding::CEJSONSorted> const _;
+
+constinit NMib::NEncoding::TCJSONConstants<NMib::NEncoding::CJSONOrdered> const _jo;
+constinit NMib::NEncoding::TCJSONConstants<NMib::NEncoding::CJSONSorted> const _j;
+
