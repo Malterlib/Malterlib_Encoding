@@ -378,9 +378,18 @@ namespace
 						, "KeyBinary"_= NContainer::fg_CreateVector<uint8>(0, 1, 2, 3, 4, 5, 6, 7)
 						, "UserType"_= fg_UserTypeSorted("TestType", {"TestValue1"_j= "Test1", "TestValue2"_j= 2})
 						, "UserTypeSimple"_= fg_UserTypeSorted("oid", "e86c9bc324bbba92f0fd4014")
-						, "Escape1"_= {"$escape"_= 5}
-						, "Escape2"_= {"$date"_= 6}
-						, "Escape3"_= {"$binary"_= 7}
+						, "Escape1"_=
+						{
+							"$escape"_= 5
+						}
+						, "Escape2"_=
+						{
+							"$date"_= 6
+						}
+						, "Escape3"_=
+						{
+							"$binary"_= 7
+						}
 						, "Escape4"_=
 						{
 							"$type"_= 8
@@ -407,7 +416,10 @@ namespace
 							, "$value"_= 13
 							, "OtherKey"_= 13
 						}
-						, "RecursiveEscape"_= {"$escape"_= NContainer::fg_CreateVector<uint8>(0, 1, 2, 3, 4, 5, 6, 7)}
+						, "RecursiveEscape"_=
+						{
+							"$escape"_= NContainer::fg_CreateVector<uint8>(0, 1, 2, 3, 4, 5, 6, 7)
+						}
 						, "KeyObject"_=
 						{
 							"Key"_= "Value"
@@ -416,22 +428,22 @@ namespace
 							, "KeyNull"_= nullptr
 							, "KeyInt"_= 25
 							, "KeyFloat"_= 167.6
-							, "KeyArray"_= _[_]
+							, "KeyArray"_= _[]
 							, "KeyObject"_= {}
 						}
-						, "KeyArray"_=
-						{
+						, "KeyArray"_= _
+						[
 							25
 							, 167.6
 							, true
 							, false
 							, _.mc_EmptyArray
-							, 
+							, _=
 							{
 								"KeyInt"_= 25
 								, "KeyFloat"_= 167.6
 							}
-						}
+						]
 					}
 				;
 				

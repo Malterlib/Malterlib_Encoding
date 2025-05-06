@@ -171,19 +171,19 @@ namespace
 							, "KeyArray"_j= EJSONType_Array
 							, "KeyObject"_j= EJSONType_Object
 						}
-						, "KeyArray"_j=
-						{
+						, "KeyArray"_j= _j
+						[
 							25
 							, 167.6
 							, true
 							, false
 							, EJSONType_Array
-							, 
+							, _j=
 							{
 								"KeyInt"_j= 25
 								, "KeyFloat"_j= 167.6
 							}
-						}
+						]
 					}
 				;
 				
