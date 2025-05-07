@@ -1,199 +1,199 @@
 // Copyright © 2023 Favro Holding AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-#include "Malterlib_Encoding_JSON.h"
-#include "Malterlib_Encoding_JSON_Parse.h"
-#include "Malterlib_Encoding_JSON_Generate.h"
-#include "Malterlib_Encoding_JSON.hpp"
-#include "Malterlib_Encoding_JSON_GenerateColored.hpp"
+#include "Malterlib_Encoding_Json.h"
+#include "Malterlib_Encoding_Json_Parse.h"
+#include "Malterlib_Encoding_Json_Generate.h"
+#include "Malterlib_Encoding_Json.hpp"
+#include "Malterlib_Encoding_Json_GenerateColored.hpp"
 
 namespace NMib::NEncoding
 {
-#ifdef DMibEncodingJSONExternTemplate
-	template struct NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes, true>;
-	template struct TCJSONValue<NPrivate::TCJSONValueBase<TCJSONValue, NPrivate::CJSONExtraTypes, true>>;
-	template struct TCJSONObject<CJSONOrdered, true>;
-	template struct NPrivate::TCObjectEntry<CJSONOrdered, true>;
+#ifdef DMibEncodingJsonExternTemplate
+	template struct NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, true>;
+	template struct TCJsonValue<NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, true>>;
+	template struct TCJsonObject<CJsonOrdered, true>;
+	template struct NPrivate::TCObjectEntry<CJsonOrdered, true>;
 
-	template CJSONValueJSONOrdered::TCJSONValue(CJSONValueBaseSorted const &);
-	template CJSONValueJSONOrdered::TCJSONValue(CJSONValueBaseSorted const &&);
-	template CJSONValueJSONOrdered::TCJSONValue(CJSONValueBaseSorted &&);
+	template CJsonValueJsonOrdered::TCJsonValue(CJsonValueBaseSorted const &);
+	template CJsonValueJsonOrdered::TCJsonValue(CJsonValueBaseSorted const &&);
+	template CJsonValueJsonOrdered::TCJsonValue(CJsonValueBaseSorted &&);
 
-	template TCJSONValue<CJSONValueBaseOrdered> CJSONOrdered::fs_FromCompatible<CJSONValueBaseSorted>(TCJSONValue<CJSONValueBaseSorted> const &);
-	template TCJSONValue<CJSONValueBaseOrdered> CJSONOrdered::fs_FromCompatible<CJSONValueBaseSorted>(TCJSONValue<CJSONValueBaseSorted> &&);
-	template TCJSONValue<CJSONValueBaseOrdered> CJSONOrdered::fs_FromCompatible<CJSONValueBaseSorted>(TCJSONValue<CJSONValueBaseSorted> const &&);
+	template TCJsonValue<CJsonValueBaseOrdered> CJsonOrdered::fs_FromCompatible<CJsonValueBaseSorted>(TCJsonValue<CJsonValueBaseSorted> const &);
+	template TCJsonValue<CJsonValueBaseOrdered> CJsonOrdered::fs_FromCompatible<CJsonValueBaseSorted>(TCJsonValue<CJsonValueBaseSorted> &&);
+	template TCJsonValue<CJsonValueBaseOrdered> CJsonOrdered::fs_FromCompatible<CJsonValueBaseSorted>(TCJsonValue<CJsonValueBaseSorted> const &&);
 
-	template CJSONOrdered::TCJSONValue(TCJSONValue<CJSONValueBaseSorted> const &);
-	template CJSONOrdered::TCJSONValue(TCJSONValue<CJSONValueBaseSorted> &&);
-	template CJSONOrdered::TCJSONValue(TCJSONValue<CJSONValueBaseSorted> const &&);
+	template CJsonOrdered::TCJsonValue(TCJsonValue<CJsonValueBaseSorted> const &);
+	template CJsonOrdered::TCJsonValue(TCJsonValue<CJsonValueBaseSorted> &&);
+	template CJsonOrdered::TCJsonValue(TCJsonValue<CJsonValueBaseSorted> const &&);
 
-	template CJSONValueBaseOrdered::TCJSONValueBase(CJSONValueBaseSorted const &);
-	template CJSONValueBaseOrdered::TCJSONValueBase(CJSONValueBaseSorted &);
-	template CJSONValueBaseOrdered::TCJSONValueBase(CJSONValueBaseSorted &&);
+	template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseSorted const &);
+	template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseSorted &);
+	template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseSorted &&);
 	
-	template CJSONOrdered::TCJSONValue(CNullPtr &&);
-	template CJSONOrdered::TCJSONValue(CNullPtr &);
-	template CJSONOrdered::TCJSONValue(CNullPtr const &);
+	template CJsonOrdered::TCJsonValue(CNullPtr &&);
+	template CJsonOrdered::TCJsonValue(CNullPtr &);
+	template CJsonOrdered::TCJsonValue(CNullPtr const &);
 
-	template CJSONOrdered::TCJSONValue(NStr::CStr &&);
-	template CJSONOrdered::TCJSONValue(NStr::CStr &);
-	template CJSONOrdered::TCJSONValue(NStr::CStr const &);
+	template CJsonOrdered::TCJsonValue(NStr::CStr &&);
+	template CJsonOrdered::TCJsonValue(NStr::CStr &);
+	template CJsonOrdered::TCJsonValue(NStr::CStr const &);
 
-	template CJSONOrdered::TCJSONValue(int64 &&);
-	template CJSONOrdered::TCJSONValue(int64 &);
-	template CJSONOrdered::TCJSONValue(int64 const &);
+	template CJsonOrdered::TCJsonValue(int64 &&);
+	template CJsonOrdered::TCJsonValue(int64 &);
+	template CJsonOrdered::TCJsonValue(int64 const &);
 
-	template CJSONOrdered::TCJSONValue(int32 &&);
-	template CJSONOrdered::TCJSONValue(int32 &);
-	template CJSONOrdered::TCJSONValue(int32 const &);
+	template CJsonOrdered::TCJsonValue(int32 &&);
+	template CJsonOrdered::TCJsonValue(int32 &);
+	template CJsonOrdered::TCJsonValue(int32 const &);
 
-	template CJSONOrdered::TCJSONValue(uint64 &&);
-	template CJSONOrdered::TCJSONValue(uint64 &);
-	template CJSONOrdered::TCJSONValue(uint64 const &);
+	template CJsonOrdered::TCJsonValue(uint64 &&);
+	template CJsonOrdered::TCJsonValue(uint64 &);
+	template CJsonOrdered::TCJsonValue(uint64 const &);
 
-	template CJSONOrdered::TCJSONValue(uint32 &&);
-	template CJSONOrdered::TCJSONValue(uint32 &);
-	template CJSONOrdered::TCJSONValue(uint32 const &);
+	template CJsonOrdered::TCJsonValue(uint32 &&);
+	template CJsonOrdered::TCJsonValue(uint32 &);
+	template CJsonOrdered::TCJsonValue(uint32 const &);
 
-	template CJSONOrdered::TCJSONValue(pfp64 &&);
-	template CJSONOrdered::TCJSONValue(pfp64 &);
-	template CJSONOrdered::TCJSONValue(pfp64 const &);
+	template CJsonOrdered::TCJsonValue(pfp64 &&);
+	template CJsonOrdered::TCJsonValue(pfp64 &);
+	template CJsonOrdered::TCJsonValue(pfp64 const &);
 
-	template CJSONOrdered::TCJSONValue(pfp32 &&);
-	template CJSONOrdered::TCJSONValue(pfp32 &);
-	template CJSONOrdered::TCJSONValue(pfp32 const &);
+	template CJsonOrdered::TCJsonValue(pfp32 &&);
+	template CJsonOrdered::TCJsonValue(pfp32 &);
+	template CJsonOrdered::TCJsonValue(pfp32 const &);
 
-	template CJSONOrdered::TCJSONValue(fp32 &&);
-	template CJSONOrdered::TCJSONValue(fp32 &);
-	template CJSONOrdered::TCJSONValue(fp32 const &);
+	template CJsonOrdered::TCJsonValue(fp32 &&);
+	template CJsonOrdered::TCJsonValue(fp32 &);
+	template CJsonOrdered::TCJsonValue(fp32 const &);
 
-	template CJSONOrdered::TCJSONValue(fp64 &&);
-	template CJSONOrdered::TCJSONValue(fp64 &);
-	template CJSONOrdered::TCJSONValue(fp64 const &);
-
-#ifdef DMibPUniqueType_int
-	template CJSONOrdered::TCJSONValue(int &&);
-	template CJSONOrdered::TCJSONValue(int &);
-	template CJSONOrdered::TCJSONValue(int const &);
-#endif
-	template CJSONOrdered::TCJSONValue(bool &&);
-	template CJSONOrdered::TCJSONValue(bool &);
-	template CJSONOrdered::TCJSONValue(bool const &);
-
-	template CJSONOrdered &CJSONOrdered::f_Insert<NMib::NEncoding::EJSONType>(NMib::NEncoding::EJSONType &&);
-	template CJSONOrdered &CJSONOrdered::f_Insert<NMib::NEncoding::EJSONType &>(NMib::NEncoding::EJSONType &);
-	template CJSONOrdered &CJSONOrdered::f_Insert<NMib::NEncoding::EJSONType const &>(NMib::NEncoding::EJSONType const &);
-
-	template CJSONOrdered &CJSONOrdered::f_Insert<CNullPtr>(CNullPtr &&);
-	template CJSONOrdered &CJSONOrdered::f_Insert<CNullPtr &>(CNullPtr &);
-	template CJSONOrdered &CJSONOrdered::f_Insert<CNullPtr const &>(CNullPtr const &);
-
-	template CJSONOrdered &CJSONOrdered::f_Insert<NStr::CStr>(NStr::CStr &&);
-	template CJSONOrdered &CJSONOrdered::f_Insert<NStr::CStr &>(NStr::CStr &);
-	template CJSONOrdered &CJSONOrdered::f_Insert<NStr::CStr const &>(NStr::CStr const &);
-
-	template CJSONOrdered &CJSONOrdered::f_Insert<int64>(int64 &&);
-	template CJSONOrdered &CJSONOrdered::f_Insert<int64 &>(int64 &);
-	template CJSONOrdered &CJSONOrdered::f_Insert<int64 const &>(int64 const &);
-
-	template CJSONOrdered &CJSONOrdered::f_Insert<int32>(int32 &&);
-	template CJSONOrdered &CJSONOrdered::f_Insert<int32 &>(int32 &);
-	template CJSONOrdered &CJSONOrdered::f_Insert<int32 const &>(int32 const &);
-
-	template CJSONOrdered &CJSONOrdered::f_Insert<uint64>(uint64 &&);
-	template CJSONOrdered &CJSONOrdered::f_Insert<uint64 &>(uint64 &);
-	template CJSONOrdered &CJSONOrdered::f_Insert<uint64 const &>(uint64 const &);
-
-	template CJSONOrdered &CJSONOrdered::f_Insert<uint32>(uint32 &&);
-	template CJSONOrdered &CJSONOrdered::f_Insert<uint32 &>(uint32 &);
-	template CJSONOrdered &CJSONOrdered::f_Insert<uint32 const &>(uint32 const &);
-
-	template CJSONOrdered &CJSONOrdered::f_Insert<pfp64>(pfp64 &&);
-	template CJSONOrdered &CJSONOrdered::f_Insert<pfp64 &>(pfp64 &);
-	template CJSONOrdered &CJSONOrdered::f_Insert<pfp64 const &>(pfp64 const &);
-
-	template CJSONOrdered &CJSONOrdered::f_Insert<pfp32>(pfp32 &&);
-	template CJSONOrdered &CJSONOrdered::f_Insert<pfp32 &>(pfp32 &);
-	template CJSONOrdered &CJSONOrdered::f_Insert<pfp32 const &>(pfp32 const &);
-
-	template CJSONOrdered &CJSONOrdered::f_Insert<fp32>(fp32 &&);
-	template CJSONOrdered &CJSONOrdered::f_Insert<fp32 &>(fp32 &);
-	template CJSONOrdered &CJSONOrdered::f_Insert<fp32 const &>(fp32 const &);
-
-	template CJSONOrdered &CJSONOrdered::f_Insert<fp64>(fp64 &&);
-	template CJSONOrdered &CJSONOrdered::f_Insert<fp64 &>(fp64 &);
-	template CJSONOrdered &CJSONOrdered::f_Insert<fp64 const &>(fp64 const &);
+	template CJsonOrdered::TCJsonValue(fp64 &&);
+	template CJsonOrdered::TCJsonValue(fp64 &);
+	template CJsonOrdered::TCJsonValue(fp64 const &);
 
 #ifdef DMibPUniqueType_int
-	template CJSONOrdered &CJSONOrdered::f_Insert<int>(int &&);
-	template CJSONOrdered &CJSONOrdered::f_Insert<int &>(int &);
-	template CJSONOrdered &CJSONOrdered::f_Insert<int const &>(int const &);
+	template CJsonOrdered::TCJsonValue(int &&);
+	template CJsonOrdered::TCJsonValue(int &);
+	template CJsonOrdered::TCJsonValue(int const &);
 #endif
-	template CJSONOrdered &CJSONOrdered::f_Insert<bool>(bool &&);
-	template CJSONOrdered &CJSONOrdered::f_Insert<bool &>(bool &);
-	template CJSONOrdered &CJSONOrdered::f_Insert<bool const &>(bool const &);
+	template CJsonOrdered::TCJsonValue(bool &&);
+	template CJsonOrdered::TCJsonValue(bool &);
+	template CJsonOrdered::TCJsonValue(bool const &);
 
-	template CJSONOrdered &CJSONOrdered::operator = <NMib::NEncoding::EJSONType>(NMib::NEncoding::EJSONType &&);
-	template CJSONOrdered &CJSONOrdered::operator = <NMib::NEncoding::EJSONType &>(NMib::NEncoding::EJSONType &);
-	template CJSONOrdered &CJSONOrdered::operator = <NMib::NEncoding::EJSONType const &>(NMib::NEncoding::EJSONType const &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<NMib::NEncoding::EJsonType>(NMib::NEncoding::EJsonType &&);
+	template CJsonOrdered &CJsonOrdered::f_Insert<NMib::NEncoding::EJsonType &>(NMib::NEncoding::EJsonType &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<NMib::NEncoding::EJsonType const &>(NMib::NEncoding::EJsonType const &);
 
-	template CJSONOrdered &CJSONOrdered::operator = <CNullPtr>(CNullPtr &&);
-	template CJSONOrdered &CJSONOrdered::operator = <CNullPtr &>(CNullPtr &);
-	template CJSONOrdered &CJSONOrdered::operator = <CNullPtr const &>(CNullPtr const &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<CNullPtr>(CNullPtr &&);
+	template CJsonOrdered &CJsonOrdered::f_Insert<CNullPtr &>(CNullPtr &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<CNullPtr const &>(CNullPtr const &);
 
-	template CJSONOrdered &CJSONOrdered::operator = <NStr::CStr>(NStr::CStr &&);
-	template CJSONOrdered &CJSONOrdered::operator = <NStr::CStr &>(NStr::CStr &);
-	template CJSONOrdered &CJSONOrdered::operator = <NStr::CStr const &>(NStr::CStr const &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<NStr::CStr>(NStr::CStr &&);
+	template CJsonOrdered &CJsonOrdered::f_Insert<NStr::CStr &>(NStr::CStr &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<NStr::CStr const &>(NStr::CStr const &);
 
-	template CJSONOrdered &CJSONOrdered::operator = <int64>(int64 &&);
-	template CJSONOrdered &CJSONOrdered::operator = <int64 &>(int64 &);
-	template CJSONOrdered &CJSONOrdered::operator = <int64 const &>(int64 const &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<int64>(int64 &&);
+	template CJsonOrdered &CJsonOrdered::f_Insert<int64 &>(int64 &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<int64 const &>(int64 const &);
 
-	template CJSONOrdered &CJSONOrdered::operator = <int32>(int32 &&);
-	template CJSONOrdered &CJSONOrdered::operator = <int32 &>(int32 &);
-	template CJSONOrdered &CJSONOrdered::operator = <int32 const &>(int32 const &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<int32>(int32 &&);
+	template CJsonOrdered &CJsonOrdered::f_Insert<int32 &>(int32 &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<int32 const &>(int32 const &);
 
-	template CJSONOrdered &CJSONOrdered::operator = <uint64>(uint64 &&);
-	template CJSONOrdered &CJSONOrdered::operator = <uint64 &>(uint64 &);
-	template CJSONOrdered &CJSONOrdered::operator = <uint64 const &>(uint64 const &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<uint64>(uint64 &&);
+	template CJsonOrdered &CJsonOrdered::f_Insert<uint64 &>(uint64 &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<uint64 const &>(uint64 const &);
 
-	template CJSONOrdered &CJSONOrdered::operator = <uint32>(uint32 &&);
-	template CJSONOrdered &CJSONOrdered::operator = <uint32 &>(uint32 &);
-	template CJSONOrdered &CJSONOrdered::operator = <uint32 const &>(uint32 const &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<uint32>(uint32 &&);
+	template CJsonOrdered &CJsonOrdered::f_Insert<uint32 &>(uint32 &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<uint32 const &>(uint32 const &);
 
-	template CJSONOrdered &CJSONOrdered::operator = <pfp64>(pfp64 &&);
-	template CJSONOrdered &CJSONOrdered::operator = <pfp64 &>(pfp64 &);
-	template CJSONOrdered &CJSONOrdered::operator = <pfp64 const &>(pfp64 const &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<pfp64>(pfp64 &&);
+	template CJsonOrdered &CJsonOrdered::f_Insert<pfp64 &>(pfp64 &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<pfp64 const &>(pfp64 const &);
 
-	template CJSONOrdered &CJSONOrdered::operator = <pfp32>(pfp32 &&);
-	template CJSONOrdered &CJSONOrdered::operator = <pfp32 &>(pfp32 &);
-	template CJSONOrdered &CJSONOrdered::operator = <pfp32 const &>(pfp32 const &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<pfp32>(pfp32 &&);
+	template CJsonOrdered &CJsonOrdered::f_Insert<pfp32 &>(pfp32 &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<pfp32 const &>(pfp32 const &);
 
-	template CJSONOrdered &CJSONOrdered::operator = <fp32>(fp32 &&);
-	template CJSONOrdered &CJSONOrdered::operator = <fp32 &>(fp32 &);
-	template CJSONOrdered &CJSONOrdered::operator = <fp32 const &>(fp32 const &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<fp32>(fp32 &&);
+	template CJsonOrdered &CJsonOrdered::f_Insert<fp32 &>(fp32 &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<fp32 const &>(fp32 const &);
 
-	template CJSONOrdered &CJSONOrdered::operator = <fp64>(fp64 &&);
-	template CJSONOrdered &CJSONOrdered::operator = <fp64 &>(fp64 &);
-	template CJSONOrdered &CJSONOrdered::operator = <fp64 const &>(fp64 const &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<fp64>(fp64 &&);
+	template CJsonOrdered &CJsonOrdered::f_Insert<fp64 &>(fp64 &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<fp64 const &>(fp64 const &);
 
 #ifdef DMibPUniqueType_int
-	template CJSONOrdered &CJSONOrdered::operator = <int>(int &&);
-	template CJSONOrdered &CJSONOrdered::operator = <int &>(int &);
-	template CJSONOrdered &CJSONOrdered::operator = <int const &>(int const &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<int>(int &&);
+	template CJsonOrdered &CJsonOrdered::f_Insert<int &>(int &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<int const &>(int const &);
 #endif
-	template CJSONOrdered &CJSONOrdered::operator = <bool>(bool &&);
-	template CJSONOrdered &CJSONOrdered::operator = <bool &>(bool &);
-	template CJSONOrdered &CJSONOrdered::operator = <bool const &>(bool const &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<bool>(bool &&);
+	template CJsonOrdered &CJsonOrdered::f_Insert<bool &>(bool &);
+	template CJsonOrdered &CJsonOrdered::f_Insert<bool const &>(bool const &);
 
-	template void CJSONOrdered::f_Format
-		<NStr::CStrAggregate, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJSONOrdered, true>::CLocalOptions>
-		(NStr::CStrAggregate &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJSONOrdered, true>::CLocalOptions const &) const
+	template CJsonOrdered &CJsonOrdered::operator = <NMib::NEncoding::EJsonType>(NMib::NEncoding::EJsonType &&);
+	template CJsonOrdered &CJsonOrdered::operator = <NMib::NEncoding::EJsonType &>(NMib::NEncoding::EJsonType &);
+	template CJsonOrdered &CJsonOrdered::operator = <NMib::NEncoding::EJsonType const &>(NMib::NEncoding::EJsonType const &);
+
+	template CJsonOrdered &CJsonOrdered::operator = <CNullPtr>(CNullPtr &&);
+	template CJsonOrdered &CJsonOrdered::operator = <CNullPtr &>(CNullPtr &);
+	template CJsonOrdered &CJsonOrdered::operator = <CNullPtr const &>(CNullPtr const &);
+
+	template CJsonOrdered &CJsonOrdered::operator = <NStr::CStr>(NStr::CStr &&);
+	template CJsonOrdered &CJsonOrdered::operator = <NStr::CStr &>(NStr::CStr &);
+	template CJsonOrdered &CJsonOrdered::operator = <NStr::CStr const &>(NStr::CStr const &);
+
+	template CJsonOrdered &CJsonOrdered::operator = <int64>(int64 &&);
+	template CJsonOrdered &CJsonOrdered::operator = <int64 &>(int64 &);
+	template CJsonOrdered &CJsonOrdered::operator = <int64 const &>(int64 const &);
+
+	template CJsonOrdered &CJsonOrdered::operator = <int32>(int32 &&);
+	template CJsonOrdered &CJsonOrdered::operator = <int32 &>(int32 &);
+	template CJsonOrdered &CJsonOrdered::operator = <int32 const &>(int32 const &);
+
+	template CJsonOrdered &CJsonOrdered::operator = <uint64>(uint64 &&);
+	template CJsonOrdered &CJsonOrdered::operator = <uint64 &>(uint64 &);
+	template CJsonOrdered &CJsonOrdered::operator = <uint64 const &>(uint64 const &);
+
+	template CJsonOrdered &CJsonOrdered::operator = <uint32>(uint32 &&);
+	template CJsonOrdered &CJsonOrdered::operator = <uint32 &>(uint32 &);
+	template CJsonOrdered &CJsonOrdered::operator = <uint32 const &>(uint32 const &);
+
+	template CJsonOrdered &CJsonOrdered::operator = <pfp64>(pfp64 &&);
+	template CJsonOrdered &CJsonOrdered::operator = <pfp64 &>(pfp64 &);
+	template CJsonOrdered &CJsonOrdered::operator = <pfp64 const &>(pfp64 const &);
+
+	template CJsonOrdered &CJsonOrdered::operator = <pfp32>(pfp32 &&);
+	template CJsonOrdered &CJsonOrdered::operator = <pfp32 &>(pfp32 &);
+	template CJsonOrdered &CJsonOrdered::operator = <pfp32 const &>(pfp32 const &);
+
+	template CJsonOrdered &CJsonOrdered::operator = <fp32>(fp32 &&);
+	template CJsonOrdered &CJsonOrdered::operator = <fp32 &>(fp32 &);
+	template CJsonOrdered &CJsonOrdered::operator = <fp32 const &>(fp32 const &);
+
+	template CJsonOrdered &CJsonOrdered::operator = <fp64>(fp64 &&);
+	template CJsonOrdered &CJsonOrdered::operator = <fp64 &>(fp64 &);
+	template CJsonOrdered &CJsonOrdered::operator = <fp64 const &>(fp64 const &);
+
+#ifdef DMibPUniqueType_int
+	template CJsonOrdered &CJsonOrdered::operator = <int>(int &&);
+	template CJsonOrdered &CJsonOrdered::operator = <int &>(int &);
+	template CJsonOrdered &CJsonOrdered::operator = <int const &>(int const &);
+#endif
+	template CJsonOrdered &CJsonOrdered::operator = <bool>(bool &&);
+	template CJsonOrdered &CJsonOrdered::operator = <bool &>(bool &);
+	template CJsonOrdered &CJsonOrdered::operator = <bool const &>(bool const &);
+
+	template void CJsonOrdered::f_Format
+		<NStr::CStrAggregate, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonOrdered, true>::CLocalOptions>
+		(NStr::CStrAggregate &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonOrdered, true>::CLocalOptions const &) const
 	;
 
-	template void CJSONOrdered::f_Format
-		<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJSONOrdered, true>::CLocalOptions>
-		(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJSONOrdered, true>::CLocalOptions const&) const
+	template void CJsonOrdered::f_Format
+		<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonOrdered, true>::CLocalOptions>
+		(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonOrdered, true>::CLocalOptions const&) const
 	;
 #endif
 }

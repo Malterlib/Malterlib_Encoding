@@ -3,26 +3,26 @@
 
 #pragma once
 
-#include "Malterlib_Encoding_JSON.h"
+#include "Malterlib_Encoding_Json.h"
 
 namespace NMib::NEncoding
 {
-	enum EJSONStringType
+	enum EJsonStringType
 	{
-		EJSONStringType_DoubleQuote = 0
-		, EJSONStringType_SingleQuote
-		, EJSONStringType_NoQuote
-		, EJSONStringType_Custom
+		EJsonStringType_DoubleQuote = 0
+		, EJsonStringType_SingleQuote
+		, EJsonStringType_NoQuote
+		, EJsonStringType_Custom
 	};
 }
 
-namespace NMib::NEncoding::NJSON
+namespace NMib::NEncoding::NJson
 {
-	enum EParseJSONStringFlag
+	enum EParseJsonStringFlag
 	{
-		EParseJSONStringFlag_None = 0
-		, EParseJSONStringFlag_AllowMultiLine = DMibBit(0)
-		, EParseJSONStringFlag_NoQuotes = DMibBit(1)
+		EParseJsonStringFlag_None = 0
+		, EParseJsonStringFlag_AllowMultiLine = DMibBit(0)
+		, EParseJsonStringFlag_NoQuotes = DMibBit(1)
 	};
 
 	struct CParseContext
@@ -46,13 +46,13 @@ namespace NMib::NEncoding::NJSON
 		mint m_ObjectArrayParseDepth = 0;
 		uch8 const *m_pStartParse;
 		bool m_bConvertNullToSpace = false;
-		EJSONDialectFlag m_Flags = EJSONDialectFlag_None;
+		EJsonDialectFlag m_Flags = EJsonDialectFlag_None;
 
 		static constexpr bool mc_bCustomParse = false;
 		static constexpr bool mc_bCustomGenerate = false;
 		static constexpr bool mc_bAllowSingleQuote = false;
 		static constexpr bool mc_bAllowKeyWithoutQuote = false;
-		static constexpr NEncoding::NJSON::EParseJSONStringFlag mc_ParseJSONStringFlags = NEncoding::NJSON::EParseJSONStringFlag_None;
+		static constexpr NEncoding::NJson::EParseJsonStringFlag mc_ParseJsonStringFlags = NEncoding::NJson::EParseJsonStringFlag_None;
 		static constexpr bool mc_bAllowDuplicateKeys = true;
 		static constexpr bool mc_bRecordStringMap = false;
 		static inline constexpr ch8 mc_AllowedControlCharacters[] = "";
@@ -61,13 +61,13 @@ namespace NMib::NEncoding::NJSON
 	};
 
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static void fg_ParseJSONArray(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
+	static void fg_ParseJsonArray(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static void fg_ParseJSONObject(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
-	template <uch8 t_QuoteCharacter, EParseJSONStringFlag t_Flags, typename tf_CParseContext, typename tf_FExtraParse = bool>
-	static bool fg_ParseJSONString(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext &_Context, tf_FExtraParse &&_fExtraParse = false);
+	static void fg_ParseJsonObject(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
+	template <uch8 t_QuoteCharacter, EParseJsonStringFlag t_Flags, typename tf_CParseContext, typename tf_FExtraParse = bool>
+	static bool fg_ParseJsonString(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext &_Context, tf_FExtraParse &&_fExtraParse = false);
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static void fg_ParseJSONValue(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
+	static void fg_ParseJsonValue(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
 }
 
-#include "Malterlib_Encoding_JSON_Parse.hpp"
+#include "Malterlib_Encoding_Json_Parse.hpp"

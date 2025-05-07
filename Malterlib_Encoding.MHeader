@@ -72,7 +72,7 @@ Import "../Core/Lib_Malterlib.MTarget"
 			%File "Include/Mib/Encoding/^*"
 		}
 		%File "Source/*"
-		%File "Source/Malterlib_Encoding_*JSON*"
+		%File "Source/Malterlib_Encoding_*Json*"
 		%Group "Documentation"
 		{
 			%File "Documentation/*"

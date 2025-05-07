@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "Malterlib_Encoding_JSON_Generate.h"
+#include "Malterlib_Encoding_Json_Generate.h"
 
 #include <Mib/String/Appender>
 
-namespace NMib::NEncoding::NJSON
+namespace NMib::NEncoding::NJson
 {
 	inline NStr::CParseLocation CParseContext::f_GetLocation(uch8 const *_pParse) const
 	{
@@ -54,7 +54,7 @@ namespace NMib::NEncoding::NJSON
 		if (*pParse == '"')
 		{
 			auto pStartString = pParse;
-			if (!fg_ParseJSONString<'\"', tf_CParseContext::mc_ParseJSONStringFlags>(o_Key, pParse, *this))
+			if (!fg_ParseJsonString<'\"', tf_CParseContext::mc_ParseJsonStringFlags>(o_Key, pParse, *this))
 				f_ThrowError("End of string character \" not found for key name string", pStartString);
 			o_pParse = pParse;
 			return;
@@ -65,7 +65,7 @@ namespace NMib::NEncoding::NJSON
 			if (*pParse == '\'')
 			{
 				auto pStartString = pParse;
-				if (!fg_ParseJSONString<'\'', tf_CParseContext::mc_ParseJSONStringFlags>(o_Key, pParse, *this))
+				if (!fg_ParseJsonString<'\'', tf_CParseContext::mc_ParseJsonStringFlags>(o_Key, pParse, *this))
 					f_ThrowError("End of string character ' not found for key name string", pStartString);
 				o_pParse = pParse;
 				return;
@@ -80,7 +80,7 @@ namespace NMib::NEncoding::NJSON
 				while (fg_CharIsAlphabetical(*pParse) || fg_CharIsNumber(*pParse) || fg_StrFindChar(tf_CParseContext::mc_AllowedKeyWithoutQuoteCharacters, *pParse) >= 0)
 					++pParse;
 				o_Key = CStr(pStartString, pParse - pStartString);
-				o_Key.f_SetUserData(EJSONStringType_NoQuote);
+				o_Key.f_SetUserData(EJsonStringType_NoQuote);
 				o_pParse = pParse;
 				return;
 			}
@@ -98,13 +98,13 @@ namespace NMib::NEncoding::NJSON
 	{
 		if constexpr (tf_CParseContext::mc_bAllowSingleQuote)
 		{
-			if (_Value.f_GetUserData() == EJSONStringType_SingleQuote)
+			if (_Value.f_GetUserData() == EJsonStringType_SingleQuote)
 			{
-				fg_GenerateJSONString<'\'', tf_CParseContext>(o_String, _Value);
+				fg_GenerateJsonString<'\'', tf_CParseContext>(o_String, _Value);
 				return;
 			}
 		}
-		fg_GenerateJSONString<'\"', tf_CParseContext>(o_String, _Value);
+		fg_GenerateJsonString<'\"', tf_CParseContext>(o_String, _Value);
 	}
 
 	template <typename tf_CParseContext, typename tf_CStr, typename tf_CSourceStr>
@@ -113,7 +113,7 @@ namespace NMib::NEncoding::NJSON
 		using namespace NStr;
 		if constexpr (tf_CParseContext::mc_bAllowKeyWithoutQuote)
 		{
-			if (_Key.f_GetUserData() == EJSONStringType_NoQuote)
+			if (_Key.f_GetUserData() == EJsonStringType_NoQuote)
 			{
 				auto *pParse = _Key.f_GetStr();
 				if (fg_CharIsAlphabetical(*pParse) || fg_StrFindChar(tf_CParseContext::mc_AllowedKeyWithoutQuoteCharacters, *pParse) >= 0)
@@ -134,10 +134,10 @@ namespace NMib::NEncoding::NJSON
 	}
 
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static void fg_ParseJSONArray(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	static void fg_ParseJsonArray(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
-		DMibRequire(o_Value.f_Type() == EJSONType_Array);
+		DMibRequire(o_Value.f_Type() == EJsonType_Array);
 
 		auto &Array = o_Value.f_Array();
 
@@ -159,9 +159,9 @@ namespace NMib::NEncoding::NJSON
 				return; // Finished
 
 			auto &Child = Array.f_Insert();
-			fg_ParseJSONValue(Child, pParse, _Context);
+			fg_ParseJsonValue(Child, pParse, _Context);
 
-			DMibCheck(Child.f_Type() != EJSONType_Invalid || (_Context.m_Flags & EJSONDialectFlag_AllowUndefined));
+			DMibCheck(Child.f_Type() != EJsonType_Invalid || (_Context.m_Flags & EJsonDialectFlag_AllowUndefined));
 
 			fg_ParseWhiteSpace(pParse);
 			if (*pParse == ',')
@@ -176,10 +176,10 @@ namespace NMib::NEncoding::NJSON
 	}
 
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static void fg_ParseJSONObject(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	static void fg_ParseJsonObject(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
-		DMibRequire(o_Value.f_Type() == EJSONType_Object);
+		DMibRequire(o_Value.f_Type() == EJsonType_Object);
 
 		auto &Object = o_Value.f_Object();
 
@@ -220,8 +220,8 @@ namespace NMib::NEncoding::NJSON
 			}
 
 			auto &Child = Object.f_CreateMember(KeyName);
-			fg_ParseJSONValue(Child, pParse, _Context);
-			DMibCheck(Child.f_Type() != EJSONType_Invalid || (_Context.m_Flags & EJSONDialectFlag_AllowUndefined));
+			fg_ParseJsonValue(Child, pParse, _Context);
+			DMibCheck(Child.f_Type() != EJsonType_Invalid || (_Context.m_Flags & EJsonDialectFlag_AllowUndefined));
 
 			fg_ParseWhiteSpace(pParse);
 
@@ -236,8 +236,8 @@ namespace NMib::NEncoding::NJSON
 		}
 	}
 
-	template <uch8 t_QuoteCharacter, EParseJSONStringFlag t_Flags, typename tf_CParseContext, typename tf_FExtraParse>
-	static bool fg_ParseJSONString(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext &_Context, tf_FExtraParse &&_fExtraParse)
+	template <uch8 t_QuoteCharacter, EParseJsonStringFlag t_Flags, typename tf_CParseContext, typename tf_FExtraParse>
+	static bool fg_ParseJsonString(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext &_Context, tf_FExtraParse &&_fExtraParse)
 	{
 		using namespace NStr;
 		uch8 const *pParse = o_pParse;
@@ -247,14 +247,14 @@ namespace NMib::NEncoding::NJSON
 				o_pParse = pParse;
 				switch (t_QuoteCharacter)
 				{
-					case '\"': o_String.f_SetUserData(EJSONStringType_DoubleQuote); break;
-					case '\'': o_String.f_SetUserData(EJSONStringType_SingleQuote); break;
-					default: o_String.f_SetUserData(EJSONStringType_Custom); break;
+					case '\"': o_String.f_SetUserData(EJsonStringType_DoubleQuote); break;
+					case '\'': o_String.f_SetUserData(EJsonStringType_SingleQuote); break;
+					default: o_String.f_SetUserData(EJsonStringType_Custom); break;
 				}
 			}
 		;
 
-		if constexpr ((t_Flags & EParseJSONStringFlag_NoQuotes) == EParseJSONStringFlag_None)
+		if constexpr ((t_Flags & EParseJsonStringFlag_NoQuotes) == EParseJsonStringFlag_None)
 		{
 			DMibRequire(*pParse == t_QuoteCharacter);
 			++pParse;
@@ -276,7 +276,7 @@ namespace NMib::NEncoding::NJSON
 			if (*pParse == t_QuoteCharacter)
 			{
 				++pParse;
-				if constexpr (t_Flags & EParseJSONStringFlag_AllowMultiLine)
+				if constexpr (t_Flags & EParseJsonStringFlag_AllowMultiLine)
 				{
 					if (*pParse == '\\')
 					{
@@ -438,14 +438,14 @@ namespace NMib::NEncoding::NJSON
 			}
 		}
 
-		if constexpr ((t_Flags & EParseJSONStringFlag_NoQuotes) != EParseJSONStringFlag_None)
+		if constexpr ((t_Flags & EParseJsonStringFlag_NoQuotes) != EParseJsonStringFlag_None)
 			return true;
 		else
 			return false;
 	}
 
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static void fg_ParseJSONValue(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	static void fg_ParseJsonValue(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
 
@@ -479,8 +479,8 @@ namespace NMib::NEncoding::NJSON
 					// Object
 					auto pParseStart = pParse;
 					++pParse;
-					o_Value.f_SetType(EJSONType_Object);
-					fg_ParseJSONObject(o_Value, pParse, _Context);
+					o_Value.f_SetType(EJsonType_Object);
+					fg_ParseJsonObject(o_Value, pParse, _Context);
 
 					fg_ParseWhiteSpace(pParse);
 
@@ -510,8 +510,8 @@ namespace NMib::NEncoding::NJSON
 					// Array
 					auto pParseStart = pParse;
 					++pParse;
-					o_Value.f_SetType(EJSONType_Array);
-					fg_ParseJSONArray(o_Value, pParse, _Context);
+					o_Value.f_SetType(EJsonType_Array);
+					fg_ParseJsonArray(o_Value, pParse, _Context);
 
 					fg_ParseWhiteSpace(pParse);
 
@@ -541,7 +541,7 @@ namespace NMib::NEncoding::NJSON
 					// String
 					CStr ParsedString;
 					auto pParseStart = pParse;
-					if (!fg_ParseJSONString<'\"', tf_CParseContext::mc_ParseJSONStringFlags>(ParsedString, pParse, _Context))
+					if (!fg_ParseJsonString<'\"', tf_CParseContext::mc_ParseJsonStringFlags>(ParsedString, pParse, _Context))
 						_Context.f_ThrowError("End of string character \" not found for string", pParseStart);
 
 					o_Value = ParsedString;
@@ -558,7 +558,7 @@ namespace NMib::NEncoding::NJSON
 							// String
 							CStr ParsedString;
 							auto pParseStart = pParse;
-							if (!fg_ParseJSONString<'\'', tf_CParseContext::mc_ParseJSONStringFlags>(ParsedString, pParse, _Context))
+							if (!fg_ParseJsonString<'\'', tf_CParseContext::mc_ParseJsonStringFlags>(ParsedString, pParse, _Context))
 								_Context.f_ThrowError("End of string character ' not found for string", pParseStart);
 
 							o_Value = ParsedString;
@@ -603,7 +603,7 @@ namespace NMib::NEncoding::NJSON
 							return;
 						}
 					}
-					else if ((_Context.m_Flags & EJSONDialectFlag_AllowUndefined) && fg_StrStartsWith(pParse, "undefined"))
+					else if ((_Context.m_Flags & EJsonDialectFlag_AllowUndefined) && fg_StrStartsWith(pParse, "undefined"))
 					{
 						auto pParseTemp = pParse;
 						pParseTemp += 9;
@@ -616,7 +616,7 @@ namespace NMib::NEncoding::NJSON
 						}
 					}
 
-					if (_Context.m_Flags & EJSONDialectFlag_AllowInvalidFloat)
+					if (_Context.m_Flags & EJsonDialectFlag_AllowInvalidFloat)
 					{
 						if (fg_StrStartsWith(pParse, "QNaN"))
 						{
@@ -753,7 +753,7 @@ namespace NMib::NEncoding::NJSON
 namespace NMib::NEncoding
 {
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::fs_FromString(NStr::CStr const & _String, NStr::CStr const & _FileName, bool _bConvertNullToSpace, EJSONDialectFlag _Flags) -> CValue
+	auto TCJsonValue<t_CParent>::fs_FromString(NStr::CStr const & _String, NStr::CStr const & _FileName, bool _bConvertNullToSpace, EJsonDialectFlag _Flags) -> CValue
 	{
 		using namespace NStr;
 		CValue Output;
@@ -761,7 +761,7 @@ namespace NMib::NEncoding
 
 		uch8 const *pParse = reinterpret_cast<uch8 const *>(ToParse.f_GetStr());
 
-		NJSON::CParseContext Context;
+		NJson::CParseContext Context;
 		Context.m_pStartParse = pParse;
 		Context.m_FileName = _FileName;
 		Context.m_bConvertNullToSpace = _bConvertNullToSpace;
@@ -770,7 +770,7 @@ namespace NMib::NEncoding
 		fg_ParseWhiteSpace(pParse);
 
 		// Any value is allowed at root
-		NJSON::fg_ParseJSONValue(Output, pParse, Context);
+		NJson::fg_ParseJsonValue(Output, pParse, Context);
 
 		fg_ParseWhiteSpace(pParse);
 

@@ -1,26 +1,26 @@
 
-#include <Mib/Encoding/JSON>
+#include <Mib/Encoding/Json>
 #include <Mib/Test/Exception>
 
 namespace
 {
-	template <typename t_CJSON>
-	class TCJSONTests
+	template <typename t_CJson>
+	class TCJsonTests
 	{
 	public:
-		TCJSONTests
+		TCJsonTests
 			(
-				t_CJSON const &_Reference
+				t_CJson const &_Reference
 				, NMib::NStr::CStr const &_ReferenceText
-				, NMib::NFunction::TCFunction<t_CJSON (NMib::NStr::CStr const &_ToParse, NMib::NStr::CStr const &_FileName)> const &_fParse
+				, NMib::NFunction::TCFunction<t_CJson (NMib::NStr::CStr const &_ToParse, NMib::NStr::CStr const &_FileName)> const &_fParse
 			)
-			: mp_JSONReference(_Reference)
-			, mp_JSONReferenceText(_ReferenceText)
+			: mp_JsonReference(_Reference)
+			, mp_JsonReferenceText(_ReferenceText)
 			, mp_fParse(_fParse)
 		{
 			using namespace NMib::NStr;
 
-			mp_TestFilePath = NMib::NFile::CFile::fs_GetProgramDirectory() / ("Test{nfh}.json"_f << NMib::fg_GetTypeHash<t_CJSON>());
+			mp_TestFilePath = NMib::NFile::CFile::fs_GetProgramDirectory() / ("Test{nfh}.json"_f << NMib::fg_GetTypeHash<t_CJson>());
 		}
 
 		void f_DoTests()
@@ -33,413 +33,413 @@ namespace
 			{
 				{
 					DMibTestPath("Generating");
-					t_CJSON JSON = mp_JSONReference;
+					t_CJson Json = mp_JsonReference;
 
-					CStr GeneratedJSONText = JSON.f_ToString();
+					CStr GeneratedJsonText = Json.f_ToString();
 					
-					DMibExpect(GeneratedJSONText, ==, mp_JSONReferenceText);
+					DMibExpect(GeneratedJsonText, ==, mp_JsonReferenceText);
 				}
 				{
 					DMibTestPath("Copy");
-					t_CJSON JSON = mp_JSONReference;
+					t_CJson Json = mp_JsonReference;
 
-					t_CJSON JSONCopy(JSON);
+					t_CJson JsonCopy(Json);
 
-					CStr GeneratedJSONText = JSONCopy.f_ToString();
+					CStr GeneratedJsonText = JsonCopy.f_ToString();
 					
-					DMibExpect(GeneratedJSONText, ==, mp_JSONReferenceText);
+					DMibExpect(GeneratedJsonText, ==, mp_JsonReferenceText);
 				}
 				{
 					DMibTestPath("Move");
-					t_CJSON JSON = mp_JSONReference;
+					t_CJson Json = mp_JsonReference;
 
-					t_CJSON JSONCopy(fg_Move(JSON));
+					t_CJson JsonCopy(fg_Move(Json));
 
-					CStr GeneratedJSONText = JSONCopy.f_ToString();
+					CStr GeneratedJsonText = JsonCopy.f_ToString();
 					
-					DMibExpect(GeneratedJSONText, ==, mp_JSONReferenceText);
+					DMibExpect(GeneratedJsonText, ==, mp_JsonReferenceText);
 				}
 				{
 					DMibTestPath("Assign");
-					t_CJSON JSON = mp_JSONReference;
+					t_CJson Json = mp_JsonReference;
 
-					t_CJSON JSONCopy;
-					JSONCopy = JSON;
+					t_CJson JsonCopy;
+					JsonCopy = Json;
 
-					CStr GeneratedJSONText = JSONCopy.f_ToString();
+					CStr GeneratedJsonText = JsonCopy.f_ToString();
 					
-					DMibExpect(GeneratedJSONText, ==, mp_JSONReferenceText);
+					DMibExpect(GeneratedJsonText, ==, mp_JsonReferenceText);
 				}
 				{
 					DMibTestPath("MoveAssign");
-					t_CJSON JSON = mp_JSONReference;
+					t_CJson Json = mp_JsonReference;
 
-					t_CJSON JSONCopy;
-					JSONCopy = fg_Move(JSON);
+					t_CJson JsonCopy;
+					JsonCopy = fg_Move(Json);
 
-					CStr GeneratedJSONText = JSONCopy.f_ToString();
+					CStr GeneratedJsonText = JsonCopy.f_ToString();
 					
-					DMibExpect(GeneratedJSONText, ==, mp_JSONReferenceText);
+					DMibExpect(GeneratedJsonText, ==, mp_JsonReferenceText);
 				}
 				{
 					DMibTestPath("AssignTree");
-					t_CJSON JSON = mp_JSONReference;
+					t_CJson Json = mp_JsonReference;
 
-					t_CJSON JSONCopy = JSON;
-					JSONCopy["TreeCopy"] = JSON;
+					t_CJson JsonCopy = Json;
+					JsonCopy["TreeCopy"] = Json;
 
-					CStr GeneratedJSONText = JSONCopy.f_ToString();
+					CStr GeneratedJsonText = JsonCopy.f_ToString();
 					
-					DMibExpect(GeneratedJSONText, !=, mp_JSONReferenceText);
+					DMibExpect(GeneratedJsonText, !=, mp_JsonReferenceText);
 				}
 				{
 					DMibTestPath("Get member");
-					t_CJSON JSON = mp_JSONReference;
+					t_CJson Json = mp_JsonReference;
 
-					DMibAssertTrue(JSON.f_GetMember("Key"));
-					DMibExpect(JSON.f_GetMember("Key")->f_String(), ==, "Value");
+					DMibAssertTrue(Json.f_GetMember("Key"));
+					DMibExpect(Json.f_GetMember("Key")->f_String(), ==, "Value");
 
-					DMibAssertTrue(fg_Const(JSON).f_GetMember("Key"));
-					DMibExpect(fg_Const(JSON).f_GetMember("Key")->f_String(), ==, "Value");
+					DMibAssertTrue(fg_Const(Json).f_GetMember("Key"));
+					DMibExpect(fg_Const(Json).f_GetMember("Key")->f_String(), ==, "Value");
 
-					DMibExpectFalse(JSON.f_GetMember("NonExistingKey"));
+					DMibExpectFalse(Json.f_GetMember("NonExistingKey"));
 				}
 				{
 					DMibTestPath("Comparison");
-					DMibExpect(mp_JSONReference, ==, mp_JSONReference);
-					DMibTest(!(DMibExpr(mp_JSONReference) < DMibExpr(mp_JSONReference)));
+					DMibExpect(mp_JsonReference, ==, mp_JsonReference);
+					DMibTest(!(DMibExpr(mp_JsonReference) < DMibExpr(mp_JsonReference)));
 				}
 				{
 					DMibTestPath("Parsing");
-					t_CJSON JSON = mp_fParse(mp_JSONReferenceText, CStr());
+					t_CJson Json = mp_fParse(mp_JsonReferenceText, CStr());
 
-					DMibExpect(JSON, ==, mp_JSONReference);
+					DMibExpect(Json, ==, mp_JsonReference);
 				}
 				{
-					DMibTestPath("JSON roundtrip");
-					t_CJSON JSON = mp_fParse(mp_JSONReferenceText, CStr());
-					CStr GeneratedJSONText = JSON.f_ToString();
+					DMibTestPath("Json roundtrip");
+					t_CJson Json = mp_fParse(mp_JsonReferenceText, CStr());
+					CStr GeneratedJsonText = Json.f_ToString();
 					
-					DMibExpect(GeneratedJSONText, ==, mp_JSONReferenceText);
+					DMibExpect(GeneratedJsonText, ==, mp_JsonReferenceText);
 				}
 				{
-					DMibTestPath("JSON roundtrip no whitespace");
-					CStr JSONText = mp_JSONReferenceText.f_Replace("\n", "").f_Replace(" ", "").f_Replace("\t", "");
-					t_CJSON JSON = mp_fParse(JSONText, CStr());
-					CStr GeneratedJSONText = JSON.f_ToString(nullptr);
+					DMibTestPath("Json roundtrip no whitespace");
+					CStr JsonText = mp_JsonReferenceText.f_Replace("\n", "").f_Replace(" ", "").f_Replace("\t", "");
+					t_CJson Json = mp_fParse(JsonText, CStr());
+					CStr GeneratedJsonText = Json.f_ToString(nullptr);
 					
-					DMibExpect(GeneratedJSONText, ==, JSONText);
+					DMibExpect(GeneratedJsonText, ==, JsonText);
 				}
 				{
 					DMibTestPath("Remove by string");
-					t_CJSON JSON;
+					t_CJson Json;
 					
-					JSON["Test0"] = "52";
-					JSON["Test1"] = "53";
+					Json["Test0"] = "52";
+					Json["Test1"] = "53";
 
-					JSON.f_RemoveMember("Test0");
+					Json.f_RemoveMember("Test0");
 					
-					t_CJSON JSONRemoved;
-					JSONRemoved["Test1"] = "53";
+					t_CJson JsonRemoved;
+					JsonRemoved["Test1"] = "53";
 					
-					DMibExpect(JSON, ==, JSONRemoved);
+					DMibExpect(Json, ==, JsonRemoved);
 				}
-				if constexpr (t_CJSON::mc_bOrdered)
+				if constexpr (t_CJson::mc_bOrdered)
 				{
 					DMibTestPath("Remove by ordered const iterator");
-					t_CJSON JSON;
+					t_CJson Json;
 					
-					JSON["Test0"] = "52";
-					JSON["Test1"] = "53";
-					JSON["Test2"] = "54";
+					Json["Test0"] = "52";
+					Json["Test1"] = "53";
+					Json["Test2"] = "54";
 					
-					auto iMember = fg_Const(JSON).f_Object().f_OrderedIterator();
+					auto iMember = fg_Const(Json).f_Object().f_OrderedIterator();
 					
 					++iMember;
-					JSON.f_Object().f_RemoveMember(iMember);
+					Json.f_Object().f_RemoveMember(iMember);
 					
 					DMibExpect(iMember->f_Value().f_String(), ==, "54");
 					
-					t_CJSON JSONRemoved;
-					JSONRemoved["Test0"] = "52";
-					JSONRemoved["Test2"] = "54";
+					t_CJson JsonRemoved;
+					JsonRemoved["Test0"] = "52";
+					JsonRemoved["Test2"] = "54";
 					
-					DMibExpect(JSON, ==, JSONRemoved);
+					DMibExpect(Json, ==, JsonRemoved);
 				}
 				{
 					DMibTestPath("Remove by ordered iterator");
-					t_CJSON JSON;
+					t_CJson Json;
 					
-					JSON["Test0"] = "52";
-					JSON["Test1"] = "53";
-					JSON["Test2"] = "54";
+					Json["Test0"] = "52";
+					Json["Test1"] = "53";
+					Json["Test2"] = "54";
 					
-					auto iMember = JSON.f_Object().f_OrderedIterator();
+					auto iMember = Json.f_Object().f_OrderedIterator();
 					
 					++iMember;
-					JSON.f_Object().f_RemoveMember(iMember);
+					Json.f_Object().f_RemoveMember(iMember);
 					
 					DMibExpect(iMember->f_Value().f_String(), ==, "54");
 					
-					t_CJSON JSONRemoved;
-					JSONRemoved["Test0"] = "52";
-					JSONRemoved["Test2"] = "54";
+					t_CJson JsonRemoved;
+					JsonRemoved["Test0"] = "52";
+					JsonRemoved["Test2"] = "54";
 					
-					DMibExpect(JSON, ==, JSONRemoved);
+					DMibExpect(Json, ==, JsonRemoved);
 				}
-				if constexpr (t_CJSON::mc_bOrdered)
+				if constexpr (t_CJson::mc_bOrdered)
 				{
 					DMibTestPath("Remove by sorted iterator");
-					t_CJSON JSON;
+					t_CJson Json;
 					
-					JSON["Test3"] = "54";
-					JSON["Test1"] = "52";
-					JSON["Test2"] = "53";
+					Json["Test3"] = "54";
+					Json["Test1"] = "52";
+					Json["Test2"] = "53";
 					
-					auto iMember = JSON.f_Object().f_SortedIterator();
+					auto iMember = Json.f_Object().f_SortedIterator();
 					
 					++iMember;
-					JSON.f_Object().f_RemoveMember(iMember);
+					Json.f_Object().f_RemoveMember(iMember);
 					
 					DMibExpect(iMember->f_Value().f_String(), ==, "54");
 					
-					t_CJSON JSONRemoved;
-					JSONRemoved["Test3"] = "54";
-					JSONRemoved["Test1"] = "52";
+					t_CJson JsonRemoved;
+					JsonRemoved["Test3"] = "54";
+					JsonRemoved["Test1"] = "52";
 					
-					DMibExpect(JSON, ==, JSONRemoved);
+					DMibExpect(Json, ==, JsonRemoved);
 				}
 				{
 					DMibTestPath("Get as string");
-					t_CJSON JSON;
+					t_CJson Json;
 					
-					JSON["TestNull"] = nullptr;
-					JSON["TestString"] = "String";
-					JSON["TestInt"] = 54;
-					JSON["TestFloat"] = fp32(5.5);
-					JSON["TestBool"] = true;
-					t_CJSON Object;
+					Json["TestNull"] = nullptr;
+					Json["TestString"] = "String";
+					Json["TestInt"] = 54;
+					Json["TestFloat"] = fp32(5.5);
+					Json["TestBool"] = true;
+					t_CJson Object;
 					Object["5"] = 6;
-					JSON["TestObject"] = Object;
-					t_CJSON Array;
+					Json["TestObject"] = Object;
+					t_CJson Array;
 					Array.f_Insert(6);
-					JSON["TestArray"] = Array;
-					JSON["TestInvalid"];
+					Json["TestArray"] = Array;
+					Json["TestInvalid"];
 					
 					
-					DMibExpect(JSON["TestNull"].f_AsString(), ==, "null");
-					DMibExpect(JSON["TestString"].f_AsString(), ==, "String");
-					DMibExpect(JSON["TestInt"].f_AsString(), ==, "54");
-					DMibExpect(JSON["TestFloat"].f_AsString(), ==, "5.5");
-					DMibExpect(JSON["TestBool"].f_AsString(), ==, "true");
-					DMibExpect(JSON["TestObject"].f_AsString(), ==, Object.f_ToString());
-					DMibExpect(JSON["TestArray"].f_AsString(), ==, Array.f_ToString());
-					DMibExpectException(JSON["TestInvalid"].f_AsString(), DMibErrorInstance("JSON type cannot be converted to string"));
+					DMibExpect(Json["TestNull"].f_AsString(), ==, "null");
+					DMibExpect(Json["TestString"].f_AsString(), ==, "String");
+					DMibExpect(Json["TestInt"].f_AsString(), ==, "54");
+					DMibExpect(Json["TestFloat"].f_AsString(), ==, "5.5");
+					DMibExpect(Json["TestBool"].f_AsString(), ==, "true");
+					DMibExpect(Json["TestObject"].f_AsString(), ==, Object.f_ToString());
+					DMibExpect(Json["TestArray"].f_AsString(), ==, Array.f_ToString());
+					DMibExpectException(Json["TestInvalid"].f_AsString(), DMibErrorInstance("JSON type cannot be converted to string"));
 				}
 				{
 					DMibTestPath("Get as integer");
-					t_CJSON JSON;
+					t_CJson Json;
 					
-					JSON["TestNull"] = nullptr;
-					JSON["TestString"] = "66";
-					JSON["TestInt"] = 54;
-					JSON["TestFloat"] = fp32(5.5);
-					JSON["TestBool"] = true;
-					t_CJSON Object;
+					Json["TestNull"] = nullptr;
+					Json["TestString"] = "66";
+					Json["TestInt"] = 54;
+					Json["TestFloat"] = fp32(5.5);
+					Json["TestBool"] = true;
+					t_CJson Object;
 					Object["5"] = 6;
-					JSON["TestObject"] = Object;
-					t_CJSON Array;
+					Json["TestObject"] = Object;
+					t_CJson Array;
 					Array.f_Insert(6);
-					JSON["TestArray"] = Array;
-					JSON["TestInvalid"];
+					Json["TestArray"] = Array;
+					Json["TestInvalid"];
 					
 					
-					DMibExpectException(JSON["TestNull"].f_AsInteger(), DMibErrorInstance("JSON type cannot be converted to integer"));
-					DMibExpect(JSON["TestString"].f_AsInteger(), ==, 66);
-					DMibExpect(JSON["TestInt"].f_AsInteger(), ==, 54);
-					DMibExpect(JSON["TestFloat"].f_AsInteger(), ==, 6);
-					DMibExpect(JSON["TestBool"].f_AsInteger(), ==, 1);
-					DMibExpectException(JSON["TestObject"].f_AsInteger(), DMibErrorInstance("JSON type cannot be converted to integer"));
-					DMibExpectException(JSON["TestArray"].f_AsInteger(), DMibErrorInstance("JSON type cannot be converted to integer"));
-					DMibExpectException(JSON["TestInvalid"].f_AsInteger(), DMibErrorInstance("JSON type cannot be converted to integer"));
+					DMibExpectException(Json["TestNull"].f_AsInteger(), DMibErrorInstance("JSON type cannot be converted to integer"));
+					DMibExpect(Json["TestString"].f_AsInteger(), ==, 66);
+					DMibExpect(Json["TestInt"].f_AsInteger(), ==, 54);
+					DMibExpect(Json["TestFloat"].f_AsInteger(), ==, 6);
+					DMibExpect(Json["TestBool"].f_AsInteger(), ==, 1);
+					DMibExpectException(Json["TestObject"].f_AsInteger(), DMibErrorInstance("JSON type cannot be converted to integer"));
+					DMibExpectException(Json["TestArray"].f_AsInteger(), DMibErrorInstance("JSON type cannot be converted to integer"));
+					DMibExpectException(Json["TestInvalid"].f_AsInteger(), DMibErrorInstance("JSON type cannot be converted to integer"));
 				}
 				{
 					DMibTestPath("Get as float");
-					t_CJSON JSON;
+					t_CJson Json;
 					
-					JSON["TestNull"] = nullptr;
-					JSON["TestString"] = "66.5";
-					JSON["TestInt"] = 54;
-					JSON["TestFloat"] = fp32(5.5);
-					JSON["TestBool"] = true;
-					t_CJSON Object;
+					Json["TestNull"] = nullptr;
+					Json["TestString"] = "66.5";
+					Json["TestInt"] = 54;
+					Json["TestFloat"] = fp32(5.5);
+					Json["TestBool"] = true;
+					t_CJson Object;
 					Object["5"] = 6;
-					JSON["TestObject"] = Object;
-					t_CJSON Array;
+					Json["TestObject"] = Object;
+					t_CJson Array;
 					Array.f_Insert(6);
-					JSON["TestArray"] = Array;
-					JSON["TestInvalid"];
+					Json["TestArray"] = Array;
+					Json["TestInvalid"];
 					
-					DMibExpectException(JSON["TestNull"].f_AsFloat(), DMibErrorInstance("JSON type cannot be converted to float"));
-					DMibExpect(JSON["TestString"].f_AsFloat(), ==, 66.5);
-					DMibExpect(JSON["TestInt"].f_AsFloat(), ==, 54.0);
-					DMibExpect(JSON["TestFloat"].f_AsFloat(), ==, 5.5);
-					DMibExpect(JSON["TestBool"].f_AsFloat(), ==, 1.0);
-					DMibExpectException(JSON["TestObject"].f_AsFloat(), DMibErrorInstance("JSON type cannot be converted to float"));
-					DMibExpectException(JSON["TestArray"].f_AsFloat(), DMibErrorInstance("JSON type cannot be converted to float"));
-					DMibExpectException(JSON["TestInvalid"].f_AsFloat(), DMibErrorInstance("JSON type cannot be converted to float"));
+					DMibExpectException(Json["TestNull"].f_AsFloat(), DMibErrorInstance("JSON type cannot be converted to float"));
+					DMibExpect(Json["TestString"].f_AsFloat(), ==, 66.5);
+					DMibExpect(Json["TestInt"].f_AsFloat(), ==, 54.0);
+					DMibExpect(Json["TestFloat"].f_AsFloat(), ==, 5.5);
+					DMibExpect(Json["TestBool"].f_AsFloat(), ==, 1.0);
+					DMibExpectException(Json["TestObject"].f_AsFloat(), DMibErrorInstance("JSON type cannot be converted to float"));
+					DMibExpectException(Json["TestArray"].f_AsFloat(), DMibErrorInstance("JSON type cannot be converted to float"));
+					DMibExpectException(Json["TestInvalid"].f_AsFloat(), DMibErrorInstance("JSON type cannot be converted to float"));
 				}
 				{
 					DMibTestPath("Get as boolean");
-					t_CJSON JSON;
+					t_CJson Json;
 					
-					JSON["TestNull"] = nullptr;
-					JSON["TestString0"] = "true";
-					JSON["TestString1"] = "false";
-					JSON["TestString2"] = "1";
-					JSON["TestString3"] = "4";
-					JSON["TestString4"] = "0";
-					JSON["TestString5"] = "0.5";
-					JSON["TestInt"] = 54;
-					JSON["TestFloat"] = fp32(5.5);
-					JSON["TestBool"] = true;
-					t_CJSON Object;
+					Json["TestNull"] = nullptr;
+					Json["TestString0"] = "true";
+					Json["TestString1"] = "false";
+					Json["TestString2"] = "1";
+					Json["TestString3"] = "4";
+					Json["TestString4"] = "0";
+					Json["TestString5"] = "0.5";
+					Json["TestInt"] = 54;
+					Json["TestFloat"] = fp32(5.5);
+					Json["TestBool"] = true;
+					t_CJson Object;
 					Object["5"] = 6;
-					JSON["TestObject"] = Object;
-					t_CJSON Array;
+					Json["TestObject"] = Object;
+					t_CJson Array;
 					Array.f_Insert(6);
-					JSON["TestArray"] = Array;
-					JSON["TestInvalid"];
+					Json["TestArray"] = Array;
+					Json["TestInvalid"];
 					
-					DMibExpectException(JSON["TestNull"].f_AsBoolean(), DMibErrorInstance("JSON type cannot be converted to boolean"));
-					DMibExpectTrue(JSON["TestString0"].f_AsBoolean());
-					DMibExpectFalse(JSON["TestString1"].f_AsBoolean());
-					DMibExpectTrue(JSON["TestString2"].f_AsBoolean());
-					DMibExpectTrue(JSON["TestString3"].f_AsBoolean());
-					DMibExpectFalse(JSON["TestString4"].f_AsBoolean());
-					DMibExpectFalse(JSON["TestString5"].f_AsBoolean());
-					DMibExpectTrue(JSON["TestInt"].f_AsBoolean());
-					DMibExpectTrue(JSON["TestFloat"].f_AsBoolean());
-					DMibExpectTrue(JSON["TestBool"].f_AsBoolean());
-					DMibExpectException(JSON["TestObject"].f_AsBoolean(), DMibErrorInstance("JSON type cannot be converted to boolean"));
-					DMibExpectException(JSON["TestArray"].f_AsBoolean(), DMibErrorInstance("JSON type cannot be converted to boolean"));
-					DMibExpectException(JSON["TestInvalid"].f_AsBoolean(), DMibErrorInstance("JSON type cannot be converted to boolean"));
+					DMibExpectException(Json["TestNull"].f_AsBoolean(), DMibErrorInstance("JSON type cannot be converted to boolean"));
+					DMibExpectTrue(Json["TestString0"].f_AsBoolean());
+					DMibExpectFalse(Json["TestString1"].f_AsBoolean());
+					DMibExpectTrue(Json["TestString2"].f_AsBoolean());
+					DMibExpectTrue(Json["TestString3"].f_AsBoolean());
+					DMibExpectFalse(Json["TestString4"].f_AsBoolean());
+					DMibExpectFalse(Json["TestString5"].f_AsBoolean());
+					DMibExpectTrue(Json["TestInt"].f_AsBoolean());
+					DMibExpectTrue(Json["TestFloat"].f_AsBoolean());
+					DMibExpectTrue(Json["TestBool"].f_AsBoolean());
+					DMibExpectException(Json["TestObject"].f_AsBoolean(), DMibErrorInstance("JSON type cannot be converted to boolean"));
+					DMibExpectException(Json["TestArray"].f_AsBoolean(), DMibErrorInstance("JSON type cannot be converted to boolean"));
+					DMibExpectException(Json["TestInvalid"].f_AsBoolean(), DMibErrorInstance("JSON type cannot be converted to boolean"));
 				}
 				{
 					DMibTestPath("Get as string default");
-					t_CJSON JSON;
+					t_CJson Json;
 					
-					JSON["TestNull"] = nullptr;
-					JSON["TestString"] = "String";
-					JSON["TestInt"] = 54;
-					JSON["TestFloat"] = fp32(5.5);
-					JSON["TestBool"] = true;
-					t_CJSON Object;
+					Json["TestNull"] = nullptr;
+					Json["TestString"] = "String";
+					Json["TestInt"] = 54;
+					Json["TestFloat"] = fp32(5.5);
+					Json["TestBool"] = true;
+					t_CJson Object;
 					Object["5"] = 6;
-					JSON["TestObject"] = Object;
-					t_CJSON Array;
+					Json["TestObject"] = Object;
+					t_CJson Array;
 					Array.f_Insert(6);
-					JSON["TestArray"] = Array;
-					JSON["TestInvalid"];
+					Json["TestArray"] = Array;
+					Json["TestInvalid"];
 					
 					
-					DMibExpect(JSON["TestNull"].f_AsString("Default"), ==, "null");
-					DMibExpect(JSON["TestString"].f_AsString("Default"), ==, "String");
-					DMibExpect(JSON["TestInt"].f_AsString("Default"), ==, "54");
-					DMibExpect(JSON["TestFloat"].f_AsString("Default"), ==, "5.5");
-					DMibExpect(JSON["TestBool"].f_AsString("Default"), ==, "true");
-					DMibExpect(JSON["TestObject"].f_AsString("Default"), ==, Object.f_ToString());
-					DMibExpect(JSON["TestArray"].f_AsString("Default"), ==, Array.f_ToString());
-					DMibExpect(JSON["TestInvalid"].f_AsString("Default"), ==, "Default");
+					DMibExpect(Json["TestNull"].f_AsString("Default"), ==, "null");
+					DMibExpect(Json["TestString"].f_AsString("Default"), ==, "String");
+					DMibExpect(Json["TestInt"].f_AsString("Default"), ==, "54");
+					DMibExpect(Json["TestFloat"].f_AsString("Default"), ==, "5.5");
+					DMibExpect(Json["TestBool"].f_AsString("Default"), ==, "true");
+					DMibExpect(Json["TestObject"].f_AsString("Default"), ==, Object.f_ToString());
+					DMibExpect(Json["TestArray"].f_AsString("Default"), ==, Array.f_ToString());
+					DMibExpect(Json["TestInvalid"].f_AsString("Default"), ==, "Default");
 				}
 				{
 					DMibTestPath("Get as integer default");
-					t_CJSON JSON;
+					t_CJson Json;
 					
-					JSON["TestNull"] = nullptr;
-					JSON["TestString"] = "66";
-					JSON["TestInt"] = 54;
-					JSON["TestFloat"] = fp32(5.5);
-					JSON["TestBool"] = true;
-					t_CJSON Object;
+					Json["TestNull"] = nullptr;
+					Json["TestString"] = "66";
+					Json["TestInt"] = 54;
+					Json["TestFloat"] = fp32(5.5);
+					Json["TestBool"] = true;
+					t_CJson Object;
 					Object["5"] = 6;
-					JSON["TestObject"] = Object;
-					t_CJSON Array;
+					Json["TestObject"] = Object;
+					t_CJson Array;
 					Array.f_Insert(6);
-					JSON["TestArray"] = Array;
-					JSON["TestInvalid"];
+					Json["TestArray"] = Array;
+					Json["TestInvalid"];
 					
 					
-					DMibExpect(JSON["TestNull"].f_AsInteger(77), ==, 77);
-					DMibExpect(JSON["TestString"].f_AsInteger(77), ==, 66);
-					DMibExpect(JSON["TestInt"].f_AsInteger(77), ==, 54);
-					DMibExpect(JSON["TestFloat"].f_AsInteger(77), ==, 6);
-					DMibExpect(JSON["TestBool"].f_AsInteger(77), ==, 1);
-					DMibExpect(JSON["TestObject"].f_AsInteger(77), ==, 77);
-					DMibExpect(JSON["TestArray"].f_AsInteger(77), ==, 77);
-					DMibExpect(JSON["TestInvalid"].f_AsInteger(77), ==, 77);
+					DMibExpect(Json["TestNull"].f_AsInteger(77), ==, 77);
+					DMibExpect(Json["TestString"].f_AsInteger(77), ==, 66);
+					DMibExpect(Json["TestInt"].f_AsInteger(77), ==, 54);
+					DMibExpect(Json["TestFloat"].f_AsInteger(77), ==, 6);
+					DMibExpect(Json["TestBool"].f_AsInteger(77), ==, 1);
+					DMibExpect(Json["TestObject"].f_AsInteger(77), ==, 77);
+					DMibExpect(Json["TestArray"].f_AsInteger(77), ==, 77);
+					DMibExpect(Json["TestInvalid"].f_AsInteger(77), ==, 77);
 				}
 				{
 					DMibTestPath("Get as float default");
-					t_CJSON JSON;
+					t_CJson Json;
 					
-					JSON["TestNull"] = nullptr;
-					JSON["TestString"] = "66.5";
-					JSON["TestInt"] = 54;
-					JSON["TestFloat"] = fp32(5.5);
-					JSON["TestBool"] = true;
-					t_CJSON Object;
+					Json["TestNull"] = nullptr;
+					Json["TestString"] = "66.5";
+					Json["TestInt"] = 54;
+					Json["TestFloat"] = fp32(5.5);
+					Json["TestBool"] = true;
+					t_CJson Object;
 					Object["5"] = 6;
-					JSON["TestObject"] = Object;
-					t_CJSON Array;
+					Json["TestObject"] = Object;
+					t_CJson Array;
 					Array.f_Insert(6);
-					JSON["TestArray"] = Array;
-					JSON["TestInvalid"];
+					Json["TestArray"] = Array;
+					Json["TestInvalid"];
 					
-					DMibExpect(JSON["TestNull"].f_AsFloat(77.7), ==, 77.7);
-					DMibExpect(JSON["TestString"].f_AsFloat(77.7), ==, 66.5);
-					DMibExpect(JSON["TestInt"].f_AsFloat(77.7), ==, 54.0);
-					DMibExpect(JSON["TestFloat"].f_AsFloat(77.7), ==, 5.5);
-					DMibExpect(JSON["TestBool"].f_AsFloat(77.7), ==, 1.0);
-					DMibExpect(JSON["TestObject"].f_AsFloat(77.7), ==, 77.7);
-					DMibExpect(JSON["TestArray"].f_AsFloat(77.7), ==, 77.7);
-					DMibExpect(JSON["TestInvalid"].f_AsFloat(77.7), ==, 77.7);
+					DMibExpect(Json["TestNull"].f_AsFloat(77.7), ==, 77.7);
+					DMibExpect(Json["TestString"].f_AsFloat(77.7), ==, 66.5);
+					DMibExpect(Json["TestInt"].f_AsFloat(77.7), ==, 54.0);
+					DMibExpect(Json["TestFloat"].f_AsFloat(77.7), ==, 5.5);
+					DMibExpect(Json["TestBool"].f_AsFloat(77.7), ==, 1.0);
+					DMibExpect(Json["TestObject"].f_AsFloat(77.7), ==, 77.7);
+					DMibExpect(Json["TestArray"].f_AsFloat(77.7), ==, 77.7);
+					DMibExpect(Json["TestInvalid"].f_AsFloat(77.7), ==, 77.7);
 				}
 				{
 					DMibTestPath("Get as boolean default");
-					t_CJSON JSON;
+					t_CJson Json;
 					
-					JSON["TestNull"] = nullptr;
-					JSON["TestString0"] = "true";
-					JSON["TestString1"] = "false";
-					JSON["TestString2"] = "1";
-					JSON["TestString3"] = "4";
-					JSON["TestString4"] = "0";
-					JSON["TestString5"] = "0.5";
-					JSON["TestInt"] = 54;
-					JSON["TestFloat"] = fp32(5.5);
-					JSON["TestBool"] = true;
-					t_CJSON Object;
+					Json["TestNull"] = nullptr;
+					Json["TestString0"] = "true";
+					Json["TestString1"] = "false";
+					Json["TestString2"] = "1";
+					Json["TestString3"] = "4";
+					Json["TestString4"] = "0";
+					Json["TestString5"] = "0.5";
+					Json["TestInt"] = 54;
+					Json["TestFloat"] = fp32(5.5);
+					Json["TestBool"] = true;
+					t_CJson Object;
 					Object["5"] = 6;
-					JSON["TestObject"] = Object;
-					t_CJSON Array;
+					Json["TestObject"] = Object;
+					t_CJson Array;
 					Array.f_Insert(6);
-					JSON["TestArray"] = Array;
-					JSON["TestInvalid"];
+					Json["TestArray"] = Array;
+					Json["TestInvalid"];
 					
-					DMibExpectTrue(JSON["TestNull"].f_AsBoolean(true));
-					DMibExpectTrue(JSON["TestString0"].f_AsBoolean(true));
-					DMibExpectFalse(JSON["TestString1"].f_AsBoolean(true));
-					DMibExpectTrue(JSON["TestString2"].f_AsBoolean(true));
-					DMibExpectTrue(JSON["TestString3"].f_AsBoolean(true));
-					DMibExpectFalse(JSON["TestString4"].f_AsBoolean(true));
-					DMibExpectFalse(JSON["TestString5"].f_AsBoolean(true));
-					DMibExpectTrue(JSON["TestInt"].f_AsBoolean(true));
-					DMibExpectTrue(JSON["TestFloat"].f_AsBoolean(true));
-					DMibExpectTrue(JSON["TestBool"].f_AsBoolean(true));
-					DMibExpectTrue(JSON["TestObject"].f_AsBoolean(true));
-					DMibExpectTrue(JSON["TestArray"].f_AsBoolean(true));
-					DMibExpectTrue(JSON["TestInvalid"].f_AsBoolean(true));
+					DMibExpectTrue(Json["TestNull"].f_AsBoolean(true));
+					DMibExpectTrue(Json["TestString0"].f_AsBoolean(true));
+					DMibExpectFalse(Json["TestString1"].f_AsBoolean(true));
+					DMibExpectTrue(Json["TestString2"].f_AsBoolean(true));
+					DMibExpectTrue(Json["TestString3"].f_AsBoolean(true));
+					DMibExpectFalse(Json["TestString4"].f_AsBoolean(true));
+					DMibExpectFalse(Json["TestString5"].f_AsBoolean(true));
+					DMibExpectTrue(Json["TestInt"].f_AsBoolean(true));
+					DMibExpectTrue(Json["TestFloat"].f_AsBoolean(true));
+					DMibExpectTrue(Json["TestBool"].f_AsBoolean(true));
+					DMibExpectTrue(Json["TestObject"].f_AsBoolean(true));
+					DMibExpectTrue(Json["TestArray"].f_AsBoolean(true));
+					DMibExpectTrue(Json["TestInvalid"].f_AsBoolean(true));
 				}
 			};
 
@@ -447,11 +447,11 @@ namespace
 			{
 				{
 					DMibTestPath("Invalid type");
-					t_CJSON JSON;
+					t_CJson Json;
 					
-					JSON["Test"];
+					Json["Test"];
 					
-					DMibExpectException(JSON.f_ToString(), DMibErrorInstance("Invalid JSON type in value node"));
+					DMibExpectException(Json.f_ToString(), DMibErrorInstance("Invalid JSON type in value node"));
 				}
 			};
 			
@@ -699,7 +699,7 @@ namespace
 	private:
 		void fp_TestParseError(NMib::NStr::CStr const &_ToParse, NMib::NContainer::TCVector<NMib::NStr::CParseError> const &_ExpectedErrors)
 		{
-			NMib::NStr::CExceptionParse Exception = DMibImpExceptionInstanceSpecific(NMib::NStr::CExceptionParse, "JSON Error", NMib::fg_Default());
+			NMib::NStr::CExceptionParse Exception = DMibImpExceptionInstanceSpecific(NMib::NStr::CExceptionParse, "Json Error", NMib::fg_Default());
 			try
 			{
 				fg_TestAddCleanupPath(mp_TestFilePath);
@@ -718,8 +718,8 @@ namespace
 		}
 
 		NMib::NStr::CStr mp_TestFilePath;
-		t_CJSON mp_JSONReference;
-		NMib::NStr::CStr mp_JSONReferenceText;
-		NMib::NFunction::TCFunction<t_CJSON (NMib::NStr::CStr const &_ToParse, NMib::NStr::CStr const &_FileName)> mp_fParse;
+		t_CJson mp_JsonReference;
+		NMib::NStr::CStr mp_JsonReferenceText;
+		NMib::NFunction::TCFunction<t_CJson (NMib::NStr::CStr const &_ToParse, NMib::NStr::CStr const &_FileName)> mp_fParse;
 	};
 }

@@ -1,10 +1,10 @@
 // Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-#include "Malterlib_Encoding_JSON.h"
-#include "Malterlib_Encoding_JSON_Parse.h"
+#include "Malterlib_Encoding_Json.h"
+#include "Malterlib_Encoding_Json_Parse.h"
 
-namespace NMib::NEncoding::NJSON
+namespace NMib::NEncoding::NJson
 {
 	void CParseContext::f_ThrowErrors(NContainer::TCVector<NStr::CParseError> const &_Errors) const
 	{

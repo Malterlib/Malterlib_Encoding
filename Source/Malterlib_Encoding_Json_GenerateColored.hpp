@@ -1,7 +1,7 @@
 // Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-#include "Malterlib_Encoding_JSON.h"
+#include "Malterlib_Encoding_Json.h"
 
 #include <Mib/CommandLine/AnsiEncoding>
 
@@ -12,8 +12,8 @@ namespace NMib::NEncoding
 		using namespace NStr;
 		using namespace NCommandLine;
 
-		template <typename t_CJSON>
-		struct TCJSONColorGenerator
+		template <typename t_CJson>
+		struct TCJsonColorGenerator
 		{
 			using ESyntaxColor = CAnsiEncoding::ESyntaxColor;
 
@@ -32,7 +32,7 @@ namespace NMib::NEncoding
 					o_String += _pPrettySeparator;
 			}
 
-			CStr f_GenerateJSONString(NStr::CStr const &_Value)
+			CStr f_GenerateJsonString(NStr::CStr const &_Value)
 			{
 				using namespace NStr;
 
@@ -83,7 +83,7 @@ namespace NMib::NEncoding
 				return f_Color(String, ESyntaxColor::ESyntaxColor_String);
 			}
 
-			void f_GenerateJSONObject(NStr::CStr &o_String, t_CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
+			void f_GenerateJsonObject(NStr::CStr &o_String, t_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
 			{
 				auto iChild = _Value.f_Object().f_OrderedIterator();
 				if (!iChild)
@@ -104,12 +104,12 @@ namespace NMib::NEncoding
 					++iChild;
 					if (_pPrettySeparator)
 						f_AddPrefix(o_String, _Depth + 1, _pPrettySeparator);
-					o_String += f_GenerateJSONString(Child.f_Name());
+					o_String += f_GenerateJsonString(Child.f_Name());
 					if (_pPrettySeparator)
 						o_String += ": ";
 					else
 						o_String += ":";
-					f_GenerateJSONValue(o_String, Child.f_Value(), _Depth + 1, _pPrettySeparator);
+					f_GenerateJsonValue(o_String, Child.f_Value(), _Depth + 1, _pPrettySeparator);
 					if (_pPrettySeparator)
 					{
 						if (iChild)
@@ -125,7 +125,7 @@ namespace NMib::NEncoding
 				o_String += "}";
 			}
 
-			void f_GenerateJSONArray(NStr::CStr &o_String, t_CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
+			void f_GenerateJsonArray(NStr::CStr &o_String, t_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
 			{
 				auto iChild = _Value.f_Array().f_GetIterator();
 				if (!iChild)
@@ -145,7 +145,7 @@ namespace NMib::NEncoding
 					++iChild;
 					if (_pPrettySeparator)
 						f_AddPrefix(o_String, _Depth + 1, _pPrettySeparator);
-					f_GenerateJSONValue(o_String, Child, _Depth + 1, _pPrettySeparator);
+					f_GenerateJsonValue(o_String, Child, _Depth + 1, _pPrettySeparator);
 					if (_pPrettySeparator)
 					{
 						if (iChild)
@@ -161,51 +161,51 @@ namespace NMib::NEncoding
 				o_String += "]";
 			}
 
-			void f_GenerateJSONValue(NStr::CStr &o_String, t_CJSON const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
+			void f_GenerateJsonValue(NStr::CStr &o_String, t_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
 			{
 				using namespace NStr;
 
-				auto &JSONValue = _Value;
+				auto &JsonValue = _Value;
 
-				switch (JSONValue.f_Type())
+				switch (JsonValue.f_Type())
 				{
-				case EJSONType_String:
-					o_String += f_GenerateJSONString(JSONValue.f_String());
+				case EJsonType_String:
+					o_String += f_GenerateJsonString(JsonValue.f_String());
 					break;
-				case EJSONType_Integer:
-					o_String += f_Color(CStr::fs_ToStr(JSONValue.f_Integer()), ESyntaxColor::ESyntaxColor_Number);
+				case EJsonType_Integer:
+					o_String += f_Color(CStr::fs_ToStr(JsonValue.f_Integer()), ESyntaxColor::ESyntaxColor_Number);
 					break;
-				case EJSONType_Float:
+				case EJsonType_Float:
 					{
-						auto &Float = JSONValue.f_Float();
-						if (Float.f_IsInvalid() && !(m_Flags & EJSONDialectFlag_AllowInvalidFloat))
-							o_String += f_Color("null", ESyntaxColor::ESyntaxColor_Number); // QNaN, Inf etc is not representable in JSON
+						auto &Float = JsonValue.f_Float();
+						if (Float.f_IsInvalid() && !(m_Flags & EJsonDialectFlag_AllowInvalidFloat))
+							o_String += f_Color("null", ESyntaxColor::ESyntaxColor_Number); // QNaN, Inf etc is not representable in Json
 						else
 						{
-							if (m_Flags & EJSONDialectFlag_HighPrecisionFloat)
-								o_String += f_Color(CStr(CStr::CFormat("{ffs,fdb}") << JSONValue.f_Float()), ESyntaxColor::ESyntaxColor_Number);
+							if (m_Flags & EJsonDialectFlag_HighPrecisionFloat)
+								o_String += f_Color(CStr(CStr::CFormat("{ffs,fdb}") << JsonValue.f_Float()), ESyntaxColor::ESyntaxColor_Number);
 							else
-								o_String += f_Color(CStr(CStr::CFormat("{ffs}") << JSONValue.f_Float()), ESyntaxColor::ESyntaxColor_Number);
+								o_String += f_Color(CStr(CStr::CFormat("{ffs}") << JsonValue.f_Float()), ESyntaxColor::ESyntaxColor_Number);
 						}
 					}
 					break;
-				case EJSONType_Object:
-					f_GenerateJSONObject(o_String, _Value, _Depth, _pPrettySeparator);
+				case EJsonType_Object:
+					f_GenerateJsonObject(o_String, _Value, _Depth, _pPrettySeparator);
 					break;
-				case EJSONType_Array:
-					f_GenerateJSONArray(o_String, _Value, _Depth, _pPrettySeparator);
+				case EJsonType_Array:
+					f_GenerateJsonArray(o_String, _Value, _Depth, _pPrettySeparator);
 					break;
-				case EJSONType_Null:
+				case EJsonType_Null:
 					o_String += f_Color("null", ESyntaxColor::ESyntaxColor_Constant);
 					break;
-				case EJSONType_Boolean:
-					if (JSONValue.f_Boolean())
+				case EJsonType_Boolean:
+					if (JsonValue.f_Boolean())
 						o_String += f_Color("true", ESyntaxColor::ESyntaxColor_Constant);
 					else
 						o_String += f_Color("false", ESyntaxColor::ESyntaxColor_Constant);
 					break;
-				case EJSONType_Invalid:
-					if (m_Flags & EJSONDialectFlag_AllowUndefined)
+				case EJsonType_Invalid:
+					if (m_Flags & EJsonDialectFlag_AllowUndefined)
 					{
 						o_String += "undefined";
 						break;
@@ -217,32 +217,32 @@ namespace NMib::NEncoding
 				}
 			}
 
-			NStr::CStr f_ToString(t_CJSON const &_JSON, ch8 const *_pPrettySeparator)
+			NStr::CStr f_ToString(t_CJson const &_Json, ch8 const *_pPrettySeparator)
 			{
 				using namespace NStr;
 
 				CStr Return;
 
-				f_GenerateJSONValue(Return, _JSON, 0, _pPrettySeparator);
+				f_GenerateJsonValue(Return, _Json, 0, _pPrettySeparator);
 
-				if (_pPrettySeparator && !(m_Flags & EJSONDialectFlag_TrimWhitespace))
+				if (_pPrettySeparator && !(m_Flags & EJsonDialectFlag_TrimWhitespace))
 					Return += "\n";
 
 				return Return;
 			}
 
-			EJSONDialectFlag m_Flags;
+			EJsonDialectFlag m_Flags;
 			NCommandLine::EAnsiEncodingFlag m_AnsiFlags;
 		};
 
-		template <typename tf_CJSON>
-		NStr::CStr fg_JSONGenerateColored(tf_CJSON const &_JSON, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJSONDialectFlag _Flags)
+		template <typename tf_CJson>
+		NStr::CStr fg_JsonGenerateColored(tf_CJson const &_Json, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJsonDialectFlag _Flags)
 		{
-			TCJSONColorGenerator<tf_CJSON> Generator;
+			TCJsonColorGenerator<tf_CJson> Generator;
 			Generator.m_Flags = _Flags;
 			Generator.m_AnsiFlags = _AnsiFlags;
 
-			return Generator.f_ToString(_JSON, _pPrettySeparator);
+			return Generator.f_ToString(_Json, _pPrettySeparator);
 		}
 	}
 }

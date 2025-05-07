@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "Malterlib_Encoding_JSON_Parse.h"
+#include "Malterlib_Encoding_Json_Parse.h"
 
 #include <Mib/String/Appender>
 
-namespace NMib::NEncoding::NJSON
+namespace NMib::NEncoding::NJson
 {
 	template <typename tf_CStr>
 	static void fg_AddPrefix(tf_CStr &o_String, mint _Depth, ch8 const *_pPrettySeparator)
@@ -18,7 +18,7 @@ namespace NMib::NEncoding::NJSON
 	}
 
 	template <ch8 t_QuoteCharacter, typename tf_CParseContext, bool tf_bAddQuotes, typename tf_CStr, typename tf_CSourceString>
-	static void fg_GenerateJSONString(tf_CStr &o_String, tf_CSourceString const &_Value)
+	static void fg_GenerateJsonString(tf_CStr &o_String, tf_CSourceString const &_Value)
 	{
 		using namespace NStr;
 
@@ -35,7 +35,7 @@ namespace NMib::NEncoding::NJSON
 		bool bInitPreWhitespace = false;
 		auto fAddPreWhitespace = [&]()
 			{
-				if constexpr (tf_CParseContext::mc_ParseJSONStringFlags & EParseJSONStringFlag_AllowMultiLine)
+				if constexpr (tf_CParseContext::mc_ParseJsonStringFlags & EParseJsonStringFlag_AllowMultiLine)
 				{
 					if (!bInitPreWhitespace)
 					{
@@ -92,7 +92,7 @@ namespace NMib::NEncoding::NJSON
 					o_String += "\\r";
 				}
 
-				if constexpr (tf_CParseContext::mc_ParseJSONStringFlags & EParseJSONStringFlag_AllowMultiLine)
+				if constexpr (tf_CParseContext::mc_ParseJsonStringFlags & EParseJsonStringFlag_AllowMultiLine)
 				{
 					if (fg_StrStartsWith(pParse, "\r\n"))
 					{
@@ -126,7 +126,7 @@ namespace NMib::NEncoding::NJSON
 	}
 
 	template <typename tf_CParseContext, typename tf_CStr, typename tf_CJson>
-	static void fg_GenerateJSONObject(tf_CStr &o_String, tf_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags)
+	static void fg_GenerateJsonObject(tf_CStr &o_String, tf_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags)
 	{
 		auto iChild = _Value.f_OrderedIterator();
 		if (!iChild)
@@ -155,7 +155,7 @@ namespace NMib::NEncoding::NJSON
 			else
 				o_String += ":";
 
-			fg_GenerateJSONValue<tf_CParseContext>(o_String, Child.f_Value(), _Depth + 1, _pPrettySeparator, _Flags);
+			fg_GenerateJsonValue<tf_CParseContext>(o_String, Child.f_Value(), _Depth + 1, _pPrettySeparator, _Flags);
 
 			if (_pPrettySeparator)
 			{
@@ -173,7 +173,7 @@ namespace NMib::NEncoding::NJSON
 	}
 
 	template <typename tf_CParseContext, typename tf_CStr, typename tf_CJson>
-	static void fg_GenerateJSONArray(tf_CStr &o_String, tf_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags)
+	static void fg_GenerateJsonArray(tf_CStr &o_String, tf_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags)
 	{
 		auto iChild = _Value.f_GetIterator();
 		if (!iChild)
@@ -194,7 +194,7 @@ namespace NMib::NEncoding::NJSON
 			if (_pPrettySeparator)
 				fg_AddPrefix(o_String, _Depth + 1, _pPrettySeparator);
 
-			fg_GenerateJSONValue<tf_CParseContext>(o_String, Child, _Depth + 1, _pPrettySeparator, _Flags);
+			fg_GenerateJsonValue<tf_CParseContext>(o_String, Child, _Depth + 1, _pPrettySeparator, _Flags);
 
 			if (_pPrettySeparator)
 			{
@@ -212,11 +212,11 @@ namespace NMib::NEncoding::NJSON
 	}
 
 	template <typename tf_CParseContext, typename tf_CStr, typename tf_CJson>
-	static void fg_GenerateJSONValue(tf_CStr &o_String, tf_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags)
+	static void fg_GenerateJsonValue(tf_CStr &o_String, tf_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags)
 	{
 		using namespace NStr;
 
-		auto &JSONValue = _Value;
+		auto &JsonValue = _Value;
 
 		if constexpr (tf_CParseContext::mc_bCustomGenerate)
 		{
@@ -224,25 +224,25 @@ namespace NMib::NEncoding::NJSON
 				return;
 		}
 
-		switch (JSONValue.f_Type())
+		switch (JsonValue.f_Type())
 		{
-		case EJSONType_String:
-			tf_CParseContext::template fs_GenerateString<tf_CParseContext>(o_String, JSONValue.f_String());
+		case EJsonType_String:
+			tf_CParseContext::template fs_GenerateString<tf_CParseContext>(o_String, JsonValue.f_String());
 			break;
-		case EJSONType_Integer:
+		case EJsonType_Integer:
 			{
 				using CFormatType = typename TCStringFormatterAll<typename tf_CStr::CString::CFormat, int64>::CFormatType;
 				auto Committed = o_String.f_Commit();
 				aint CurrentLen = Committed.m_String.f_GetLen();
-				CFormatType::fs_AddToStrStatic(Committed.m_String, CurrentLen, typename CFormatType::CType(JSONValue.f_Integer()));
+				CFormatType::fs_AddToStrStatic(Committed.m_String, CurrentLen, typename CFormatType::CType(JsonValue.f_Integer()));
 				Committed.m_String.f_SetStrLen(CurrentLen);
 			}
 			break;
-		case EJSONType_Float:
+		case EJsonType_Float:
 			{
-				auto &Float = JSONValue.f_Float();
-				if (Float.f_IsInvalid() && !(_Flags & EJSONDialectFlag_AllowInvalidFloat))
-					o_String += "null"; // QNaN, Inf etc is not representable in JSON
+				auto &Float = JsonValue.f_Float();
+				if (Float.f_IsInvalid() && !(_Flags & EJsonDialectFlag_AllowInvalidFloat))
+					o_String += "null"; // QNaN, Inf etc is not representable in Json
 				else
 				{
 					auto Committed = o_String.f_Commit();
@@ -251,31 +251,31 @@ namespace NMib::NEncoding::NJSON
 
 					typename CFormatType::COptionsFloat Options;
 					Options.m_FloatFormat = CFormatType::COptionsFloat::EFloatFormat_ShortestLowerCase;
-					if (_Flags & EJSONDialectFlag_HighPrecisionFloat)
+					if (_Flags & EJsonDialectFlag_HighPrecisionFloat)
 						Options.m_MinDigits = -2;
 
-					CFormatType::fs_AddToStrStatic(Committed.m_String, CurrentLen, typename CFormatType::CType(JSONValue.f_Float()), Options);
+					CFormatType::fs_AddToStrStatic(Committed.m_String, CurrentLen, typename CFormatType::CType(JsonValue.f_Float()), Options);
 					Committed.m_String.f_SetStrLen(CurrentLen);
 				}
 			}
 			break;
-		case EJSONType_Object:
-			fg_GenerateJSONObject<tf_CParseContext>(o_String, _Value.f_Object(), _Depth, _pPrettySeparator, _Flags & EJSONDialectFlag_All);
+		case EJsonType_Object:
+			fg_GenerateJsonObject<tf_CParseContext>(o_String, _Value.f_Object(), _Depth, _pPrettySeparator, _Flags & EJsonDialectFlag_All);
 			break;
-		case EJSONType_Array:
-			fg_GenerateJSONArray<tf_CParseContext>(o_String, _Value.f_Array(), _Depth, _pPrettySeparator, _Flags & EJSONDialectFlag_All);
+		case EJsonType_Array:
+			fg_GenerateJsonArray<tf_CParseContext>(o_String, _Value.f_Array(), _Depth, _pPrettySeparator, _Flags & EJsonDialectFlag_All);
 			break;
-		case EJSONType_Null:
+		case EJsonType_Null:
 			o_String += "null";
 			break;
-		case EJSONType_Boolean:
-			if (JSONValue.f_Boolean())
+		case EJsonType_Boolean:
+			if (JsonValue.f_Boolean())
 				o_String += "true";
 			else
 				o_String += "false";
 			break;
-		case EJSONType_Invalid:
-			if (_Flags & EJSONDialectFlag_AllowUndefined)
+		case EJsonType_Invalid:
+			if (_Flags & EJsonDialectFlag_AllowUndefined)
 			{
 				o_String += "undefined";
 				break;
@@ -292,7 +292,7 @@ namespace NMib::NEncoding::NJSON
 namespace NMib::NEncoding
 {
 	template <typename t_CParent>
-	NStr::CStr TCJSONValue<t_CParent>::f_ToString(ch8 const * _pPrettySeparator, EJSONDialectFlag _Flags) const
+	NStr::CStr TCJsonValue<t_CParent>::f_ToString(ch8 const * _pPrettySeparator, EJsonDialectFlag _Flags) const
 	{
 		using namespace NStr;
 
@@ -300,9 +300,9 @@ namespace NMib::NEncoding
 		{
 			CStr::CAppender StringAppender(Return);
 
-			NJSON::fg_GenerateJSONValue<NJSON::CParseContext>(StringAppender, *this, 0, _pPrettySeparator, _Flags);
+			NJson::fg_GenerateJsonValue<NJson::CParseContext>(StringAppender, *this, 0, _pPrettySeparator, _Flags);
 
-			if (_pPrettySeparator && !(_Flags & EJSONDialectFlag_TrimWhitespace))
+			if (_pPrettySeparator && !(_Flags & EJsonDialectFlag_TrimWhitespace))
 				StringAppender += "\n";
 		}
 		return Return;

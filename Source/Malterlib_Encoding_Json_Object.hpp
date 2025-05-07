@@ -3,22 +3,22 @@
 
 #pragma once
 
-#include "Malterlib_Encoding_JSON.h"
+#include "Malterlib_Encoding_Json.h"
 
 namespace NMib::NEncoding
 {
-	template <typename t_CJSONValue, bool t_bOrdered>
-	TCJSONObject<t_CJSONValue, t_bOrdered>::TCJSONObject()
+	template <typename t_CJsonValue, bool t_bOrdered>
+	TCJsonObject<t_CJsonValue, t_bOrdered>::TCJsonObject()
 	{
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	TCJSONObject<t_CJSONValue, t_bOrdered>::~TCJSONObject()
+	template <typename t_CJsonValue, bool t_bOrdered>
+	TCJsonObject<t_CJsonValue, t_bOrdered>::~TCJsonObject()
 	{
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	TCJSONObject<t_CJSONValue, t_bOrdered>::TCJSONObject(TCJSONObject const &_Other)
+	template <typename t_CJsonValue, bool t_bOrdered>
+	TCJsonObject<t_CJsonValue, t_bOrdered>::TCJsonObject(TCJsonObject const &_Other)
 		: mp_Objects(_Other.mp_Objects)
 	{
 		if constexpr (t_bOrdered)
@@ -28,35 +28,35 @@ namespace NMib::NEncoding
 		}
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	TCJSONObject<t_CJSONValue, t_bOrdered>::TCJSONObject(TCJSONObject &&_Other)
+	template <typename t_CJsonValue, bool t_bOrdered>
+	TCJsonObject<t_CJsonValue, t_bOrdered>::TCJsonObject(TCJsonObject &&_Other)
 		: mp_Objects(fg_Move(_Other.mp_Objects))
 		, mp_ObjectTree(fg_Move(_Other.mp_ObjectTree))
 	{
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	template <typename tf_CJSONValue, bool tf_bOrdered>
-	TCJSONObject<t_CJSONValue, t_bOrdered>::TCJSONObject(TCJSONObject<tf_CJSONValue, tf_bOrdered> const &_Other)
+	template <typename t_CJsonValue, bool t_bOrdered>
+	template <typename tf_CJsonValue, bool tf_bOrdered>
+	TCJsonObject<t_CJsonValue, t_bOrdered>::TCJsonObject(TCJsonObject<tf_CJsonValue, tf_bOrdered> const &_Other)
 	{
 		static_assert(t_bOrdered != tf_bOrdered);
 
 		for (auto &Object : _Other)
-			f_CreateMember(Object.f_Name()) = t_CJSONValue(Object.f_Value());
+			f_CreateMember(Object.f_Name()) = t_CJsonValue(Object.f_Value());
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	template <typename tf_CJSONValue, bool tf_bOrdered>
-	TCJSONObject<t_CJSONValue, t_bOrdered>::TCJSONObject(TCJSONObject<tf_CJSONValue, tf_bOrdered> &&_Other)
+	template <typename t_CJsonValue, bool t_bOrdered>
+	template <typename tf_CJsonValue, bool tf_bOrdered>
+	TCJsonObject<t_CJsonValue, t_bOrdered>::TCJsonObject(TCJsonObject<tf_CJsonValue, tf_bOrdered> &&_Other)
 	{
 		static_assert(t_bOrdered != tf_bOrdered);
 
 		for (auto &Object : _Other)
-			f_CreateMember(Object.f_Name()) = t_CJSONValue(fg_Move(Object.f_Value()));
+			f_CreateMember(Object.f_Name()) = t_CJsonValue(fg_Move(Object.f_Value()));
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	t_CJSONValue const *TCJSONObject<t_CJSONValue, t_bOrdered>::f_GetMember(NStr::CStr const &_Name) const
+	template <typename t_CJsonValue, bool t_bOrdered>
+	t_CJsonValue const *TCJsonObject<t_CJsonValue, t_bOrdered>::f_GetMember(NStr::CStr const &_Name) const
 	{
 		if constexpr (t_bOrdered)
 		{
@@ -74,8 +74,8 @@ namespace NMib::NEncoding
 		}
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	t_CJSONValue *TCJSONObject<t_CJSONValue, t_bOrdered>::f_GetMember(NStr::CStr const &_Name)
+	template <typename t_CJsonValue, bool t_bOrdered>
+	t_CJsonValue *TCJsonObject<t_CJsonValue, t_bOrdered>::f_GetMember(NStr::CStr const &_Name)
 	{
 		if constexpr (t_bOrdered)
 		{
@@ -93,8 +93,8 @@ namespace NMib::NEncoding
 		}
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	t_CJSONValue const *TCJSONObject<t_CJSONValue, t_bOrdered>::f_GetMember(NStr::CStr const &_Name, EJSONType _Type) const
+	template <typename t_CJsonValue, bool t_bOrdered>
+	t_CJsonValue const *TCJsonObject<t_CJsonValue, t_bOrdered>::f_GetMember(NStr::CStr const &_Name, EJsonType _Type) const
 	{
 		if constexpr (t_bOrdered)
 		{
@@ -112,8 +112,8 @@ namespace NMib::NEncoding
 		}
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	t_CJSONValue *TCJSONObject<t_CJSONValue, t_bOrdered>::f_GetMember(NStr::CStr const &_Name, EJSONType _Type)
+	template <typename t_CJsonValue, bool t_bOrdered>
+	t_CJsonValue *TCJsonObject<t_CJsonValue, t_bOrdered>::f_GetMember(NStr::CStr const &_Name, EJsonType _Type)
 	{
 		if constexpr (t_bOrdered)
 		{
@@ -131,8 +131,8 @@ namespace NMib::NEncoding
 		}
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	t_CJSONValue TCJSONObject<t_CJSONValue, t_bOrdered>::f_GetMemberValue(NStr::CStr const &_Name, t_CJSONValue const &_Default) const
+	template <typename t_CJsonValue, bool t_bOrdered>
+	t_CJsonValue TCJsonObject<t_CJsonValue, t_bOrdered>::f_GetMemberValue(NStr::CStr const &_Name, t_CJsonValue const &_Default) const
 	{
 		if constexpr (t_bOrdered)
 		{
@@ -150,8 +150,8 @@ namespace NMib::NEncoding
 		}
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	t_CJSONValue TCJSONObject<t_CJSONValue, t_bOrdered>::f_GetMemberValue(NStr::CStr const &_Name, t_CJSONValue &&_Default) const
+	template <typename t_CJsonValue, bool t_bOrdered>
+	t_CJsonValue TCJsonObject<t_CJsonValue, t_bOrdered>::f_GetMemberValue(NStr::CStr const &_Name, t_CJsonValue &&_Default) const
 	{
 		if constexpr (t_bOrdered)
 		{
@@ -169,8 +169,8 @@ namespace NMib::NEncoding
 		}
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	t_CJSONValue &TCJSONObject<t_CJSONValue, t_bOrdered>::f_CreateMember(NStr::CStr const &_Name)
+	template <typename t_CJsonValue, bool t_bOrdered>
+	t_CJsonValue &TCJsonObject<t_CJsonValue, t_bOrdered>::f_CreateMember(NStr::CStr const &_Name)
 	{
 		if constexpr (t_bOrdered)
 		{
@@ -186,8 +186,8 @@ namespace NMib::NEncoding
 			return mp_Objects[_Name].f_Value();
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	t_CJSONValue &TCJSONObject<t_CJSONValue, t_bOrdered>::f_CreateMember(NStr::CStr &&_Name)
+	template <typename t_CJsonValue, bool t_bOrdered>
+	t_CJsonValue &TCJsonObject<t_CJsonValue, t_bOrdered>::f_CreateMember(NStr::CStr &&_Name)
 	{
 		if constexpr (t_bOrdered)
 		{
@@ -203,8 +203,8 @@ namespace NMib::NEncoding
 			return mp_Objects[fg_Move(_Name)].f_Value();
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	t_CJSONValue const &TCJSONObject<t_CJSONValue, t_bOrdered>::operator [] (NStr::CStr const &_Name) const
+	template <typename t_CJsonValue, bool t_bOrdered>
+	t_CJsonValue const &TCJsonObject<t_CJsonValue, t_bOrdered>::operator [] (NStr::CStr const &_Name) const
 	{
 		auto pMember = f_GetMember(_Name);
 		if (!pMember)
@@ -213,15 +213,15 @@ namespace NMib::NEncoding
 		return *pMember;
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	t_CJSONValue &TCJSONObject<t_CJSONValue, t_bOrdered>::operator [] (NStr::CStr const &_Name)
+	template <typename t_CJsonValue, bool t_bOrdered>
+	t_CJsonValue &TCJsonObject<t_CJsonValue, t_bOrdered>::operator [] (NStr::CStr const &_Name)
 	{
 		return f_CreateMember(_Name);
 	}
 
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	t_CJSONValue &TCJSONObject<t_CJSONValue, t_bOrdered>::operator () (NStr::CStr const &_Name)
+	template <typename t_CJsonValue, bool t_bOrdered>
+	t_CJsonValue &TCJsonObject<t_CJsonValue, t_bOrdered>::operator () (NStr::CStr const &_Name)
 	{
 		auto pMember = f_GetMember(_Name);
 		if (!pMember)
@@ -230,8 +230,8 @@ namespace NMib::NEncoding
 		return *pMember;
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	bool TCJSONObject<t_CJSONValue, t_bOrdered>::f_RemoveMember(NStr::CStr const &_Name)
+	template <typename t_CJsonValue, bool t_bOrdered>
+	bool TCJsonObject<t_CJsonValue, t_bOrdered>::f_RemoveMember(NStr::CStr const &_Name)
 	{
 		if constexpr (t_bOrdered)
 		{
@@ -248,8 +248,8 @@ namespace NMib::NEncoding
 			return mp_Objects.f_Remove(_Name);
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	void TCJSONObject<t_CJSONValue, t_bOrdered>::f_SortObjectsLexicographically()
+	template <typename t_CJsonValue, bool t_bOrdered>
+	void TCJsonObject<t_CJsonValue, t_bOrdered>::f_SortObjectsLexicographically()
 	{
 		if constexpr (t_bOrdered)
 		{
@@ -259,8 +259,8 @@ namespace NMib::NEncoding
 		}
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	void TCJSONObject<t_CJSONValue, t_bOrdered>::f_RemoveMember(typename CObjects::CIteratorConst &_Iterator)
+	template <typename t_CJsonValue, bool t_bOrdered>
+	void TCJsonObject<t_CJsonValue, t_bOrdered>::f_RemoveMember(typename CObjects::CIteratorConst &_Iterator)
 		requires (t_bOrdered)
 	{
 		auto pObject = const_cast<CObjectEntry *>(&*_Iterator);
@@ -269,9 +269,9 @@ namespace NMib::NEncoding
 		mp_Objects.f_Remove(*pObject);
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
+	template <typename t_CJsonValue, bool t_bOrdered>
 	template <typename tf_FOnObject>
-	void TCJSONObject<t_CJSONValue, t_bOrdered>::f_ExtractAll(tf_FOnObject &&_fOnObject)
+	void TCJsonObject<t_CJsonValue, t_bOrdered>::f_ExtractAll(tf_FOnObject &&_fOnObject)
 	{
 		if constexpr (t_bOrdered)
 		{
@@ -295,8 +295,8 @@ namespace NMib::NEncoding
 		}
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	void TCJSONObject<t_CJSONValue, t_bOrdered>::f_RemoveMember(typename CObjects::CIterator &_Iterator)
+	template <typename t_CJsonValue, bool t_bOrdered>
+	void TCJsonObject<t_CJsonValue, t_bOrdered>::f_RemoveMember(typename CObjects::CIterator &_Iterator)
 	{
 		if constexpr (t_bOrdered)
 		{
@@ -306,8 +306,8 @@ namespace NMib::NEncoding
 		_Iterator.f_Remove();
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	void TCJSONObject<t_CJSONValue, t_bOrdered>::f_RemoveMember
+	template <typename t_CJsonValue, bool t_bOrdered>
+	void TCJsonObject<t_CJsonValue, t_bOrdered>::f_RemoveMember
 		(
 			typename NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>::CIterator &_Iterator
 		)
@@ -318,40 +318,40 @@ namespace NMib::NEncoding
 		mp_Objects.f_Remove(*pObject);
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	auto TCJSONObject<t_CJSONValue, t_bOrdered>::f_OrderedIterator() const -> typename CObjects::CIteratorConst
+	template <typename t_CJsonValue, bool t_bOrdered>
+	auto TCJsonObject<t_CJsonValue, t_bOrdered>::f_OrderedIterator() const -> typename CObjects::CIteratorConst
 	{
 		return mp_Objects.f_GetIterator();
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	auto TCJSONObject<t_CJSONValue, t_bOrdered>::f_OrderedIterator() -> typename CObjects::CIterator
+	template <typename t_CJsonValue, bool t_bOrdered>
+	auto TCJsonObject<t_CJsonValue, t_bOrdered>::f_OrderedIterator() -> typename CObjects::CIterator
 	{
 		return mp_Objects.f_GetIterator();
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	auto TCJSONObject<t_CJSONValue, t_bOrdered>::f_SortedIterator() const
+	template <typename t_CJsonValue, bool t_bOrdered>
+	auto TCJsonObject<t_CJsonValue, t_bOrdered>::f_SortedIterator() const
 		-> typename NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>::CIterator
 		requires (t_bOrdered)
 	{
 		return mp_ObjectTree.f_GetIterator();
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	bool TCJSONObject<t_CJSONValue, t_bOrdered>::f_IsEmpty() const
+	template <typename t_CJsonValue, bool t_bOrdered>
+	bool TCJsonObject<t_CJsonValue, t_bOrdered>::f_IsEmpty() const
 	{
 		return mp_Objects.f_IsEmpty();
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	bool TCJSONObject<t_CJSONValue, t_bOrdered>::operator == (TCJSONObject const &_Right) const
+	template <typename t_CJsonValue, bool t_bOrdered>
+	bool TCJsonObject<t_CJsonValue, t_bOrdered>::operator == (TCJsonObject const &_Right) const
 	{
 		return mp_Objects == _Right.mp_Objects;
 	}
 
-	template <typename t_CJSONValue, bool t_bOrdered>
-	COrdering_Partial TCJSONObject<t_CJSONValue, t_bOrdered>::operator <=> (TCJSONObject const &_Right) const
+	template <typename t_CJsonValue, bool t_bOrdered>
+	COrdering_Partial TCJsonObject<t_CJsonValue, t_bOrdered>::operator <=> (TCJsonObject const &_Right) const
 	{
 		return mp_Objects <=> _Right.mp_Objects;
 	}

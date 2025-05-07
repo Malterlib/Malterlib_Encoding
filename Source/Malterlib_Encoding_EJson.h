@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Malterlib_Encoding_JSON.h"
+#include "Malterlib_Encoding_Json.h"
 
 #include <Mib/Storage/Indirection>
 
@@ -11,39 +11,39 @@
 
 namespace NMib::NEncoding
 {
-	enum EEJSONType : uint8
+	enum EEJsonType : uint8
 	{
-		EEJSONType_Invalid = EJSONType_Invalid
-		, EEJSONType_Null = EJSONType_Null
-		, EEJSONType_String = EJSONType_String
-		, EEJSONType_Integer = EJSONType_Integer
-		, EEJSONType_Float = EJSONType_Float
-		, EEJSONType_Boolean = EJSONType_Boolean
-		, EEJSONType_Object = EJSONType_Object
-		, EEJSONType_Array = EJSONType_Array
-		, EEJSONType_Date = EJSONType_Max
-		, EEJSONType_Binary
-		, EEJSONType_UserType
+		EEJsonType_Invalid = EJsonType_Invalid
+		, EEJsonType_Null = EJsonType_Null
+		, EEJsonType_String = EJsonType_String
+		, EEJsonType_Integer = EJsonType_Integer
+		, EEJsonType_Float = EJsonType_Float
+		, EEJsonType_Boolean = EJsonType_Boolean
+		, EEJsonType_Object = EJsonType_Object
+		, EEJsonType_Array = EJsonType_Array
+		, EEJsonType_Date = EJsonType_Max
+		, EEJsonType_Binary
+		, EEJsonType_UserType
 	};
 
-	struct CEJSONUserTypeSorted;
+	struct CEJsonUserTypeSorted;
 
-	struct CEJSONUserTypeOrdered final
+	struct CEJsonUserTypeOrdered final
 	{
-		CEJSONUserTypeOrdered();
-		CEJSONUserTypeOrdered(CEJSONUserTypeOrdered const &_Other) = default;
-		CEJSONUserTypeOrdered(CEJSONUserTypeOrdered &&_Other) = default;
-		CEJSONUserTypeOrdered(CEJSONUserTypeSorted const &_Other);
-		CEJSONUserTypeOrdered(CEJSONUserTypeSorted &&_Other);
+		CEJsonUserTypeOrdered();
+		CEJsonUserTypeOrdered(CEJsonUserTypeOrdered const &_Other) = default;
+		CEJsonUserTypeOrdered(CEJsonUserTypeOrdered &&_Other) = default;
+		CEJsonUserTypeOrdered(CEJsonUserTypeSorted const &_Other);
+		CEJsonUserTypeOrdered(CEJsonUserTypeSorted &&_Other);
 
-		CEJSONUserTypeOrdered(NStr::CStr const &_Type, CJSONOrdered const &_Value);
-		CEJSONUserTypeOrdered(NStr::CStr const &_Type, CJSONOrdered &&_Value);
+		CEJsonUserTypeOrdered(NStr::CStr const &_Type, CJsonOrdered const &_Value);
+		CEJsonUserTypeOrdered(NStr::CStr const &_Type, CJsonOrdered &&_Value);
 
-		bool operator == (CEJSONUserTypeOrdered const &_Right) const;
-		COrdering_Partial operator <=> (CEJSONUserTypeOrdered const &_Right) const;
+		bool operator == (CEJsonUserTypeOrdered const &_Right) const;
+		COrdering_Partial operator <=> (CEJsonUserTypeOrdered const &_Right) const;
 
 		NStr::CStr m_Type;
-		CJSONOrdered m_Value;
+		CJsonOrdered m_Value;
 
 		template <typename tf_CStream>
 		void f_Feed(tf_CStream &_Stream) const;
@@ -51,21 +51,21 @@ namespace NMib::NEncoding
 		void f_Consume(tf_CStream &_Stream);
 	};
 
-	struct CEJSONUserTypeSorted final
+	struct CEJsonUserTypeSorted final
 	{
-		CEJSONUserTypeSorted();
-		CEJSONUserTypeSorted(CEJSONUserTypeSorted const &_Other) = default;
-		CEJSONUserTypeSorted(CEJSONUserTypeSorted &&_Other) = default;
-		CEJSONUserTypeSorted(CEJSONUserTypeOrdered const &_Other);
-		CEJSONUserTypeSorted(CEJSONUserTypeOrdered &&_Other);
-		CEJSONUserTypeSorted(NStr::CStr const &_Type, CJSONSorted const &_Value);
-		CEJSONUserTypeSorted(NStr::CStr const &_Type, CJSONSorted &&_Value);
+		CEJsonUserTypeSorted();
+		CEJsonUserTypeSorted(CEJsonUserTypeSorted const &_Other) = default;
+		CEJsonUserTypeSorted(CEJsonUserTypeSorted &&_Other) = default;
+		CEJsonUserTypeSorted(CEJsonUserTypeOrdered const &_Other);
+		CEJsonUserTypeSorted(CEJsonUserTypeOrdered &&_Other);
+		CEJsonUserTypeSorted(NStr::CStr const &_Type, CJsonSorted const &_Value);
+		CEJsonUserTypeSorted(NStr::CStr const &_Type, CJsonSorted &&_Value);
 
-		bool operator == (CEJSONUserTypeSorted const &_Right) const;
-		COrdering_Partial operator <=> (CEJSONUserTypeSorted const &_Right) const;
+		bool operator == (CEJsonUserTypeSorted const &_Right) const;
+		COrdering_Partial operator <=> (CEJsonUserTypeSorted const &_Right) const;
 
 		NStr::CStr m_Type;
-		CJSONSorted m_Value;
+		CJsonSorted m_Value;
 
 		template <typename tf_CStream>
 		void f_Feed(tf_CStream &_Stream) const;
@@ -73,16 +73,16 @@ namespace NMib::NEncoding
 		void f_Consume(tf_CStream &_Stream);
 	};
 
-	CEJSONUserTypeOrdered fg_UserTypeOrdered(NStr::CStr const &_Type, CJSONOrdered const &_Value);
-	CEJSONUserTypeOrdered fg_UserTypeOrdered(NStr::CStr const &_Type, CJSONOrdered &&_Value);
+	CEJsonUserTypeOrdered fg_UserTypeOrdered(NStr::CStr const &_Type, CJsonOrdered const &_Value);
+	CEJsonUserTypeOrdered fg_UserTypeOrdered(NStr::CStr const &_Type, CJsonOrdered &&_Value);
 
-	CEJSONUserTypeSorted fg_UserTypeSorted(NStr::CStr const &_Type, CJSONSorted const &_Value);
-	CEJSONUserTypeSorted fg_UserTypeSorted(NStr::CStr const &_Type, CJSONSorted &&_Value);
+	CEJsonUserTypeSorted fg_UserTypeSorted(NStr::CStr const &_Type, CJsonSorted const &_Value);
+	CEJsonUserTypeSorted fg_UserTypeSorted(NStr::CStr const &_Type, CJsonSorted &&_Value);
 
-	NStr::CStr fg_EJSONTypeToString(EEJSONType _Type);
-	NStr::CStr fg_JSONTypeToString(EEJSONType _Type);
+	NStr::CStr fg_EJsonTypeToString(EEJsonType _Type);
+	NStr::CStr fg_JsonTypeToString(EEJsonType _Type);
 
-	struct CEJSONConstStrings
+	struct CEJsonConstStrings
 	{
 		static NStr::CStr const mc_Date;
 		static NStr::CStr const mc_Binary;
@@ -92,55 +92,55 @@ namespace NMib::NEncoding
 	};
 
 	template <typename t_CParent>
-	struct TCEJSONValue : public TCJSONValue<t_CParent>
+	struct TCEJsonValue : public TCJsonValue<t_CParent>
 	{
-		using CValue = typename TCJSONValue<t_CParent>::CValue;
-		using CKeyValue = typename TCJSONValue<t_CParent>::CKeyValue;
-		using CUserType = typename TCChooseType<CValue::mc_bOrdered, CEJSONUserTypeOrdered, CEJSONUserTypeSorted>::CType;
-		using CJSONType = typename TCChooseType<CValue::mc_bOrdered, CJSONOrdered, CJSONSorted>::CType;
+		using CValue = typename TCJsonValue<t_CParent>::CValue;
+		using CKeyValue = typename TCJsonValue<t_CParent>::CKeyValue;
+		using CUserType = typename TCChooseType<CValue::mc_bOrdered, CEJsonUserTypeOrdered, CEJsonUserTypeSorted>::CType;
+		using CJsonType = typename TCChooseType<CValue::mc_bOrdered, CJsonOrdered, CJsonSorted>::CType;
 
 		template <typename tf_CType>
-		TCEJSONValue(tf_CType &&_Type)
+		TCEJsonValue(tf_CType &&_Type)
 			requires
 			(
-				NTraits::cConstructibleWith<TCJSONValue<t_CParent>, tf_CType &&>
-				&& !NPrivate::TCIsTCJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
-				&& !NPrivate::TCIsTCEJSONValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
+				NTraits::cConstructibleWith<TCJsonValue<t_CParent>, tf_CType &&>
+				&& !NPrivate::TCIsTCJsonValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
+				&& !NPrivate::TCIsTCEJsonValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
 			)
 #ifdef DCompiler_MSVC_Workaround
-			: TCJSONValue<t_CParent>(fg_Forward<tf_CType>(_Type))
+			: TCJsonValue<t_CParent>(fg_Forward<tf_CType>(_Type))
 		{
 		}
 #else
 		;
 #endif
 
-		TCEJSONValue();
-		TCEJSONValue(EEJSONType _Type);
-		TCEJSONValue(TCEJSONValue const &_Other);
-		TCEJSONValue(TCEJSONValue &_Other);
-		TCEJSONValue(TCEJSONValue &&_Other);
-		TCEJSONValue(TCEJSONValue const &&_Other);
+		TCEJsonValue();
+		TCEJsonValue(EEJsonType _Type);
+		TCEJsonValue(TCEJsonValue const &_Other);
+		TCEJsonValue(TCEJsonValue &_Other);
+		TCEJsonValue(TCEJsonValue &&_Other);
+		TCEJsonValue(TCEJsonValue const &&_Other);
 
 		template <typename ...tfp_CValues>
-		TCEJSONValue(tfp_CValues && ...p_Values)
+		TCEJsonValue(tfp_CValues && ...p_Values)
 			requires ((NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiersType<tfp_CValues>, CKeyValue> && (sizeof...(p_Values) > 0)) && ...)
 		;
 
-		TCEJSONValue(NContainer::CSecureByteVector const &_Value) = delete;
-		TCEJSONValue(NContainer::CSecureByteVector &_Value) = delete;
-		TCEJSONValue(NContainer::CSecureByteVector &&_Value) = delete;
+		TCEJsonValue(NContainer::CSecureByteVector const &_Value) = delete;
+		TCEJsonValue(NContainer::CSecureByteVector &_Value) = delete;
+		TCEJsonValue(NContainer::CSecureByteVector &&_Value) = delete;
 
-		using TCJSONValue<t_CParent>::operator = ;
+		using TCJsonValue<t_CParent>::operator = ;
 
-		TCEJSONValue &operator = (TCEJSONValue const &_Value);
-		TCEJSONValue &operator = (TCEJSONValue &_Value);
-		TCEJSONValue &operator = (TCEJSONValue &&_Value);
-		TCEJSONValue &operator = (EEJSONType _Type);
+		TCEJsonValue &operator = (TCEJsonValue const &_Value);
+		TCEJsonValue &operator = (TCEJsonValue &_Value);
+		TCEJsonValue &operator = (TCEJsonValue &&_Value);
+		TCEJsonValue &operator = (EEJsonType _Type);
 
-		EEJSONType f_EType() const;
-		void f_SetEType(EEJSONType _Type);
-		void f_SetType(EJSONType _Type);
+		EEJsonType f_EType() const;
+		void f_SetEType(EEJsonType _Type);
+		void f_SetType(EJsonType _Type);
 
 		bool f_IsDate() const;
 		bool f_IsBinary() const;
@@ -153,114 +153,114 @@ namespace NMib::NEncoding
 		CUserType const &f_UserType() const;
 		CUserType &f_UserType();
 
-		CJSONType f_ToJson() const &;
-		CJSONType f_ToJson() &&;
-		static TCEJSONValue fs_FromJson(CJSONType const &_JSON);
-		static TCEJSONValue fs_FromJson(CJSONType &&_JSON);
+		CJsonType f_ToJson() const &;
+		CJsonType f_ToJson() &&;
+		static TCEJsonValue fs_FromJson(CJsonType const &_Json);
+		static TCEJsonValue fs_FromJson(CJsonType &&_Json);
 
-		CJSONType f_ToJsonNoConvert() const &;
-		CJSONType f_ToJsonNoConvert() &&;
-		static TCEJSONValue fs_FromJsonNoConvert(CJSONType const &_JSON);
-		static TCEJSONValue fs_FromJsonNoConvert(CJSONType &&_JSON);
+		CJsonType f_ToJsonNoConvert() const &;
+		CJsonType f_ToJsonNoConvert() &&;
+		static TCEJsonValue fs_FromJsonNoConvert(CJsonType const &_Json);
+		static TCEJsonValue fs_FromJsonNoConvert(CJsonType &&_Json);
 
-		static TCEJSONValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, bool _bConvertNullToSpace = false, EJSONDialectFlag _Flags = EJSONDialectFlag_None);
-		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", EJSONDialectFlag _Flags = EJSONDialectFlag_None) const;
-		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJSONDialectFlag _Flags = EJSONDialectFlag_None) const;
+		static TCEJsonValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, bool _bConvertNullToSpace = false, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
+		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
+		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 
-		using TCJSONValue<t_CParent>::f_GetMember;
-		CValue const *f_GetMember(NStr::CStr const &_Name, EEJSONType _Type) const;
-		CValue *f_GetMember(NStr::CStr const &_Name, EEJSONType _Type);
+		using TCJsonValue<t_CParent>::f_GetMember;
+		CValue const *f_GetMember(NStr::CStr const &_Name, EEJsonType _Type) const;
+		CValue *f_GetMember(NStr::CStr const &_Name, EEJsonType _Type);
 
 		template <typename tf_CParent>
-		static TCEJSONValue fs_FromCompatible(TCEJSONValue<tf_CParent> const &_Other);
+		static TCEJsonValue fs_FromCompatible(TCEJsonValue<tf_CParent> const &_Other);
 		template <typename tf_CParent>
-		static TCEJSONValue fs_FromCompatible(TCEJSONValue<tf_CParent> &&_Other);
+		static TCEJsonValue fs_FromCompatible(TCEJsonValue<tf_CParent> &&_Other);
 		template <typename tf_CParent>
-		static TCEJSONValue fs_FromCompatible(TCEJSONValue<tf_CParent> const &&_Other);
+		static TCEJsonValue fs_FromCompatible(TCEJsonValue<tf_CParent> const &&_Other);
 
 	protected:
-		template <typename t_CJSONValue2, bool t_bOrdered2>
-		friend struct TCJSONObject;
+		template <typename t_CJsonValue2, bool t_bOrdered2>
+		friend struct TCJsonObject;
 
 		template <template <typename t_CParent2> class t_TCValue2, typename t_CTypes2, bool t_bOrdered2>
-		friend struct NPrivate::TCJSONValueBase;
+		friend struct NPrivate::TCJsonValueBase;
 
 		template <typename tf_CParent>
-		explicit TCEJSONValue(TCEJSONValue<tf_CParent> const &_Other);
+		explicit TCEJsonValue(TCEJsonValue<tf_CParent> const &_Other);
 		template <typename tf_CParent>
-		explicit TCEJSONValue(TCEJSONValue<tf_CParent> &&_Other);
+		explicit TCEJsonValue(TCEJsonValue<tf_CParent> &&_Other);
 		template <typename tf_CParent>
-		explicit TCEJSONValue(TCEJSONValue<tf_CParent> const &&_Other);
+		explicit TCEJsonValue(TCEJsonValue<tf_CParent> const &&_Other);
 
-		void fp_PromoteEType(EEJSONType _Type);
+		void fp_PromoteEType(EEJsonType _Type);
 
-		void fp_ToJson(CJSONType &_Ret) const &;
-		static void fsp_EscapeObject(CJSONType &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value);
-		static void fsp_ToJson_Object(CJSONType &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value);
-		static void fsp_FromJson(TCEJSONValue &_Ret, CJSONType const &_From);
-		static void fsp_FromJson_Object(TCEJSONValue &_Ret, typename CJSONType::CObject const &_From);
+		void fp_ToJson(CJsonType &_Ret) const &;
+		static void fsp_EscapeObject(CJsonType &_Ret, typename TCJsonValue<t_CParent>::CObject const &_Value);
+		static void fsp_ToJson_Object(CJsonType &_Ret, typename TCJsonValue<t_CParent>::CObject const &_Value);
+		static void fsp_FromJson(TCEJsonValue &_Ret, CJsonType const &_From);
+		static void fsp_FromJson_Object(TCEJsonValue &_Ret, typename CJsonType::CObject const &_From);
 
-		void fp_ToJson(CJSONType &_Ret) &&;
-		static void fsp_EscapeObject(CJSONType &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value);
-		static void fsp_ToJson_Object(CJSONType &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value);
-		static void fsp_FromJson(TCEJSONValue &_Ret, CJSONType &&_From);
-		static void fsp_FromJson_Object(TCEJSONValue &_Ret, typename CJSONType::CObject &&_From);
+		void fp_ToJson(CJsonType &_Ret) &&;
+		static void fsp_EscapeObject(CJsonType &_Ret, typename TCJsonValue<t_CParent>::CObject &&_Value);
+		static void fsp_ToJson_Object(CJsonType &_Ret, typename TCJsonValue<t_CParent>::CObject &&_Value);
+		static void fsp_FromJson(TCEJsonValue &_Ret, CJsonType &&_From);
+		static void fsp_FromJson_Object(TCEJsonValue &_Ret, typename CJsonType::CObject &&_From);
 
-		void fp_ToJsonNoConvert(CJSONType &_Ret) const &;
-		static void fsp_ToJsonNoConvert_Object(CJSONType &_Ret, typename TCJSONValue<t_CParent>::CObject const &_Value);
-		static void fsp_FromJsonNoConvert(TCEJSONValue &_Ret, CJSONType const &_From);
-		static void fsp_FromJsonNoConvert_Object(TCEJSONValue &_Ret, typename CJSONType::CObject const &_From);
+		void fp_ToJsonNoConvert(CJsonType &_Ret) const &;
+		static void fsp_ToJsonNoConvert_Object(CJsonType &_Ret, typename TCJsonValue<t_CParent>::CObject const &_Value);
+		static void fsp_FromJsonNoConvert(TCEJsonValue &_Ret, CJsonType const &_From);
+		static void fsp_FromJsonNoConvert_Object(TCEJsonValue &_Ret, typename CJsonType::CObject const &_From);
 
-		void fp_ToJsonNoConvert(CJSONType &_Ret) &&;
-		static void fsp_ToJsonNoConvert_Object(CJSONType &_Ret, typename TCJSONValue<t_CParent>::CObject &&_Value);
-		static void fsp_FromJsonNoConvert(TCEJSONValue &_Ret, CJSONType &&_From);
-		static void fsp_FromJsonNoConvert_Object(TCEJSONValue &_Ret, typename CJSONType::CObject &&_From);
+		void fp_ToJsonNoConvert(CJsonType &_Ret) &&;
+		static void fsp_ToJsonNoConvert_Object(CJsonType &_Ret, typename TCJsonValue<t_CParent>::CObject &&_Value);
+		static void fsp_FromJsonNoConvert(TCEJsonValue &_Ret, CJsonType &&_From);
+		static void fsp_FromJsonNoConvert_Object(TCEJsonValue &_Ret, typename CJsonType::CObject &&_From);
 	};
 
 	namespace NPrivate
 	{
-		struct CEJSONExtraTypesOrdered
+		struct CEJsonExtraTypesOrdered
 		{
 			using CTypes = NMeta::TCTypeList
 				<
-					NStorage::TCMember<NTime::CTime, (EJSONType)EEJSONType_Date>
-					, NStorage::TCMember<NContainer::CByteVector, (EJSONType)EEJSONType_Binary>
-					, NStorage::TCMember<NStorage::TCIndirection<CEJSONUserTypeOrdered>, (EJSONType)EEJSONType_UserType>
+					NStorage::TCMember<NTime::CTime, (EJsonType)EEJsonType_Date>
+					, NStorage::TCMember<NContainer::CByteVector, (EJsonType)EEJsonType_Binary>
+					, NStorage::TCMember<NStorage::TCIndirection<CEJsonUserTypeOrdered>, (EJsonType)EEJsonType_UserType>
 				>
 			;
 		};
 
-		struct CEJSONExtraTypesSorted
+		struct CEJsonExtraTypesSorted
 		{
 			using CTypes = NMeta::TCTypeList
 				<
-					NStorage::TCMember<NStorage::TCIndirection<NTime::CTime>, (EJSONType)EEJSONType_Date>
-					, NStorage::TCMember<NContainer::CByteVector, (EJSONType)EEJSONType_Binary>
-					, NStorage::TCMember<NStorage::TCIndirection<CEJSONUserTypeSorted>, (EJSONType)EEJSONType_UserType>
+					NStorage::TCMember<NStorage::TCIndirection<NTime::CTime>, (EJsonType)EEJsonType_Date>
+					, NStorage::TCMember<NContainer::CByteVector, (EJsonType)EEJsonType_Binary>
+					, NStorage::TCMember<NStorage::TCIndirection<CEJsonUserTypeSorted>, (EJsonType)EEJsonType_UserType>
 				>
 			;
 		};
 	}
 
-	using CEJSONOrdered = TCJSON<TCEJSONValue, NPrivate::CEJSONExtraTypesOrdered, true>;
-	using CEJSONSorted = TCJSON<TCEJSONValue, NPrivate::CEJSONExtraTypesSorted, false>;
+	using CEJsonOrdered = TCJson<TCEJsonValue, NPrivate::CEJsonExtraTypesOrdered, true>;
+	using CEJsonSorted = TCJson<TCEJsonValue, NPrivate::CEJsonExtraTypesSorted, false>;
 
-#ifdef DMibEncodingJSONExternTemplate
-	using CEJSONValueBaseOrdered = NPrivate::TCJSONValueBase<TCEJSONValue, NPrivate::CEJSONExtraTypesOrdered, true>;
-	using CJSONValueEJSONOrdered = TCJSONValue<CEJSONValueBaseOrdered>;
+#ifdef DMibEncodingJsonExternTemplate
+	using CEJsonValueBaseOrdered = NPrivate::TCJsonValueBase<TCEJsonValue, NPrivate::CEJsonExtraTypesOrdered, true>;
+	using CJsonValueEJsonOrdered = TCJsonValue<CEJsonValueBaseOrdered>;
 
-	using CEJSONValueBaseSorted = NPrivate::TCJSONValueBase<TCEJSONValue, NPrivate::CEJSONExtraTypesSorted, false>;
-	using CJSONValueEJSONSorted = TCJSONValue<CEJSONValueBaseSorted>;
+	using CEJsonValueBaseSorted = NPrivate::TCJsonValueBase<TCEJsonValue, NPrivate::CEJsonExtraTypesSorted, false>;
+	using CJsonValueEJsonSorted = TCJsonValue<CEJsonValueBaseSorted>;
 #endif
 }
 
-#include "Malterlib_Encoding_EJSON_Uninstantiated.hpp"
+#include "Malterlib_Encoding_EJson_Uninstantiated.hpp"
 
-#ifdef DMibEncodingJSONExternTemplate
-#	include "Malterlib_Encoding_EJSON_Instantiated.hpp"
-#	include "Malterlib_Encoding_EJSON_InstantiatedSorted.hpp"
+#ifdef DMibEncodingJsonExternTemplate
+#	include "Malterlib_Encoding_EJson_Instantiated.hpp"
+#	include "Malterlib_Encoding_EJson_InstantiatedSorted.hpp"
 #else
-#	include "Malterlib_Encoding_EJSON.hpp"
+#	include "Malterlib_Encoding_EJson.hpp"
 #endif
 
 #ifndef DMibPNoShortCuts

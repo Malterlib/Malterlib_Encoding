@@ -1,22 +1,22 @@
 // Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-#include <Mib/Encoding/JSON>
-#include <Mib/Encoding/JSONShortcuts>
+#include <Mib/Encoding/Json>
+#include <Mib/Encoding/JsonShortcuts>
 #include <Mib/Test/Exception>
 #include <Mib/Stream/ByteVector>
-#include "Test_Malterlib_Encoding_JSONShared.h"
+#include "Test_Malterlib_Encoding_JsonShared.h"
 
 namespace
 {
 	using namespace NMib;
 	using namespace NMib::NEncoding;
-	class CJSON_Tests : public NTest::CTest
+	class CJson_Tests : public NTest::CTest
 	{
 	public:
-		static CJSONOrdered fs_GetJSON()
+		static CJsonOrdered fs_GetJson()
 		{
-			CJSONOrdered ToReturn(EJSONType_Object);
+			CJsonOrdered ToReturn(EJsonType_Object);
 
 			ToReturn["Key"] = "Value";
 			ToReturn["KeyTrue"] = true;
@@ -32,15 +32,15 @@ namespace
 			Object["KeyNull"] = nullptr;
 			Object["KeyInt"] = 25;
 			Object["KeyFloat"] = 167.6;
-			Object["KeyArray"] = EJSONType_Array;
-			Object["KeyObject"] = EJSONType_Object;
+			Object["KeyArray"] = EJsonType_Array;
+			Object["KeyObject"] = EJsonType_Object;
 
 			auto &Array = ToReturn["KeyArray"];
 			Array.f_Insert(25);
 			Array.f_Insert(167.6);
 			Array.f_Insert(true);
 			Array.f_Insert(false);
-			Array.f_Insert(EJSONType_Array);
+			Array.f_Insert(EJsonType_Array);
 
 			auto &ArrayObject = Array.f_Insert();
 			ArrayObject["KeyInt"] = 25;
@@ -49,7 +49,7 @@ namespace
 			return fg_Move(ToReturn);
 		}
 		
-		static NStr::CStr fs_GetJSONTextOrdered()
+		static NStr::CStr fs_GetJsonTextOrdered()
 		{
 			return
 				"{\n"
@@ -84,7 +84,7 @@ namespace
 			;
 		}
 
-		static NStr::CStr fs_GetJSONTextSorted()
+		static NStr::CStr fs_GetJsonTextSorted()
 		{
 			return
 				"{\n"
@@ -123,13 +123,13 @@ namespace
 		{
 			DMibTestCategory("Shared Sorted")
 			{
-				TCJSONTests<CJSONSorted> SharedTests
+				TCJsonTests<CJsonSorted> SharedTests
 					(
-						CJSONSorted::fs_FromCompatible(fs_GetJSON())
-						, fs_GetJSONTextSorted()
-						, [](NStr::CStr const &_ToParse, NStr::CStr const &_FileName) -> CJSONSorted
+						CJsonSorted::fs_FromCompatible(fs_GetJson())
+						, fs_GetJsonTextSorted()
+						, [](NStr::CStr const &_ToParse, NStr::CStr const &_FileName) -> CJsonSorted
 						{
-							return CJSONSorted::fs_FromString(_ToParse, _FileName);
+							return CJsonSorted::fs_FromString(_ToParse, _FileName);
 						}
 					)
 				;
@@ -137,22 +137,22 @@ namespace
 			};
 			DMibTestCategory("Shared Ordered")
 			{
-				TCJSONTests<CJSONOrdered> SharedTests
+				TCJsonTests<CJsonOrdered> SharedTests
 					(
-						fs_GetJSON()
-						, fs_GetJSONTextOrdered()
-						, [](NStr::CStr const &_ToParse, NStr::CStr const &_FileName) -> CJSONOrdered
+						fs_GetJson()
+						, fs_GetJsonTextOrdered()
+						, [](NStr::CStr const &_ToParse, NStr::CStr const &_FileName) -> CJsonOrdered
 						{
-							return CJSONOrdered::fs_FromString(_ToParse, _FileName);
+							return CJsonOrdered::fs_FromString(_ToParse, _FileName);
 						}
 					)
 				;
 				SharedTests.f_DoTests();
 			};
 			
-			DMibTestSuite("Initializier list")
+			DMibTestSuite("Shortcuts")
 			{
-				CJSONSorted Value =
+				CJsonSorted Value =
 					{
 						"Key"_j= "Value"
 						, "KeyTrue"_j= true
@@ -168,8 +168,8 @@ namespace
 							, "KeyNull"_j= nullptr
 							, "KeyInt"_j= 25
 							, "KeyFloat"_j= 167.6
-							, "KeyArray"_j= EJSONType_Array
-							, "KeyObject"_j= EJSONType_Object
+							, "KeyArray"_j= EJsonType_Array
+							, "KeyObject"_j= {}
 						}
 						, "KeyArray"_j= _j
 						[
@@ -177,7 +177,7 @@ namespace
 							, 167.6
 							, true
 							, false
-							, EJSONType_Array
+							, EJsonType_Array
 							, _j=
 							{
 								"KeyInt"_j= 25
@@ -187,14 +187,14 @@ namespace
 					}
 				;
 				
-				DMibExpect(Value, ==, CJSONSorted::fs_FromCompatible(fs_GetJSON()));
+				DMibExpect(Value, ==, CJsonSorted::fs_FromCompatible(fs_GetJson()));
 			};
 			DMibTestSuite("Stream")
 			{
-				DMibExpect(NStream::fg_FromByteVector<CJSONSorted>(NStream::fg_ToByteVector(fs_GetJSON())), ==, CJSONSorted::fs_FromCompatible(fs_GetJSON()));
+				DMibExpect(NStream::fg_FromByteVector<CJsonSorted>(NStream::fg_ToByteVector(fs_GetJson())), ==, CJsonSorted::fs_FromCompatible(fs_GetJson()));
 			};
 		}
 	};
 
-	DMibTestRegister(CJSON_Tests, Malterlib::Encoding);
+	DMibTestRegister(CJson_Tests, Malterlib::Encoding);
 }

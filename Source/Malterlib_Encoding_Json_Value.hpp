@@ -3,136 +3,136 @@
 
 #pragma once
 
-#include "Malterlib_Encoding_JSON.h"
+#include "Malterlib_Encoding_Json.h"
 
 namespace NMib::NEncoding
 {
 	template <typename t_CParent>
-	TCJSONValue<t_CParent>::CKey::CKey() = default;
+	TCJsonValue<t_CParent>::CKey::CKey() = default;
 
 	template <typename t_CParent>
-	TCJSONValue<t_CParent>::CKey::CKey(CKey &&_Other) = default;
+	TCJsonValue<t_CParent>::CKey::CKey(CKey &&_Other) = default;
 
 	template <typename t_CParent>
-	TCJSONValue<t_CParent>::TCJSONValue()
+	TCJsonValue<t_CParent>::TCJsonValue()
 	{
 	}
 
 	template <typename t_CParent>
-	TCJSONValue<t_CParent>::TCJSONValue(TCJSONValue const &_Other)
+	TCJsonValue<t_CParent>::TCJsonValue(TCJsonValue const &_Other)
 		: t_CParent(static_cast<t_CParent const &>(_Other))
 	{
 	}
 
 	template <typename t_CParent>
-	TCJSONValue<t_CParent>::TCJSONValue(TCJSONValue &&_Other)
+	TCJsonValue<t_CParent>::TCJsonValue(TCJsonValue &&_Other)
 		: t_CParent(fg_Move(static_cast<t_CParent &>(_Other)))
 	{
 	}
 
 	template <typename t_CParent>
-	TCJSONValue<t_CParent>::TCJSONValue(TCJSONValue const &&_Other)
+	TCJsonValue<t_CParent>::TCJsonValue(TCJsonValue const &&_Other)
 		: t_CParent(static_cast<t_CParent const &>(_Other))
 	{
 	}
 
 	template <typename t_CParent>
 	template <typename tf_CParent>
-	TCJSONValue<t_CParent>::TCJSONValue(TCJSONValue<tf_CParent> const &_Other)
+	TCJsonValue<t_CParent>::TCJsonValue(TCJsonValue<tf_CParent> const &_Other)
 		: t_CParent(static_cast<tf_CParent const &>(_Other))
 	{
 	}
 
 	template <typename t_CParent>
 	template <typename tf_CParent>
-	TCJSONValue<t_CParent>::TCJSONValue(TCJSONValue<tf_CParent> &&_Other)
+	TCJsonValue<t_CParent>::TCJsonValue(TCJsonValue<tf_CParent> &&_Other)
 		: t_CParent(fg_Move(static_cast<tf_CParent &>(_Other)))
 	{
 	}
 
 	template <typename t_CParent>
 	template <typename tf_CParent>
-	TCJSONValue<t_CParent>::TCJSONValue(TCJSONValue<tf_CParent> const &&_Other)
+	TCJsonValue<t_CParent>::TCJsonValue(TCJsonValue<tf_CParent> const &&_Other)
 		: t_CParent(static_cast<tf_CParent const &>(_Other))
 	{
 	}
 
 	template <typename t_CParent>
 	template <typename tf_CParent>
-	auto TCJSONValue<t_CParent>::fs_FromCompatible(TCJSONValue<tf_CParent> const &_Other) -> TCJSONValue
+	auto TCJsonValue<t_CParent>::fs_FromCompatible(TCJsonValue<tf_CParent> const &_Other) -> TCJsonValue
 	{
-		return TCJSONValue(_Other);
+		return TCJsonValue(_Other);
 	}
 
 	template <typename t_CParent>
 	template <typename tf_CParent>
-	auto TCJSONValue<t_CParent>::fs_FromCompatible(TCJSONValue<tf_CParent> &&_Other) -> TCJSONValue
+	auto TCJsonValue<t_CParent>::fs_FromCompatible(TCJsonValue<tf_CParent> &&_Other) -> TCJsonValue
 	{
-		return TCJSONValue(_Other);
+		return TCJsonValue(_Other);
 	}
 
 	template <typename t_CParent>
 	template <typename tf_CParent>
-	auto TCJSONValue<t_CParent>::fs_FromCompatible(TCJSONValue<tf_CParent> const &&_Other) -> TCJSONValue
+	auto TCJsonValue<t_CParent>::fs_FromCompatible(TCJsonValue<tf_CParent> const &&_Other) -> TCJsonValue
 	{
-		return TCJSONValue(_Other);
+		return TCJsonValue(_Other);
 	}
 
 	template <typename t_CParent>
-	TCJSONValue<t_CParent>::TCJSONValue(EJSONType _Type)
+	TCJsonValue<t_CParent>::TCJsonValue(EJsonType _Type)
 	{
 		f_SetType(_Type);
 	}
 
 	template <typename t_CParent>
-	TCJSONValue<t_CParent>::TCJSONValue(ch8 const *_pValue)
+	TCJsonValue<t_CParent>::TCJsonValue(ch8 const *_pValue)
 		: t_CParent(_pValue)
 	{
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator = (ch8 const *_pValue) -> CValue &
+	auto TCJsonValue<t_CParent>::operator = (ch8 const *_pValue) -> CValue &
 	{
 		this->mp_Value = _pValue;
 		return static_cast<CValue &>(*this);
 	}
 
 	template <typename t_CParent>
-	EJSONType TCJSONValue<t_CParent>::f_Type() const
+	EJsonType TCJsonValue<t_CParent>::f_Type() const
 	{
-		return (EJSONType)this->mp_Value.f_GetTypeID();
+		return (EJsonType)this->mp_Value.f_GetTypeID();
 	}
 
 	template <typename t_CParent>
-	void TCJSONValue<t_CParent>::f_SetType(EJSONType _Type)
+	void TCJsonValue<t_CParent>::f_SetType(EJsonType _Type)
 	{
 		if (f_Type() == _Type)
 			return;
 		switch (_Type)
 		{
-		case EJSONType_Invalid:
-			this->mp_Value.template f_Set<EJSONType_Invalid>();
+		case EJsonType_Invalid:
+			this->mp_Value.template f_Set<EJsonType_Invalid>();
 			break;
-		case EJSONType_Null:
-			this->mp_Value.template f_Set<EJSONType_Null>();
+		case EJsonType_Null:
+			this->mp_Value.template f_Set<EJsonType_Null>();
 			break;
-		case EJSONType_String:
-			this->mp_Value.template f_Set<EJSONType_String>();
+		case EJsonType_String:
+			this->mp_Value.template f_Set<EJsonType_String>();
 			break;
-		case EJSONType_Integer:
-			this->mp_Value.template f_Set<EJSONType_Integer>();
+		case EJsonType_Integer:
+			this->mp_Value.template f_Set<EJsonType_Integer>();
 			break;
-		case EJSONType_Float:
-			this->mp_Value.template f_Set<EJSONType_Float>();
+		case EJsonType_Float:
+			this->mp_Value.template f_Set<EJsonType_Float>();
 			break;
-		case EJSONType_Boolean:
-			this->mp_Value.template f_Set<EJSONType_Boolean>();
+		case EJsonType_Boolean:
+			this->mp_Value.template f_Set<EJsonType_Boolean>();
 			break;
-		case EJSONType_Object:
-			this->mp_Value.template f_Set<EJSONType_Object>();
+		case EJsonType_Object:
+			this->mp_Value.template f_Set<EJsonType_Object>();
 			break;
-		case EJSONType_Array:
-			this->mp_Value.template f_Set<EJSONType_Array>();
+		case EJsonType_Array:
+			this->mp_Value.template f_Set<EJsonType_Array>();
 			break;
 		default:
 			DMibNeverGetHere;
@@ -141,150 +141,150 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::f_IsValid() const
+	bool TCJsonValue<t_CParent>::f_IsValid() const
 	{
-		return this->f_Type() != EJSONType_Invalid;
+		return this->f_Type() != EJsonType_Invalid;
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::f_IsNull() const
+	bool TCJsonValue<t_CParent>::f_IsNull() const
 	{
-		return this->f_Type() == EJSONType_Null;
+		return this->f_Type() == EJsonType_Null;
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::f_IsString() const
+	bool TCJsonValue<t_CParent>::f_IsString() const
 	{
-		return this->f_Type() == EJSONType_String;
+		return this->f_Type() == EJsonType_String;
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::f_IsInteger() const
+	bool TCJsonValue<t_CParent>::f_IsInteger() const
 	{
-		return this->f_Type() == EJSONType_Integer;
+		return this->f_Type() == EJsonType_Integer;
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::f_IsFloat() const
+	bool TCJsonValue<t_CParent>::f_IsFloat() const
 	{
-		return this->f_Type() == EJSONType_Float;
+		return this->f_Type() == EJsonType_Float;
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::f_IsBoolean() const
+	bool TCJsonValue<t_CParent>::f_IsBoolean() const
 	{
-		return this->f_Type() == EJSONType_Boolean;
+		return this->f_Type() == EJsonType_Boolean;
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::f_IsObject() const
+	bool TCJsonValue<t_CParent>::f_IsObject() const
 	{
-		return this->f_Type() == EJSONType_Object;
+		return this->f_Type() == EJsonType_Object;
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::f_IsArray() const
+	bool TCJsonValue<t_CParent>::f_IsArray() const
 	{
-		return this->f_Type() == EJSONType_Array;
+		return this->f_Type() == EJsonType_Array;
 	}
 
 	template <typename t_CParent>
-	void TCJSONValue<t_CParent>::fp_PromoteType(EJSONType _Type)
+	void TCJsonValue<t_CParent>::fp_PromoteType(EJsonType _Type)
 	{
-		DMibRequire(this->f_Type() == EJSONType_Invalid || this->f_Type() == _Type);
+		DMibRequire(this->f_Type() == EJsonType_Invalid || this->f_Type() == _Type);
 		if (this->f_Type() == _Type)
 			return;
 		f_SetType(_Type);
 	}
 
 	template <typename t_CParent>
-	void TCJSONValue<t_CParent>::fp_CheckType(EJSONType _Type) const
+	void TCJsonValue<t_CParent>::fp_CheckType(EJsonType _Type) const
 	{
 		using namespace NStr;
 		
 		if (this->f_Type() != _Type)
-			DMibError("Trying to access by wrong type. {} != {}"_f << fg_JSONTypeToString(this->f_Type()) << fg_JSONTypeToString(_Type));
+			DMibError("Trying to access by wrong type. {} != {}"_f << fg_JsonTypeToString(this->f_Type()) << fg_JsonTypeToString(_Type));
 	}
 
 	template <typename t_CParent>
-	NStr::CStr const &TCJSONValue<t_CParent>::f_String() const
+	NStr::CStr const &TCJsonValue<t_CParent>::f_String() const
 	{
-		fp_CheckType(EJSONType_String);
-		return this->mp_Value.template f_Get<EJSONType_String>();
+		fp_CheckType(EJsonType_String);
+		return this->mp_Value.template f_Get<EJsonType_String>();
 	}
 
 	template <typename t_CParent>
-	NStr::CStr &TCJSONValue<t_CParent>::f_String()
+	NStr::CStr &TCJsonValue<t_CParent>::f_String()
 	{
-		fp_PromoteType(EJSONType_String);
-		return this->mp_Value.template f_Get<EJSONType_String>();
+		fp_PromoteType(EJsonType_String);
+		return this->mp_Value.template f_Get<EJsonType_String>();
 	}
 
 	template <typename t_CParent>
-	int64 const &TCJSONValue<t_CParent>::f_Integer() const
+	int64 const &TCJsonValue<t_CParent>::f_Integer() const
 	{
-		fp_CheckType(EJSONType_Integer);
-		return this->mp_Value.template f_Get<EJSONType_Integer>();
+		fp_CheckType(EJsonType_Integer);
+		return this->mp_Value.template f_Get<EJsonType_Integer>();
 	}
 
 	template <typename t_CParent>
-	int64 &TCJSONValue<t_CParent>::f_Integer()
+	int64 &TCJsonValue<t_CParent>::f_Integer()
 	{
-		fp_PromoteType(EJSONType_Integer);
-		return this->mp_Value.template f_Get<EJSONType_Integer>();
+		fp_PromoteType(EJsonType_Integer);
+		return this->mp_Value.template f_Get<EJsonType_Integer>();
 	}
 
 	template <typename t_CParent>
-	fp64 const &TCJSONValue<t_CParent>::f_Float() const
+	fp64 const &TCJsonValue<t_CParent>::f_Float() const
 	{
-		fp_CheckType(EJSONType_Float);
-		return this->mp_Value.template f_Get<EJSONType_Float>();
+		fp_CheckType(EJsonType_Float);
+		return this->mp_Value.template f_Get<EJsonType_Float>();
 	}
 
 	template <typename t_CParent>
-	fp64 &TCJSONValue<t_CParent>::f_Float()
+	fp64 &TCJsonValue<t_CParent>::f_Float()
 	{
-		fp_PromoteType(EJSONType_Float);
-		return this->mp_Value.template f_Get<EJSONType_Float>();
+		fp_PromoteType(EJsonType_Float);
+		return this->mp_Value.template f_Get<EJsonType_Float>();
 	}
 
 	template <typename t_CParent>
-	bool const &TCJSONValue<t_CParent>::f_Boolean() const
+	bool const &TCJsonValue<t_CParent>::f_Boolean() const
 	{
-		fp_CheckType(EJSONType_Boolean);
-		return this->mp_Value.template f_Get<EJSONType_Boolean>();
+		fp_CheckType(EJsonType_Boolean);
+		return this->mp_Value.template f_Get<EJsonType_Boolean>();
 	}
 
 	template <typename t_CParent>
-	bool &TCJSONValue<t_CParent>::f_Boolean()
+	bool &TCJsonValue<t_CParent>::f_Boolean()
 	{
-		fp_PromoteType(EJSONType_Boolean);
-		return this->mp_Value.template f_Get<EJSONType_Boolean>();
+		fp_PromoteType(EJsonType_Boolean);
+		return this->mp_Value.template f_Get<EJsonType_Boolean>();
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::f_Object() const -> CObject const &
+	auto TCJsonValue<t_CParent>::f_Object() const -> CObject const &
 	{
-		fp_CheckType(EJSONType_Object);
-		return this->mp_Value.template f_Get<EJSONType_Object>();
+		fp_CheckType(EJsonType_Object);
+		return this->mp_Value.template f_Get<EJsonType_Object>();
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::f_Object() -> CObject &
+	auto TCJsonValue<t_CParent>::f_Object() -> CObject &
 	{
-		fp_PromoteType(EJSONType_Object);
-		return this->mp_Value.template f_Get<EJSONType_Object>();
+		fp_PromoteType(EJsonType_Object);
+		return this->mp_Value.template f_Get<EJsonType_Object>();
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::f_Array() const -> typename NContainer::TCVector<CValue> const &
+	auto TCJsonValue<t_CParent>::f_Array() const -> typename NContainer::TCVector<CValue> const &
 	{
-		fp_CheckType(EJSONType_Array);
-		return this->mp_Value.template f_Get<EJSONType_Array>();
+		fp_CheckType(EJsonType_Array);
+		return this->mp_Value.template f_Get<EJsonType_Array>();
 	}
 
 	template <typename t_CParent>
-	NContainer::TCVector<NStr::CStr> TCJSONValue<t_CParent>::f_StringArray() const &
+	NContainer::TCVector<NStr::CStr> TCJsonValue<t_CParent>::f_StringArray() const &
 	{
 		auto &SourceArray = f_Array();
 
@@ -298,7 +298,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	NContainer::TCVector<NStr::CStr> TCJSONValue<t_CParent>::f_StringArray() &&
+	NContainer::TCVector<NStr::CStr> TCJsonValue<t_CParent>::f_StringArray() &&
 	{
 		auto &SourceArray = f_Array();
 
@@ -315,7 +315,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::f_IsStringArray() const
+	bool TCJsonValue<t_CParent>::f_IsStringArray() const
 	{
 		if (!f_IsArray())
 			return false;
@@ -330,30 +330,30 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::f_Array() -> typename NContainer::TCVector<CValue> &
+	auto TCJsonValue<t_CParent>::f_Array() -> typename NContainer::TCVector<CValue> &
 	{
-		fp_PromoteType(EJSONType_Array);
-		return this->mp_Value.template f_Get<EJSONType_Array>();
+		fp_PromoteType(EJsonType_Array);
+		return this->mp_Value.template f_Get<EJsonType_Array>();
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCJSONValue<t_CParent>::f_AsString() const
+	NStr::CStr TCJsonValue<t_CParent>::f_AsString() const
 	{
 		switch (f_Type())
 		{
-		case EJSONType_Null:
+		case EJsonType_Null:
 			return "null";
-		case EJSONType_String:
+		case EJsonType_String:
 			return f_String();
-		case EJSONType_Integer:
+		case EJsonType_Integer:
 			return NStr::CStr::fs_ToStr(f_Integer());
-		case EJSONType_Float:
+		case EJsonType_Float:
 			return NStr::CStr::fs_ToStr(f_Float());
-		case EJSONType_Boolean:
+		case EJsonType_Boolean:
 			return f_Boolean() ? "true" : "false";
-		case EJSONType_Object:
+		case EJsonType_Object:
 			return static_cast<CValue const &>(*this).f_ToString();
-		case EJSONType_Array:
+		case EJsonType_Array:
 			return static_cast<CValue const &>(*this).f_ToString();
 		default:
 			DMibError("JSON type cannot be converted to string");
@@ -361,17 +361,17 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	int64 TCJSONValue<t_CParent>::f_AsInteger() const
+	int64 TCJsonValue<t_CParent>::f_AsInteger() const
 	{
 		switch (f_Type())
 		{
-		case EJSONType_String:
+		case EJsonType_String:
 			return f_String().f_ToInt(int64(0));
-		case EJSONType_Integer:
+		case EJsonType_Integer:
 			return f_Integer();
-		case EJSONType_Float:
+		case EJsonType_Float:
 			return f_Float().f_ToIntRound();
-		case EJSONType_Boolean:
+		case EJsonType_Boolean:
 			return f_Boolean() ? 1 : 0;
 		default:
 			DMibError("JSON type cannot be converted to integer");
@@ -379,11 +379,11 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	fp64 TCJSONValue<t_CParent>::f_AsFloat() const
+	fp64 TCJsonValue<t_CParent>::f_AsFloat() const
 	{
 		switch (f_Type())
 		{
-		case EJSONType_String:
+		case EJsonType_String:
 			{
 				auto &String = f_String();
 				if (String == "QNaN")
@@ -401,11 +401,11 @@ namespace NMib::NEncoding
 				else
 					return f_String().f_ToFloat(fp64::fs_SNan());
 			}
-		case EJSONType_Integer:
+		case EJsonType_Integer:
 			return f_Integer();
-		case EJSONType_Float:
+		case EJsonType_Float:
 			return f_Float();
-		case EJSONType_Boolean:
+		case EJsonType_Boolean:
 			return f_Boolean() ? 1.0 : 0.0;
 		default:
 			DMibError("JSON type cannot be converted to float");
@@ -413,20 +413,20 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::f_AsBoolean() const
+	bool TCJsonValue<t_CParent>::f_AsBoolean() const
 	{
 		switch (f_Type())
 		{
-		case EJSONType_String:
+		case EJsonType_String:
 			{
 				auto &String = f_String();
 				return String.f_CmpNoCase("true") == 0 || String.f_ToInt(0) != 0;
 			}
-		case EJSONType_Integer:
+		case EJsonType_Integer:
 			return f_Integer() != 0;
-		case EJSONType_Float:
+		case EJsonType_Float:
 			return f_Float() != 0.0;
-		case EJSONType_Boolean:
+		case EJsonType_Boolean:
 			return f_Boolean();
 		default:
 			DMibError("JSON type cannot be converted to boolean");
@@ -434,23 +434,23 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCJSONValue<t_CParent>::f_AsString(NStr::CStr const &_Default) const
+	NStr::CStr TCJsonValue<t_CParent>::f_AsString(NStr::CStr const &_Default) const
 	{
 		switch (f_Type())
 		{
-		case EJSONType_Null:
+		case EJsonType_Null:
 			return "null";
-		case EJSONType_String:
+		case EJsonType_String:
 			return f_String();
-		case EJSONType_Integer:
+		case EJsonType_Integer:
 			return NStr::CStr::fs_ToStr(f_Integer());
-		case EJSONType_Float:
+		case EJsonType_Float:
 			return NStr::CStr::fs_ToStr(f_Float());
-		case EJSONType_Boolean:
+		case EJsonType_Boolean:
 			return f_Boolean() ? "true" : "false";
-		case EJSONType_Object:
+		case EJsonType_Object:
 			return static_cast<CValue const &>(*this).f_ToString();
-		case EJSONType_Array:
+		case EJsonType_Array:
 			return static_cast<CValue const &>(*this).f_ToString();
 		default:
 			return _Default;
@@ -458,17 +458,17 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	int64 TCJSONValue<t_CParent>::f_AsInteger(int64 _Default) const
+	int64 TCJsonValue<t_CParent>::f_AsInteger(int64 _Default) const
 	{
 		switch (f_Type())
 		{
-		case EJSONType_String:
+		case EJsonType_String:
 			return f_String().f_ToInt(_Default);
-		case EJSONType_Integer:
+		case EJsonType_Integer:
 			return f_Integer();
-		case EJSONType_Float:
+		case EJsonType_Float:
 			return f_Float().f_ToIntRound();
-		case EJSONType_Boolean:
+		case EJsonType_Boolean:
 			return f_Boolean() ? 1 : 0;
 		default:
 			return _Default;
@@ -476,17 +476,17 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	fp64 TCJSONValue<t_CParent>::f_AsFloat(fp64 _Default) const
+	fp64 TCJsonValue<t_CParent>::f_AsFloat(fp64 _Default) const
 	{
 		switch (f_Type())
 		{
-		case EJSONType_String:
+		case EJsonType_String:
 			return f_String().f_ToFloat(_Default);
-		case EJSONType_Integer:
+		case EJsonType_Integer:
 			return f_Integer();
-		case EJSONType_Float:
+		case EJsonType_Float:
 			return f_Float();
-		case EJSONType_Boolean:
+		case EJsonType_Boolean:
 			return f_Boolean() ? 1.0 : 0.0;
 		default:
 			return _Default;
@@ -494,20 +494,20 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::f_AsBoolean(bool _Default) const
+	bool TCJsonValue<t_CParent>::f_AsBoolean(bool _Default) const
 	{
 		switch (f_Type())
 		{
-		case EJSONType_String:
+		case EJsonType_String:
 			{
 				auto &String = f_String();
 				return String.f_CmpNoCase("true") == 0 || String.f_ToInt(0) != 0;
 			}
-		case EJSONType_Integer:
+		case EJsonType_Integer:
 			return f_Integer() != 0;
-		case EJSONType_Float:
+		case EJsonType_Float:
 			return f_Float() != 0.0;
-		case EJSONType_Boolean:
+		case EJsonType_Boolean:
 			return f_Boolean();
 		default:
 			return _Default;
@@ -515,58 +515,58 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator = (TCJSONValue const &_Value) -> CValue &
+	auto TCJsonValue<t_CParent>::operator = (TCJsonValue const &_Value) -> CValue &
 	{
 		this->mp_Value = _Value.mp_Value;
 		return static_cast<CValue &>(*this);
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator = (TCJSONValue &&_Value) -> CValue &
+	auto TCJsonValue<t_CParent>::operator = (TCJsonValue &&_Value) -> CValue &
 	{
 		auto Temp = fg_Move(_Value.mp_Value);
-		_Value.mp_Value.template f_Set<EJSONType_Invalid>();
+		_Value.mp_Value.template f_Set<EJsonType_Invalid>();
 		this->mp_Value = fg_Move(Temp);
 		return static_cast<CValue &>(*this);
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator = (pfp64 _Value) -> CValue &
+	auto TCJsonValue<t_CParent>::operator = (pfp64 _Value) -> CValue &
 	{
 		this->mp_Value = fp64(_Value);
 		return static_cast<CValue &>(*this);
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator = (pfp32 _Value) -> CValue &
+	auto TCJsonValue<t_CParent>::operator = (pfp32 _Value) -> CValue &
 	{
 		this->mp_Value = fp64(_Value);
 		return static_cast<CValue &>(*this);
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator = (fp32 _Value) -> CValue &
+	auto TCJsonValue<t_CParent>::operator = (fp32 _Value) -> CValue &
 	{
 		this->mp_Value = fp64(_Value);
 		return static_cast<CValue &>(*this);
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator = (bool _Value) -> CValue &
+	auto TCJsonValue<t_CParent>::operator = (bool _Value) -> CValue &
 	{
-		this->mp_Value = NPrivate::CJSONBoolean(_Value);
+		this->mp_Value = NPrivate::CJsonBoolean(_Value);
 		return static_cast<CValue &>(*this);
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator = (EJSONType _Type) -> CValue &
+	auto TCJsonValue<t_CParent>::operator = (EJsonType _Type) -> CValue &
 	{
 		this->f_SetType(_Type);
 		return static_cast<CValue &>(*this);
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::f_GetMember(NStr::CStr const &_Name) const -> CValue const *
+	auto TCJsonValue<t_CParent>::f_GetMember(NStr::CStr const &_Name) const -> CValue const *
 	{
 		if (!f_IsObject())
 			return nullptr;
@@ -578,7 +578,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::f_GetMember(NStr::CStr const &_Name) -> CValue *
+	auto TCJsonValue<t_CParent>::f_GetMember(NStr::CStr const &_Name) -> CValue *
 	{
 		if (!f_IsObject())
 			return nullptr;
@@ -590,7 +590,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::f_GetMember(NStr::CStr const &_Name, EJSONType _Type) const -> CValue const *
+	auto TCJsonValue<t_CParent>::f_GetMember(NStr::CStr const &_Name, EJsonType _Type) const -> CValue const *
 	{
 		if (!f_IsObject())
 			return nullptr;
@@ -602,7 +602,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::f_GetMember(NStr::CStr const &_Name, EJSONType _Type) -> CValue *
+	auto TCJsonValue<t_CParent>::f_GetMember(NStr::CStr const &_Name, EJsonType _Type) -> CValue *
 	{
 		if (!f_IsObject())
 			return nullptr;
@@ -614,7 +614,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::f_GetMemberValue(NStr::CStr const &_Name, CValue const &_Default) const -> CValue
+	auto TCJsonValue<t_CParent>::f_GetMemberValue(NStr::CStr const &_Name, CValue const &_Default) const -> CValue
 	{
 		if (!f_IsObject())
 			return _Default;
@@ -623,7 +623,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::f_GetMemberValue(NStr::CStr const &_Name, CValue &&_Default) const -> CValue
+	auto TCJsonValue<t_CParent>::f_GetMemberValue(NStr::CStr const &_Name, CValue &&_Default) const -> CValue
 	{
 		if (!f_IsObject())
 			return _Default;
@@ -632,13 +632,13 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator [](NStr::CStr const &_Name) -> CValue &
+	auto TCJsonValue<t_CParent>::operator [](NStr::CStr const &_Name) -> CValue &
 	{
 		return f_Object().f_CreateMember(_Name);
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator [] (NStr::CStr const &_Name) const -> CValue const &
+	auto TCJsonValue<t_CParent>::operator [] (NStr::CStr const &_Name) const -> CValue const &
 	{
 		if (!f_IsObject())
 			DMibError(fg_Format("Not an object when getting member '{}'", _Name));
@@ -651,7 +651,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator () (NStr::CStr const &_Name) -> CValue &
+	auto TCJsonValue<t_CParent>::operator () (NStr::CStr const &_Name) -> CValue &
 	{
 		if (!f_IsObject())
 			DMibError(fg_Format("Not an object when getting member '{}'", _Name));
@@ -664,13 +664,13 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::f_RemoveMember(NStr::CStr const &_Name)
+	bool TCJsonValue<t_CParent>::f_RemoveMember(NStr::CStr const &_Name)
 	{
 		return f_Object().f_RemoveMember(_Name);
 	}
 
 	template <typename t_CParent>
-	void TCJSONValue<t_CParent>::f_SortObjectsLexicographically()
+	void TCJsonValue<t_CParent>::f_SortObjectsLexicographically()
 	{
 		if (f_IsObject())
 			f_Object().f_SortObjectsLexicographically();
@@ -683,7 +683,7 @@ namespace NMib::NEncoding
 
 	namespace NPrivate
 	{
-		struct CJSONEqualsVisitor
+		struct CJsonEqualsVisitor
 		{
 			template <typename tf_CTypeLeft, typename tf_CTypeRight>
 			bool operator ()(tf_CTypeLeft const &, tf_CTypeRight const &)
@@ -707,13 +707,13 @@ namespace NMib::NEncoding
 				return true;
 			}
 
-			bool operator ()(CJSONNull const &_Left, CJSONNull const &_Right)
+			bool operator ()(CJsonNull const &_Left, CJsonNull const &_Right)
 			{
 				return true;
 			}
 		};
 
-		struct CJSONSpaceshipVisitor
+		struct CJsonSpaceshipVisitor
 		{
 			template <typename tf_CTypeLeft, typename tf_CTypeRight>
 			COrdering_Partial operator ()(tf_CTypeLeft const &, tf_CTypeRight const &)
@@ -726,7 +726,7 @@ namespace NMib::NEncoding
 				return COrdering_Partial::equivalent;
 			}
 
-			COrdering_Partial operator ()(CJSONNull const &_Left, CJSONNull const &_Right)
+			COrdering_Partial operator ()(CJsonNull const &_Left, CJsonNull const &_Right)
 			{
 				return COrdering_Partial::equivalent;
 			}
@@ -745,68 +745,68 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	bool TCJSONValue<t_CParent>::operator == (TCJSONValue const &_Right) const
+	bool TCJsonValue<t_CParent>::operator == (TCJsonValue const &_Right) const
 	{
 		if (this->f_Type() != _Right.f_Type())
 			return false;
-		return fg_VisitRet<bool>(NPrivate::CJSONEqualsVisitor(), this->mp_Value, _Right.mp_Value);
+		return fg_VisitRet<bool>(NPrivate::CJsonEqualsVisitor(), this->mp_Value, _Right.mp_Value);
 	}
 
 	template <typename t_CParent>
-	COrdering_Partial TCJSONValue<t_CParent>::operator <=> (TCJSONValue const &_Right) const
+	COrdering_Partial TCJsonValue<t_CParent>::operator <=> (TCJsonValue const &_Right) const
 	{
 		if (auto Result = this->f_Type() <=> _Right.f_Type(); Result != 0)
 			return Result;
 
-		return fg_VisitRet<COrdering_Partial>(NPrivate::CJSONSpaceshipVisitor(), this->mp_Value, _Right.mp_Value);
+		return fg_VisitRet<COrdering_Partial>(NPrivate::CJsonSpaceshipVisitor(), this->mp_Value, _Right.mp_Value);
 	}
 
 	template <typename t_CParent>
-	mint TCJSONValue<t_CParent>::f_GetLen() const
+	mint TCJsonValue<t_CParent>::f_GetLen() const
 	{
-		fp_CheckType(EJSONType_Array);
+		fp_CheckType(EJsonType_Array);
 		return f_Array().f_GetLen();
 	}
 
 	template <typename t_CParent>
-	void TCJSONValue<t_CParent>::f_SetLen(mint _Len)
+	void TCJsonValue<t_CParent>::f_SetLen(mint _Len)
 	{
 		f_Array().f_SetLen(_Len);
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::f_Insert() -> CValue &
+	auto TCJsonValue<t_CParent>::f_Insert() -> CValue &
 	{
 		return f_Array().f_Insert();
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator [] (mint _Index) const -> CValue const &
+	auto TCJsonValue<t_CParent>::operator [] (mint _Index) const -> CValue const &
 	{
-		fp_CheckType(EJSONType_Array);
+		fp_CheckType(EJsonType_Array);
 		return f_Array()[_Index];
 	}
 
 	template <typename t_CParent>
-	auto TCJSONValue<t_CParent>::operator [] (mint _Index) -> CValue &
+	auto TCJsonValue<t_CParent>::operator [] (mint _Index) -> CValue &
 	{
-		fp_CheckType(EJSONType_Array);
+		fp_CheckType(EJsonType_Array);
 		return f_Array()[_Index];
 	}
 
 	namespace NPrivate
 	{
-		template <typename tf_CJSON>
-		NStr::CStr fg_JSONGenerateColored(tf_CJSON const &_JSON, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJSONDialectFlag _Flags);
+		template <typename tf_CJson>
+		NStr::CStr fg_JsonGenerateColored(tf_CJson const &_Json, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJsonDialectFlag _Flags);
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCJSONValue<t_CParent>::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, EJSONDialectFlag _Flags) const
+	NStr::CStr TCJsonValue<t_CParent>::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags) const
 	{
 		if constexpr (t_CParent::mc_bHasDefaultTypes)
 		{
 			if (_AnsiFlags & NCommandLine::EAnsiEncodingFlag_Color)
-				return NPrivate::fg_JSONGenerateColored(*this, _pPrettySeparator, _AnsiFlags, _Flags);
+				return NPrivate::fg_JsonGenerateColored(*this, _pPrettySeparator, _AnsiFlags, _Flags);
 		}
 
 		return f_ToString(_pPrettySeparator, _Flags);

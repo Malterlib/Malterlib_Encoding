@@ -1,26 +1,26 @@
 
-#include <Mib/Encoding/EJSON>
-#include <Mib/Encoding/JSONShortcuts>
+#include <Mib/Encoding/EJson>
+#include <Mib/Encoding/JsonShortcuts>
 #include <Mib/Test/Exception>
 #include <Mib/Stream/ByteVector>
-#include "Test_Malterlib_Encoding_JSONShared.h"
+#include "Test_Malterlib_Encoding_JsonShared.h"
 
 namespace
 {
 	using namespace NMib;
 	using namespace NMib::NEncoding;
-	class CEJSON_Tests : public NTest::CTest
+	class CEJson_Tests : public NTest::CTest
 	{
 		NStr::CStr mp_TestFilePath;
 	public:
-		CEJSON_Tests()
+		CEJson_Tests()
 		{
-			mp_TestFilePath = NFile::CFile::fs_GetProgramDirectory() + "/TestEJSON.json";
+			mp_TestFilePath = NFile::CFile::fs_GetProgramDirectory() + "/TestEJson.json";
 		}
 
-		static CEJSONOrdered fs_GetEJSON()
+		static CEJsonOrdered fs_GetEJson()
 		{
-			CEJSONOrdered ToReturn(EJSONType_Object);
+			CEJsonOrdered ToReturn(EJsonType_Object);
 
 			ToReturn["Key"] = "Value";
 			ToReturn["KeyTrue"] = true;
@@ -71,15 +71,15 @@ namespace
 			Object["KeyNull"] = nullptr;
 			Object["KeyInt"] = 25;
 			Object["KeyFloat"] = 167.6;
-			Object["KeyArray"] = EJSONType_Array;
-			Object["KeyObject"] = EJSONType_Object;
+			Object["KeyArray"] = EJsonType_Array;
+			Object["KeyObject"] = EJsonType_Object;
 
 			auto &Array = ToReturn["KeyArray"];
 			Array.f_Insert(25);
 			Array.f_Insert(167.6);
 			Array.f_Insert(true);
 			Array.f_Insert(false);
-			Array.f_Insert(EJSONType_Array);
+			Array.f_Insert(EJsonType_Array);
 
 			auto &ArrayObject = Array.f_Insert();
 			ArrayObject["KeyInt"] = 25;
@@ -88,7 +88,7 @@ namespace
 			return fg_Move(ToReturn);
 		}
 		
-		static NStr::CStr fs_GetEJSONTextOrdered()
+		static NStr::CStr fs_GetEJsonTextOrdered()
 		{
 			return
 				"{\n"
@@ -185,7 +185,7 @@ namespace
 			;
 		}
 
-		static NStr::CStr fs_GetEJSONTextSorted()
+		static NStr::CStr fs_GetEJsonTextSorted()
 		{
 			return
 				"{\n"
@@ -290,7 +290,7 @@ namespace
 			NException::CException Exception = fg_Move(DMibErrorInstance(""));
 			try
 			{
-				CEJSONSorted::fs_FromString(_ToParse, mp_TestFilePath);
+				CEJsonSorted::fs_FromString(_ToParse, mp_TestFilePath);
 			}
 			catch (NException::CException const &_Exception)
 			{
@@ -307,23 +307,23 @@ namespace
 			using namespace NMib::NStr;
 			using namespace NMib::NContainer;
 
-			CEJSONSorted Test;
-			CEJSONOrdered Test2(CEJSONOrdered::fs_FromCompatible(Test));
-			CEJSONSorted Test3(CEJSONSorted::fs_FromCompatible(Test2));
+			CEJsonSorted Test;
+			CEJsonOrdered Test2(CEJsonOrdered::fs_FromCompatible(Test));
+			CEJsonSorted Test3(CEJsonSorted::fs_FromCompatible(Test2));
 
-			CJSONSorted Test4;
-			CJSONOrdered Test5(CJSONOrdered::fs_FromCompatible(Test4));
-			CJSONSorted Test6(CJSONSorted::fs_FromCompatible(Test5));
+			CJsonSorted Test4;
+			CJsonOrdered Test5(CJsonOrdered::fs_FromCompatible(Test4));
+			CJsonSorted Test6(CJsonSorted::fs_FromCompatible(Test5));
 
 			DMibTestCategory("Shared Sorted")
 			{
-				TCJSONTests<CEJSONSorted> SharedTests
+				TCJsonTests<CEJsonSorted> SharedTests
 					(
-						CEJSONSorted::fs_FromCompatible(fs_GetEJSON())
-						, fs_GetEJSONTextSorted()
-						, [](NStr::CStr const &_ToParse, NStr::CStr const &_FileName) -> CEJSONSorted
+						CEJsonSorted::fs_FromCompatible(fs_GetEJson())
+						, fs_GetEJsonTextSorted()
+						, [](NStr::CStr const &_ToParse, NStr::CStr const &_FileName) -> CEJsonSorted
 						{
-							return CEJSONSorted::fs_FromString(_ToParse, _FileName);
+							return CEJsonSorted::fs_FromString(_ToParse, _FileName);
 						}
 					)
 				;
@@ -332,13 +332,13 @@ namespace
 
 			DMibTestCategory("Shared Ordered")
 			{
-				TCJSONTests<CEJSONOrdered> SharedTests
+				TCJsonTests<CEJsonOrdered> SharedTests
 					(
-						fs_GetEJSON()
-						, fs_GetEJSONTextOrdered()
-						, [](NStr::CStr const &_ToParse, NStr::CStr const &_FileName) -> CEJSONOrdered
+						fs_GetEJson()
+						, fs_GetEJsonTextOrdered()
+						, [](NStr::CStr const &_ToParse, NStr::CStr const &_FileName) -> CEJsonOrdered
 						{
-							return CEJSONOrdered::fs_FromString(_ToParse, _FileName);
+							return CEJsonOrdered::fs_FromString(_ToParse, _FileName);
 						}
 					)
 				;
@@ -364,9 +364,9 @@ namespace
 					fp_TestParseError("{ \"$binary\": 5 }\n", "Invalid EJSON: $binary value must be a string");
 				}
 			};
-			DMibTestSuite("Initializier list")
+			DMibTestSuite("Shortcuts")
 			{
-				CEJSONSorted Value =
+				CEJsonSorted Value =
 					{
 						"Key"_= "Value"
 						, "KeyTrue"_= true
@@ -437,7 +437,7 @@ namespace
 							, 167.6
 							, true
 							, false
-							, _.mc_EmptyArray
+							, _[]
 							, _=
 							{
 								"KeyInt"_= 25
@@ -447,17 +447,17 @@ namespace
 					}
 				;
 				
-				DMibExpect(Value, ==, CEJSONSorted::fs_FromCompatible(fs_GetEJSON()));
+				DMibExpect(Value, ==, CEJsonSorted::fs_FromCompatible(fs_GetEJson()));
 
 				auto ConstToJson = Value.f_ToJson();
-				DMibExpect(CEJSONSorted::fs_FromJson(ConstToJson), ==, CEJSONSorted::fs_FromCompatible(fs_GetEJSON()));
+				DMibExpect(CEJsonSorted::fs_FromJson(ConstToJson), ==, CEJsonSorted::fs_FromCompatible(fs_GetEJson()));
 
 				auto MoveToJson = fg_Move(Value).f_ToJson();
-				DMibExpect(CEJSONSorted::fs_FromJson(fg_Move(MoveToJson)), ==, CEJSONSorted::fs_FromCompatible(fs_GetEJSON()));
+				DMibExpect(CEJsonSorted::fs_FromJson(fg_Move(MoveToJson)), ==, CEJsonSorted::fs_FromCompatible(fs_GetEJson()));
 			};
 			DMibTestSuite("Stream")
 			{
-				DMibExpect(NStream::fg_FromByteVector<CEJSONSorted>(NStream::fg_ToByteVector(fs_GetEJSON())), ==, CEJSONSorted::fs_FromCompatible(fs_GetEJSON()));
+				DMibExpect(NStream::fg_FromByteVector<CEJsonSorted>(NStream::fg_ToByteVector(fs_GetEJson())), ==, CEJsonSorted::fs_FromCompatible(fs_GetEJson()));
 			};
 			DMibTestSuite("Date")
 			{
@@ -465,10 +465,10 @@ namespace
 					{
 						auto OriginalTime = _Time;
 						OriginalTime = NTime::CTimeConvert::fs_FromUnixMilliseconds(NTime::CTimeConvert(OriginalTime).f_UnixMilliseconds());
-						CEJSONSorted OriginalEJSON;
-						OriginalEJSON = OriginalTime;
-						CEJSONSorted ConvertedEJSON = CEJSONSorted::fs_FromJson(OriginalEJSON.f_ToJson());
-						DMibExpect(ConvertedEJSON.f_Date(), == , OriginalTime);
+						CEJsonSorted OriginalEJson;
+						OriginalEJson = OriginalTime;
+						CEJsonSorted ConvertedEJson = CEJsonSorted::fs_FromJson(OriginalEJson.f_ToJson());
+						DMibExpect(ConvertedEJson.f_Date(), == , OriginalTime);
 					}
 				;
 				{
@@ -488,27 +488,27 @@ namespace
 					fTestTimeConversion(NTime::CTime::fs_Create(constant_int64(237148623722908912), constant_uint64(7627728670263725056)));
 				}
 			};
-			DMibTestSuite("JSONNoConvert")
+			DMibTestSuite("JsonNoConvert")
 			{
-				auto JSON = CJSONSorted::fs_FromString(fs_GetEJSONTextOrdered());
-				auto EnhancedJSON = CEJSONSorted::fs_FromJsonNoConvert(JSON);
-				DMibExpect(EnhancedJSON, !=, CEJSONSorted::fs_FromCompatible(fs_GetEJSON()));
-				auto ToJson = EnhancedJSON.f_ToJsonNoConvert();
-				DMibExpect(ToJson, ==, JSON);
+				auto Json = CJsonSorted::fs_FromString(fs_GetEJsonTextOrdered());
+				auto EnhancedJson = CEJsonSorted::fs_FromJsonNoConvert(Json);
+				DMibExpect(EnhancedJson, !=, CEJsonSorted::fs_FromCompatible(fs_GetEJson()));
+				auto ToJson = EnhancedJson.f_ToJsonNoConvert();
+				DMibExpect(ToJson, ==, Json);
 			};
-			DMibTestSuite("JSONNoConvert Move")
+			DMibTestSuite("JsonNoConvert Move")
 			{
-				auto JSON = CJSONSorted::fs_FromString(fs_GetEJSONTextOrdered());
-				auto OriginalJSON = JSON;
-				auto EnhancedJSON = CEJSONSorted::fs_FromJsonNoConvert(fg_Move(JSON));
-				DMibExpect(EnhancedJSON, !=, CEJSONSorted::fs_FromCompatible(fs_GetEJSON()));
-				auto OriginalEnhancedJSON = EnhancedJSON;
-				auto ToJson = fg_Move(EnhancedJSON).f_ToJsonNoConvert();
-				DMibExpect(EnhancedJSON, !=, OriginalEnhancedJSON);
-				DMibExpect(ToJson, ==, OriginalJSON);
+				auto Json = CJsonSorted::fs_FromString(fs_GetEJsonTextOrdered());
+				auto OriginalJson = Json;
+				auto EnhancedJson = CEJsonSorted::fs_FromJsonNoConvert(fg_Move(Json));
+				DMibExpect(EnhancedJson, !=, CEJsonSorted::fs_FromCompatible(fs_GetEJson()));
+				auto OriginalEnhancedJson = EnhancedJson;
+				auto ToJson = fg_Move(EnhancedJson).f_ToJsonNoConvert();
+				DMibExpect(EnhancedJson, !=, OriginalEnhancedJson);
+				DMibExpect(ToJson, ==, OriginalJson);
 			};
 		}
 	};
 
-	DMibTestRegister(CEJSON_Tests, Malterlib::Encoding);
+	DMibTestRegister(CEJson_Tests, Malterlib::Encoding);
 }

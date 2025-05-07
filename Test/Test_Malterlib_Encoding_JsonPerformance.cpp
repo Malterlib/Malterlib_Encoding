@@ -4,15 +4,15 @@
 #ifdef DMalterlibEnableThirdPartyComparisonTests
 #define RAPIDJSON_USE_MEMBERSMAP 1
 
-#include <Mib/Encoding/JSON>
-#include <Mib/Encoding/JSONImpl>
-#include <Mib/Encoding/EJSON>
-#include <Mib/Encoding/EJSONImpl>
-#include <Mib/Encoding/EJSONParse>
-#include <Mib/Encoding/EJSONGenerate>
-#include <Mib/Encoding/JSONParse>
-#include <Mib/Encoding/JSONParse>
-#include <Mib/Encoding/JSONGenerate>
+#include <Mib/Encoding/Json>
+#include <Mib/Encoding/JsonImpl>
+#include <Mib/Encoding/EJson>
+#include <Mib/Encoding/EJsonImpl>
+#include <Mib/Encoding/EJsonParse>
+#include <Mib/Encoding/EJsonGenerate>
+#include <Mib/Encoding/JsonParse>
+#include <Mib/Encoding/JsonParse>
+#include <Mib/Encoding/JsonGenerate>
 #include <Mib/Test/Exception>
 #include <Mib/Stream/ByteVector>
 #include <Mib/Test/Performance>
@@ -91,7 +91,7 @@ namespace
 	using namespace NMib::NEncoding;
 	using namespace NMib::NStr;
 
-	class CJSONPerformance_Tests : public NTest::CTest
+	class CJsonPerformance_Tests : public NTest::CTest
 	{
 	public:
 
@@ -105,7 +105,7 @@ namespace
 
 		CStr fp_GenerateTestData(bool _bFloat, CCoordinate &o_Average)
 		{
-			CJSONSorted Data;
+			CJsonSorted Data;
 			auto &OutArray = Data["coordinates"].f_Array();
 			for (mint i = 0; i < mc_TestDataLength; ++i)
 			{
@@ -140,23 +140,23 @@ namespace
 				o_Average = SumCoordinate / OutArray.f_GetLen();
 			}
 
-			return Data.f_ToString("\t", EJSONDialectFlag_HighPrecisionFloat);
+			return Data.f_ToString("\t", EJsonDialectFlag_HighPrecisionFloat);
 		}
 
-		void fp_TestGenerate(CStr const &_Description, NFunction::TCFunction<CStr ()> const &_GenerateJSON, bool _bFloat)
+		void fp_TestGenerate(CStr const &_Description, NFunction::TCFunction<CStr ()> const &_GenerateJson, bool _bFloat)
 		{
 			DMibTestSuite(CTestCategory(_Description) << CTestGroup("Performance"))
 			{
 				CTestPerformance PerfTotal(0.75, false);
 
-				auto JSONString = _GenerateJSON();
+				auto JsonString = _GenerateJson();
 
 				mint nIterations = 11;
 
 				mint RapidJsonLen = 0;
 				{
 					rapidjson::Document Document;
-					Document.Parse<rapidjson::kParseFullPrecisionFlag>(JSONString.f_GetStr());
+					Document.Parse<rapidjson::kParseFullPrecisionFlag>(JsonString.f_GetStr());
 
 					CTestPerformanceMeasure Measure("RapidJson");
 					for (mint i = 0; i < nIterations; ++i)
@@ -180,8 +180,8 @@ namespace
 				}
 				mint NlohmannJsonLen = 0;
 				{
-					auto const JSONStringView = std::string_view(JSONString.f_GetStr(), JSONString.f_GetLen());
-					auto Document = nlohmann::json::parse(JSONStringView);
+					auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
+					auto Document = nlohmann::json::parse(JsonStringView);
 
 					CTestPerformanceMeasure Measure("NlohmannJson");
 					for (mint i = 0; i < nIterations; ++i)
@@ -200,7 +200,7 @@ namespace
 				}
 				mint MalterlibLen = 0;
 				{
-					auto const Document = NEncoding::CJSONSorted::fs_FromString(JSONString);
+					auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("Malterlib");
 					for (mint i = 0; i < nIterations; ++i)
@@ -217,18 +217,18 @@ namespace
 					}
 					PerfTotal.f_Add(Measure);
 				}
-				mint MalterlibEJSONLen = 0;
+				mint MalterlibEJsonLen = 0;
 				{
-					auto const Document = NEncoding::CEJSONSorted::fs_FromString(JSONString);
+					auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
 
-					CTestPerformanceMeasure Measure("MalterlibEJSON");
+					CTestPerformanceMeasure Measure("MalterlibEJson");
 					for (mint i = 0; i < nIterations; ++i)
 					{
 						Measure.f_Start();
 						[&]() inline_never
 							{
 								auto String = Document.f_ToString(nullptr);
-								MalterlibEJSONLen = String.f_GetLen();
+								MalterlibEJsonLen = String.f_GetLen();
 							}
 							()
 						;
@@ -246,7 +246,7 @@ namespace
 				DMibExpectTrue(PerfTotal);
 				DMibExpect(fDiff(RapidJsonLen, NlohmannJsonLen), <, 0.04);
 				DMibExpect(fDiff(MalterlibLen, NlohmannJsonLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibEJSONLen, NlohmannJsonLen), <, 0.04);
+				DMibExpect(fDiff(MalterlibEJsonLen, NlohmannJsonLen), <, 0.04);
 			};
 		}
 
@@ -258,7 +258,7 @@ namespace
 				CTestPerformance PerfTotal(0.75, false);
 
 				CCoordinate ExpectedAverage;
-				auto JSONString = fp_GenerateTestData(true, ExpectedAverage);
+				auto JsonString = fp_GenerateTestData(true, ExpectedAverage);
 
 				mint nIterations = 11;
 
@@ -271,7 +271,7 @@ namespace
 						RapidJsonResult = [&]() inline_never -> CCoordinate
 							{
 								rapidjson::Document Document;
-								Document.Parse<rapidjson::kParseFullPrecisionFlag>(JSONString.f_GetStr());
+								Document.Parse<rapidjson::kParseFullPrecisionFlag>(JsonString.f_GetStr());
 
 								if constexpr (tf_bDoCalculation)
 								{
@@ -307,7 +307,7 @@ namespace
 						RapidJsonInaccurateResult = [&]() inline_never -> CCoordinate
 							{
 								rapidjson::Document Document;
-								Document.Parse(JSONString.f_GetStr());
+								Document.Parse(JsonString.f_GetStr());
 
 								if constexpr (tf_bDoCalculation)
 								{
@@ -339,17 +339,17 @@ namespace
 					CTestPerformanceMeasure Measure("DawJsonLink");
 					for (mint i = 0; i < nIterations; ++i)
 					{
-						auto const JSONStringView = std::string_view(JSONString.f_GetStr(), JSONString.f_GetLen());
+						auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
 
 						using range_t = daw::json::json_array_range<CCoordinate>;
-
+						
 						Measure.f_Start();
 						DawJsonLinkResult = [&]() inline_never -> CCoordinate
 							{
 								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 								auto Length = 0;
 
-								auto Coordinates = range_t(JSONStringView, "coordinates");
+								auto Coordinates = range_t(JsonStringView, "coordinates");
 
 								for (auto Coordinate : Coordinates)
 								{
@@ -372,12 +372,12 @@ namespace
 					CTestPerformanceMeasure Measure("NlohmannJson");
 					for (mint i = 0; i < nIterations; ++i)
 					{
-						auto const JSONStringView = std::string_view(JSONString.f_GetStr(), JSONString.f_GetLen());
+						auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
 
 						Measure.f_Start();
 						NlohmannJsonResult = [&]() inline_never -> CCoordinate
 							{
-								auto Document = nlohmann::json::parse(JSONStringView);
+								auto Document = nlohmann::json::parse(JsonStringView);
 
 								if constexpr (tf_bDoCalculation)
 								{
@@ -411,7 +411,7 @@ namespace
 						Measure.f_Start();
 						MalterlibResult = [&]() inline_never -> CCoordinate
 							{
-								auto const Document = NEncoding::CJSONSorted::fs_FromString(JSONString);
+								auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
 
 								if constexpr (tf_bDoCalculation)
 								{
@@ -438,15 +438,15 @@ namespace
 					}
 					PerfTotal.f_Add(Measure);
 				}
-				CCoordinate MalterlibEJSONResult;
+				CCoordinate MalterlibEJsonResult;
 				{
-					CTestPerformanceMeasure Measure("MalterlibEJSON");
+					CTestPerformanceMeasure Measure("MalterlibEJson");
 					for (mint i = 0; i < nIterations; ++i)
 					{
 						Measure.f_Start();
-						MalterlibEJSONResult = [&]() inline_never -> CCoordinate
+						MalterlibEJsonResult = [&]() inline_never -> CCoordinate
 							{
-								auto const Document = NEncoding::CEJSONSorted::fs_FromString(JSONString);
+								auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
 
 								if constexpr (tf_bDoCalculation)
 								{
@@ -482,7 +482,7 @@ namespace
 					DMibExpect(RapidJsonInaccurateResult, ==, ExpectedAverage);
 					DMibExpect(DawJsonLinkResult, ==, ExpectedAverage);
 					DMibExpect(MalterlibResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibEJSONResult, ==, ExpectedAverage);
+					DMibExpect(MalterlibEJsonResult, ==, ExpectedAverage);
 				}
 			};
 		}
@@ -516,7 +516,7 @@ namespace
 		}
 	};
 
-	DMibTestRegister(CJSONPerformance_Tests, Malterlib::Encoding);
+	DMibTestRegister(CJsonPerformance_Tests, Malterlib::Encoding);
 }
 
 #endif

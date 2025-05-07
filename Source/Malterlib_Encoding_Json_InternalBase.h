@@ -3,26 +3,26 @@
 
 #pragma once
 
-#include "Malterlib_Encoding_JSON.h"
+#include "Malterlib_Encoding_Json.h"
 
 namespace NMib::NEncoding
 {
-	template <typename t_CJSONValue, bool t_bOrdered>
-	struct TCJSONObject;
+	template <typename t_CJsonValue, bool t_bOrdered>
+	struct TCJsonObject;
 
 	template <typename t_CParent>
-	struct TCJSONValue;
+	struct TCJsonValue;
 
 	template <typename t_CParent>
-	struct TCEJSONValue;
+	struct TCEJsonValue;
 }
 
 namespace NMib::NEncoding::NPrivate
 {
 	struct CObjectEntryBase
 	{
-		template <typename t_CJSONValue, bool t_bOrdered>
-		friend struct NEncoding::TCJSONObject;
+		template <typename t_CJsonValue, bool t_bOrdered>
+		friend struct NEncoding::TCJsonObject;
 
 	protected:
 
@@ -43,11 +43,11 @@ namespace NMib::NEncoding::NPrivate
 		};
 	};
 
-	template <typename t_CJSONValue, bool t_bOrdered>
+	template <typename t_CJsonValue, bool t_bOrdered>
 	struct TCObjectEntry : public TCChooseType<t_bOrdered, CObjectEntryBase, CEmpty>::CType
 	{
-		template <typename t_CJSONValue2, bool t_bOrdered2>
-		friend struct NEncoding::TCJSONObject;
+		template <typename t_CJsonValue2, bool t_bOrdered2>
+		friend struct NEncoding::TCJsonObject;
 
 	public:
 		TCObjectEntry();
@@ -57,8 +57,8 @@ namespace NMib::NEncoding::NPrivate
 		COrdering_Partial operator <=> (TCObjectEntry const &_Right) const;
 
 		NStr::CStr const &f_Name() const;
-		t_CJSONValue &f_Value();
-		t_CJSONValue const &f_Value() const;
+		t_CJsonValue &f_Value();
+		t_CJsonValue const &f_Value() const;
 
 		template <typename tf_CStream>
 		void f_Feed(tf_CStream &_Stream) const;
@@ -66,29 +66,29 @@ namespace NMib::NEncoding::NPrivate
 		void f_Consume(tf_CStream &_Stream);
 
 	protected:
-		t_CJSONValue mp_Value;
+		t_CJsonValue mp_Value;
 	};
 
 	template <typename t_CType>
-	struct TCIsTCJSONValue
+	struct TCIsTCJsonValue
 	{
 		constexpr static bool mc_Value = false;
 	};
 
 	template <typename t_CParent>
-	struct TCIsTCJSONValue<TCJSONValue<t_CParent>>
+	struct TCIsTCJsonValue<TCJsonValue<t_CParent>>
 	{
 		constexpr static bool mc_Value = true;
 	};
 
 	template <typename t_CType>
-	struct TCIsTCEJSONValue
+	struct TCIsTCEJsonValue
 	{
 		constexpr static bool mc_Value = false;
 	};
 
 	template <typename t_CParent>
-	struct TCIsTCEJSONValue<TCEJSONValue<t_CParent>>
+	struct TCIsTCEJsonValue<TCEJsonValue<t_CParent>>
 	{
 		constexpr static bool mc_Value = true;
 	};

@@ -1,7 +1,7 @@
 // Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-#include "Malterlib_Encoding_SimpleJSONDatabase.h"
+#include "Malterlib_Encoding_SimpleJsonDatabase.h"
 #include <Mib/Concurrency/ConcurrencyManager>
 #include <Mib/Concurrency/LogError>
 #include <Mib/Cryptography/RandomID>
@@ -10,44 +10,44 @@ namespace NMib::NEncoding
 {
 	namespace
 	{
-		constexpr EJSONDialectFlag gc_JsonDialectFlags = EJSONDialectFlag_AllowUndefined | EJSONDialectFlag_AllowInvalidFloat;
+		constexpr EJsonDialectFlag gc_JsonDialectFlags = EJsonDialectFlag_AllowUndefined | EJsonDialectFlag_AllowInvalidFloat;
 	}
 
-	CSimpleJSONDatabase::CSimpleJSONDatabase(NStr::CStr const &_FileName)
+	CSimpleJsonDatabase::CSimpleJsonDatabase(NStr::CStr const &_FileName)
 		: mp_FileName(_FileName)
 	{
 	}
 
-	CSimpleJSONDatabase::~CSimpleJSONDatabase()
+	CSimpleJsonDatabase::~CSimpleJsonDatabase()
 	{
 		*mp_pWasDeleted = true;
 	}
 
-	NConcurrency::TCUnsafeFuture<void> CSimpleJSONDatabase::f_Destroy() &&
+	NConcurrency::TCUnsafeFuture<void> CSimpleJsonDatabase::f_Destroy() &&
 	{
 		auto WriteSequencer = fg_Move(mp_WriteSequencer);
 
-		co_await fg_Move(WriteSequencer).f_Destroy().f_Wrap() > NConcurrency::fg_LogError("SimpleJSONDatabase", "Failed to destroy sequencer");
+		co_await fg_Move(WriteSequencer).f_Destroy().f_Wrap() > NConcurrency::fg_LogError("SimpleJsonDatabase", "Failed to destroy sequencer");
 
 		co_return {};
 	}
 
-	NStr::CStr const &CSimpleJSONDatabase::f_GetFileName() const
+	NStr::CStr const &CSimpleJsonDatabase::f_GetFileName() const
 	{
 		return mp_FileName;
 	}
 
-	NConcurrency::TCUnsafeFuture<void> CSimpleJSONDatabase::f_Load()
+	NConcurrency::TCUnsafeFuture<void> CSimpleJsonDatabase::f_Load()
 	{
 		auto pWasDeleted = mp_pWasDeleted;
 		auto BlockingActorCheckout = NConcurrency::fg_BlockingActor();
 		auto Data = co_await
 			(
-				NConcurrency::g_Dispatch(BlockingActorCheckout) / [FileName = mp_FileName]() -> CEJSONSorted
+				NConcurrency::g_Dispatch(BlockingActorCheckout) / [FileName = mp_FileName]() -> CEJsonSorted
 				{
 					if (!NFile::CFile::fs_FileExists(FileName))
-						return CEJSONSorted();
-					return CEJSONSorted::fs_FromString(NFile::CFile::fs_ReadStringFromFile(FileName, true), FileName, false, gc_JsonDialectFlags);
+						return CEJsonSorted();
+					return CEJsonSorted::fs_FromString(NFile::CFile::fs_ReadStringFromFile(FileName, true), FileName, false, gc_JsonDialectFlags);
 				}
 			)
 		;
@@ -60,7 +60,7 @@ namespace NMib::NEncoding
 		co_return {};
 	}
 
-	NConcurrency::TCUnsafeFuture<void> CSimpleJSONDatabase::f_Save()
+	NConcurrency::TCUnsafeFuture<void> CSimpleJsonDatabase::f_Save()
 	{
 		using namespace NFile;
 		using namespace NStr;

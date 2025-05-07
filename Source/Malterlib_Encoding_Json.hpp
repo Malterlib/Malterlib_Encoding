@@ -3,44 +3,44 @@
 
 #pragma once
 
-#include "Malterlib_Encoding_JSON.h"
+#include "Malterlib_Encoding_Json.h"
 
 namespace NMib::NEncoding
 {
 	namespace NPrivate
 	{
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
-		TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJSONValueBase(TCJSONValueBase const &_Value)
+		TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJsonValueBase(TCJsonValueBase const &_Value)
 			: mp_Value(_Value.mp_Value)
 		{
 		}
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
-		TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJSONValueBase(TCJSONValueBase &_Value)
+		TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJsonValueBase(TCJsonValueBase &_Value)
 			: mp_Value(_Value.mp_Value)
 		{
 		}
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
-		TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJSONValueBase(TCJSONValueBase &&_Value)
+		TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJsonValueBase(TCJsonValueBase &&_Value)
 			: mp_Value(fg_Move(_Value.mp_Value))
 		{
-			_Value.mp_Value.template f_Set<EJSONType_Invalid>();
+			_Value.mp_Value.template f_Set<EJsonType_Invalid>();
 		}
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
 		template <template <typename t_CParent> class tf_TCValue, typename tf_CTypes, bool tf_bOrdered>
-		TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJSONValueBase(TCJSONValueBase<tf_TCValue, tf_CTypes, tf_bOrdered> const &_Value)
+		TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJsonValueBase(TCJsonValueBase<tf_TCValue, tf_CTypes, tf_bOrdered> const &_Value)
 		{
 			_Value.mp_Value.f_Visit
 				(
 					[&](auto &&_Value)
 					{
 						if constexpr (NTraits::TCIsSame<typename NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>::CType, CVoidTag>::mc_Value)
-							mp_Value.template f_Set<EJSONType_Invalid>();
+							mp_Value.template f_Set<EJsonType_Invalid>();
 						else if constexpr (NContainer::NPrivate::TCIsVector<typename NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>::CType>::mc_bValue)
 						{
-							auto &OutArray = mp_Value.template f_Set<EJSONType_Array>();
+							auto &OutArray = mp_Value.template f_Set<EJsonType_Array>();
 							for (auto &Value : _Value)
 								OutArray.f_Insert(CValue(Value));
 						}
@@ -53,17 +53,17 @@ namespace NMib::NEncoding
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
 		template <template <typename t_CParent> class tf_TCValue, typename tf_CTypes, bool tf_bOrdered>
-		TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJSONValueBase(TCJSONValueBase<tf_TCValue, tf_CTypes, tf_bOrdered> &_Value)
+		TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJsonValueBase(TCJsonValueBase<tf_TCValue, tf_CTypes, tf_bOrdered> &_Value)
 		{
 			_Value.mp_Value.f_Visit
 				(
 					[&](auto &&_Value)
 					{
 						if constexpr (NTraits::TCIsSame<typename NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>::CType, CVoidTag>::mc_Value)
-							mp_Value.template f_Set<EJSONType_Invalid>();
+							mp_Value.template f_Set<EJsonType_Invalid>();
 						else if constexpr (NContainer::NPrivate::TCIsVector<typename NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>::CType>::mc_bValue)
 						{
-							auto &OutArray = mp_Value.template f_Set<EJSONType_Array>();
+							auto &OutArray = mp_Value.template f_Set<EJsonType_Array>();
 							for (auto &Value : _Value)
 								OutArray.f_Insert(CValue(Value));
 						}
@@ -76,17 +76,17 @@ namespace NMib::NEncoding
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
 		template <template <typename t_CParent> class tf_TCValue, typename tf_CTypes, bool tf_bOrdered>
-		TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJSONValueBase(TCJSONValueBase<tf_TCValue, tf_CTypes, tf_bOrdered> &&_Value)
+		TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJsonValueBase(TCJsonValueBase<tf_TCValue, tf_CTypes, tf_bOrdered> &&_Value)
 		{
 			_Value.mp_Value.f_Visit
 				(
 					[&](auto &&_Value)
 					{
 						if constexpr (NTraits::TCIsSame<typename NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>::CType, CVoidTag>::mc_Value)
-							mp_Value.template f_Set<EJSONType_Invalid>();
+							mp_Value.template f_Set<EJsonType_Invalid>();
 						else if constexpr (NContainer::NPrivate::TCIsVector<typename NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>::CType>::mc_bValue)
 						{
-							auto &OutArray = mp_Value.template f_Set<EJSONType_Array>();
+							auto &OutArray = mp_Value.template f_Set<EJsonType_Array>();
 							for (auto &Value : _Value)
 								OutArray.f_Insert(CValue(fg_Move(Value)));
 						}
@@ -95,51 +95,51 @@ namespace NMib::NEncoding
 					}
 				)
 			;
-			_Value.mp_Value.template f_Set<EJSONType_Invalid>();
+			_Value.mp_Value.template f_Set<EJsonType_Invalid>();
 		}
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
-		TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJSONValueBase(bool _Value)
-			: mp_Value(CJSONBoolean(_Value))
+		TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJsonValueBase(bool _Value)
+			: mp_Value(CJsonBoolean(_Value))
 		{
 		}
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
-		TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJSONValueBase(pfp64 _Value)
+		TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJsonValueBase(pfp64 _Value)
 			: mp_Value(fp64(_Value))
 		{
 		}
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
-		TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJSONValueBase(pfp32 _Value)
+		TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJsonValueBase(pfp32 _Value)
 			: mp_Value(fp64(_Value))
 		{
 		}
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
-		TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJSONValueBase(fp32 _Value)
+		TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJsonValueBase(fp32 _Value)
 			: mp_Value(fp64(_Value))
 		{
 		}
 
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
-		TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJSONValueBase()
+		TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJsonValueBase()
 		{
 		}
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
-		TCJSONValueBase<t_TCValue, t_CTypes, t_bOrdered>::~TCJSONValueBase()
+		TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::~TCJsonValueBase()
 		{
 		}
 
-		template <typename t_CJSONValue, bool t_bOrdered>
-		TCObjectEntry<t_CJSONValue, t_bOrdered>::TCObjectEntry()
+		template <typename t_CJsonValue, bool t_bOrdered>
+		TCObjectEntry<t_CJsonValue, t_bOrdered>::TCObjectEntry()
 		{
 		}
 
-		template <typename t_CJSONValue, bool t_bOrdered>
-		NStr::CStr const &TCObjectEntry<t_CJSONValue, t_bOrdered>::f_Name() const
+		template <typename t_CJsonValue, bool t_bOrdered>
+		NStr::CStr const &TCObjectEntry<t_CJsonValue, t_bOrdered>::f_Name() const
 		{
 			if constexpr (t_bOrdered)
 				return this->mp_Name;
@@ -147,28 +147,28 @@ namespace NMib::NEncoding
 				return NContainer::TCMap<NStr::CStr, TCObjectEntry>::fs_GetKey(*this);
 		}
 
-		template <typename t_CJSONValue, bool t_bOrdered>
-		t_CJSONValue &TCObjectEntry<t_CJSONValue, t_bOrdered>::f_Value()
+		template <typename t_CJsonValue, bool t_bOrdered>
+		t_CJsonValue &TCObjectEntry<t_CJsonValue, t_bOrdered>::f_Value()
 		{
 			return mp_Value;
 		}
 
-		template <typename t_CJSONValue, bool t_bOrdered>
-		t_CJSONValue const &TCObjectEntry<t_CJSONValue, t_bOrdered>::f_Value() const
+		template <typename t_CJsonValue, bool t_bOrdered>
+		t_CJsonValue const &TCObjectEntry<t_CJsonValue, t_bOrdered>::f_Value() const
 		{
 			return mp_Value;
 		}
 
-		template <typename t_CJSONValue, bool t_bOrdered>
-		bool TCObjectEntry<t_CJSONValue, t_bOrdered>::operator == (TCObjectEntry const &_Right) const
+		template <typename t_CJsonValue, bool t_bOrdered>
+		bool TCObjectEntry<t_CJsonValue, t_bOrdered>::operator == (TCObjectEntry const &_Right) const
 		{
 			if (f_Name() != _Right.f_Name())
 				return false;
 			return mp_Value == _Right.mp_Value;
 		}
 
-		template <typename t_CJSONValue, bool t_bOrdered>
-		COrdering_Partial TCObjectEntry<t_CJSONValue, t_bOrdered>::operator <=> (TCObjectEntry const &_Right) const
+		template <typename t_CJsonValue, bool t_bOrdered>
+		COrdering_Partial TCObjectEntry<t_CJsonValue, t_bOrdered>::operator <=> (TCObjectEntry const &_Right) const
 		{
 			if (auto Result = f_Name() <=> _Right.f_Name(); Result != 0)
 				return Result;
@@ -178,5 +178,5 @@ namespace NMib::NEncoding
 	}
 }
 
-#include "Malterlib_Encoding_JSON_Value.hpp"
-#include "Malterlib_Encoding_JSON_Object.hpp"
+#include "Malterlib_Encoding_Json_Value.hpp"
+#include "Malterlib_Encoding_Json_Object.hpp"
