@@ -20,9 +20,19 @@ namespace NMib::NEncoding
 
 		typename tf_CJson::CKey operator () (NStr::CStr const &_Key) const;
 
-		tf_CJson operator = (tf_CJson _Convert) const
+		tf_CJson const &operator = (tf_CJson const &_Convert) const
 		{
 			return _Convert;
+		}
+
+		tf_CJson &&operator = (tf_CJson &&_Convert) const
+		{
+			return fg_Move(_Convert);
+		}
+
+		tf_CJson operator = (std::initializer_list<CVoidTag> const &_Initializer) const
+		{
+			return EJsonType_Object;
 		}
 
 		template <typename ...tfp_CValue>

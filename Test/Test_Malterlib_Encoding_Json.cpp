@@ -168,7 +168,7 @@ namespace
 							, "KeyNull"_j= nullptr
 							, "KeyInt"_j= 25
 							, "KeyFloat"_j= 167.6
-							, "KeyArray"_j= EJsonType_Array
+							, "KeyArray"_j= _j[]
 							, "KeyObject"_j= {}
 						}
 						, "KeyArray"_j= _j
@@ -188,6 +188,9 @@ namespace
 				;
 				
 				DMibExpect(Value, ==, CJsonSorted::fs_FromCompatible(fs_GetJson()));
+
+				DMibExpectTrue((_j= {}).f_IsObject());
+				DMibExpectFalse((CJsonSorted{}).f_IsValid());
 			};
 			DMibTestSuite("Stream")
 			{

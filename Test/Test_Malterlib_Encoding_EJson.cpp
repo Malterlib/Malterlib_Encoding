@@ -454,6 +454,9 @@ namespace
 
 				auto MoveToJson = fg_Move(Value).f_ToJson();
 				DMibExpect(CEJsonSorted::fs_FromJson(fg_Move(MoveToJson)), ==, CEJsonSorted::fs_FromCompatible(fs_GetEJson()));
+
+				DMibExpectTrue((_= {}).f_IsObject());
+				DMibExpectFalse((CEJsonSorted{}).f_IsValid());
 			};
 			DMibTestSuite("Stream")
 			{
