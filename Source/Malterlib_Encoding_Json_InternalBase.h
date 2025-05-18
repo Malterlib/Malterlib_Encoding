@@ -44,7 +44,7 @@ namespace NMib::NEncoding::NPrivate
 	};
 
 	template <typename t_CJsonValue, bool t_bOrdered>
-	struct TCObjectEntry : public TCChooseType<t_bOrdered, CObjectEntryBase, CEmpty>::CType
+	struct TCObjectEntry : public TCConditional<t_bOrdered, CObjectEntryBase, CEmpty>
 	{
 		template <typename t_CJsonValue2, bool t_bOrdered2>
 		friend struct NEncoding::TCJsonObject;

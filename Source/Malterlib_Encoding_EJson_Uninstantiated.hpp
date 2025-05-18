@@ -13,9 +13,9 @@ namespace NMib::NEncoding
 	TCEJsonValue<t_CParent>::TCEJsonValue(tf_CType &&_Type)
 		requires
 		(
-			NTraits::cConstructibleWith<TCJsonValue<t_CParent>, tf_CType &&>
-			&& !NPrivate::TCIsTCJsonValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
-			&& !NPrivate::TCIsTCEJsonValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
+			NTraits::cIsPlacementNewConstructibleWith<TCJsonValue<t_CParent>, tf_CType &&>
+			&& !NPrivate::TCIsTCJsonValue<NTraits::TCRemoveReferenceAndQualifiers<tf_CType>>::mc_Value
+			&& !NPrivate::TCIsTCEJsonValue<NTraits::TCRemoveReferenceAndQualifiers<tf_CType>>::mc_Value
 		)
 		: TCJsonValue<t_CParent>(fg_Forward<tf_CType>(_Type))
 	{
@@ -25,7 +25,7 @@ namespace NMib::NEncoding
 	template <typename t_CParent>
 	template <typename ...tfp_CValues>
 	TCEJsonValue<t_CParent>::TCEJsonValue(tfp_CValues && ...p_Values)
-		requires ((NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiersType<tfp_CValues>, CKeyValue> && (sizeof...(p_Values) > 0)) && ...)
+		requires ((NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiers<tfp_CValues>, CKeyValue> && (sizeof...(p_Values) > 0)) && ...)
 		: TCJsonValue<t_CParent>(fg_Forward<tfp_CValues>(p_Values)...)
 	{
 	}

@@ -403,7 +403,7 @@ namespace NMib::NEncoding::NJson
 			}
 			else
 			{
-				if constexpr (!NTraits::TCIsSame<typename NTraits::TCRemoveReference<tf_FExtraParse>::CType, bool>::mc_Value)
+				if constexpr (!NTraits::cIsSame<NTraits::TCRemoveReference<tf_FExtraParse>, bool>)
 				{
 					auto Committed = StringAppender.f_Commit();
 					if (_fExtraParse(pParse))

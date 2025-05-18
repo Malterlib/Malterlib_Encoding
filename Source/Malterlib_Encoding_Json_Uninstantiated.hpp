@@ -13,9 +13,9 @@ namespace NMib::NEncoding
 	TCJsonValue<t_CParent>::TCJsonValue(tf_CType &&_Type)
 		requires
 		(
-			NTraits::cConstructibleWith<t_CParent, tf_CType &&>
-			&& !NPrivate::TCIsTCJsonValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
-			&& !NPrivate::TCIsTCEJsonValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
+			NTraits::cIsPlacementNewConstructibleWith<t_CParent, tf_CType &&>
+			&& !NPrivate::TCIsTCJsonValue<NTraits::TCRemoveReferenceAndQualifiers<tf_CType>>::mc_Value
+			&& !NPrivate::TCIsTCEJsonValue<NTraits::TCRemoveReferenceAndQualifiers<tf_CType>>::mc_Value
 		)
 		: t_CParent(fg_Forward<tf_CType>(_Type))
 	{
@@ -25,7 +25,7 @@ namespace NMib::NEncoding
 #ifndef DCompiler_MSVC_Workaround
 	template <typename t_CParent>
 	template <typename tf_CType>
-	auto TCJsonValue<t_CParent>::operator = (tf_CType &&_Value) -> TCEnableIfType<!NTraits::TCIsSame<decltype(this->mp_Value = fg_Forward<tf_CType>(_Value)), CDummy>::mc_Value, CValue> &
+	auto TCJsonValue<t_CParent>::operator = (tf_CType &&_Value) -> TCEnableIf<!NTraits::cIsSame<decltype(this->mp_Value = fg_Forward<tf_CType>(_Value)), CDummy>, CValue> &
 	{
 		this->mp_Value = fg_Forward<tf_CType>(_Value);
 		return static_cast<CValue &>(*this);
@@ -35,7 +35,7 @@ namespace NMib::NEncoding
 	template <typename t_CParent>
 	template <typename ...tfp_CValues>
 	TCJsonValue<t_CParent>::TCJsonValue(tfp_CValues && ...p_Values)
-		requires ((NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiersType<tfp_CValues>, CKeyValue> && (sizeof...(p_Values) > 0)) && ...)
+		requires ((NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiers<tfp_CValues>, CKeyValue> && (sizeof...(p_Values) > 0)) && ...)
 	{
 		auto &Object = f_Object();
 		(
@@ -43,7 +43,7 @@ namespace NMib::NEncoding
 			[&]
 			{
 				DMibCheck(!Object.f_GetMember(p_Values.m_Key));
-				if constexpr (NTraits::TCIsRValueReference<tfp_CValues &&>::mc_Value)
+				if constexpr (NTraits::cIsRValueReference<tfp_CValues &&>)
 					Object.f_CreateMember(fg_Move(p_Values.m_Key)) = fg_Move(p_Values.m_Value);
 				else
 					Object.f_CreateMember(p_Values.m_Key) = p_Values.m_Value;
@@ -159,7 +159,7 @@ namespace NMib::NEncoding::NPrivate
 	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
 	template <typename tf_CType>
 	TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJsonValueBase(tf_CType &&_Value)
-		requires (NTraits::cConstructibleWith<typename TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::CVariantType, tf_CType &&>)
+		requires (NTraits::cIsPlacementNewConstructibleWith<typename TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::CVariantType, tf_CType &&>)
 		: mp_Value(fg_Forward<tf_CType>(_Value))
 	{
 	}

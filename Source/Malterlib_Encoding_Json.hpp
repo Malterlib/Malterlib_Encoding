@@ -36,9 +36,9 @@ namespace NMib::NEncoding
 				(
 					[&](auto &&_Value)
 					{
-						if constexpr (NTraits::TCIsSame<typename NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>::CType, CVoidTag>::mc_Value)
+						if constexpr (NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>, CVoidTag>)
 							mp_Value.template f_Set<EJsonType_Invalid>();
-						else if constexpr (NContainer::NPrivate::TCIsVector<typename NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>::CType>::mc_bValue)
+						else if constexpr (NContainer::NPrivate::TCIsVector<NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>>::mc_bValue)
 						{
 							auto &OutArray = mp_Value.template f_Set<EJsonType_Array>();
 							for (auto &Value : _Value)
@@ -59,9 +59,9 @@ namespace NMib::NEncoding
 				(
 					[&](auto &&_Value)
 					{
-						if constexpr (NTraits::TCIsSame<typename NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>::CType, CVoidTag>::mc_Value)
+						if constexpr (NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>, CVoidTag>)
 							mp_Value.template f_Set<EJsonType_Invalid>();
-						else if constexpr (NContainer::NPrivate::TCIsVector<typename NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>::CType>::mc_bValue)
+						else if constexpr (NContainer::NPrivate::TCIsVector<NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>>::mc_bValue)
 						{
 							auto &OutArray = mp_Value.template f_Set<EJsonType_Array>();
 							for (auto &Value : _Value)
@@ -82,9 +82,9 @@ namespace NMib::NEncoding
 				(
 					[&](auto &&_Value)
 					{
-						if constexpr (NTraits::TCIsSame<typename NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>::CType, CVoidTag>::mc_Value)
+						if constexpr (NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>, CVoidTag>)
 							mp_Value.template f_Set<EJsonType_Invalid>();
-						else if constexpr (NContainer::NPrivate::TCIsVector<typename NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>::CType>::mc_bValue)
+						else if constexpr (NContainer::NPrivate::TCIsVector<NTraits::TCRemoveReferenceAndQualifiers<decltype(_Value)>>::mc_bValue)
 						{
 							auto &OutArray = mp_Value.template f_Set<EJsonType_Array>();
 							for (auto &Value : _Value)

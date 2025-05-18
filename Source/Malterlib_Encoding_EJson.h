@@ -96,16 +96,16 @@ namespace NMib::NEncoding
 	{
 		using CValue = typename TCJsonValue<t_CParent>::CValue;
 		using CKeyValue = typename TCJsonValue<t_CParent>::CKeyValue;
-		using CUserType = typename TCChooseType<CValue::mc_bOrdered, CEJsonUserTypeOrdered, CEJsonUserTypeSorted>::CType;
-		using CJsonType = typename TCChooseType<CValue::mc_bOrdered, CJsonOrdered, CJsonSorted>::CType;
+		using CUserType = TCConditional<CValue::mc_bOrdered, CEJsonUserTypeOrdered, CEJsonUserTypeSorted>;
+		using CJsonType = TCConditional<CValue::mc_bOrdered, CJsonOrdered, CJsonSorted>;
 
 		template <typename tf_CType>
 		TCEJsonValue(tf_CType &&_Type)
 			requires
 			(
-				NTraits::cConstructibleWith<TCJsonValue<t_CParent>, tf_CType &&>
-				&& !NPrivate::TCIsTCJsonValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
-				&& !NPrivate::TCIsTCEJsonValue<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CType>::CType>::mc_Value
+				NTraits::cIsPlacementNewConstructibleWith<TCJsonValue<t_CParent>, tf_CType &&>
+				&& !NPrivate::TCIsTCJsonValue<NTraits::TCRemoveReferenceAndQualifiers<tf_CType>>::mc_Value
+				&& !NPrivate::TCIsTCEJsonValue<NTraits::TCRemoveReferenceAndQualifiers<tf_CType>>::mc_Value
 			)
 #ifdef DCompiler_MSVC_Workaround
 			: TCJsonValue<t_CParent>(fg_Forward<tf_CType>(_Type))
@@ -124,7 +124,7 @@ namespace NMib::NEncoding
 
 		template <typename ...tfp_CValues>
 		TCEJsonValue(tfp_CValues && ...p_Values)
-			requires ((NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiersType<tfp_CValues>, CKeyValue> && (sizeof...(p_Values) > 0)) && ...)
+			requires ((NTraits::cIsSame<NTraits::TCRemoveReferenceAndQualifiers<tfp_CValues>, CKeyValue> && (sizeof...(p_Values) > 0)) && ...)
 		;
 
 		TCEJsonValue(NContainer::CSecureByteVector const &_Value) = delete;

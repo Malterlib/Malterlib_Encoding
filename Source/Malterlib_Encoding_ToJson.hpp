@@ -17,7 +17,7 @@ namespace NMib::NEncoding
 
 	template <typename tf_CValue>
 	CEJsonSorted fg_ToJson(tf_CValue &&_Value)
-		requires (NTraits::TCIsEnum<typename NTraits::TCRemoveReferenceAndQualifiers<tf_CValue>::CType>::mc_Value)
+		requires (NTraits::cIsEnum<NTraits::TCRemoveReferenceAndQualifiers<tf_CValue>>)
 	{
 		return int64(_Value);
 	}

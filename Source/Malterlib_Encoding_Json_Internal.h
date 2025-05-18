@@ -74,14 +74,14 @@ namespace NMib::NEncoding::NPrivate
 	struct TCJsonValueBase
 	{
 		static constexpr bool mc_bOrdered = t_bOrdered;
-		static constexpr bool mc_bHasDefaultTypes = NMeta::TCTypeList_Len<typename t_CTypes::CTypes>::mc_Value == 0;
+		static constexpr bool mc_bHasDefaultTypes = NMeta::gc_TypeList_Len<typename t_CTypes::CTypes> == 0;
 
 		using CValue = t_TCValue<TCJsonValueBase>;
 		using CVariantType = typename NPrivate::TCGetJsonValueVariant<CValue, t_bOrdered, typename t_CTypes::CTypes>::CType;
 
 		template <typename tf_CType>
 		TCJsonValueBase(tf_CType &&_Value)
-			requires (NTraits::cConstructibleWith<CVariantType, tf_CType &&>)
+			requires (NTraits::cIsPlacementNewConstructibleWith<CVariantType, tf_CType &&>)
 #ifdef DCompiler_MSVC_Workaround
 			: mp_Value(fg_Forward<tf_CType>(_Value))
 		{
