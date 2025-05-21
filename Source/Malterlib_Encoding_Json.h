@@ -47,8 +47,8 @@ namespace NMib::NEncoding
 		using CValue = typename t_CParent::CValue;
 		struct CDummy {};
 	public:
-		typedef TCJsonObject<CValue, t_CParent::mc_bOrdered> CObject;
-		typedef NContainer::TCVector<CValue> CArray;
+		using CObject = TCJsonObject<CValue, t_CParent::mc_bOrdered>;
+		using CArray = NContainer::TCVector<CValue>;
 
 		struct CKeyValue
 		{
@@ -242,9 +242,9 @@ namespace NMib::NEncoding
 	struct TCJsonObject
 	{
 	public:
-		typedef NPrivate::TCObjectEntry<t_CJsonValue, t_bOrdered> CObjectEntry;
+		using CObjectEntry = NPrivate::TCObjectEntry<t_CJsonValue, t_bOrdered>;
 	private:
-		typedef typename NPrivate::CObjectEntryBase::CCompare CCompare;
+		using CCompare = typename NPrivate::CObjectEntryBase::CCompare;
 
 		using CObjects = TCConditional<t_bOrdered, NContainer::TCLinkedList<CObjectEntry>, NContainer::TCMap<NStr::CStr, CObjectEntry>>;
 		using CObjectsTree = TCConditional
