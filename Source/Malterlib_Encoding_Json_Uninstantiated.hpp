@@ -88,9 +88,7 @@ namespace NMib::NEncoding
 		{
 			constexpr static auto c_Flags = EJsonDialectFlag_AllowUndefined | EJsonDialectFlag_AllowInvalidFloat | EJsonDialectFlag_TrimWhitespace;
 
-			if (!this->f_IsValid())
-				o_FormatInto += "INVALID";
-			else if (_Options.m_LocalOptions.m_PrettySeparator[0])
+			if (_Options.m_LocalOptions.m_PrettySeparator[0])
 				o_FormatInto += static_cast<CValue const &>(*this).f_ToString(_Options.m_LocalOptions.m_PrettySeparator, c_Flags);
 			else
 				o_FormatInto += static_cast<CValue const &>(*this).f_ToString(nullptr, c_Flags);
