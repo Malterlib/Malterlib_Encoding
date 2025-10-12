@@ -1,4 +1,4 @@
-// Copyright © 2023 Favro Holding AB 
+// Copyright © 2023 Favro Holding AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #pragma once
@@ -18,7 +18,7 @@ namespace NMib::NEncoding
 		constexpr static auto mc_InvalidDate = EEJsonType_Date;
 		constexpr static auto mc_EmptyBinary = EEJsonType_Binary;
 
-		typename tf_CJson::CKey operator () (NStr::CStr const &_Key) const;
+		static typename tf_CJson::CKey operator () (NStr::CStr const &_Key);
 
 		tf_CJson const &operator = (tf_CJson const &_Convert) const
 		{
@@ -47,10 +47,10 @@ namespace NMib::NEncoding
 		}
 	};
 
-	extern template CEJsonOrdered::CKey TCJsonConstants<CEJsonOrdered>::operator () (NStr::CStr const &_Key) const;
-	extern template CEJsonSorted::CKey TCJsonConstants<CEJsonSorted>::operator () (NStr::CStr const &_Key) const;
-	extern template CJsonOrdered::CKey TCJsonConstants<CJsonOrdered>::operator () (NStr::CStr const &_Key) const;
-	extern template CJsonSorted::CKey TCJsonConstants<CJsonSorted>::operator () (NStr::CStr const &_Key) const;
+	extern template CEJsonOrdered::CKey TCJsonConstants<CEJsonOrdered>::operator () (NStr::CStr const &_Key);
+	extern template CEJsonSorted::CKey TCJsonConstants<CEJsonSorted>::operator () (NStr::CStr const &_Key);
+	extern template CJsonOrdered::CKey TCJsonConstants<CJsonOrdered>::operator () (NStr::CStr const &_Key);
+	extern template CJsonSorted::CKey TCJsonConstants<CJsonSorted>::operator () (NStr::CStr const &_Key);
 }
 
 NMib::NEncoding::CEJsonOrdered::CKey operator ""_o (const char *_pStr, std::size_t _Len);
@@ -59,11 +59,11 @@ NMib::NEncoding::CJsonOrdered::CKey operator ""_jo (const char *_pStr, std::size
 NMib::NEncoding::CEJsonSorted::CKey operator ""_ (const char *_pStr, std::size_t _Len);
 NMib::NEncoding::CJsonSorted::CKey operator ""_j (const char *_pStr, std::size_t _Len);
 
-extern NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CEJsonOrdered> const _o;
-extern NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CEJsonSorted> const _;
+constexpr NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CEJsonOrdered> _o;
+constexpr NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CEJsonSorted> _;
 
-extern NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CJsonOrdered> const _jo;
-extern NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CJsonSorted> const _j;
+constexpr NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CJsonOrdered> _jo;
+constexpr NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CJsonSorted> _j;
 
 #ifndef DMibPNoShortCuts
 	using namespace NMib::NEncoding;
