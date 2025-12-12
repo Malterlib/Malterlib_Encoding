@@ -74,7 +74,7 @@ namespace NMib::NEncoding
 				{
 					CFile::fs_CreateDirectory(CFile::fs_GetPath(FileName));
 					EFileAttrib FileAttributes = EFileAttrib_UnixAttributesValid | EFileAttrib_UserRead | EFileAttrib_UserWrite;
-					CStr TempFileName = "{}.{}"_f << FileName << NCryptography::fg_RandomID();
+					CStr TempFileName = "{}.{}"_f << FileName << NCryptography::fg_FastRandomID();
 					CFile::fs_WriteStringToFile(TempFileName, Data.f_ToString("\t", gc_JsonDialectFlags), true, FileAttributes);
 					CFile::fs_AtomicReplaceFile(TempFileName, FileName);
 				}
