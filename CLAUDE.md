@@ -254,7 +254,7 @@ The module includes comprehensive tests in the `Test/` directory:
 
 Run tests with:
 ```bash
-./mib build Tests macOS x86_64 Debug
+MalterlibBuildShowProgress=false ./mib build Tests macOS arm64 Debug
 /opt/Deploy/Tests/RunAllTests --paths '["Malterlib/Encoding*"]'
 ```
 
