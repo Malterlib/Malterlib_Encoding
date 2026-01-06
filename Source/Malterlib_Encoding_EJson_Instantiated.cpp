@@ -30,7 +30,7 @@ namespace NMib::NEncoding
 	template CEJsonValueBaseOrdered::TCJsonValueBase(CEJsonValueBaseSorted const &);
 	template CEJsonValueBaseOrdered::TCJsonValueBase(CEJsonValueBaseSorted &);
 	template CEJsonValueBaseOrdered::TCJsonValueBase(CEJsonValueBaseSorted &&);
-	
+
 	template CJsonValueEJsonOrdered::TCJsonValue(CNullPtr &&);
 	template CJsonValueEJsonOrdered::TCJsonValue(CNullPtr &);
 	template CJsonValueEJsonOrdered::TCJsonValue(CNullPtr const &);

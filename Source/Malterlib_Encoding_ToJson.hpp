@@ -74,7 +74,7 @@ namespace NMib::NEncoding
 
 		for (auto &Value : _Value)
 			Return.f_Insert(fg_ToJson(Value));
-		
+
 		return Return;
 	}
 }

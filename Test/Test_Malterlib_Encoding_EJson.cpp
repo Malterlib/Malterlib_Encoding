@@ -87,7 +87,7 @@ namespace
 
 			return fg_Move(ToReturn);
 		}
-		
+
 		static NStr::CStr fs_GetEJsonTextOrdered()
 		{
 			return
@@ -296,11 +296,11 @@ namespace
 			{
 				Exception = _Exception;
 			}
-			
+
 			auto ErrorStr = Exception.f_GetErrorStr();
 			DMibExpect(ErrorStr, ==, _ExpectedError);
 		}
-		
+
 		void f_DoTests()
 		{
 			using namespace NMib;
@@ -410,7 +410,7 @@ namespace
 							"$binary"_= 12
 							, "OtherKey"_= 12
 						}
-						, "NonEscape4"_= 
+						, "NonEscape4"_=
 						{
 							"$type"_= 13
 							, "$value"_= 13
@@ -446,7 +446,7 @@ namespace
 						]
 					}
 				;
-				
+
 				DMibExpect(Value, ==, CEJsonSorted::fs_FromCompatible(fs_GetEJson()));
 
 				auto ConstToJson = Value.f_ToJson();

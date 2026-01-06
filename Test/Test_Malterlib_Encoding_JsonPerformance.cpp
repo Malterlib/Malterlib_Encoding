@@ -342,7 +342,7 @@ namespace
 						auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
 
 						using range_t = daw::json::json_array_range<CCoordinate>;
-						
+
 						Measure.f_Start();
 						DawJsonLinkResult = [&]() inline_never -> CCoordinate
 							{
@@ -451,7 +451,7 @@ namespace
 								if constexpr (tf_bDoCalculation)
 								{
 									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-									
+
 									auto &Array = Document["coordinates"].f_Array();
 									auto Length = Array.f_GetLen();
 

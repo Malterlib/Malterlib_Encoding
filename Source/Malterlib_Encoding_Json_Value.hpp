@@ -1,4 +1,4 @@
-// Copyright © 2023 Favro Holding AB 
+// Copyright © 2023 Favro Holding AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #pragma once
@@ -201,7 +201,7 @@ namespace NMib::NEncoding
 	void TCJsonValue<t_CParent>::fp_CheckType(EJsonType _Type) const
 	{
 		using namespace NStr;
-		
+
 		if (this->f_Type() != _Type)
 			DMibError("Trying to access by wrong type. {} != {}"_f << fg_JsonTypeToString(this->f_Type()) << fg_JsonTypeToString(_Type));
 	}

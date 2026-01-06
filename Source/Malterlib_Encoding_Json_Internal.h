@@ -1,4 +1,4 @@
-// Copyright © 2023 Favro Holding AB 
+// Copyright © 2023 Favro Holding AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #pragma once
@@ -118,7 +118,7 @@ namespace NMib::NEncoding::NPrivate
 
 		template <template <typename t_CParent2> class t_TCValue2, typename t_CTypes2, bool t_bOrdered2>
 		friend struct TCJsonValueBase;
-		
+
 		// Members
 		CVariantType mp_Value;
 	};

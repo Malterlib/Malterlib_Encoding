@@ -1,4 +1,4 @@
-// Copyright © 2023 Favro Holding AB 
+// Copyright © 2023 Favro Holding AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #pragma once
@@ -28,7 +28,7 @@ namespace NMib::NEncoding
 	extern template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseSorted const &);
 	extern template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseSorted &);
 	extern template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseSorted &&);
-	
+
 	extern template CJsonOrdered::TCJsonValue(CNullPtr &&);
 	extern template CJsonOrdered::TCJsonValue(CNullPtr &);
 	extern template CJsonOrdered::TCJsonValue(CNullPtr const &);

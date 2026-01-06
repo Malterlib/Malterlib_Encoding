@@ -36,7 +36,7 @@ namespace
 					t_CJson Json = mp_JsonReference;
 
 					CStr GeneratedJsonText = Json.f_ToString();
-					
+
 					DMibExpect(GeneratedJsonText, ==, mp_JsonReferenceText);
 				}
 				{
@@ -46,7 +46,7 @@ namespace
 					t_CJson JsonCopy(Json);
 
 					CStr GeneratedJsonText = JsonCopy.f_ToString();
-					
+
 					DMibExpect(GeneratedJsonText, ==, mp_JsonReferenceText);
 				}
 				{
@@ -56,7 +56,7 @@ namespace
 					t_CJson JsonCopy(fg_Move(Json));
 
 					CStr GeneratedJsonText = JsonCopy.f_ToString();
-					
+
 					DMibExpect(GeneratedJsonText, ==, mp_JsonReferenceText);
 				}
 				{
@@ -67,7 +67,7 @@ namespace
 					JsonCopy = Json;
 
 					CStr GeneratedJsonText = JsonCopy.f_ToString();
-					
+
 					DMibExpect(GeneratedJsonText, ==, mp_JsonReferenceText);
 				}
 				{
@@ -78,7 +78,7 @@ namespace
 					JsonCopy = fg_Move(Json);
 
 					CStr GeneratedJsonText = JsonCopy.f_ToString();
-					
+
 					DMibExpect(GeneratedJsonText, ==, mp_JsonReferenceText);
 				}
 				{
@@ -89,7 +89,7 @@ namespace
 					JsonCopy["TreeCopy"] = Json;
 
 					CStr GeneratedJsonText = JsonCopy.f_ToString();
-					
+
 					DMibExpect(GeneratedJsonText, !=, mp_JsonReferenceText);
 				}
 				{
@@ -119,7 +119,7 @@ namespace
 					DMibTestPath("Json roundtrip");
 					t_CJson Json = mp_fParse(mp_JsonReferenceText, CStr());
 					CStr GeneratedJsonText = Json.f_ToString();
-					
+
 					DMibExpect(GeneratedJsonText, ==, mp_JsonReferenceText);
 				}
 				{
@@ -127,92 +127,92 @@ namespace
 					CStr JsonText = mp_JsonReferenceText.f_Replace("\n", "").f_Replace(" ", "").f_Replace("\t", "");
 					t_CJson Json = mp_fParse(JsonText, CStr());
 					CStr GeneratedJsonText = Json.f_ToString(nullptr);
-					
+
 					DMibExpect(GeneratedJsonText, ==, JsonText);
 				}
 				{
 					DMibTestPath("Remove by string");
 					t_CJson Json;
-					
+
 					Json["Test0"] = "52";
 					Json["Test1"] = "53";
 
 					Json.f_RemoveMember("Test0");
-					
+
 					t_CJson JsonRemoved;
 					JsonRemoved["Test1"] = "53";
-					
+
 					DMibExpect(Json, ==, JsonRemoved);
 				}
 				if constexpr (t_CJson::mc_bOrdered)
 				{
 					DMibTestPath("Remove by ordered const iterator");
 					t_CJson Json;
-					
+
 					Json["Test0"] = "52";
 					Json["Test1"] = "53";
 					Json["Test2"] = "54";
-					
+
 					auto iMember = fg_Const(Json).f_Object().f_OrderedIterator();
-					
+
 					++iMember;
 					Json.f_Object().f_RemoveMember(iMember);
-					
+
 					DMibExpect(iMember->f_Value().f_String(), ==, "54");
-					
+
 					t_CJson JsonRemoved;
 					JsonRemoved["Test0"] = "52";
 					JsonRemoved["Test2"] = "54";
-					
+
 					DMibExpect(Json, ==, JsonRemoved);
 				}
 				{
 					DMibTestPath("Remove by ordered iterator");
 					t_CJson Json;
-					
+
 					Json["Test0"] = "52";
 					Json["Test1"] = "53";
 					Json["Test2"] = "54";
-					
+
 					auto iMember = Json.f_Object().f_OrderedIterator();
-					
+
 					++iMember;
 					Json.f_Object().f_RemoveMember(iMember);
-					
+
 					DMibExpect(iMember->f_Value().f_String(), ==, "54");
-					
+
 					t_CJson JsonRemoved;
 					JsonRemoved["Test0"] = "52";
 					JsonRemoved["Test2"] = "54";
-					
+
 					DMibExpect(Json, ==, JsonRemoved);
 				}
 				if constexpr (t_CJson::mc_bOrdered)
 				{
 					DMibTestPath("Remove by sorted iterator");
 					t_CJson Json;
-					
+
 					Json["Test3"] = "54";
 					Json["Test1"] = "52";
 					Json["Test2"] = "53";
-					
+
 					auto iMember = Json.f_Object().f_SortedIterator();
-					
+
 					++iMember;
 					Json.f_Object().f_RemoveMember(iMember);
-					
+
 					DMibExpect(iMember->f_Value().f_String(), ==, "54");
-					
+
 					t_CJson JsonRemoved;
 					JsonRemoved["Test3"] = "54";
 					JsonRemoved["Test1"] = "52";
-					
+
 					DMibExpect(Json, ==, JsonRemoved);
 				}
 				{
 					DMibTestPath("Get as string");
 					t_CJson Json;
-					
+
 					Json["TestNull"] = nullptr;
 					Json["TestString"] = "String";
 					Json["TestInt"] = 54;
@@ -225,8 +225,8 @@ namespace
 					Array.f_Insert(6);
 					Json["TestArray"] = Array;
 					Json["TestInvalid"];
-					
-					
+
+
 					DMibExpect(Json["TestNull"].f_AsString(), ==, "null");
 					DMibExpect(Json["TestString"].f_AsString(), ==, "String");
 					DMibExpect(Json["TestInt"].f_AsString(), ==, "54");
@@ -239,7 +239,7 @@ namespace
 				{
 					DMibTestPath("Get as integer");
 					t_CJson Json;
-					
+
 					Json["TestNull"] = nullptr;
 					Json["TestString"] = "66";
 					Json["TestInt"] = 54;
@@ -252,8 +252,8 @@ namespace
 					Array.f_Insert(6);
 					Json["TestArray"] = Array;
 					Json["TestInvalid"];
-					
-					
+
+
 					DMibExpectException(Json["TestNull"].f_AsInteger(), DMibErrorInstance("JSON type cannot be converted to integer"));
 					DMibExpect(Json["TestString"].f_AsInteger(), ==, 66);
 					DMibExpect(Json["TestInt"].f_AsInteger(), ==, 54);
@@ -266,7 +266,7 @@ namespace
 				{
 					DMibTestPath("Get as float");
 					t_CJson Json;
-					
+
 					Json["TestNull"] = nullptr;
 					Json["TestString"] = "66.5";
 					Json["TestInt"] = 54;
@@ -279,7 +279,7 @@ namespace
 					Array.f_Insert(6);
 					Json["TestArray"] = Array;
 					Json["TestInvalid"];
-					
+
 					DMibExpectException(Json["TestNull"].f_AsFloat(), DMibErrorInstance("JSON type cannot be converted to float"));
 					DMibExpect(Json["TestString"].f_AsFloat(), ==, 66.5);
 					DMibExpect(Json["TestInt"].f_AsFloat(), ==, 54.0);
@@ -292,7 +292,7 @@ namespace
 				{
 					DMibTestPath("Get as boolean");
 					t_CJson Json;
-					
+
 					Json["TestNull"] = nullptr;
 					Json["TestString0"] = "true";
 					Json["TestString1"] = "false";
@@ -310,7 +310,7 @@ namespace
 					Array.f_Insert(6);
 					Json["TestArray"] = Array;
 					Json["TestInvalid"];
-					
+
 					DMibExpectException(Json["TestNull"].f_AsBoolean(), DMibErrorInstance("JSON type cannot be converted to boolean"));
 					DMibExpectTrue(Json["TestString0"].f_AsBoolean());
 					DMibExpectFalse(Json["TestString1"].f_AsBoolean());
@@ -328,7 +328,7 @@ namespace
 				{
 					DMibTestPath("Get as string default");
 					t_CJson Json;
-					
+
 					Json["TestNull"] = nullptr;
 					Json["TestString"] = "String";
 					Json["TestInt"] = 54;
@@ -341,8 +341,8 @@ namespace
 					Array.f_Insert(6);
 					Json["TestArray"] = Array;
 					Json["TestInvalid"];
-					
-					
+
+
 					DMibExpect(Json["TestNull"].f_AsString("Default"), ==, "null");
 					DMibExpect(Json["TestString"].f_AsString("Default"), ==, "String");
 					DMibExpect(Json["TestInt"].f_AsString("Default"), ==, "54");
@@ -355,7 +355,7 @@ namespace
 				{
 					DMibTestPath("Get as integer default");
 					t_CJson Json;
-					
+
 					Json["TestNull"] = nullptr;
 					Json["TestString"] = "66";
 					Json["TestInt"] = 54;
@@ -368,8 +368,8 @@ namespace
 					Array.f_Insert(6);
 					Json["TestArray"] = Array;
 					Json["TestInvalid"];
-					
-					
+
+
 					DMibExpect(Json["TestNull"].f_AsInteger(77), ==, 77);
 					DMibExpect(Json["TestString"].f_AsInteger(77), ==, 66);
 					DMibExpect(Json["TestInt"].f_AsInteger(77), ==, 54);
@@ -382,7 +382,7 @@ namespace
 				{
 					DMibTestPath("Get as float default");
 					t_CJson Json;
-					
+
 					Json["TestNull"] = nullptr;
 					Json["TestString"] = "66.5";
 					Json["TestInt"] = 54;
@@ -395,7 +395,7 @@ namespace
 					Array.f_Insert(6);
 					Json["TestArray"] = Array;
 					Json["TestInvalid"];
-					
+
 					DMibExpect(Json["TestNull"].f_AsFloat(77.7), ==, 77.7);
 					DMibExpect(Json["TestString"].f_AsFloat(77.7), ==, 66.5);
 					DMibExpect(Json["TestInt"].f_AsFloat(77.7), ==, 54.0);
@@ -408,7 +408,7 @@ namespace
 				{
 					DMibTestPath("Get as boolean default");
 					t_CJson Json;
-					
+
 					Json["TestNull"] = nullptr;
 					Json["TestString0"] = "true";
 					Json["TestString1"] = "false";
@@ -426,7 +426,7 @@ namespace
 					Array.f_Insert(6);
 					Json["TestArray"] = Array;
 					Json["TestInvalid"];
-					
+
 					DMibExpectTrue(Json["TestNull"].f_AsBoolean(true));
 					DMibExpectTrue(Json["TestString0"].f_AsBoolean(true));
 					DMibExpectFalse(Json["TestString1"].f_AsBoolean(true));
@@ -448,19 +448,19 @@ namespace
 				{
 					DMibTestPath("Invalid type");
 					t_CJson Json;
-					
+
 					Json["Test"];
-					
+
 					DMibExpectException(Json.f_ToString(), DMibErrorInstance("Invalid JSON type in value node"));
 				}
 			};
-			
+
 			DMibTestCategoryFlags("Parse Exceptions", ETestCategoryFlag_DisableExceptionFilter | ETestCategoryFlag_Tests)
 			{
 				{
 					DMibTestPath("Key quoting");
 					CStr Data;
-					Data = 
+					Data =
 						"    \n"
 						"    \n"
 						"    \n"
@@ -470,13 +470,13 @@ namespace
 
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
-					
+
 					Error.m_Error = "Expected \" to start object key name";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 5;
 					Error.m_Location.m_Column = 3;
 					Error.m_Location.m_Character = 22;
-					
+
 					fp_TestParseError(Data, Errors);
 				}
 				{
@@ -485,13 +485,13 @@ namespace
 
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
-					
+
 					Error.m_Error = "End of string character \" not found for key name string";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 1;
 					Error.m_Location.m_Column = 3;
 					Error.m_Location.m_Character = 2;
-					
+
 					fp_TestParseError(Data, Errors);
 				}
 				{
@@ -500,28 +500,28 @@ namespace
 
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
-					
+
 					Error.m_Error = "Control characters or new lines not allowed in string. Use escaped characters.";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 1;
 					Error.m_Location.m_Column = 7;
 					Error.m_Location.m_Character = 6;
-					
+
 					fp_TestParseError(Data, Errors);
 				}
 				{
 					DMibTestPath("Key value separator");
 					CStr Data = "{ \"Key\" \"Value\" }";
-					
+
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
-					
+
 					Error.m_Error = "Expected : to follow key name in object";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 1;
 					Error.m_Location.m_Column = 9;
 					Error.m_Location.m_Character = 8;
-					
+
 					fp_TestParseError(Data, Errors);
 				}
 				{
@@ -530,13 +530,13 @@ namespace
 
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
-					
+
 					Error.m_Error = "Invalid escape value";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 1;
 					Error.m_Location.m_Column = 12;
 					Error.m_Location.m_Character = 11;
-					
+
 					fp_TestParseError(Data, Errors);
 				}
 				{
@@ -545,13 +545,13 @@ namespace
 
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
-					
+
 					Error.m_Error = "Too short escaped UTF16 value";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 1;
 					Error.m_Location.m_Column = 13;
 					Error.m_Location.m_Character = 12;
-					
+
 					fp_TestParseError(Data, Errors);
 				}
 				{
@@ -560,13 +560,13 @@ namespace
 
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
-					
+
 					Error.m_Error = "Invalid escaped UTF16 value";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 1;
 					Error.m_Location.m_Column = 13;
 					Error.m_Location.m_Character = 12;
-					
+
 					fp_TestParseError(Data, Errors);
 				}
 				{
@@ -575,13 +575,13 @@ namespace
 
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
-					
+
 					Error.m_Error = "Null characters not supported in this implementation";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 1;
 					Error.m_Location.m_Column = 10;
 					Error.m_Location.m_Character = 9;
-					
+
 					fp_TestParseError(Data, Errors);
 				}
 				{
@@ -595,7 +595,7 @@ namespace
 					TCVector<CParseError> Errors;
 					{
 						auto &Error = Errors.f_Insert();
-						
+
 						Error.m_Error = "Missing closing } for object";
 						Error.m_Location.m_File = mp_TestFilePath;
 						Error.m_Location.m_Line = 4;
@@ -604,14 +604,14 @@ namespace
 					}
 					{
 						auto &Error = Errors.f_Insert();
-						
+
 						Error.m_Error = "See opening { for object";
 						Error.m_Location.m_File = mp_TestFilePath;
 						Error.m_Location.m_Line = 1;
 						Error.m_Location.m_Column = 1;
 						Error.m_Location.m_Character = 0;
 					}
-					
+
 					fp_TestParseError(Data, Errors);
 				}
 				{
@@ -623,7 +623,7 @@ namespace
 					;
 
 					TCVector<CParseError> Errors;
-					
+
 					{
 						auto &Error = Errors.f_Insert();
 						Error.m_Error = "Missing closing ] for array";
@@ -640,7 +640,7 @@ namespace
 						Error.m_Location.m_Column = 1;
 						Error.m_Location.m_Character = 0;
 					}
-					
+
 					fp_TestParseError(Data, Errors);
 				}
 				{
@@ -649,13 +649,13 @@ namespace
 
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
-					
+
 					Error.m_Error = "End of string character \" not found for string";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 1;
 					Error.m_Location.m_Column = 1;
 					Error.m_Location.m_Character = 0;
-					
+
 					fp_TestParseError(Data, Errors);
 				}
 				{
@@ -664,13 +664,13 @@ namespace
 
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
-					
+
 					Error.m_Error = "Invalid literal starting with: 55ue";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 1;
 					Error.m_Location.m_Column = 1;
 					Error.m_Location.m_Character = 0;
-					
+
 					fp_TestParseError(Data, Errors);
 				}
 				{
@@ -684,18 +684,18 @@ namespace
 
 					TCVector<CParseError> Errors;
 					auto &Error = Errors.f_Insert();
-					
+
 					Error.m_Error = "Unexpected character after root value";
 					Error.m_Location.m_File = mp_TestFilePath;
 					Error.m_Location.m_Line = 4;
 					Error.m_Location.m_Column = 1;
 					Error.m_Location.m_Character = 19;
-					
+
 					fp_TestParseError(Data, Errors);
 				}
 			};
 		}
-		
+
 	private:
 		void fp_TestParseError(NMib::NStr::CStr const &_ToParse, NMib::NContainer::TCVector<NMib::NStr::CParseError> const &_ExpectedErrors)
 		{
@@ -710,7 +710,7 @@ namespace
 			{
 				Exception = _Exception;
 			}
-			
+
 			auto &Errors = Exception.f_GetSpecific();
 			if (Errors != _ExpectedErrors)
 				NMib::NFile::CFile::fs_WriteStringToFile(mp_TestFilePath, _ToParse);

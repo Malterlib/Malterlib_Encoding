@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Encoding/Json>
@@ -48,7 +48,7 @@ namespace
 
 			return fg_Move(ToReturn);
 		}
-		
+
 		static NStr::CStr fs_GetJsonTextOrdered()
 		{
 			return
@@ -149,7 +149,7 @@ namespace
 				;
 				SharedTests.f_DoTests();
 			};
-			
+
 			DMibTestSuite("Shortcuts")
 			{
 				CJsonSorted Value =
@@ -186,7 +186,7 @@ namespace
 						]
 					}
 				;
-				
+
 				DMibExpect(Value, ==, CJsonSorted::fs_FromCompatible(fs_GetJson()));
 
 				DMibExpectTrue((_j= {}).f_IsObject());

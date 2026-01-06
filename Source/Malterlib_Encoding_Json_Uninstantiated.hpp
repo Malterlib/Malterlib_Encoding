@@ -1,4 +1,4 @@
-// Copyright © 2023 Favro Holding AB 
+// Copyright © 2023 Favro Holding AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #pragma once
@@ -52,7 +52,7 @@ namespace NMib::NEncoding
 			, ...
 		);
 	}
-	
+
 	template <typename t_CParent>
 	template <typename tf_CType>
 	auto TCJsonValue<t_CParent>::f_Insert(tf_CType &&_Value) -> CValue &
