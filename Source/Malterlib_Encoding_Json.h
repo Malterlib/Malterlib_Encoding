@@ -40,6 +40,17 @@ namespace NMib::NEncoding
 	template <typename t_CJsonValue, bool t_bOrdered>
 	struct TCJsonObject;
 
+	// Forward declarations for destructive iteration types (ordered mode only)
+	// Full definitions are after TCJsonObject
+	template <typename t_CJsonObject>
+	struct TCJsonObjectEntryHandle;
+
+	template <typename t_CJsonObject>
+	struct TCJsonOrderedDestructiveIterator;
+
+	template <typename t_CJsonObject>
+	struct TCJsonSortedDestructiveIterator;
+
 	template <typename t_CParent>
 	struct TCJsonValue : public t_CParent
 	{
@@ -309,7 +320,44 @@ namespace NMib::NEncoding
 		void f_Consume(tf_CStream &_Stream);
 		void f_SortObjectsLexicographically();
 
+		// Type aliases for destructive iteration
+		// Ordered mode: custom types that manage linked list + AVL tree
+		using CObjectEntryHandle = TCConditional<t_bOrdered, TCJsonObjectEntryHandle<TCJsonObject>, typename NContainer::TCMap<NStr::CStr, CObjectEntry>::CNodeHandle>;
+		using COrderedDestructiveIterator = TCConditional
+			<
+				t_bOrdered
+				, TCJsonOrderedDestructiveIterator<TCJsonObject>
+				, typename NContainer::TCMap<NStr::CStr, CObjectEntry>::CKeyValueIteratorBidirectionalDestructive
+			>
+		;
+		using CSortedDestructiveIterator = TCConditional
+			<
+				t_bOrdered
+				, TCJsonSortedDestructiveIterator<TCJsonObject>
+				, typename NContainer::TCMap<NStr::CStr, CObjectEntry>::CKeyValueIteratorBidirectionalDestructive
+			>
+		;
+
+		// Destructive iterator accessors (rvalue-qualified)
+		COrderedDestructiveIterator f_OrderedDestructiveIterator() &&;
+		CSortedDestructiveIterator f_SortedDestructiveIterator() &&;
+
+		// Insert extracted entry (returns existing value if key exists)
+		t_CJsonValue &f_Insert(CObjectEntryHandle &&_Handle);
+
+		// Insert extracted entry, replacing value if key exists
+		t_CJsonValue &f_InsertOrAssign(CObjectEntryHandle &&_Handle);
+
 	private:
+		template <typename t_CJsonValue2, bool t_bOrdered2>
+		friend struct TCJsonObject;
+
+ 		using CJsonValue = t_CJsonValue;
+
+		template <typename> friend struct TCJsonObjectEntryHandle;
+		template <typename> friend struct TCJsonOrderedDestructiveIterator;
+		template <typename> friend struct TCJsonSortedDestructiveIterator;
+
 		CObjects mp_Objects;
 		DMibNoUniqueAddress CObjectsTree mp_ObjectTree;
 	};
@@ -339,6 +387,123 @@ namespace NMib::NEncoding
 		return NContainer::CIteratorEndSentinel();
 	}
 #endif
+
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Destructive iteration and node extraction (ordered mode)
+	///////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Entry handle for extracted entries (ordered mode only)
+	template <typename t_CJsonObject>
+	struct TCJsonObjectEntryHandle
+	{
+	private:
+		template <typename> friend struct TCJsonOrderedDestructiveIterator;
+		template <typename> friend struct TCJsonSortedDestructiveIterator;
+		friend t_CJsonObject;
+
+		using CObjects = typename t_CJsonObject::CObjects;
+		using CListHandle = typename CObjects::CNodeHandle;
+		using CJsonValue = typename t_CJsonObject::CJsonValue;
+
+	public:
+		TCJsonObjectEntryHandle() = default;
+		TCJsonObjectEntryHandle(TCJsonObjectEntryHandle &&_Other) noexcept;
+		TCJsonObjectEntryHandle &operator = (TCJsonObjectEntryHandle &&_Other) noexcept;
+		TCJsonObjectEntryHandle(TCJsonObjectEntryHandle const &) = delete;
+		TCJsonObjectEntryHandle &operator = (TCJsonObjectEntryHandle const &) = delete;
+
+		[[nodiscard]] bool f_IsEmpty() const noexcept;
+		[[nodiscard]] explicit operator bool() const noexcept;
+
+		NStr::CStr &f_Name() noexcept;
+		NStr::CStr const &f_Name() const noexcept;
+		NStr::CStr &f_Key() noexcept;
+		NStr::CStr const &f_Key() const noexcept;
+		CJsonValue &f_Value() noexcept;
+		CJsonValue const &f_Value() const noexcept;
+
+	private:
+		TCJsonObjectEntryHandle(CListHandle &&_ListHandle);
+
+		CListHandle mp_ListHandle;
+	};
+
+	// Ordered destructive iterator (iterates in insertion order)
+	template <typename t_CJsonObject>
+	struct TCJsonOrderedDestructiveIterator
+	{
+	private:
+		friend t_CJsonObject;
+
+		using CObjects = typename t_CJsonObject::CObjects;
+		using CObjectsTree = typename t_CJsonObject::CObjectsTree;
+		using CObjectEntry = typename t_CJsonObject::CObjectEntry;
+		using CInnerIterator = typename CObjects::CIterator;
+		using CObjectEntryHandle = TCJsonObjectEntryHandle<t_CJsonObject>;
+
+	public:
+		TCJsonOrderedDestructiveIterator(TCJsonOrderedDestructiveIterator &&_Other) noexcept;
+		TCJsonOrderedDestructiveIterator(TCJsonOrderedDestructiveIterator const &) = delete;
+		TCJsonOrderedDestructiveIterator &operator = (TCJsonOrderedDestructiveIterator const &) = delete;
+		TCJsonOrderedDestructiveIterator &operator = (TCJsonOrderedDestructiveIterator &&_Other) noexcept;
+		~TCJsonOrderedDestructiveIterator();
+
+		explicit operator bool() const;
+		CObjectEntry *f_GetCurrent() const;
+		CObjectEntry *operator->() const;
+		CObjectEntry &operator*() const;
+
+		void operator++();
+
+		// Extract current entry and advance iterator
+		CObjectEntryHandle f_ExtractNode();
+
+	private:
+		TCJsonOrderedDestructiveIterator(t_CJsonObject &_Object);
+
+		void fp_Clear();
+
+		CInnerIterator mp_Iter;
+		t_CJsonObject *mp_pObject;
+	};
+
+	// Sorted destructive iterator (iterates in sorted key order)
+	template <typename t_CJsonObject>
+	struct TCJsonSortedDestructiveIterator
+	{
+	private:
+		friend t_CJsonObject;
+
+		using CObjects = typename t_CJsonObject::CObjects;
+		using CObjectsTree = typename t_CJsonObject::CObjectsTree;
+		using CObjectEntry = typename t_CJsonObject::CObjectEntry;
+		using CInnerIterator = typename CObjectsTree::CIterator;
+		using CObjectEntryHandle = TCJsonObjectEntryHandle<t_CJsonObject>;
+
+	public:
+		TCJsonSortedDestructiveIterator(TCJsonSortedDestructiveIterator &&_Other) noexcept;
+		TCJsonSortedDestructiveIterator(TCJsonSortedDestructiveIterator const &) = delete;
+		TCJsonSortedDestructiveIterator &operator = (TCJsonSortedDestructiveIterator const &) = delete;
+		TCJsonSortedDestructiveIterator &operator = (TCJsonSortedDestructiveIterator &&_Other) noexcept;
+		~TCJsonSortedDestructiveIterator();
+
+		explicit operator bool() const;
+		CObjectEntry *f_GetCurrent() const;
+		CObjectEntry *operator->() const;
+		CObjectEntry &operator*() const;
+		void operator++();
+
+		// Extract current entry and advance iterator
+		CObjectEntryHandle f_ExtractNode();
+
+	private:
+		TCJsonSortedDestructiveIterator(t_CJsonObject &_Object);
+
+		void fp_Clear();
+
+		CInnerIterator mp_Iter;
+		t_CJsonObject *mp_pObject;
+	};
 
 	template <typename t_CJsonObject>
 	bool fg_ValidateType(t_CJsonObject const *_pObject, EJsonType _Type);

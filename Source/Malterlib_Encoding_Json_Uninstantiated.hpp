@@ -149,6 +149,29 @@ namespace NMib::NEncoding
 			}
 		}
 	}
+
+	template <typename t_CJsonValue, bool t_bOrdered>
+	template <typename tf_FOnObject>
+	void TCJsonObject<t_CJsonValue, t_bOrdered>::f_ExtractAll(tf_FOnObject &&_fOnObject)
+	{
+		if constexpr (t_bOrdered)
+		{
+			mp_ObjectTree.f_Clear();
+			for (auto iIter = mp_Objects.f_GetIterator(); iIter; )
+				_fOnObject(CObjectEntryHandle(iIter.f_ExtractNode()));
+		}
+		else
+		{
+			mp_Objects.f_ExtractAll
+				(
+					[&_fOnObject](auto &&_NodeHandle)
+					{
+						_fOnObject(CObjectEntryHandle(fg_Move(_NodeHandle)));
+					}
+				)
+			;
+		}
+	}
 }
 
 namespace NMib::NEncoding::NPrivate

@@ -148,6 +148,12 @@ namespace NMib::NEncoding
 		}
 
 		template <typename t_CJsonValue, bool t_bOrdered>
+		NStr::CStr const &TCObjectEntry<t_CJsonValue, t_bOrdered>::f_Key() const
+		{
+			return f_Name();
+		}
+
+		template <typename t_CJsonValue, bool t_bOrdered>
 		t_CJsonValue &TCObjectEntry<t_CJsonValue, t_bOrdered>::f_Value()
 		{
 			return mp_Value;

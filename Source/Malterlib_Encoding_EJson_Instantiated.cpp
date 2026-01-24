@@ -15,6 +15,11 @@ namespace NMib::NEncoding
 	template struct TCJsonObject<CEJsonOrdered, true>;
 	template struct NPrivate::TCObjectEntry<CEJsonOrdered, true>;
 
+	// Destructive iterator types for ordered mode
+	template struct TCJsonObjectEntryHandle<TCJsonObject<CEJsonOrdered, true>>;
+	template struct TCJsonOrderedDestructiveIterator<TCJsonObject<CEJsonOrdered, true>>;
+	template struct TCJsonSortedDestructiveIterator<TCJsonObject<CEJsonOrdered, true>>;
+
 	template CJsonValueEJsonOrdered::TCJsonValue(CEJsonValueBaseSorted const &);
 	template CJsonValueEJsonOrdered::TCJsonValue(CEJsonValueBaseSorted const &&);
 	template CJsonValueEJsonOrdered::TCJsonValue(CEJsonValueBaseSorted &&);

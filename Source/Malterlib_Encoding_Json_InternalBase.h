@@ -57,6 +57,7 @@ namespace NMib::NEncoding::NPrivate
 		COrdering_Partial operator <=> (TCObjectEntry const &_Right) const;
 
 		NStr::CStr const &f_Name() const;
+		NStr::CStr const &f_Key() const;
 		t_CJsonValue &f_Value();
 		t_CJsonValue const &f_Value() const;
 

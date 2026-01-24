@@ -4,6 +4,16 @@
 
 namespace
 {
+	// Helper to count elements in an iterator with operator bool() and operator++()
+	template <typename t_CIterator>
+	aint fsg_IteratorCount(t_CIterator _Iterator)
+	{
+		aint nCount = 0;
+		for (; _Iterator; ++_Iterator)
+			++nCount;
+		return nCount;
+	}
+
 	template <typename t_CJson>
 	class TCJsonTests
 	{
@@ -452,6 +462,535 @@ namespace
 					Json["Test"];
 
 					DMibExpectException(Json.f_ToString(), DMibErrorInstance("Invalid JSON type in value node"));
+				}
+			};
+
+			DMibTestSuite("Destructive Iterators")
+			{
+				// Test ordered destructive iterator
+				{
+					DMibTestPath("OrderedDestructiveIterator");
+					t_CJson Source;
+					Source["a"] = 1;
+					Source["b"] = 2;
+					Source["c"] = 3;
+
+					TCVector<CStr> Keys;
+					TCVector<int64> Values;
+
+					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter; ++Iter)
+					{
+						if constexpr (t_CJson::mc_bOrdered)
+						{
+							Keys.f_InsertLast(Iter->f_Name());
+							Values.f_InsertLast(Iter->f_Value().f_Integer());
+						}
+						else
+						{
+							Keys.f_InsertLast(Iter->f_Key());
+							Values.f_InsertLast(Iter->f_Value().f_Value().f_Integer());
+						}
+					}
+
+					DMibExpect(Keys.f_GetLen(), ==, 3u);
+					// Source should be empty after destructive iteration
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+				}
+				// Test sorted destructive iterator
+				{
+					DMibTestPath("SortedDestructiveIterator");
+					t_CJson Source;
+					Source["c"] = 3;
+					Source["a"] = 1;
+					Source["b"] = 2;
+
+					TCVector<CStr> Keys;
+
+					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; ++Iter)
+					{
+						Keys.f_InsertLast(Iter->f_Key());
+					}
+
+					// Should be in sorted order for both ordered and sorted
+					DMibExpect(Keys.f_GetLen(), ==, 3u);
+					DMibExpect(Keys[0], ==, CStr("a"));
+					DMibExpect(Keys[1], ==, CStr("b"));
+					DMibExpect(Keys[2], ==, CStr("c"));
+
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+				}
+				// Test sorted iterator extraction with sorted order preserved
+				{
+					DMibTestPath("Sorted Extract and Insert");
+					t_CJson Source;
+					Source["zebra"] = 5;
+					Source["alpha"] = 1;
+					Source["mango"] = 3;
+					Source["beta"] = 2;
+					Source["omega"] = 4;
+
+					t_CJson Dest;
+					Dest = EJsonType_Object;
+
+					TCVector<CStr> ExtractOrder;
+
+					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; )
+					{
+						ExtractOrder.f_InsertLast(Iter->f_Key());
+						auto Handle = Iter.f_ExtractNode();
+						Dest.f_Object().f_Insert(fg_Move(Handle));
+					}
+
+					// Verify extraction happened in sorted order
+					DMibExpect(ExtractOrder.f_GetLen(), ==, 5u);
+					DMibExpect(ExtractOrder[0], ==, CStr("alpha"));
+					DMibExpect(ExtractOrder[1], ==, CStr("beta"));
+					DMibExpect(ExtractOrder[2], ==, CStr("mango"));
+					DMibExpect(ExtractOrder[3], ==, CStr("omega"));
+					DMibExpect(ExtractOrder[4], ==, CStr("zebra"));
+
+					// Verify destination has all values
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+					DMibExpect(Dest["alpha"].f_Integer(), ==, 1);
+					DMibExpect(Dest["beta"].f_Integer(), ==, 2);
+					DMibExpect(Dest["mango"].f_Integer(), ==, 3);
+					DMibExpect(Dest["omega"].f_Integer(), ==, 4);
+					DMibExpect(Dest["zebra"].f_Integer(), ==, 5);
+				}
+				// Test sorted partial extraction
+				{
+					DMibTestPath("Sorted partial extraction");
+					t_CJson Source;
+					Source["d"] = 4;
+					Source["a"] = 1;
+					Source["c"] = 3;
+					Source["b"] = 2;
+					Source["e"] = 5;
+
+					t_CJson Dest;
+					Dest = EJsonType_Object;
+
+					// Extract only values less than 3 (in sorted key order)
+					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; )
+					{
+						int64 Value;
+						if constexpr (t_CJson::mc_bOrdered)
+							Value = Iter->f_Value().f_Integer();
+						else
+							Value = Iter->f_Value().f_Value().f_Integer();
+
+						if (Value < 3)
+						{
+							auto Handle = Iter.f_ExtractNode();
+							Dest.f_Object().f_Insert(fg_Move(Handle));
+						}
+						else
+						{
+							++Iter;
+						}
+					}
+
+					// Source should be empty (destructive iterator clears remaining)
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+
+					// Dest should have a=1 and b=2
+					DMibExpect(Dest["a"].f_Integer(), ==, 1);
+					DMibExpect(Dest["b"].f_Integer(), ==, 2);
+					DMibExpect(Dest.f_Object().f_GetMember("c"), ==, nullptr);
+				}
+				// Test sorted iterator with complex nested values
+				{
+					DMibTestPath("Sorted transfer complex values");
+					t_CJson Source;
+					Source["z"]["deep"]["value"] = 100;
+					Source["a"]["array"].f_Insert("first");
+					Source["a"]["array"].f_Insert("second");
+					Source["m"]["number"] = 42;
+
+					t_CJson Dest;
+					Dest = EJsonType_Object;
+
+					TCVector<CStr> Order;
+					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; )
+					{
+						Order.f_InsertLast(Iter->f_Key());
+						auto Handle = Iter.f_ExtractNode();
+						Dest.f_Object().f_Insert(fg_Move(Handle));
+					}
+
+					// Verify sorted order
+					DMibExpect(Order[0], ==, CStr("a"));
+					DMibExpect(Order[1], ==, CStr("m"));
+					DMibExpect(Order[2], ==, CStr("z"));
+
+					// Verify source is empty after full extraction
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+
+					// Verify complex values transferred correctly
+					DMibExpect(Dest["a"]["array"].f_Array()[0].f_String(), ==, CStr("first"));
+					DMibExpect(Dest["a"]["array"].f_Array()[1].f_String(), ==, CStr("second"));
+					DMibExpect(Dest["m"]["number"].f_Integer(), ==, 42);
+					DMibExpect(Dest["z"]["deep"]["value"].f_Integer(), ==, 100);
+				}
+				// Test sorted handle value access (ordered only)
+				if constexpr (t_CJson::mc_bOrdered)
+				{
+					DMibTestPath("Sorted handle value access");
+					t_CJson Source;
+					Source["beta"] = "second";
+					Source["alpha"] = "first";
+					Source["gamma"] = "third";
+
+					TCVector<CStr> Names;
+					TCVector<CStr> Values;
+
+					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; )
+					{
+						auto Handle = Iter.f_ExtractNode();
+						Names.f_InsertLast(Handle.f_Name());
+						Values.f_InsertLast(Handle.f_Value().f_String());
+					}
+
+					// Verify sorted order and values
+					DMibExpect(Names[0], ==, CStr("alpha"));
+					DMibExpect(Values[0], ==, CStr("first"));
+					DMibExpect(Names[1], ==, CStr("beta"));
+					DMibExpect(Values[1], ==, CStr("second"));
+					DMibExpect(Names[2], ==, CStr("gamma"));
+					DMibExpect(Values[2], ==, CStr("third"));
+
+					// Verify source is empty after full extraction
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+				}
+				// Test extraction and reinsertion
+				{
+					DMibTestPath("Extract and Insert");
+					t_CJson Source;
+					Source["a"] = 1;
+					Source["b"] = 2;
+					Source["c"] = 3;
+
+					t_CJson Dest;
+					Dest = EJsonType_Object;
+
+					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter; )
+					{
+						auto Handle = Iter.f_ExtractNode();
+						Dest.f_Object().f_Insert(fg_Move(Handle));
+					}
+
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+					DMibExpectFalse(Dest.f_Object().f_IsEmpty());
+					DMibExpect(Dest["a"].f_Integer(), ==, 1);
+					DMibExpect(Dest["b"].f_Integer(), ==, 2);
+					DMibExpect(Dest["c"].f_Integer(), ==, 3);
+				}
+				// Test partial extraction
+				{
+					DMibTestPath("Partial extraction");
+					t_CJson Source;
+					Source["a"] = 1;
+					Source["b"] = 2;
+					Source["c"] = 3;
+					Source["d"] = 4;
+
+					t_CJson Dest;
+					Dest = EJsonType_Object;
+
+					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter; )
+					{
+						int64 Value;
+						if constexpr (t_CJson::mc_bOrdered)
+							Value = Iter->f_Value().f_Integer();
+						else
+							Value = Iter->f_Value().f_Value().f_Integer();
+
+						if (Value % 2 == 0)
+						{
+							auto Handle = Iter.f_ExtractNode();
+							Dest.f_Object().f_Insert(fg_Move(Handle));
+						}
+						else
+						{
+							++Iter;
+						}
+					}
+
+					// Source should be empty (destructive iterator clears remaining)
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+
+					// Dest should have even values
+					DMibExpect(Dest["b"].f_Integer(), ==, 2);
+					DMibExpect(Dest["d"].f_Integer(), ==, 4);
+				}
+				// Test handle value access (ordered only has named accessors)
+				if constexpr (t_CJson::mc_bOrdered)
+				{
+					DMibTestPath("Handle value access");
+					t_CJson Source;
+					Source["key"] = "value";
+
+					auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator();
+					auto Handle = Iter.f_ExtractNode();
+
+					DMibExpect(Handle.f_Name(), ==, CStr("key"));
+					DMibExpect(Handle.f_Value().f_String(), ==, CStr("value"));
+				}
+				// Test transfer preserves complex values
+				{
+					DMibTestPath("Transfer complex values");
+					t_CJson Source;
+					Source["obj"]["nested"] = "value";
+					Source["arr"].f_Insert(1);
+					Source["arr"].f_Insert(2);
+
+					t_CJson Dest;
+					Dest = EJsonType_Object;
+
+					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter; )
+					{
+						auto Handle = Iter.f_ExtractNode();
+						Dest.f_Object().f_Insert(fg_Move(Handle));
+					}
+
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+					DMibExpect(Dest["obj"]["nested"].f_String(), ==, CStr("value"));
+					DMibExpect(Dest["arr"].f_Array()[0].f_Integer(), ==, 1);
+					DMibExpect(Dest["arr"].f_Array()[1].f_Integer(), ==, 2);
+				}
+				// Test f_Insert with duplicate key keeps existing value
+				{
+					DMibTestPath("Insert duplicate key keeps existing");
+					t_CJson Source;
+					Source["a"] = 100;
+
+					t_CJson Dest;
+					Dest["a"] = 1;
+					Dest["b"] = 2;
+
+					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter; )
+					{
+						auto Handle = Iter.f_ExtractNode();
+						Dest.f_Object().f_Insert(fg_Move(Handle));
+					}
+
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+					// Value should NOT be replaced
+					DMibExpect(Dest["a"].f_Integer(), ==, 1);
+					// Other values should be unchanged
+					DMibExpect(Dest["b"].f_Integer(), ==, 2);
+				}
+				// Test f_InsertOrAssign with duplicate key replaces value
+				{
+					DMibTestPath("InsertOrAssign duplicate key replaces value");
+					t_CJson Source;
+					Source["a"] = 100;
+
+					t_CJson Dest;
+					Dest["a"] = 1;
+					Dest["b"] = 2;
+
+					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter; )
+					{
+						auto Handle = Iter.f_ExtractNode();
+						Dest.f_Object().f_InsertOrAssign(fg_Move(Handle));
+					}
+
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+					// Value should be replaced
+					DMibExpect(Dest["a"].f_Integer(), ==, 100);
+					// Other values should be unchanged
+					DMibExpect(Dest["b"].f_Integer(), ==, 2);
+				}
+				// Test sorted f_Insert with duplicate key keeps existing
+				if constexpr (t_CJson::mc_bOrdered)
+				{
+					DMibTestPath("Sorted Insert duplicate key keeps existing");
+					t_CJson Source;
+					Source["b"] = 200;
+					Source["c"] = 300;
+
+					t_CJson Dest;
+					Dest["a"] = 1;
+					Dest["b"] = 2;
+					Dest["c"] = 3;
+
+					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; )
+					{
+						auto Handle = Iter.f_ExtractNode();
+						Dest.f_Object().f_Insert(fg_Move(Handle));
+					}
+
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+					// All values should be unchanged (f_Insert keeps existing)
+					DMibExpect(Dest["a"].f_Integer(), ==, 1);
+					DMibExpect(Dest["b"].f_Integer(), ==, 2);
+					DMibExpect(Dest["c"].f_Integer(), ==, 3);
+				}
+				// Test sorted f_InsertOrAssign with duplicate key replaces
+				if constexpr (t_CJson::mc_bOrdered)
+				{
+					DMibTestPath("Sorted InsertOrAssign duplicate key replaces value");
+					t_CJson Source;
+					Source["b"] = 200;
+					Source["c"] = 300;
+
+					t_CJson Dest;
+					Dest["a"] = 1;
+					Dest["b"] = 2;
+					Dest["c"] = 3;
+
+					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; )
+					{
+						auto Handle = Iter.f_ExtractNode();
+						Dest.f_Object().f_InsertOrAssign(fg_Move(Handle));
+					}
+
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+					// Original value unchanged
+					DMibExpect(Dest["a"].f_Integer(), ==, 1);
+					// Values should be replaced
+					DMibExpect(Dest["b"].f_Integer(), ==, 200);
+					DMibExpect(Dest["c"].f_Integer(), ==, 300);
+				}
+				// Test f_ExtractAll basic usage
+				{
+					DMibTestPath("ExtractAll basic");
+					t_CJson Source;
+					Source["a"] = 1;
+					Source["b"] = 2;
+					Source["c"] = 3;
+
+					t_CJson Dest;
+					Dest = EJsonType_Object;
+
+					Source.f_Object().f_ExtractAll
+						(
+							[&](auto &&_Handle)
+							{
+								Dest.f_Object().f_Insert(fg_Move(_Handle));
+							}
+						)
+					;
+
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+					DMibExpect(fsg_IteratorCount(Dest.f_Object().f_OrderedIterator()), ==, 3u);
+					DMibExpect(Dest["a"].f_Integer(), ==, 1);
+					DMibExpect(Dest["b"].f_Integer(), ==, 2);
+					DMibExpect(Dest["c"].f_Integer(), ==, 3);
+				}
+				// Test f_ExtractAll with empty object
+				{
+					DMibTestPath("ExtractAll empty");
+					t_CJson Source;
+					Source = EJsonType_Object;
+
+					aint nCallCount = 0;
+					Source.f_Object().f_ExtractAll
+						(
+							[&](auto &&_Handle)
+							{
+								++nCallCount;
+							}
+						)
+					;
+
+					DMibExpect(nCallCount, ==, 0);
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+				}
+				// Test f_ExtractAll with InsertOrAssign for duplicates
+				{
+					DMibTestPath("ExtractAll with InsertOrAssign");
+					t_CJson Source;
+					Source["a"] = 100;
+					Source["b"] = 200;
+
+					t_CJson Dest;
+					Dest = EJsonType_Object;
+					Dest["a"] = 1;
+					Dest["c"] = 3;
+
+					Source.f_Object().f_ExtractAll
+						(
+							[&](auto &&_Handle)
+							{
+								Dest.f_Object().f_InsertOrAssign(fg_Move(_Handle));
+							}
+						)
+					;
+
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+					DMibExpect(fsg_IteratorCount(Dest.f_Object().f_OrderedIterator()), ==, 3u);
+					// a should be replaced
+					DMibExpect(Dest["a"].f_Integer(), ==, 100);
+					// b should be added
+					DMibExpect(Dest["b"].f_Integer(), ==, 200);
+					// c should be unchanged
+					DMibExpect(Dest["c"].f_Integer(), ==, 3);
+				}
+				// Test f_ExtractAll with complex values
+				{
+					DMibTestPath("ExtractAll complex values");
+					t_CJson Source;
+					Source["obj"]["nested"] = "value";
+					Source["arr"].f_Insert(1);
+					Source["arr"].f_Insert(2);
+					Source["str"] = "text";
+
+					t_CJson Dest;
+					Dest = EJsonType_Object;
+
+					Source.f_Object().f_ExtractAll
+						(
+							[&](auto &&_Handle)
+							{
+								Dest.f_Object().f_Insert(fg_Move(_Handle));
+							}
+						)
+					;
+
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+					DMibExpect(Dest["obj"]["nested"].f_String(), ==, CStr("value"));
+					DMibExpect(Dest["arr"].f_Array()[0].f_Integer(), ==, 1);
+					DMibExpect(Dest["arr"].f_Array()[1].f_Integer(), ==, 2);
+					DMibExpect(Dest["str"].f_String(), ==, CStr("text"));
+				}
+				// Test f_ExtractAll selective insertion
+				{
+					DMibTestPath("ExtractAll selective");
+					t_CJson Source;
+					Source["keep1"] = 1;
+					Source["skip2"] = 2;
+					Source["keep3"] = 3;
+					Source["skip4"] = 4;
+					Source["keep5"] = 5;
+
+					t_CJson Dest;
+					Dest = EJsonType_Object;
+
+					Source.f_Object().f_ExtractAll
+						(
+							[&](auto &&_Handle)
+							{
+								// Only insert entries with odd values
+								int64 Value;
+								if constexpr (t_CJson::mc_bOrdered)
+									Value = _Handle.f_Value().f_Integer();
+								else
+									Value = _Handle.f_Value().f_Value().f_Integer();
+
+								if (Value % 2 == 1)
+									Dest.f_Object().f_Insert(fg_Move(_Handle));
+								// Even-valued handles are destroyed when lambda exits
+							}
+						)
+					;
+
+					DMibExpectTrue(Source.f_Object().f_IsEmpty());
+					DMibExpect(fsg_IteratorCount(Dest.f_Object().f_OrderedIterator()), ==, 3u);
+					DMibExpect(Dest["keep1"].f_Integer(), ==, 1);
+					DMibExpect(Dest["keep3"].f_Integer(), ==, 3);
+					DMibExpect(Dest["keep5"].f_Integer(), ==, 5);
 				}
 			};
 
