@@ -31,7 +31,7 @@ namespace NMib::NEncoding::NJson
 
 		ch8 const *pParse = _Value;
 
-		typename tf_CStr::CString::CDynamicStr PreWhitespace;
+		typename tf_CStr::CString::CString PreWhitespace;
 		bool bInitPreWhitespace = false;
 		auto fAddPreWhitespace = [&]()
 			{
