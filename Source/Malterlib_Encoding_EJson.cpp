@@ -28,14 +28,14 @@ namespace NMib::NEncoding
 	{
 	}
 
-	bool CEJsonUserTypeOrdered::operator == (CEJsonUserTypeOrdered const &_Right) const
+	bool CEJsonUserTypeOrdered::operator == (CEJsonUserTypeOrdered const &_Right) const noexcept
 	{
 		if (m_Type != _Right.m_Type)
 			return false;
 		return m_Value == _Right.m_Value;
 	}
 
-	COrdering_Partial CEJsonUserTypeOrdered::operator <=> (CEJsonUserTypeOrdered const &_Right) const
+	COrdering_Partial CEJsonUserTypeOrdered::operator <=> (CEJsonUserTypeOrdered const &_Right) const noexcept
 	{
 		if (auto Result = m_Type <=> _Right.m_Type; Result != 0)
 			return Result;
@@ -91,14 +91,14 @@ namespace NMib::NEncoding
 	{
 	}
 
-	bool CEJsonUserTypeSorted::operator == (CEJsonUserTypeSorted const &_Right) const
+	bool CEJsonUserTypeSorted::operator == (CEJsonUserTypeSorted const &_Right) const noexcept
 	{
 		if (m_Type != _Right.m_Type)
 			return false;
 		return m_Value == _Right.m_Value;
 	}
 
-	COrdering_Partial CEJsonUserTypeSorted::operator <=> (CEJsonUserTypeSorted const &_Right) const
+	COrdering_Partial CEJsonUserTypeSorted::operator <=> (CEJsonUserTypeSorted const &_Right) const noexcept
 	{
 		if (auto Result = m_Type <=> _Right.m_Type; Result != 0)
 			return Result;

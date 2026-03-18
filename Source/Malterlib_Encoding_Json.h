@@ -141,8 +141,8 @@ namespace NMib::NEncoding
 		CValue &operator = (EJsonType _Type);
 		CValue &operator = (ch8 const *_pValue);
 
-		bool operator == (TCJsonValue const &_Right) const;
-		COrdering_Partial operator <=> (TCJsonValue const &_Right) const;
+		bool operator == (TCJsonValue const &_Right) const noexcept;
+		COrdering_Partial operator <=> (TCJsonValue const &_Right) const noexcept;
 
 		EJsonType f_Type() const;
 		void f_SetType(EJsonType _Type);
@@ -277,8 +277,8 @@ namespace NMib::NEncoding
 		template <typename tf_CJsonValue, bool tf_bOrdered>
 		explicit TCJsonObject(TCJsonObject<tf_CJsonValue, tf_bOrdered> &&_Other);
 
-		bool operator == (TCJsonObject const &_Right) const;
-		COrdering_Partial operator <=> (TCJsonObject const &_Right) const;
+		bool operator == (TCJsonObject const &_Right) const noexcept;
+		COrdering_Partial operator <=> (TCJsonObject const &_Right) const noexcept;
 
 		t_CJsonValue const *f_GetMember(NStr::CStr const &_Name) const;
 		t_CJsonValue *f_GetMember(NStr::CStr const &_Name);

@@ -56,7 +56,7 @@ struct CCoordinate
 		return {m_CoordinateX / double(_Length), m_CoordinateY / double(_Length), m_CoordinateZ / double(_Length)};
 	}
 
-	auto operator == (const CCoordinate &_Right) const
+	auto operator == (const CCoordinate &_Right) const noexcept
 	{
 		return fp64(m_CoordinateX).f_AlmostEqual(fp64(_Right.m_CoordinateX), 2)
 			&& fp64(m_CoordinateY).f_AlmostEqual(fp64(_Right.m_CoordinateY), 2)

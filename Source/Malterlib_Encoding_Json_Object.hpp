@@ -326,13 +326,13 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJsonValue, bool t_bOrdered>
-	bool TCJsonObject<t_CJsonValue, t_bOrdered>::operator == (TCJsonObject const &_Right) const
+	bool TCJsonObject<t_CJsonValue, t_bOrdered>::operator == (TCJsonObject const &_Right) const noexcept
 	{
 		return mp_Objects == _Right.mp_Objects;
 	}
 
 	template <typename t_CJsonValue, bool t_bOrdered>
-	COrdering_Partial TCJsonObject<t_CJsonValue, t_bOrdered>::operator <=> (TCJsonObject const &_Right) const
+	COrdering_Partial TCJsonObject<t_CJsonValue, t_bOrdered>::operator <=> (TCJsonObject const &_Right) const noexcept
 	{
 		return mp_Objects <=> _Right.mp_Objects;
 	}

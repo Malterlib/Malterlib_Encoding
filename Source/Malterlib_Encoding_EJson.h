@@ -39,8 +39,8 @@ namespace NMib::NEncoding
 		CEJsonUserTypeOrdered(NStr::CStr const &_Type, CJsonOrdered const &_Value);
 		CEJsonUserTypeOrdered(NStr::CStr const &_Type, CJsonOrdered &&_Value);
 
-		bool operator == (CEJsonUserTypeOrdered const &_Right) const;
-		COrdering_Partial operator <=> (CEJsonUserTypeOrdered const &_Right) const;
+		bool operator == (CEJsonUserTypeOrdered const &_Right) const noexcept;
+		COrdering_Partial operator <=> (CEJsonUserTypeOrdered const &_Right) const noexcept;
 
 		NStr::CStr m_Type;
 		CJsonOrdered m_Value;
@@ -61,8 +61,8 @@ namespace NMib::NEncoding
 		CEJsonUserTypeSorted(NStr::CStr const &_Type, CJsonSorted const &_Value);
 		CEJsonUserTypeSorted(NStr::CStr const &_Type, CJsonSorted &&_Value);
 
-		bool operator == (CEJsonUserTypeSorted const &_Right) const;
-		COrdering_Partial operator <=> (CEJsonUserTypeSorted const &_Right) const;
+		bool operator == (CEJsonUserTypeSorted const &_Right) const noexcept;
+		COrdering_Partial operator <=> (CEJsonUserTypeSorted const &_Right) const noexcept;
 
 		NStr::CStr m_Type;
 		CJsonSorted m_Value;

@@ -166,7 +166,7 @@ namespace NMib::NEncoding
 		}
 
 		template <typename t_CJsonValue, bool t_bOrdered>
-		bool TCObjectEntry<t_CJsonValue, t_bOrdered>::operator == (TCObjectEntry const &_Right) const
+		bool TCObjectEntry<t_CJsonValue, t_bOrdered>::operator == (TCObjectEntry const &_Right) const noexcept
 		{
 			if (f_Name() != _Right.f_Name())
 				return false;
@@ -174,7 +174,7 @@ namespace NMib::NEncoding
 		}
 
 		template <typename t_CJsonValue, bool t_bOrdered>
-		COrdering_Partial TCObjectEntry<t_CJsonValue, t_bOrdered>::operator <=> (TCObjectEntry const &_Right) const
+		COrdering_Partial TCObjectEntry<t_CJsonValue, t_bOrdered>::operator <=> (TCObjectEntry const &_Right) const noexcept
 		{
 			if (auto Result = f_Name() <=> _Right.f_Name(); Result != 0)
 				return Result;

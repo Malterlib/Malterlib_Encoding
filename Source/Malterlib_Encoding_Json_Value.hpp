@@ -745,7 +745,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	bool TCJsonValue<t_CParent>::operator == (TCJsonValue const &_Right) const
+	bool TCJsonValue<t_CParent>::operator == (TCJsonValue const &_Right) const noexcept
 	{
 		if (this->f_Type() != _Right.f_Type())
 			return false;
@@ -753,7 +753,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	COrdering_Partial TCJsonValue<t_CParent>::operator <=> (TCJsonValue const &_Right) const
+	COrdering_Partial TCJsonValue<t_CParent>::operator <=> (TCJsonValue const &_Right) const noexcept
 	{
 		if (auto Result = this->f_Type() <=> _Right.f_Type(); Result != 0)
 			return Result;

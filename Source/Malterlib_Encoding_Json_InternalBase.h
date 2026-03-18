@@ -53,8 +53,8 @@ namespace NMib::NEncoding::NPrivate
 		TCObjectEntry();
 		~TCObjectEntry() = default;
 
-		bool operator == (TCObjectEntry const &_Right) const;
-		COrdering_Partial operator <=> (TCObjectEntry const &_Right) const;
+		bool operator == (TCObjectEntry const &_Right) const noexcept;
+		COrdering_Partial operator <=> (TCObjectEntry const &_Right) const noexcept;
 
 		NStr::CStr const &f_Name() const;
 		NStr::CStr const &f_Key() const;
