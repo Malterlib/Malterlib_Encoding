@@ -14,10 +14,10 @@ namespace NMib::NEncoding::NPrivate
 		static constexpr bool mc_bCustomParse = true;
 		static constexpr bool mc_bCustomGenerate = true;
 
-		NContainer::TCVector<mint> m_InEscapeParseDepth;
+		NContainer::TCVector<umint> m_InEscapeParseDepth;
 
 		template <typename tf_CParseContext, typename tf_CJson, typename tf_CStr>
-		static bool fs_GenerateValue(tf_CStr &o_String, tf_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags)
+		static bool fs_GenerateValue(tf_CStr &o_String, tf_CJson const &_Value, umint _Depth, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags)
 		{
 			switch (_Value.f_EType())
 			{

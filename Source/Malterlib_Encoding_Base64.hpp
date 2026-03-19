@@ -89,7 +89,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	mint TCBinaryStream_Base64<t_CStreamType>::fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite)
+	umint TCBinaryStream_Base64<t_CStreamType>::fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite)
 	{
 		if (mp_CurrentLoaded >= 0 && _Pos >=  mp_CurrentLoaded && _Pos < mp_CurrentLoaded + EChunkSizeData)
 		{
@@ -138,7 +138,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	void TCBinaryStream_Base64<t_CStreamType>::f_FeedBytes(const void *_pMem, mint _nBytes)
+	void TCBinaryStream_Base64<t_CStreamType>::f_FeedBytes(const void *_pMem, umint _nBytes)
 	{
 		if (!(mp_OpenFlags & NFile::EFileOpen_Write))
 			DMibErrorFile("File was not opened for write.");
@@ -146,8 +146,8 @@ namespace NMib::NEncoding
 		const uint8 *pMem = (const uint8 *)_pMem;
 		while (_nBytes)
 		{
-			mint Pos = fp_PrepareBlock(mp_FilePos, true);
-			mint ThisTime = fg_Min(_nBytes, (mint)EChunkSizeData - Pos);
+			umint Pos = fp_PrepareBlock(mp_FilePos, true);
+			umint ThisTime = fg_Min(_nBytes, (umint)EChunkSizeData - Pos);
 			NMemory::fg_MemCopy(mp_DecryptedData + Pos, pMem, ThisTime);
 			mp_bCurrentDirty = true;
 
@@ -160,7 +160,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	void TCBinaryStream_Base64<t_CStreamType>::f_ConsumeBytes(void *_pMem, mint _nBytes)
+	void TCBinaryStream_Base64<t_CStreamType>::f_ConsumeBytes(void *_pMem, umint _nBytes)
 	{
 		if (!(mp_OpenFlags & NFile::EFileOpen_Read))
 			DMibErrorFile("File was not opened for read.");
@@ -168,8 +168,8 @@ namespace NMib::NEncoding
 		uint8 *pMem = (uint8 *)_pMem;
 		while (_nBytes)
 		{
-			mint Pos = fp_PrepareBlock(mp_FilePos, false);
-			mint ThisTime = fg_Min(_nBytes, (mint)EChunkSizeData - Pos);
+			umint Pos = fp_PrepareBlock(mp_FilePos, false);
+			umint ThisTime = fg_Min(_nBytes, (umint)EChunkSizeData - Pos);
 			NMemory::fg_MemCopy(pMem, mp_DecryptedData + Pos, ThisTime);
 
 			mp_FilePos += ThisTime;
@@ -226,7 +226,7 @@ namespace NMib::NEncoding
 		return mp_pStream->f_Flush(_bLocalCacheOnly);
 	}
 	template <typename t_CStreamType>
-	void TCBinaryStream_Base64<t_CStreamType>::f_SetCacheSize(mint _CacheSize)
+	void TCBinaryStream_Base64<t_CStreamType>::f_SetCacheSize(umint _CacheSize)
 	{
 		return mp_pStream->f_SetCacheSize(_CacheSize);
 	}
@@ -242,7 +242,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	mint TCBinaryStream_Base64<t_CStreamType>::f_ContainerLengthLimit() const
+	umint TCBinaryStream_Base64<t_CStreamType>::f_ContainerLengthLimit() const
 	{
 		return NStream::fg_CapLengthLimit(f_GetLength() - f_GetPosition());
 	}

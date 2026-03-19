@@ -200,14 +200,14 @@ namespace NMib::NEncoding
 		//
 		// Array helpers
 		// =============
-		mint f_GetLen() const;
-		void f_SetLen(mint _Len);
+		umint f_GetLen() const;
+		void f_SetLen(umint _Len);
 
 		template <typename tf_CType>
 		CValue &f_Insert(tf_CType &&_Value);
 		CValue &f_Insert();
-		CValue const &operator [] (mint _Index) const;
-		CValue &operator [] (mint _Index);
+		CValue const &operator [] (umint _Index) const;
+		CValue &operator [] (umint _Index);
 
 		//
 		// Formatting

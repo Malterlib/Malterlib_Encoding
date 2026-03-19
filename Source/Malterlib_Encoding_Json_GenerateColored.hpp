@@ -26,9 +26,9 @@ namespace NMib::NEncoding
 				return AnsiEncoding.f_SyntaxColor(_Color, _String);
 			}
 
-			void f_AddPrefix(NStr::CStr &o_String, mint _Depth, ch8 const *_pPrettySeparator)
+			void f_AddPrefix(NStr::CStr &o_String, umint _Depth, ch8 const *_pPrettySeparator)
 			{
-				for (mint i = 0; i < _Depth; ++i)
+				for (umint i = 0; i < _Depth; ++i)
 					o_String += _pPrettySeparator;
 			}
 
@@ -83,7 +83,7 @@ namespace NMib::NEncoding
 				return f_Color(String, ESyntaxColor::ESyntaxColor_String);
 			}
 
-			void f_GenerateJsonObject(NStr::CStr &o_String, t_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
+			void f_GenerateJsonObject(NStr::CStr &o_String, t_CJson const &_Value, umint _Depth, ch8 const *_pPrettySeparator)
 			{
 				auto iChild = _Value.f_Object().f_OrderedIterator();
 				if (!iChild)
@@ -125,7 +125,7 @@ namespace NMib::NEncoding
 				o_String += "}";
 			}
 
-			void f_GenerateJsonArray(NStr::CStr &o_String, t_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
+			void f_GenerateJsonArray(NStr::CStr &o_String, t_CJson const &_Value, umint _Depth, ch8 const *_pPrettySeparator)
 			{
 				auto iChild = _Value.f_Array().f_GetIterator();
 				if (!iChild)
@@ -161,7 +161,7 @@ namespace NMib::NEncoding
 				o_String += "]";
 			}
 
-			void f_GenerateJsonValue(NStr::CStr &o_String, t_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator)
+			void f_GenerateJsonValue(NStr::CStr &o_String, t_CJson const &_Value, umint _Depth, ch8 const *_pPrettySeparator)
 			{
 				using namespace NStr;
 

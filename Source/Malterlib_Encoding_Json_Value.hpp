@@ -762,14 +762,14 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	mint TCJsonValue<t_CParent>::f_GetLen() const
+	umint TCJsonValue<t_CParent>::f_GetLen() const
 	{
 		fp_CheckType(EJsonType_Array);
 		return f_Array().f_GetLen();
 	}
 
 	template <typename t_CParent>
-	void TCJsonValue<t_CParent>::f_SetLen(mint _Len)
+	void TCJsonValue<t_CParent>::f_SetLen(umint _Len)
 	{
 		f_Array().f_SetLen(_Len);
 	}
@@ -781,14 +781,14 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJsonValue<t_CParent>::operator [] (mint _Index) const -> CValue const &
+	auto TCJsonValue<t_CParent>::operator [] (umint _Index) const -> CValue const &
 	{
 		fp_CheckType(EJsonType_Array);
 		return f_Array()[_Index];
 	}
 
 	template <typename t_CParent>
-	auto TCJsonValue<t_CParent>::operator [] (mint _Index) -> CValue &
+	auto TCJsonValue<t_CParent>::operator [] (umint _Index) -> CValue &
 	{
 		fp_CheckType(EJsonType_Array);
 		return f_Array()[_Index];

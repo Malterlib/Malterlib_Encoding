@@ -96,18 +96,18 @@ namespace
 	public:
 
 #if defined(DMibDebug) || defined(DMibSanitizerEnabled)
-		static constexpr mint mc_TestDataLength = 16 * 1024;
-		static constexpr mint mc_ArrayLength = 16 * 1024;
+		static constexpr umint mc_TestDataLength = 16 * 1024;
+		static constexpr umint mc_ArrayLength = 16 * 1024;
 #else
-		static constexpr mint mc_TestDataLength = 512 * 1024;
-		static constexpr mint mc_ArrayLength = 512 * 1024;
+		static constexpr umint mc_TestDataLength = 512 * 1024;
+		static constexpr umint mc_ArrayLength = 512 * 1024;
 #endif
 
 		CStr fp_GenerateTestData(bool _bFloat, CCoordinate &o_Average)
 		{
 			CJsonSorted Data;
 			auto &OutArray = Data["coordinates"].f_Array();
-			for (mint i = 0; i < mc_TestDataLength; ++i)
+			for (umint i = 0; i < mc_TestDataLength; ++i)
 			{
 				auto &Entry = OutArray.f_Insert();
 				Entry["name"] = "{} {}"_f << NCryptography::fg_RandomID(6) << (NMisc::fg_Random().f_GetValue<uint32>() % 10000);
@@ -151,15 +151,15 @@ namespace
 
 				auto JsonString = _GenerateJson();
 
-				mint nIterations = 11;
+				umint nIterations = 11;
 
-				mint RapidJsonLen = 0;
+				umint RapidJsonLen = 0;
 				{
 					rapidjson::Document Document;
 					Document.Parse<rapidjson::kParseFullPrecisionFlag>(JsonString.f_GetStr());
 
 					CTestPerformanceMeasure Measure("RapidJson");
-					for (mint i = 0; i < nIterations; ++i)
+					for (umint i = 0; i < nIterations; ++i)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -178,13 +178,13 @@ namespace
 					}
 					PerfTotal.f_AddBaseline(Measure);
 				}
-				mint NlohmannJsonLen = 0;
+				umint NlohmannJsonLen = 0;
 				{
 					auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
 					auto Document = nlohmann::json::parse(JsonStringView);
 
 					CTestPerformanceMeasure Measure("NlohmannJson");
-					for (mint i = 0; i < nIterations; ++i)
+					for (umint i = 0; i < nIterations; ++i)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -198,12 +198,12 @@ namespace
 					}
 					PerfTotal.f_AddReference(Measure);
 				}
-				mint MalterlibLen = 0;
+				umint MalterlibLen = 0;
 				{
 					auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("Malterlib");
-					for (mint i = 0; i < nIterations; ++i)
+					for (umint i = 0; i < nIterations; ++i)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -217,12 +217,12 @@ namespace
 					}
 					PerfTotal.f_Add(Measure);
 				}
-				mint MalterlibEJsonLen = 0;
+				umint MalterlibEJsonLen = 0;
 				{
 					auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("MalterlibEJson");
-					for (mint i = 0; i < nIterations; ++i)
+					for (umint i = 0; i < nIterations; ++i)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -260,12 +260,12 @@ namespace
 				CCoordinate ExpectedAverage;
 				auto JsonString = fp_GenerateTestData(true, ExpectedAverage);
 
-				mint nIterations = 11;
+				umint nIterations = 11;
 
 				CCoordinate RapidJsonResult;
 				{
 					CTestPerformanceMeasure Measure("RapidJson");
-					for (mint i = 0; i < nIterations; ++i)
+					for (umint i = 0; i < nIterations; ++i)
 					{
 						Measure.f_Start();
 						RapidJsonResult = [&]() inline_never -> CCoordinate
@@ -301,7 +301,7 @@ namespace
 				CCoordinate RapidJsonInaccurateResult;
 				{
 					CTestPerformanceMeasure Measure("RapidJsonInaccurate");
-					for (mint i = 0; i < nIterations; ++i)
+					for (umint i = 0; i < nIterations; ++i)
 					{
 						Measure.f_Start();
 						RapidJsonInaccurateResult = [&]() inline_never -> CCoordinate
@@ -337,7 +337,7 @@ namespace
 				if constexpr (tf_bDoCalculation)
 				{
 					CTestPerformanceMeasure Measure("DawJsonLink");
-					for (mint i = 0; i < nIterations; ++i)
+					for (umint i = 0; i < nIterations; ++i)
 					{
 						auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
 
@@ -370,7 +370,7 @@ namespace
 				CCoordinate NlohmannJsonResult;
 				{
 					CTestPerformanceMeasure Measure("NlohmannJson");
-					for (mint i = 0; i < nIterations; ++i)
+					for (umint i = 0; i < nIterations; ++i)
 					{
 						auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
 
@@ -406,7 +406,7 @@ namespace
 				CCoordinate MalterlibResult;
 				{
 					CTestPerformanceMeasure Measure("Malterlib");
-					for (mint i = 0; i < nIterations; ++i)
+					for (umint i = 0; i < nIterations; ++i)
 					{
 						Measure.f_Start();
 						MalterlibResult = [&]() inline_never -> CCoordinate
@@ -441,7 +441,7 @@ namespace
 				CCoordinate MalterlibEJsonResult;
 				{
 					CTestPerformanceMeasure Measure("MalterlibEJson");
-					for (mint i = 0; i < nIterations; ++i)
+					for (umint i = 0; i < nIterations; ++i)
 					{
 						Measure.f_Start();
 						MalterlibEJsonResult = [&]() inline_never -> CCoordinate

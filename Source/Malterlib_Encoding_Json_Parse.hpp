@@ -19,7 +19,7 @@ namespace NMib::NEncoding::NJson
 		uint32 StartColumn = m_StartColumn;
 
 		auto *pParse = m_pStartParse;
-		mint Line = 1;
+		umint Line = 1;
 		auto *pLastLine = pParse;
 		while (*pParse)
 		{
@@ -333,7 +333,7 @@ namespace NMib::NEncoding::NJson
 						{
 							bool bFailed = false;
 							uch8 ToParse[5];
-							mint iToParse = 0;
+							umint iToParse = 0;
 							auto pParseStart = pParse;
 							while (*pParse && iToParse < 4)
 							{

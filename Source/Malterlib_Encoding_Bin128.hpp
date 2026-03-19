@@ -56,16 +56,16 @@ namespace NMib::NEncoding
 	{
 		mp_pStream->f_SetPosition(mp_ParentFilePos + (mp_CurrentLoaded/7)*8);
 
-		mint nBytes = (fg_Min(mp_WriteFileLen - mp_CurrentLoaded, NStream::CFilePos(EChunkSizeData)) * 8 + 6) / 7;
+		umint nBytes = (fg_Min(mp_WriteFileLen - mp_CurrentLoaded, NStream::CFilePos(EChunkSizeData)) * 8 + 6) / 7;
 
 		uint64 ByteData = 0;
 		NMemory::fg_MemCopy(&ByteData, mp_DecryptedData, EChunkSizeData);
 		ByteData = fg_ByteSwapBE(ByteData);
 
-		mint Shift = 7*7 + 8;
+		umint Shift = 7*7 + 8;
 		uint8 Temp[EChunkSizeBin128];
 
-		for (mint iByte = 0; iByte < nBytes; ++iByte)
+		for (umint iByte = 0; iByte < nBytes; ++iByte)
 		{
 			auto Shifted = ByteData >> Shift;
 			Temp[iByte] = ((Shifted) & 0x7f) + mp_Offset;
@@ -77,7 +77,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	mint TCBinaryStream_Bin128<t_CStreamType>::fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite)
+	umint TCBinaryStream_Bin128<t_CStreamType>::fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite)
 	{
 		if (mp_CurrentLoaded >= 0 && _Pos >=  mp_CurrentLoaded && _Pos < mp_CurrentLoaded + EChunkSizeData)
 		{
@@ -103,14 +103,14 @@ namespace NMib::NEncoding
 		else
 		{
 			mp_pStream->f_SetPosition(mp_ParentFilePos + BlockPos);
-			mint nBytesIn = fg_Min(ParentLength - BlockPos, NStream::CFilePos(EChunkSizeBin128));
-			mint nBytesOut = (nBytesIn * 7) / 8;
+			umint nBytesIn = fg_Min(ParentLength - BlockPos, NStream::CFilePos(EChunkSizeBin128));
+			umint nBytesOut = (nBytesIn * 7) / 8;
 
 			uint8 InBytes[EChunkSizeBin128] = {0};
 			mp_pStream->f_ConsumeBytes(InBytes, nBytesIn);
-			mint Shift = 64;
+			umint Shift = 64;
 			uint64 ByteDataOut = 0;
-			for (mint iByte = 0; iByte < nBytesIn; ++iByte)
+			for (umint iByte = 0; iByte < nBytesIn; ++iByte)
 			{
 				Shift -= 7;
 				ByteDataOut |= uint64(InBytes[iByte] - mp_Offset) << Shift;
@@ -126,7 +126,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	void TCBinaryStream_Bin128<t_CStreamType>::f_FeedBytes(const void *_pMem, mint _nBytes)
+	void TCBinaryStream_Bin128<t_CStreamType>::f_FeedBytes(const void *_pMem, umint _nBytes)
 	{
 		if (!(mp_OpenFlags & NFile::EFileOpen_Write))
 			DMibErrorFile("File was not opened for write.");
@@ -134,8 +134,8 @@ namespace NMib::NEncoding
 		const uint8 *pMem = (const uint8 *)_pMem;
 		while (_nBytes)
 		{
-			mint Pos = fp_PrepareBlock(mp_FilePos, true);
-			mint ThisTime = fg_Min(_nBytes, (mint)EChunkSizeData - Pos);
+			umint Pos = fp_PrepareBlock(mp_FilePos, true);
+			umint ThisTime = fg_Min(_nBytes, (umint)EChunkSizeData - Pos);
 			NMemory::fg_MemCopy(mp_DecryptedData + Pos, pMem, ThisTime);
 			mp_bCurrentDirty = true;
 
@@ -148,7 +148,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	void TCBinaryStream_Bin128<t_CStreamType>::f_ConsumeBytes(void *_pMem, mint _nBytes)
+	void TCBinaryStream_Bin128<t_CStreamType>::f_ConsumeBytes(void *_pMem, umint _nBytes)
 	{
 		if (!(mp_OpenFlags & NFile::EFileOpen_Read))
 			DMibErrorFile("File was not opened for read.");
@@ -156,12 +156,12 @@ namespace NMib::NEncoding
 		uint8 *pMem = (uint8 *)_pMem;
 		while (_nBytes)
 		{
-			mint Pos = fp_PrepareBlock(mp_FilePos, false);
+			umint Pos = fp_PrepareBlock(mp_FilePos, false);
 
 			if (mp_FilePos >= mp_WriteFileLen)
 				DMibErrorFile("Read past end of file");
 
-			mint ThisTime = fg_Min(_nBytes, (mint)EChunkSizeData - Pos);
+			umint ThisTime = fg_Min(_nBytes, (umint)EChunkSizeData - Pos);
 			NMemory::fg_MemCopy(pMem, mp_DecryptedData + Pos, ThisTime);
 
 			mp_FilePos += ThisTime;
@@ -230,7 +230,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	void TCBinaryStream_Bin128<t_CStreamType>::f_SetCacheSize(mint _CacheSize)
+	void TCBinaryStream_Bin128<t_CStreamType>::f_SetCacheSize(umint _CacheSize)
 	{
 		return mp_pStream->f_SetCacheSize(_CacheSize);
 	}
@@ -245,7 +245,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	mint TCBinaryStream_Bin128<t_CStreamType>::f_ContainerLengthLimit() const
+	umint TCBinaryStream_Bin128<t_CStreamType>::f_ContainerLengthLimit() const
 	{
 		return NStream::fg_CapLengthLimit(f_GetLength() - f_GetPosition());
 	}

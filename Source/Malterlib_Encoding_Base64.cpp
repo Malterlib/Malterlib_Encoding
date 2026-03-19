@@ -57,7 +57,7 @@ namespace NMib::NEncoding
 		{
 			TCBinaryStream_Base64<> Base64;
 			Base64.f_Open(&Stream, NFile::EFileOpen_Read);
-			mint FLen = Base64.f_GetLength();
+			umint FLen = Base64.f_GetLength();
 			Base64.f_ConsumeBytes(Ret.f_GetStr(FLen+1), FLen);
 			Ret.f_SetAt(FLen, 0);
 		}
@@ -88,7 +88,7 @@ namespace NMib::NEncoding
 		{
 			TCBinaryStream_Base64<> Base64;
 			Base64.f_Open(&Stream, NFile::EFileOpen_Read);
-			mint FLen = Base64.f_GetLength();
+			umint FLen = Base64.f_GetLength();
 			_Data.f_SetLen(FLen);
 			Base64.f_ConsumeBytes(_Data.f_GetArray(), FLen);
 		}
@@ -118,7 +118,7 @@ namespace NMib::NEncoding
 		{
 			TCBinaryStream_Base64<> Base64;
 			Base64.f_Open(&Stream, NFile::EFileOpen_Read);
-			mint FLen = Base64.f_GetLength();
+			umint FLen = Base64.f_GetLength();
 			_Data.f_SetLen(FLen);
 			Base64.f_ConsumeBytes(_Data.f_GetArray(), FLen);
 		}

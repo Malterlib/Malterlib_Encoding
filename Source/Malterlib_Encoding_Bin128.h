@@ -12,7 +12,7 @@ namespace NMib::NEncoding
 	{
 	private:
 		void fp_WriteDirty();
-		mint fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite);
+		umint fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite);
 
 		NStream::CBinaryStream *mp_pStream;
 		NFile::EFileOpen mp_OpenFlags;
@@ -43,8 +43,8 @@ namespace NMib::NEncoding
 		~TCBinaryStream_Bin128();
 		void f_Close();
 		void f_Open(NStream::CBinaryStream *_pStream, NFile::EFileOpen _OpenFlags, NStream::CFilePos _ParentLength = -1);
-		void f_FeedBytes(const void *_pMem, mint _nBytes);
-		void f_ConsumeBytes(void *_pMem, mint _nBytes);
+		void f_FeedBytes(const void *_pMem, umint _nBytes);
+		void f_ConsumeBytes(void *_pMem, umint _nBytes);
 		bool f_IsValid() const;
 		bool f_IsAtEndOfStream() const;
 		NStream::CFilePos f_GetPosition() const;
@@ -53,9 +53,9 @@ namespace NMib::NEncoding
 		void f_AddPosition(NStream::CFilePos _Pos);
 		bool f_IsValidReadPosition(NStream::CFilePos _Pos) const;
 		void f_Flush(bool _bLocalCacheOnly);
-		void f_SetCacheSize(mint _CacheSize);
+		void f_SetCacheSize(umint _CacheSize);
 		NStream::CFilePos f_GetLength() const;
-		mint f_ContainerLengthLimit() const;
+		umint f_ContainerLengthLimit() const;
 		void f_SetLength(NStream::CFilePos _Length) { DMibError("Not supported"); }
 
 	};

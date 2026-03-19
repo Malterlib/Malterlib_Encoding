@@ -10,10 +10,10 @@
 namespace NMib::NEncoding::NJson
 {
 	template <typename tf_CStr>
-	static void fg_AddPrefix(tf_CStr &o_String, mint _Depth, ch8 const *_pPrettySeparator)
+	static void fg_AddPrefix(tf_CStr &o_String, umint _Depth, ch8 const *_pPrettySeparator)
 	{
-		mint SeparatorLength = NStr::fg_StrLen(_pPrettySeparator);
-		for (mint i = 0; i < _Depth; ++i)
+		umint SeparatorLength = NStr::fg_StrLen(_pPrettySeparator);
+		for (umint i = 0; i < _Depth; ++i)
 			o_String.f_AddString(_pPrettySeparator, SeparatorLength);
 	}
 
@@ -22,7 +22,7 @@ namespace NMib::NEncoding::NJson
 	{
 		using namespace NStr;
 
-		mint StartOfLine = o_String.f_GetStrLen();
+		umint StartOfLine = o_String.f_GetStrLen();
 
 		if constexpr (tf_bAddQuotes)
 			o_String += t_QuoteCharacter;
@@ -126,7 +126,7 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <typename tf_CParseContext, typename tf_CStr, typename tf_CJson>
-	static void fg_GenerateJsonObject(tf_CStr &o_String, tf_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags)
+	static void fg_GenerateJsonObject(tf_CStr &o_String, tf_CJson const &_Value, umint _Depth, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags)
 	{
 		auto iChild = _Value.f_OrderedIterator();
 		if (!iChild)
@@ -173,7 +173,7 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <typename tf_CParseContext, typename tf_CStr, typename tf_CJson>
-	static void fg_GenerateJsonArray(tf_CStr &o_String, tf_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags)
+	static void fg_GenerateJsonArray(tf_CStr &o_String, tf_CJson const &_Value, umint _Depth, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags)
 	{
 		auto iChild = _Value.f_GetIterator();
 		if (!iChild)
@@ -212,7 +212,7 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <typename tf_CParseContext, typename tf_CStr, typename tf_CJson>
-	static void fg_GenerateJsonValue(tf_CStr &o_String, tf_CJson const &_Value, mint _Depth, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags)
+	static void fg_GenerateJsonValue(tf_CStr &o_String, tf_CJson const &_Value, umint _Depth, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags)
 	{
 		using namespace NStr;
 

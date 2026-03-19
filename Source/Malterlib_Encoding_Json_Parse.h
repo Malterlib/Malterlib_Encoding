@@ -43,7 +43,7 @@ namespace NMib::NEncoding::NJson
 		uint32 m_StartLine = 0;
 		uint32 m_StartColumn = 0;
 		uint32 m_StartCharacter = 0;
-		mint m_ObjectArrayParseDepth = 0;
+		umint m_ObjectArrayParseDepth = 0;
 		uch8 const *m_pStartParse;
 		bool m_bConvertNullToSpace = false;
 		EJsonDialectFlag m_Flags = EJsonDialectFlag_None;
