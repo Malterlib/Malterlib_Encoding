@@ -1,3 +1,5 @@
+// Copyright © Unbroken AB
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 #include <Mib/Encoding/EJson>
 #include <Mib/Encoding/JsonShortcuts>
