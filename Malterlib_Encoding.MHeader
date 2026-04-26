@@ -11,6 +11,9 @@ Import "../Core/Lib_Malterlib.MTarget"
 	{
 		Type "External"
 		Remotes =+ {Name: "upstream", URL: "https://github.com/Tencent/rapidjson.git"}
+		{
+			!!MalterlibAddUpstreams true
+		}
 	}
 }
 
@@ -23,6 +26,9 @@ Import "../Core/Lib_Malterlib.MTarget"
 		Type "External"
 		DefaultUpstreamBranch "release"
 		Remotes =+ {Name: "upstream", URL: "https://github.com/beached/daw_json_link.git"}
+		{
+			!!MalterlibAddUpstreams true
+		}
 	}
 }
 
@@ -34,6 +40,9 @@ Import "../Core/Lib_Malterlib.MTarget"
 	{
 		Type "External"
 		Remotes =+ {Name: "upstream", URL: "https://github.com/beached/header_libraries.git"}
+		{
+			!!MalterlibAddUpstreams true
+		}
 	}
 }
 
@@ -45,6 +54,9 @@ Import "../Core/Lib_Malterlib.MTarget"
 	{
 		Type "External"
 		Remotes =+ {Name: "upstream", URL: "https://github.com/beached/utf_range.git"}
+		{
+			!!MalterlibAddUpstreams true
+		}
 	}
 }
 
@@ -56,6 +68,9 @@ Import "../Core/Lib_Malterlib.MTarget"
 	{
 		Type "External"
 		Remotes =+ {Name: "upstream", URL: "https://github.com/nlohmann/json.git"}
+		{
+			!!MalterlibAddUpstreams true
+		}
 	}
 }
 
@@ -122,7 +137,7 @@ Property
 Property
 {
 	!!MalterlibEnableInternalTests true
-	
+
 	MalterlibTests =+ "Malterlib_Encoding"
 	MalterlibTestFiles_Malterlib_Encoding: [type(CEntity)] = ["Test/*"->MakeAbsolute()]
 	MalterlibTestExtraGroups_Malterlib_Encoding: [string] = ["{Test}/{Malterlib_Encoding}"]
