@@ -3,6 +3,7 @@
 
 #include <Mib/Encoding/EJson>
 #include <Mib/Encoding/JsonShortcuts>
+#include <Mib/CommandLine/AnsiEncodingParse>
 #include <Mib/Test/Exception>
 #include <Mib/Stream/ByteVector>
 #include "Test_Malterlib_Encoding_JsonShared.h"
@@ -15,6 +16,49 @@ namespace
 	{
 		NStr::CStr mp_TestFilePath;
 	public:
+		static umint fs_CountForegroundColorChanges(NStr::CStr const &_Text)
+		{
+			umint nForegroundColors = 0;
+			NCommandLine::CAnsiEncodingParse::fs_Parse
+				(
+					_Text
+					, [](NStr::CStr const &) -> bool
+					{
+						return true;
+					}
+					, [&](NCommandLine::CAnsiEncodingParse::CPropertyChange const &_Property)
+					{
+						if (_Property.f_IsOfType<NCommandLine::CAnsiEncodingParse::CForegroundColor>())
+							++nForegroundColors;
+					}
+				)
+			;
+			return nForegroundColors;
+		}
+
+		static umint fs_CountForegroundColorChanges(NStr::CStr const &_Text, uint8 _Red, uint8 _Green, uint8 _Blue)
+		{
+			umint nForegroundColors = 0;
+			NCommandLine::CAnsiEncodingParse::fs_Parse
+				(
+					_Text
+					, [](NStr::CStr const &) -> bool
+					{
+						return true;
+					}
+					, [&](NCommandLine::CAnsiEncodingParse::CPropertyChange const &_Property)
+					{
+						if (auto const *pForeground = _Property.f_TryGetAsType<NCommandLine::CAnsiEncodingParse::CForegroundColor>())
+						{
+							if (pForeground->m_bEnabled && pForeground->m_Red == _Red && pForeground->m_Green == _Green && pForeground->m_Blue == _Blue)
+								++nForegroundColors;
+						}
+					}
+				)
+			;
+			return nForegroundColors;
+		}
+
 		CEJson_Tests()
 		{
 			mp_TestFilePath = NFile::CFile::fs_GetProgramDirectory() + "/TestEJson.json";
@@ -309,13 +353,25 @@ namespace
 			using namespace NMib::NStr;
 			using namespace NMib::NContainer;
 
-			CEJsonSorted Test;
-			CEJsonOrdered Test2(CEJsonOrdered::fs_FromCompatible(Test));
-			CEJsonSorted Test3(CEJsonSorted::fs_FromCompatible(Test2));
+			DMibTestSuite("Compatible Comments")
+			{
+				CEJsonSorted Test;
+				CEJsonOrdered Test2(CEJsonOrdered::fs_FromCompatible(Test));
+				CEJsonSorted Test3(CEJsonSorted::fs_FromCompatible(Test2));
 
-			CJsonSorted Test4;
-			CJsonOrdered Test5(CJsonOrdered::fs_FromCompatible(Test4));
-			CJsonSorted Test6(CJsonSorted::fs_FromCompatible(Test5));
+				CJsonSorted Test4;
+				CJsonOrdered Test5(CJsonOrdered::fs_FromCompatible(Test4));
+				CJsonSorted Test6(CJsonSorted::fs_FromCompatible(Test5));
+
+				CEJsonOrderedWithComments TestComments = int64(1);
+				CEJsonSortedWithComments TestSortedComments(CEJsonSortedWithComments::fs_FromCompatible(TestComments));
+				DMibExpect(TestSortedComments.f_Integer(), ==, 1);
+				DMibExpect(CEJsonOrdered::fs_FromCompatible(TestComments).f_Integer(), ==, 1);
+				DMibExpect(CEJsonSorted::fs_FromCompatible(TestComments).f_Integer(), ==, 1);
+				DMibExpect(CEJsonOrderedWithComments::fs_FromCompatible(Test3).f_IsValid(), ==, false);
+				DMibExpect(CEJsonOrderedWithComments::fs_FromCompatible(TestSortedComments).f_Integer(), ==, 1);
+				DMibExpect(CEJsonSortedWithComments::fs_FromCompatible(Test2).f_IsValid(), ==, false);
+			};
 
 			DMibTestCategory("Shared Sorted")
 			{
@@ -459,6 +515,314 @@ namespace
 
 				DMibExpectTrue((_= {}).f_IsObject());
 				DMibExpectFalse((CEJsonSorted{}).f_IsValid());
+			};
+			DMibTestSuite("JSONC")
+			{
+				NStr::CStr DateText =
+					"// file\n"
+					"{\n"
+					"\t\"$date\": 12345 // keep\n"
+					"}\n"
+					"// eof\n"
+				;
+				auto CollapsedDate = CEJsonOrderedWithComments::fs_FromStringJsonC(DateText);
+				DMibExpectTrue(CollapsedDate.f_IsDate());
+				DMibExpect(CollapsedDate.f_Date(), ==, NTime::CTimeConvert::fs_FromUnixMilliseconds(12345));
+				DMibExpect(CollapsedDate.f_ToStringJsonC(), ==, DateText);
+				DMibExpect(NCommandLine::CAnsiEncodingParse::fs_StripEncoding(CollapsedDate.f_ToStringColoredJsonC(NCommandLine::EAnsiEncodingFlag_AllFeatures)), ==, DateText);
+				DMibExpect(CollapsedDate.f_ToJson().f_ToStringJsonC(), ==, DateText);
+
+				auto NonRecording = CEJsonOrdered::fs_FromStringJsonC(DateText);
+				DMibExpectTrue(NonRecording.f_IsDate());
+				DMibExpect(NonRecording.f_ToStringJsonC().f_Find("keep"), <, 0);
+
+				auto TrailingComma = CEJsonOrdered::fs_FromStringJsonC("{\"$date\":12345,}");
+				DMibExpectTrue(TrailingComma.f_IsDate());
+			};
+			DMibTestSuite("JSON5 Comment Recording")
+			{
+				NStr::CStr DateText =
+					"{\n"
+					"	$date: 12345 // keep\n"
+					"}"
+				;
+				auto CollapsedDate = CEJsonOrderedWithComments::fs_FromStringJson5(DateText);
+				DMibExpectTrue(CollapsedDate.f_IsDate());
+				DMibExpect(CollapsedDate.f_Date(), ==, NTime::CTimeConvert::fs_FromUnixMilliseconds(12345));
+				DMibExpect
+					(
+						CollapsedDate.f_ToStringJson5()
+						, ==
+						, "{\n"
+						"	\"$date\": 12345 // keep\n"
+						"}"
+					)
+				;
+				DMibExpect(CollapsedDate.f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag_None), ==, CollapsedDate.f_ToStringJson5());
+				DMibExpect(CollapsedDate.f_ToJson().f_ToStringJson5(), ==, CollapsedDate.f_ToStringJson5());
+				auto CollapsedDateMove = CEJsonOrderedWithComments::fs_FromStringJson5(DateText);
+				DMibExpect(fg_Move(CollapsedDateMove).f_ToJson().f_ToStringJson5(), ==, CollapsedDate.f_ToStringJson5());
+				auto CollapsedDateJson = CJsonOrderedWithComments::fs_FromStringJson5(DateText);
+				DMibExpect(CEJsonOrderedWithComments::fs_FromJson(CollapsedDateJson).f_ToStringJson5(), ==, CollapsedDate.f_ToStringJson5());
+				auto CollapsedDateMoveJson = CJsonOrderedWithComments::fs_FromStringJson5(DateText);
+				DMibExpect(CEJsonOrderedWithComments::fs_FromJson(fg_Move(CollapsedDateMoveJson)).f_ToStringJson5(), ==, CollapsedDate.f_ToStringJson5());
+				auto SortedCollapsedDate = CEJsonSortedWithComments::fs_FromStringJson5(DateText);
+				DMibExpectTrue(SortedCollapsedDate.f_IsDate());
+				DMibExpect(SortedCollapsedDate.f_ToStringJson5(), ==, CollapsedDate.f_ToStringJson5());
+				auto SortedStreamedDate = NStream::fg_FromByteVector<CEJsonSortedWithComments>(NStream::fg_ToByteVector(SortedCollapsedDate));
+				DMibExpect(SortedStreamedDate.f_ToStringJson5(), ==, CollapsedDate.f_ToStringJson5());
+
+				NStr::CStr BinaryText =
+					"{\n"
+					"	$binary: 'AAECAw==' // keep\n"
+					"}"
+				;
+				auto CollapsedBinary = CEJsonOrderedWithComments::fs_FromStringJson5(BinaryText);
+				DMibExpectTrue(CollapsedBinary.f_IsBinary());
+				DMibExpect(CollapsedBinary.f_Binary().f_GetLen(), ==, 4);
+				DMibExpect
+					(
+						CollapsedBinary.f_ToStringJson5()
+						, ==
+						, "{\n"
+						"	\"$binary\": \"AAECAw==\" // keep\n"
+						"}"
+					)
+				;
+				DMibExpect(CollapsedBinary.f_ToJson().f_ToStringJson5(), ==, CollapsedBinary.f_ToStringJson5());
+				auto CollapsedBinaryJson = CJsonOrderedWithComments::fs_FromStringJson5(BinaryText);
+				DMibExpect(CEJsonOrderedWithComments::fs_FromJson(CollapsedBinaryJson).f_ToStringJson5(), ==, CollapsedBinary.f_ToStringJson5());
+				auto CollapsedBinaryMoveJson = CJsonOrderedWithComments::fs_FromStringJson5(BinaryText);
+				DMibExpect(CEJsonOrderedWithComments::fs_FromJson(fg_Move(CollapsedBinaryMoveJson)).f_ToStringJson5(), ==, CollapsedBinary.f_ToStringJson5());
+
+				NStr::CStr UserTypeText =
+					"{\n"
+					"	$type: 'Custom',\n"
+					"	$value: {\n"
+					"		// payload\n"
+					"		inner: 5,\n"
+					"	},\n"
+					"}"
+				;
+				auto CollapsedUserType = CEJsonOrderedWithComments::fs_FromStringJson5(UserTypeText);
+				DMibExpectTrue(CollapsedUserType.f_IsUserType());
+				DMibExpect(CollapsedUserType.f_UserType().m_Type, ==, "Custom");
+				DMibExpect(CollapsedUserType.f_UserType().m_Value["inner"].f_Integer(), ==, 5);
+				auto iRecordedPayload = CollapsedUserType.f_UserType().m_Value.f_Object().f_OrderedIterator();
+				DMibExpect(iRecordedPayload->f_KeyTrivia().f_Leading(), ==, "\n\t\t// payload\n\t\t");
+				DMibExpect(iRecordedPayload->f_Name(), ==, "inner");
+				DMibExpect(iRecordedPayload->f_Value().f_Trivia().f_Trailing(), ==, ",\n\t");
+				DMibExpect
+					(
+						CollapsedUserType.f_ToStringJson5()
+						, ==
+						, "{\n"
+						"	\"$type\": 'Custom',\n"
+						"	\"$value\": {\n"
+						"		// payload\n"
+						"		inner: 5,\n"
+						"	}\n"
+						"}"
+					)
+				;
+				auto StreamedUserType = NStream::fg_FromByteVector<CEJsonOrderedWithComments>(NStream::fg_ToByteVector(CollapsedUserType));
+				DMibExpect(StreamedUserType.f_ToStringJson5(), ==, CollapsedUserType.f_ToStringJson5());
+				auto SortedCollapsedUserType = CEJsonSortedWithComments::fs_FromStringJson5(UserTypeText);
+				auto SortedStreamedUserType = NStream::fg_FromByteVector<CEJsonSortedWithComments>(NStream::fg_ToByteVector(SortedCollapsedUserType));
+				DMibExpect(SortedStreamedUserType.f_ToStringJson5(), ==, SortedCollapsedUserType.f_ToStringJson5());
+
+				NStr::CStr UserTypeValueCommentText =
+					"{\n"
+					"	$type: 'Custom',\n"
+					"	$value: { inner: 5 } // keep\n"
+					"}"
+				;
+				auto CollapsedUserTypeValueComment = CEJsonOrderedWithComments::fs_FromStringJson5(UserTypeValueCommentText);
+				DMibExpectTrue(CollapsedUserTypeValueComment.f_IsUserType());
+				DMibExpect(CollapsedUserTypeValueComment.f_ToJson().f_ToStringJson5(), ==, CollapsedUserTypeValueComment.f_ToStringJson5());
+				auto CollapsedUserTypeValueCommentJson = CJsonOrderedWithComments::fs_FromStringJson5(UserTypeValueCommentText);
+				DMibExpect(CEJsonOrderedWithComments::fs_FromJson(CollapsedUserTypeValueCommentJson).f_ToStringJson5(), ==, CollapsedUserTypeValueComment.f_ToStringJson5());
+				auto CollapsedUserTypeValueCommentMoveJson = CJsonOrderedWithComments::fs_FromStringJson5(UserTypeValueCommentText);
+				DMibExpect(CEJsonOrderedWithComments::fs_FromJson(fg_Move(CollapsedUserTypeValueCommentMoveJson)).f_ToStringJson5(), ==, CollapsedUserTypeValueComment.f_ToStringJson5());
+
+				NStr::CStr EscapeText =
+					"{\n"
+					"	$escape: { value: 1 } // keep\n"
+					"}"
+				;
+				auto CollapsedEscape = CEJsonOrderedWithComments::fs_FromStringJson5(EscapeText);
+				DMibExpectTrue(CollapsedEscape.f_IsObject());
+				DMibExpect(CollapsedEscape["value"].f_Integer(), ==, 1);
+				DMibExpect
+					(
+						CollapsedEscape.f_ToStringJson5()
+						, ==
+						, "{ value: 1 // keep\n"
+						"}"
+					)
+				;
+				NStr::CStr EmptyEscapedObjectText = "{ $escape: { /* keep */ } }";
+				auto EmptyEscapedObject = CEJsonOrderedWithComments::fs_FromStringJson5(EmptyEscapedObjectText);
+				DMibExpectTrue(EmptyEscapedObject.f_IsObject());
+				DMibExpect(EmptyEscapedObject.f_Object().f_IsEmpty(), ==, true);
+				DMibExpect(EmptyEscapedObject.f_ToStringJson5(), ==, "{ /* keep */ }");
+				DMibExpect(NCommandLine::CAnsiEncodingParse::fs_StripEncoding(EmptyEscapedObject.f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag_AllFeatures)), ==, "{ /* keep */ }");
+				auto EmptyEscapedObjectJson = CJsonOrderedWithComments::fs_FromStringJson5(EmptyEscapedObjectText);
+				DMibExpect(CEJsonOrderedWithComments::fs_FromJson(EmptyEscapedObjectJson).f_ToStringJson5(), ==, EmptyEscapedObject.f_ToStringJson5());
+				auto EmptyEscapedObjectMoveJson = CJsonOrderedWithComments::fs_FromStringJson5(EmptyEscapedObjectText);
+				DMibExpect(CEJsonOrderedWithComments::fs_FromJson(fg_Move(EmptyEscapedObjectMoveJson)).f_ToStringJson5(), ==, EmptyEscapedObject.f_ToStringJson5());
+				auto EmptyEscapedObjectColoredJson = CJsonOrderedWithComments::fs_FromStringJson5(EmptyEscapedObjectText);
+				DMibExpect
+					(
+						NCommandLine::CAnsiEncodingParse::fs_StripEncoding(CEJsonOrderedWithComments::fs_FromJson(EmptyEscapedObjectColoredJson).f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag_AllFeatures))
+						, ==
+						, EmptyEscapedObject.f_ToStringJson5()
+					)
+				;
+				NStr::CStr RootTrailingLineCommentText = "{ value: 1 }// eof";
+				auto RootTrailingLineComment = CEJsonOrderedWithComments::fs_FromStringJson5(RootTrailingLineCommentText);
+				DMibExpect(RootTrailingLineComment.f_ToStringJson5(), ==, RootTrailingLineCommentText);
+				DMibExpect
+					(
+						NCommandLine::CAnsiEncodingParse::fs_StripEncoding(RootTrailingLineComment.f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag_AllFeatures))
+						, ==
+						, RootTrailingLineCommentText
+					)
+				;
+
+				CEJsonOrderedWithComments NativeDate;
+				NativeDate = NTime::CTimeConvert::fs_FromUnixMilliseconds(12345);
+				auto NativeDateText = NativeDate.f_ToStringJson5(nullptr);
+				DMibExpect(NativeDateText, ==, "{\"$date\":12345}");
+				auto NativeRecordedDate = CEJsonOrderedWithComments::fs_FromStringJson5(NativeDateText);
+				DMibExpectTrue(NativeRecordedDate.f_IsDate());
+
+				CEJsonOrderedWithComments NativeBinary;
+				NativeBinary = NContainer::fg_CreateVector<uint8>(0, 1, 2, 3);
+				auto NativeBinaryText = NativeBinary.f_ToStringJson5(nullptr);
+				DMibExpect(NativeBinaryText, ==, "{\"$binary\":\"AAECAw==\"}");
+				auto NativeRecordedBinary = CEJsonOrderedWithComments::fs_FromStringJson5(NativeBinaryText);
+				DMibExpectTrue(NativeRecordedBinary.f_IsBinary());
+
+				CEJsonOrderedWithComments NativeUserType;
+				auto &UserType = NativeUserType.f_UserType();
+				UserType.m_Type = "Commented";
+				UserType.m_Value = EJsonType_Object;
+				NStr::CStr PayloadKey("inner");
+				PayloadKey.f_SetUserData(EJsonStringType_NoQuote);
+				auto &PayloadEntry = UserType.m_Value.f_Object().f_CreateMemberEntry(fg_Move(PayloadKey));
+				PayloadEntry.f_KeyTrivia().f_SetLeading("\n\t\t// payload\n\t\t", false);
+				PayloadEntry.f_Value() = 5;
+				PayloadEntry.f_Value().f_Trivia().f_SetTrailing("\n\t", false);
+				auto NativeUserTypeText = NativeUserType.f_ToStringJson5("\t");
+				DMibExpect
+					(
+						NativeUserTypeText
+						, ==
+						, "{\n"
+						"	\"$type\": \"Commented\",\n"
+						"	\"$value\": {\n"
+						"		// payload\n"
+						"		inner: 5\n"
+						"	}\n"
+						"}"
+					)
+				;
+				auto NativeUserTypeRoundTrip = CEJsonOrderedWithComments::fs_FromStringJson5(NativeUserTypeText);
+				DMibExpectTrue(NativeUserTypeRoundTrip.f_IsUserType());
+				DMibExpect(NativeUserTypeRoundTrip.f_UserType().m_Value["inner"].f_Integer(), ==, 5);
+
+				CEJsonOrderedWithComments CommentedConversion(EJsonType_Object);
+				CommentedConversion.f_Trivia().f_SetLeading("// root\n", false);
+				NStr::CStr CommentedConversionKey("a");
+				CommentedConversionKey.f_SetUserData(EJsonStringType_NoQuote);
+				auto &CommentedConversionEntry = CommentedConversion.f_Object().f_CreateMemberEntry(fg_Move(CommentedConversionKey));
+				CommentedConversionEntry.f_KeyTrivia().f_SetLeading("\n\t// key\n\t", false);
+				CommentedConversionEntry.f_Value().f_Trivia().f_SetLeading(" ", false);
+				CommentedConversionEntry.f_Value() = EJsonType_Array;
+				auto &CommentedConversionArrayEntry = CommentedConversionEntry.f_Value().f_Insert();
+				CommentedConversionArrayEntry.f_Trivia().f_SetLeading("\n\t\t// elem\n\t\t", false);
+				CommentedConversionArrayEntry = 1;
+				CommentedConversionArrayEntry.f_Trivia().f_SetTrailing("\n\t", false);
+				CommentedConversionEntry.f_Value().f_Trivia().f_SetTrailing("\n", false);
+				NStr::CStr CommentedConversionText =
+					"// root\n"
+					"{\n"
+					"	// key\n"
+					"	a: [\n"
+					"		// elem\n"
+					"		1\n"
+					"	]\n"
+					"}"
+				;
+				DMibExpect(CommentedConversion.f_ToStringJson5(), ==, CommentedConversionText);
+				auto CommentedConversionJson = CommentedConversion.f_ToJson();
+				DMibExpect(CommentedConversionJson.f_ToStringJson5(), ==, CommentedConversionText);
+				DMibExpect(CEJsonOrderedWithComments::fs_FromJson(CommentedConversionJson).f_ToStringJson5(), ==, CommentedConversionText);
+				auto CommentedConversionNoConvertJson = CommentedConversion.f_ToJsonNoConvert();
+				DMibExpect(CommentedConversionNoConvertJson.f_ToStringJson5(), ==, CommentedConversionText);
+				DMibExpect(CEJsonOrderedWithComments::fs_FromJsonNoConvert(CommentedConversionNoConvertJson).f_ToStringJson5(), ==, CommentedConversionText);
+
+				CEJsonOrderedWithComments ReservedObject(EJsonType_Object);
+				NStr::CStr ReservedObjectKey("$date");
+				ReservedObjectKey.f_SetUserData(EJsonStringType_NoQuote);
+				auto &ReservedObjectEntry = ReservedObject.f_Object().f_CreateMemberEntry(fg_Move(ReservedObjectKey));
+				ReservedObjectEntry.f_KeyTrivia().f_SetLeading("\n\t\t// shape\n\t\t", false);
+				ReservedObjectEntry.f_Value() = 6;
+				ReservedObjectEntry.f_Value().f_Trivia().f_SetTrailing(" // keep\n\t", false);
+				NStr::CStr ReservedObjectText =
+					"{\n"
+					"	\"$escape\": {\n"
+					"		// shape\n"
+					"		$date: 6 // keep\n"
+					"	}\n"
+					"}"
+				;
+				DMibExpect(ReservedObject.f_ToStringJson5(), ==, ReservedObjectText);
+				DMibExpect(NCommandLine::CAnsiEncodingParse::fs_StripEncoding(ReservedObject.f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag_AllFeatures)), ==, ReservedObjectText);
+				auto ReservedObjectRoundTrip = CEJsonOrderedWithComments::fs_FromStringJson5(ReservedObjectText);
+				DMibExpectTrue(ReservedObjectRoundTrip.f_IsObject());
+				DMibExpectFalse(ReservedObjectRoundTrip.f_IsDate());
+				DMibExpect(ReservedObjectRoundTrip["$date"].f_Integer(), ==, 6);
+				auto CommentedConversionColored = CommentedConversion.f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag_AllFeatures);
+				DMibExpect(NCommandLine::CAnsiEncodingParse::fs_StripEncoding(CommentedConversionColored), ==, CommentedConversionText);
+				DMibExpect(fs_CountForegroundColorChanges(CommentedConversionColored), >, 0);
+				DMibExpect(fs_CountForegroundColorChanges(CommentedConversionColored, 0x89, 0x89, 0x89), ==, 3);
+
+				CEJsonOrdered NonCommentColor(EJsonType_Object);
+				NonCommentColor["a"] = 1;
+				auto NonCommentColorText = NonCommentColor.f_ToStringJson5();
+				auto NonCommentColorColored = NonCommentColor.f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag_Color);
+				DMibExpect(NCommandLine::CAnsiEncodingParse::fs_StripEncoding(NonCommentColorColored), ==, NonCommentColorText);
+				DMibExpect(fs_CountForegroundColorChanges(NonCommentColorColored), >, 0);
+
+				CEJsonOrdered NestedEscape(EJsonType_Object);
+				NestedEscape["Unknown"]["$unknown"] = 1;
+				NestedEscape["DateShape"]["$date"] = 6;
+				auto NestedEscapeText = NestedEscape.f_ToString();
+				DMibExpect
+					(
+						NestedEscapeText
+						, ==
+						, "{\n"
+						"	\"Unknown\": {\n"
+						"		\"$unknown\": 1\n"
+						"	},\n"
+						"	\"DateShape\": {\n"
+						"		\"$escape\": {\n"
+						"			\"$date\": 6\n"
+						"		}\n"
+						"	}\n"
+						"}\n"
+					)
+				;
+				DMibExpect(CEJsonOrdered::fs_FromString(NestedEscapeText), ==, NestedEscape);
+
+				CEJsonOrdered EscapedNested(EJsonType_Object);
+				EscapedNested["$date"]["Nested"]["$date"] = 6;
+				auto EscapedNestedText = EscapedNested.f_ToStringJson5();
+				auto EscapedNestedColored = EscapedNested.f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag_AllFeatures);
+				DMibExpect(NCommandLine::CAnsiEncodingParse::fs_StripEncoding(EscapedNestedColored), ==, EscapedNestedText);
 			};
 			DMibTestSuite("Stream")
 			{

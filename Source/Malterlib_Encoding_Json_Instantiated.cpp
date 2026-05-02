@@ -10,15 +10,15 @@
 namespace NMib::NEncoding
 {
 #ifdef DMibEncodingJsonExternTemplate
-	template struct NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, true>;
-	template struct TCJsonValue<NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, true>>;
-	template struct TCJsonObject<CJsonOrdered, true>;
-	template struct NPrivate::TCObjectEntry<CJsonOrdered, true>;
+	template struct NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_Ordered>;
+	template struct TCJsonValue<NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_Ordered>>;
+	template struct TCJsonObject<CJsonOrdered, EJsonContainerFlag::mc_Ordered>;
+	template struct NPrivate::TCObjectEntry<CJsonOrdered, EJsonContainerFlag::mc_Ordered>;
 
 	// Destructive iterator types for ordered mode
-	template struct TCJsonObjectEntryHandle<TCJsonObject<CJsonOrdered, true>>;
-	template struct TCJsonOrderedDestructiveIterator<TCJsonObject<CJsonOrdered, true>>;
-	template struct TCJsonSortedDestructiveIterator<TCJsonObject<CJsonOrdered, true>>;
+	template struct TCJsonObjectEntryHandle<TCJsonObject<CJsonOrdered, EJsonContainerFlag::mc_Ordered>>;
+	template struct TCJsonOrderedDestructiveIterator<TCJsonObject<CJsonOrdered, EJsonContainerFlag::mc_Ordered>>;
+	template struct TCJsonSortedDestructiveIterator<TCJsonObject<CJsonOrdered, EJsonContainerFlag::mc_Ordered>>;
 
 	template CJsonValueJsonOrdered::TCJsonValue(CJsonValueBaseSorted const &);
 	template CJsonValueJsonOrdered::TCJsonValue(CJsonValueBaseSorted const &&);
@@ -27,15 +27,30 @@ namespace NMib::NEncoding
 	template TCJsonValue<CJsonValueBaseOrdered> CJsonOrdered::fs_FromCompatible<CJsonValueBaseSorted>(TCJsonValue<CJsonValueBaseSorted> const &);
 	template TCJsonValue<CJsonValueBaseOrdered> CJsonOrdered::fs_FromCompatible<CJsonValueBaseSorted>(TCJsonValue<CJsonValueBaseSorted> &&);
 	template TCJsonValue<CJsonValueBaseOrdered> CJsonOrdered::fs_FromCompatible<CJsonValueBaseSorted>(TCJsonValue<CJsonValueBaseSorted> const &&);
-
+	template TCJsonValue<CJsonValueBaseOrdered> CJsonOrdered::fs_FromCompatible<CJsonValueBaseOrderedWithComments>(TCJsonValue<CJsonValueBaseOrderedWithComments> const &);
+	template TCJsonValue<CJsonValueBaseOrdered> CJsonOrdered::fs_FromCompatible<CJsonValueBaseOrderedWithComments>(TCJsonValue<CJsonValueBaseOrderedWithComments> &&);
+	template TCJsonValue<CJsonValueBaseOrdered> CJsonOrdered::fs_FromCompatible<CJsonValueBaseOrderedWithComments>(TCJsonValue<CJsonValueBaseOrderedWithComments> const &&);
+	template TCJsonValue<CJsonValueBaseOrdered> CJsonOrdered::fs_FromCompatible<CJsonValueBaseSortedWithComments>(TCJsonValue<CJsonValueBaseSortedWithComments> const &);
+	template TCJsonValue<CJsonValueBaseOrdered> CJsonOrdered::fs_FromCompatible<CJsonValueBaseSortedWithComments>(TCJsonValue<CJsonValueBaseSortedWithComments> &&);
+	template TCJsonValue<CJsonValueBaseOrdered> CJsonOrdered::fs_FromCompatible<CJsonValueBaseSortedWithComments>(TCJsonValue<CJsonValueBaseSortedWithComments> const &&);
 	template CJsonOrdered::TCJsonValue(TCJsonValue<CJsonValueBaseSorted> const &);
 	template CJsonOrdered::TCJsonValue(TCJsonValue<CJsonValueBaseSorted> &&);
 	template CJsonOrdered::TCJsonValue(TCJsonValue<CJsonValueBaseSorted> const &&);
-
+	template CJsonOrdered::TCJsonValue(TCJsonValue<CJsonValueBaseOrderedWithComments> const &);
+	template CJsonOrdered::TCJsonValue(TCJsonValue<CJsonValueBaseOrderedWithComments> &&);
+	template CJsonOrdered::TCJsonValue(TCJsonValue<CJsonValueBaseOrderedWithComments> const &&);
+	template CJsonOrdered::TCJsonValue(TCJsonValue<CJsonValueBaseSortedWithComments> const &);
+	template CJsonOrdered::TCJsonValue(TCJsonValue<CJsonValueBaseSortedWithComments> &&);
+	template CJsonOrdered::TCJsonValue(TCJsonValue<CJsonValueBaseSortedWithComments> const &&);
 	template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseSorted const &);
 	template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseSorted &);
 	template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseSorted &&);
-
+	template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseOrderedWithComments const &);
+	template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseOrderedWithComments &);
+	template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseOrderedWithComments &&);
+	template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseSortedWithComments const &);
+	template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseSortedWithComments &);
+	template CJsonValueBaseOrdered::TCJsonValueBase(CJsonValueBaseSortedWithComments &&);
 	template CJsonOrdered::TCJsonValue(CNullPtr &&);
 	template CJsonOrdered::TCJsonValue(CNullPtr &);
 	template CJsonOrdered::TCJsonValue(CNullPtr const &);

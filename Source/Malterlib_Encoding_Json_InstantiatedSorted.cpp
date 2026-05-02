@@ -10,10 +10,10 @@
 namespace NMib::NEncoding
 {
 #ifdef DMibEncodingJsonExternTemplate
-	template struct NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, false>;
-	template struct TCJsonValue<NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, false>>;
-	template struct TCJsonObject<CJsonSorted, false>;
-	template struct NPrivate::TCObjectEntry<CJsonSorted, false>;
+	template struct NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_None>;
+	template struct TCJsonValue<NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_None>>;
+	template struct TCJsonObject<CJsonSorted, EJsonContainerFlag::mc_None>;
+	template struct NPrivate::TCObjectEntry<CJsonSorted, EJsonContainerFlag::mc_None>;
 
 	template CJsonValueJsonSorted::TCJsonValue(CJsonValueBaseOrdered const &);
 	template CJsonValueJsonSorted::TCJsonValue(CJsonValueBaseOrdered const &&);
@@ -22,15 +22,30 @@ namespace NMib::NEncoding
 	template TCJsonValue<CJsonValueBaseSorted> CJsonSorted::fs_FromCompatible<CJsonValueBaseOrdered>(TCJsonValue<CJsonValueBaseOrdered> const &);
 	template TCJsonValue<CJsonValueBaseSorted> CJsonSorted::fs_FromCompatible<CJsonValueBaseOrdered>(TCJsonValue<CJsonValueBaseOrdered> &&);
 	template TCJsonValue<CJsonValueBaseSorted> CJsonSorted::fs_FromCompatible<CJsonValueBaseOrdered>(TCJsonValue<CJsonValueBaseOrdered> const &&);
-
+	template TCJsonValue<CJsonValueBaseSorted> CJsonSorted::fs_FromCompatible<CJsonValueBaseSortedWithComments>(TCJsonValue<CJsonValueBaseSortedWithComments> const &);
+	template TCJsonValue<CJsonValueBaseSorted> CJsonSorted::fs_FromCompatible<CJsonValueBaseSortedWithComments>(TCJsonValue<CJsonValueBaseSortedWithComments> &&);
+	template TCJsonValue<CJsonValueBaseSorted> CJsonSorted::fs_FromCompatible<CJsonValueBaseSortedWithComments>(TCJsonValue<CJsonValueBaseSortedWithComments> const &&);
+	template TCJsonValue<CJsonValueBaseSorted> CJsonSorted::fs_FromCompatible<CJsonValueBaseOrderedWithComments>(TCJsonValue<CJsonValueBaseOrderedWithComments> const &);
+	template TCJsonValue<CJsonValueBaseSorted> CJsonSorted::fs_FromCompatible<CJsonValueBaseOrderedWithComments>(TCJsonValue<CJsonValueBaseOrderedWithComments> &&);
+	template TCJsonValue<CJsonValueBaseSorted> CJsonSorted::fs_FromCompatible<CJsonValueBaseOrderedWithComments>(TCJsonValue<CJsonValueBaseOrderedWithComments> const &&);
 	template CJsonSorted::TCJsonValue(TCJsonValue<CJsonValueBaseOrdered> const &);
 	template CJsonSorted::TCJsonValue(TCJsonValue<CJsonValueBaseOrdered> &&);
 	template CJsonSorted::TCJsonValue(TCJsonValue<CJsonValueBaseOrdered> const &&);
-
+	template CJsonSorted::TCJsonValue(TCJsonValue<CJsonValueBaseSortedWithComments> const &);
+	template CJsonSorted::TCJsonValue(TCJsonValue<CJsonValueBaseSortedWithComments> &&);
+	template CJsonSorted::TCJsonValue(TCJsonValue<CJsonValueBaseSortedWithComments> const &&);
+	template CJsonSorted::TCJsonValue(TCJsonValue<CJsonValueBaseOrderedWithComments> const &);
+	template CJsonSorted::TCJsonValue(TCJsonValue<CJsonValueBaseOrderedWithComments> &&);
+	template CJsonSorted::TCJsonValue(TCJsonValue<CJsonValueBaseOrderedWithComments> const &&);
 	template CJsonValueBaseSorted::TCJsonValueBase(CJsonValueBaseOrdered const &);
 	template CJsonValueBaseSorted::TCJsonValueBase(CJsonValueBaseOrdered &);
 	template CJsonValueBaseSorted::TCJsonValueBase(CJsonValueBaseOrdered &&);
-
+	template CJsonValueBaseSorted::TCJsonValueBase(CJsonValueBaseSortedWithComments const &);
+	template CJsonValueBaseSorted::TCJsonValueBase(CJsonValueBaseSortedWithComments &);
+	template CJsonValueBaseSorted::TCJsonValueBase(CJsonValueBaseSortedWithComments &&);
+	template CJsonValueBaseSorted::TCJsonValueBase(CJsonValueBaseOrderedWithComments const &);
+	template CJsonValueBaseSorted::TCJsonValueBase(CJsonValueBaseOrderedWithComments &);
+	template CJsonValueBaseSorted::TCJsonValueBase(CJsonValueBaseOrderedWithComments &&);
 	template CJsonSorted::TCJsonValue(CNullPtr &&);
 	template CJsonSorted::TCJsonValue(CNullPtr &);
 	template CJsonSorted::TCJsonValue(CNullPtr const &);

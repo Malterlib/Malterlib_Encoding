@@ -36,13 +36,13 @@ namespace NMib::NEncoding::NPrivate
 
 	namespace NPrivate
 	{
-		template <typename t_CValue, bool t_bOrdered, typename t_CTypes>
+		template <typename t_CValue, EJsonContainerFlag t_ContainerFlags, typename t_CTypes>
 		struct TCGetJsonValueVariant
 		{
 		};
 
-		template <typename t_CValue, bool t_bOrdered, typename ...tp_CTypes>
-		struct TCGetJsonValueVariant<t_CValue, t_bOrdered, NMeta::TCTypeList<tp_CTypes...>>
+		template <typename t_CValue, EJsonContainerFlag t_ContainerFlags, typename ...tp_CTypes>
+		struct TCGetJsonValueVariant<t_CValue, t_ContainerFlags, NMeta::TCTypeList<tp_CTypes...>>
 		{
 			using CType =
 				NStorage::TCStreamableVariant
@@ -54,30 +54,30 @@ namespace NMib::NEncoding::NPrivate
 					, NStorage::TCMember<int64, EJsonType_Integer>
 					, NStorage::TCMember<fp64, EJsonType_Float>
 					, NStorage::TCMember<CJsonBoolean, EJsonType_Boolean>
-					, NStorage::TCMember<TCJsonObject<t_CValue, t_bOrdered>, EJsonType_Object>
+					, NStorage::TCMember<TCJsonObject<t_CValue, t_ContainerFlags>, EJsonType_Object>
 					, NStorage::TCMember<NContainer::TCVector<t_CValue>, EJsonType_Array>
 					, tp_CTypes...
 				>
 			;
 		} ;
-
-
 	};
 
 	template <typename t_CParent>
 	struct TCJsonValue;
 
-	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
+	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
 	struct TCJsonValueBase;
 
-	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
+	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
 	struct TCJsonValueBase
 	{
-		static constexpr bool mc_bOrdered = t_bOrdered;
+		static constexpr EJsonContainerFlag mc_ContainerFlags = t_ContainerFlags;
+		static constexpr bool mc_bOrdered = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bOrdered;
+		static constexpr bool mc_bPreserveComments = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveComments;
 		static constexpr bool mc_bHasDefaultTypes = NMeta::gc_TypeList_Len<typename t_CTypes::CTypes> == 0;
 
 		using CValue = t_TCValue<TCJsonValueBase>;
-		using CVariantType = typename NPrivate::TCGetJsonValueVariant<CValue, t_bOrdered, typename t_CTypes::CTypes>::CType;
+		using CVariantType = typename NPrivate::TCGetJsonValueVariant<CValue, t_ContainerFlags, typename t_CTypes::CTypes>::CType;
 
 		template <typename tf_CType>
 		TCJsonValueBase(tf_CType &&_Value)
@@ -87,12 +87,12 @@ namespace NMib::NEncoding::NPrivate
 		TCJsonValueBase(TCJsonValueBase &_Value);
 		TCJsonValueBase(TCJsonValueBase &&_Value);
 
-		template <template <typename t_CParent> class tf_TCValue, typename tf_CTypes, bool tf_bOrdered>
-		explicit TCJsonValueBase(TCJsonValueBase<tf_TCValue, tf_CTypes, tf_bOrdered> const &_Value);
-		template <template <typename t_CParent> class tf_TCValue, typename tf_CTypes, bool tf_bOrdered>
-		explicit TCJsonValueBase(TCJsonValueBase<tf_TCValue, tf_CTypes, tf_bOrdered> &_Value);
-		template <template <typename t_CParent> class tf_TCValue, typename tf_CTypes, bool tf_bOrdered>
-		explicit TCJsonValueBase(TCJsonValueBase<tf_TCValue, tf_CTypes, tf_bOrdered> &&_Value);
+		template <template <typename t_CParent> class tf_TCValue, typename tf_CTypes, EJsonContainerFlag tf_ContainerFlags>
+		explicit TCJsonValueBase(TCJsonValueBase<tf_TCValue, tf_CTypes, tf_ContainerFlags> const &_Value);
+		template <template <typename t_CParent> class tf_TCValue, typename tf_CTypes, EJsonContainerFlag tf_ContainerFlags>
+		explicit TCJsonValueBase(TCJsonValueBase<tf_TCValue, tf_CTypes, tf_ContainerFlags> &_Value);
+		template <template <typename t_CParent> class tf_TCValue, typename tf_CTypes, EJsonContainerFlag tf_ContainerFlags>
+		explicit TCJsonValueBase(TCJsonValueBase<tf_TCValue, tf_CTypes, tf_ContainerFlags> &&_Value);
 
 		TCJsonValueBase(pfp64 _Value);
 		TCJsonValueBase(pfp32 _Value);
@@ -106,15 +106,27 @@ namespace NMib::NEncoding::NPrivate
 		template <typename tf_CStream>
 		void f_Consume(tf_CStream &_Stream);
 
+		TCJsonTriviaView<TCJsonValueBase> f_Trivia()
+			requires (mc_bPreserveComments)
+		;
+		TCJsonTriviaConstView<TCJsonValueBase> f_Trivia() const
+			requires (mc_bPreserveComments)
+		;
+
 	protected:
 		template <typename t_CParent2>
 		friend struct TCJsonValue;
 
-		template <template <typename t_CParent2> class t_TCValue2, typename t_CTypes2, bool t_bOrdered2>
+		template <template <typename t_CParent2> class t_TCValue2, typename t_CTypes2, EJsonContainerFlag t_ContainerFlags2>
 		friend struct TCJsonValueBase;
+		template <typename t_CValueBase>
+		friend struct NEncoding::TCJsonTriviaConstView;
+		template <typename t_CValueBase>
+		friend struct NEncoding::TCJsonTriviaView;
 
 		// Members
 		CVariantType mp_Value;
+		DMibNoUniqueAddress TCConditional<mc_bPreserveComments, CJsonValueTriviaSlots, CEmpty> mp_ValueTrivia;
 	};
 
 	struct CJsonExtraTypes

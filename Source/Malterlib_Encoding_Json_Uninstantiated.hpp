@@ -123,19 +123,19 @@ namespace NMib::NEncoding
 		return Return;
 	}
 
-	template <typename t_CJsonValue, bool t_bOrdered>
+	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
 	template <typename tf_CStream>
-	void TCJsonObject<t_CJsonValue, t_bOrdered>::f_Feed(tf_CStream &_Stream) const
+	void TCJsonObject<t_CJsonValue, t_ContainerFlags>::f_Feed(tf_CStream &_Stream) const
 	{
 		_Stream << mp_Objects;
 	}
 
-	template <typename t_CJsonValue, bool t_bOrdered>
+	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
 	template <typename tf_CStream>
-	void TCJsonObject<t_CJsonValue, t_bOrdered>::f_Consume(tf_CStream &_Stream)
+	void TCJsonObject<t_CJsonValue, t_ContainerFlags>::f_Consume(tf_CStream &_Stream)
 	{
 		_Stream >> mp_Objects;
-		if constexpr (t_bOrdered)
+		if constexpr (mc_bOrdered)
 		{
 			for (auto &Object : mp_Objects)
 			{
@@ -146,11 +146,11 @@ namespace NMib::NEncoding
 		}
 	}
 
-	template <typename t_CJsonValue, bool t_bOrdered>
+	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
 	template <typename tf_FOnObject>
-	void TCJsonObject<t_CJsonValue, t_bOrdered>::f_ExtractAll(tf_FOnObject &&_fOnObject)
+	void TCJsonObject<t_CJsonValue, t_ContainerFlags>::f_ExtractAll(tf_FOnObject &&_fOnObject)
 	{
-		if constexpr (t_bOrdered)
+		if constexpr (mc_bOrdered)
 		{
 			mp_ObjectTree.f_Clear();
 			for (auto iIter = mp_Objects.f_GetIterator(); iIter; )
@@ -173,45 +173,146 @@ namespace NMib::NEncoding
 namespace NMib::NEncoding::NPrivate
 {
 #ifndef DCompiler_MSVC_Workaround
-	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
+	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
 	template <typename tf_CType>
-	TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::TCJsonValueBase(tf_CType &&_Value)
-		requires (NTraits::cIsPlacementNewConstructibleWith<typename TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::CVariantType, tf_CType &&>)
+	TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>::TCJsonValueBase(tf_CType &&_Value)
+		requires (NTraits::cIsPlacementNewConstructibleWith<typename TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>::CVariantType, tf_CType &&>)
 		: mp_Value(fg_Forward<tf_CType>(_Value))
 	{
 	}
 #endif
 
-	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
+	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
 	template <typename tf_CStream>
-	void TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::f_Feed(tf_CStream &_Stream) const
+	void TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>::f_Feed(tf_CStream &_Stream) const
 	{
 		_Stream << mp_Value;
+
+		if constexpr (mc_bPreserveComments)
+		{
+			if (mp_Value.f_GetTypeID() == EJsonType_String)
+			{
+				uint8 StringUserData = mp_Value.template f_Get<EJsonType_String>().f_GetUserData();
+				_Stream << StringUserData;
+			}
+			_Stream << mp_ValueTrivia;
+		}
 	}
 
-	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
+	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
 	template <typename tf_CStream>
-	void TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>::f_Consume(tf_CStream &_Stream)
+	void TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>::f_Consume(tf_CStream &_Stream)
 	{
 		_Stream >> mp_Value;
+
+		if constexpr (mc_bPreserveComments)
+		{
+			if (mp_Value.f_GetTypeID() == EJsonType_String)
+			{
+				uint8 StringUserData;
+				_Stream >> StringUserData;
+				mp_Value.template f_Get<EJsonType_String>().f_SetUserData(StringUserData);
+			}
+			_Stream >> mp_ValueTrivia;
+		}
 	}
 
-	template <typename t_CJsonValue, bool t_bOrdered>
+	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
 	template <typename tf_CStream>
-	void TCObjectEntry<t_CJsonValue, t_bOrdered>::f_Feed(tf_CStream &_Stream) const
+	void TCObjectEntry<t_CJsonValue, t_ContainerFlags>::f_Feed(tf_CStream &_Stream) const
 	{
-		if constexpr (t_bOrdered)
+		if constexpr (mc_bOrdered)
 			_Stream << this->mp_Name;
+
 		_Stream << mp_Value;
+
+		if constexpr (mc_bPreserveComments)
+		{
+			uint8 KeyUserData = f_Name().f_GetUserData();
+			_Stream << KeyUserData;
+			_Stream << mp_KeyTrivia;
+		}
 	}
 
-	template <typename t_CJsonValue, bool t_bOrdered>
+	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
 	template <typename tf_CStream>
-	void TCObjectEntry<t_CJsonValue, t_bOrdered>::f_Consume(tf_CStream &_Stream)
+	void TCObjectEntry<t_CJsonValue, t_ContainerFlags>::f_Consume(tf_CStream &_Stream)
 	{
-		if constexpr (t_bOrdered)
+		if constexpr (mc_bOrdered)
 			_Stream >> this->mp_Name;
+
 		_Stream >> mp_Value;
+
+		if constexpr (mc_bPreserveComments)
+		{
+			uint8 KeyUserData;
+			_Stream >> KeyUserData;
+			const_cast<NStr::CStr &>(f_Name()).f_SetUserData(KeyUserData);
+			_Stream >> mp_KeyTrivia;
+		}
+	}
+
+	template <typename tf_CStream>
+	void CJsonValueTriviaSlots::f_Feed(tf_CStream &_Stream) const
+	{
+		_Stream << m_Leading;
+		_Stream << m_Trailing;
+		_Stream << m_Interior;
+
+		uint8 Flags = 0;
+		if (m_bLeadingSet)
+			Flags |= uint8(fg_Bit(0));
+		if (m_bTrailingSet)
+			Flags |= uint8(fg_Bit(1));
+		if (m_bLeadingHasComma)
+			Flags |= uint8(fg_Bit(2));
+		if (m_bTrailingHasComma)
+			Flags |= uint8(fg_Bit(3));
+		_Stream << Flags;
+	}
+
+	template <typename tf_CStream>
+	void CJsonValueTriviaSlots::f_Consume(tf_CStream &_Stream)
+	{
+		_Stream >> m_Leading;
+		_Stream >> m_Trailing;
+		_Stream >> m_Interior;
+
+		uint8 Flags;
+		_Stream >> Flags;
+		m_bLeadingSet = (Flags & uint8(fg_Bit(0))) != 0;
+		m_bTrailingSet = (Flags & uint8(fg_Bit(1))) != 0;
+		m_bLeadingHasComma = (Flags & uint8(fg_Bit(2))) != 0;
+		m_bTrailingHasComma = (Flags & uint8(fg_Bit(3))) != 0;
+	}
+
+	template <typename tf_CStream>
+	void CJsonKeyTriviaSlots::f_Feed(tf_CStream &_Stream) const
+	{
+		_Stream << m_Leading;
+		_Stream << m_Trailing;
+
+		uint8 Flags = 0;
+		if (m_bLeadingSet)
+			Flags |= uint8(fg_Bit(0));
+		if (m_bTrailingSet)
+			Flags |= uint8(fg_Bit(1));
+		if (m_bLeadingHasComma)
+			Flags |= uint8(fg_Bit(2));
+		_Stream << Flags;
+	}
+
+	template <typename tf_CStream>
+	void CJsonKeyTriviaSlots::f_Consume(tf_CStream &_Stream)
+	{
+		_Stream >> m_Leading;
+		_Stream >> m_Trailing;
+
+		uint8 Flags;
+		_Stream >> Flags;
+		m_bLeadingSet = (Flags & uint8(fg_Bit(0))) != 0;
+		m_bTrailingSet = (Flags & uint8(fg_Bit(1))) != 0;
+		m_bLeadingHasComma = (Flags & uint8(fg_Bit(2))) != 0;
 	}
 	template <typename tf_CStream>
 	void CJsonNull::f_Feed(tf_CStream &_Stream) const

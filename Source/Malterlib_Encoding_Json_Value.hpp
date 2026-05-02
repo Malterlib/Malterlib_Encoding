@@ -68,7 +68,7 @@ namespace NMib::NEncoding
 	template <typename tf_CParent>
 	auto TCJsonValue<t_CParent>::fs_FromCompatible(TCJsonValue<tf_CParent> &&_Other) -> TCJsonValue
 	{
-		return TCJsonValue(_Other);
+		return TCJsonValue(fg_Move(_Other));
 	}
 
 	template <typename t_CParent>
@@ -518,6 +518,9 @@ namespace NMib::NEncoding
 	auto TCJsonValue<t_CParent>::operator = (TCJsonValue const &_Value) -> CValue &
 	{
 		this->mp_Value = _Value.mp_Value;
+
+		if constexpr (CValue::mc_bPreserveComments)
+			this->mp_ValueTrivia = _Value.mp_ValueTrivia;
 		return static_cast<CValue &>(*this);
 	}
 
@@ -527,6 +530,9 @@ namespace NMib::NEncoding
 		auto Temp = fg_Move(_Value.mp_Value);
 		_Value.mp_Value.template f_Set<EJsonType_Invalid>();
 		this->mp_Value = fg_Move(Temp);
+
+		if constexpr (CValue::mc_bPreserveComments)
+			this->mp_ValueTrivia = fg_Move(_Value.mp_ValueTrivia);
 		return static_cast<CValue &>(*this);
 	}
 
@@ -671,6 +677,7 @@ namespace NMib::NEncoding
 
 	template <typename t_CParent>
 	void TCJsonValue<t_CParent>::f_SortObjectsLexicographically()
+		requires (!CValue::mc_bPreserveComments)
 	{
 		if (f_IsObject())
 			f_Object().f_SortObjectsLexicographically();
@@ -798,17 +805,5 @@ namespace NMib::NEncoding
 	{
 		template <typename tf_CJson>
 		NStr::CStr fg_JsonGenerateColored(tf_CJson const &_Json, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJsonDialectFlag _Flags);
-	}
-
-	template <typename t_CParent>
-	NStr::CStr TCJsonValue<t_CParent>::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags) const
-	{
-		if constexpr (t_CParent::mc_bHasDefaultTypes)
-		{
-			if (_AnsiFlags & NCommandLine::EAnsiEncodingFlag_Color)
-				return NPrivate::fg_JsonGenerateColored(*this, _pPrettySeparator, _AnsiFlags, _Flags);
-		}
-
-		return f_ToString(_pPrettySeparator, _Flags);
 	}
 }

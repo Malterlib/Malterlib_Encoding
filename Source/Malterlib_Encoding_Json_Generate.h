@@ -5,6 +5,15 @@
 
 #include "Malterlib_Encoding_Json.h"
 
+namespace NMib::NEncoding::NPrivate
+{
+	template <typename tf_CParseContext, typename tf_CJson>
+	NStr::CStr fg_JsonGenerateColored(tf_CJson const &_Json, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJsonDialectFlag _Flags);
+
+	template <typename tf_CJson>
+	NStr::CStr fg_JsonGenerateColored(tf_CJson const &_Json, ch8 const *_pPrettySeparator, NCommandLine::EAnsiEncodingFlag _AnsiFlags, EJsonDialectFlag _Flags);
+}
+
 namespace NMib::NEncoding::NJson
 {
 	template <typename tf_CStr>
@@ -20,3 +29,4 @@ namespace NMib::NEncoding::NJson
 }
 
 #include "Malterlib_Encoding_Json_Generate.hpp"
+#include "Malterlib_Encoding_Json_GenerateColored.hpp"

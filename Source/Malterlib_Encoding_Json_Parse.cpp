@@ -15,16 +15,4 @@ namespace NMib::NEncoding::NJson
 
 		DMibErrorParse(Description, _Errors);
 	}
-
-	void CParseContext::f_ThrowError(NStr::CStr const &_Error, uch8 const *_pLocation) const
-	{
-		NContainer::TCVector<NStr::CParseError> Errors;
-
-		auto &Error = Errors.f_Insert();
-		Error.m_Location = f_GetLocation(_pLocation);
-		Error.m_Error = _Error;
-
-		f_ThrowErrors(Errors);
-	}
-
 }

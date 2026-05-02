@@ -8,27 +8,51 @@
 namespace NMib::NEncoding
 {
 #ifdef DMibEncodingJsonExternTemplate
-	extern template struct NPrivate::TCJsonValueBase<TCEJsonValue, NPrivate::CEJsonExtraTypesSorted, false>;
+	extern template struct NPrivate::TCJsonValueBase<TCEJsonValue, NPrivate::CEJsonExtraTypesSorted, EJsonContainerFlag::mc_None>;
 	extern template struct TCJsonValue<CEJsonValueBaseSorted>;
 	extern template struct TCEJsonValue<CEJsonValueBaseSorted>;
-	extern template struct TCJsonObject<CEJsonSorted, false>;
-	extern template struct NPrivate::TCObjectEntry<CEJsonSorted, false>;
+	extern template struct TCJsonObject<CEJsonSorted, EJsonContainerFlag::mc_None>;
+	extern template struct NPrivate::TCObjectEntry<CEJsonSorted, EJsonContainerFlag::mc_None>;
 
 	extern template CJsonValueEJsonSorted::TCJsonValue(CEJsonValueBaseOrdered const &);
 	extern template CJsonValueEJsonSorted::TCJsonValue(CEJsonValueBaseOrdered const &&);
 	extern template CJsonValueEJsonSorted::TCJsonValue(CEJsonValueBaseOrdered &&);
+	extern template CJsonValueEJsonSorted::TCJsonValue(CEJsonValueBaseOrderedWithComments const &);
+	extern template CJsonValueEJsonSorted::TCJsonValue(CEJsonValueBaseOrderedWithComments const &&);
+	extern template CJsonValueEJsonSorted::TCJsonValue(CEJsonValueBaseOrderedWithComments &&);
+	extern template CJsonValueEJsonSorted::TCJsonValue(CEJsonValueBaseSortedWithComments const &);
+	extern template CJsonValueEJsonSorted::TCJsonValue(CEJsonValueBaseSortedWithComments const &&);
+	extern template CJsonValueEJsonSorted::TCJsonValue(CEJsonValueBaseSortedWithComments &&);
 
 	extern template TCEJsonValue<CEJsonValueBaseSorted> CEJsonSorted::fs_FromCompatible<CEJsonValueBaseOrdered>(TCEJsonValue<CEJsonValueBaseOrdered> const &);
 	extern template TCEJsonValue<CEJsonValueBaseSorted> CEJsonSorted::fs_FromCompatible<CEJsonValueBaseOrdered>(TCEJsonValue<CEJsonValueBaseOrdered> &&);
 	extern template TCEJsonValue<CEJsonValueBaseSorted> CEJsonSorted::fs_FromCompatible<CEJsonValueBaseOrdered>(TCEJsonValue<CEJsonValueBaseOrdered> const &&);
+	extern template TCEJsonValue<CEJsonValueBaseSorted> CEJsonSorted::fs_FromCompatible<CEJsonValueBaseOrderedWithComments>(TCEJsonValue<CEJsonValueBaseOrderedWithComments> const &);
+	extern template TCEJsonValue<CEJsonValueBaseSorted> CEJsonSorted::fs_FromCompatible<CEJsonValueBaseOrderedWithComments>(TCEJsonValue<CEJsonValueBaseOrderedWithComments> &&);
+	extern template TCEJsonValue<CEJsonValueBaseSorted> CEJsonSorted::fs_FromCompatible<CEJsonValueBaseOrderedWithComments>(TCEJsonValue<CEJsonValueBaseOrderedWithComments> const &&);
+	extern template TCEJsonValue<CEJsonValueBaseSorted> CEJsonSorted::fs_FromCompatible<CEJsonValueBaseSortedWithComments>(TCEJsonValue<CEJsonValueBaseSortedWithComments> const &);
+	extern template TCEJsonValue<CEJsonValueBaseSorted> CEJsonSorted::fs_FromCompatible<CEJsonValueBaseSortedWithComments>(TCEJsonValue<CEJsonValueBaseSortedWithComments> &&);
+	extern template TCEJsonValue<CEJsonValueBaseSorted> CEJsonSorted::fs_FromCompatible<CEJsonValueBaseSortedWithComments>(TCEJsonValue<CEJsonValueBaseSortedWithComments> const &&);
 
 	extern template CEJsonSorted::TCEJsonValue(TCEJsonValue<CEJsonValueBaseOrdered> const &);
 	extern template CEJsonSorted::TCEJsonValue(TCEJsonValue<CEJsonValueBaseOrdered> &&);
 	extern template CEJsonSorted::TCEJsonValue(TCEJsonValue<CEJsonValueBaseOrdered> const &&);
+	extern template CEJsonSorted::TCEJsonValue(TCEJsonValue<CEJsonValueBaseOrderedWithComments> const &);
+	extern template CEJsonSorted::TCEJsonValue(TCEJsonValue<CEJsonValueBaseOrderedWithComments> &&);
+	extern template CEJsonSorted::TCEJsonValue(TCEJsonValue<CEJsonValueBaseOrderedWithComments> const &&);
+	extern template CEJsonSorted::TCEJsonValue(TCEJsonValue<CEJsonValueBaseSortedWithComments> const &);
+	extern template CEJsonSorted::TCEJsonValue(TCEJsonValue<CEJsonValueBaseSortedWithComments> &&);
+	extern template CEJsonSorted::TCEJsonValue(TCEJsonValue<CEJsonValueBaseSortedWithComments> const &&);
 
 	extern template CEJsonValueBaseSorted::TCJsonValueBase(CEJsonValueBaseOrdered const &);
 	extern template CEJsonValueBaseSorted::TCJsonValueBase(CEJsonValueBaseOrdered &);
 	extern template CEJsonValueBaseSorted::TCJsonValueBase(CEJsonValueBaseOrdered &&);
+	extern template CEJsonValueBaseSorted::TCJsonValueBase(CEJsonValueBaseOrderedWithComments const &);
+	extern template CEJsonValueBaseSorted::TCJsonValueBase(CEJsonValueBaseOrderedWithComments &);
+	extern template CEJsonValueBaseSorted::TCJsonValueBase(CEJsonValueBaseOrderedWithComments &&);
+	extern template CEJsonValueBaseSorted::TCJsonValueBase(CEJsonValueBaseSortedWithComments const &);
+	extern template CEJsonValueBaseSorted::TCJsonValueBase(CEJsonValueBaseSortedWithComments &);
+	extern template CEJsonValueBaseSorted::TCJsonValueBase(CEJsonValueBaseSortedWithComments &&);
 
 	extern template CJsonValueEJsonSorted::TCJsonValue(CNullPtr &&);
 	extern template CJsonValueEJsonSorted::TCJsonValue(CNullPtr &);

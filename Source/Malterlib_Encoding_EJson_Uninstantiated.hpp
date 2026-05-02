@@ -55,4 +55,42 @@ namespace NMib::NEncoding
 		_Stream >> m_Type;
 		_Stream >> m_Value;
 	}
+
+	template <typename tf_CStream>
+	void CEJsonUserTypeOrderedWithComments::f_Feed(tf_CStream &_Stream) const
+	{
+		_Stream << m_Type;
+		uint8 TypeUserData = m_Type.f_GetUserData();
+		_Stream << TypeUserData;
+		_Stream << m_Value;
+	}
+
+	template <typename tf_CStream>
+	void CEJsonUserTypeOrderedWithComments::f_Consume(tf_CStream &_Stream)
+	{
+		_Stream >> m_Type;
+		uint8 TypeUserData;
+		_Stream >> TypeUserData;
+		m_Type.f_SetUserData(TypeUserData);
+		_Stream >> m_Value;
+	}
+
+	template <typename tf_CStream>
+	void CEJsonUserTypeSortedWithComments::f_Feed(tf_CStream &_Stream) const
+	{
+		_Stream << m_Type;
+		uint8 TypeUserData = m_Type.f_GetUserData();
+		_Stream << TypeUserData;
+		_Stream << m_Value;
+	}
+
+	template <typename tf_CStream>
+	void CEJsonUserTypeSortedWithComments::f_Consume(tf_CStream &_Stream)
+	{
+		_Stream >> m_Type;
+		uint8 TypeUserData;
+		_Stream >> TypeUserData;
+		m_Type.f_SetUserData(TypeUserData);
+		_Stream >> m_Value;
+	}
 }

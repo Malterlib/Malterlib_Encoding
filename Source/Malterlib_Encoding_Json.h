@@ -7,7 +7,40 @@
 #include <Mib/Storage/Variant>
 #include <Mib/CommandLine/AnsiEncoding>
 
+namespace NMib::NEncoding
+{
+	enum class EJsonContainerFlag : uint32
+	{
+		mc_None = 0
+		, mc_Ordered = DMibBit(0)
+		, mc_PreserveComments = DMibBit(1)
+	};
+
+	template <EJsonContainerFlag t_ContainerFlags>
+	struct TCJsonContainerFlagTraits
+	{
+		static constexpr EJsonContainerFlag mc_ContainerFlags = t_ContainerFlags;
+		static constexpr bool mc_bOrdered = (t_ContainerFlags & EJsonContainerFlag::mc_Ordered) != EJsonContainerFlag::mc_None;
+		static constexpr bool mc_bPreserveComments = (t_ContainerFlags & EJsonContainerFlag::mc_PreserveComments) != EJsonContainerFlag::mc_None;
+	};
+
+	namespace NPrivate
+	{
+		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
+		struct TCJsonValueBase;
+		struct CJsonExtraTypes;
+	}
+
+	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
+	struct TCJsonObject;
+	template <typename t_CParent>
+	struct TCJsonValue;
+	template <typename t_CParent>
+	struct TCEJsonValue;
+}
+
 #include "Malterlib_Encoding_Json_InternalBase.h"
+#include "Malterlib_Encoding_Json_Trivia.h"
 
 #define DMibEncodingJsonExternTemplate
 
@@ -35,9 +68,11 @@ namespace NMib::NEncoding
 		, EJsonDialectFlag_TrimWhitespace = DMibBit(3)
 
 		, EJsonDialectFlag_All = EJsonDialectFlag_AllowUndefined | EJsonDialectFlag_AllowInvalidFloat | EJsonDialectFlag_HighPrecisionFloat | EJsonDialectFlag_TrimWhitespace
+
+		, EJsonDialectFlag_Internal_InEscapeGenerate = DMibBit(20)
 	};
 
-	template <typename t_CJsonValue, bool t_bOrdered>
+	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
 	struct TCJsonObject;
 
 	// Forward declarations for destructive iteration types (ordered mode only)
@@ -58,7 +93,7 @@ namespace NMib::NEncoding
 		using CValue = typename t_CParent::CValue;
 		struct CDummy {};
 	public:
-		using CObject = TCJsonObject<CValue, t_CParent::mc_bOrdered>;
+		using CObject = TCJsonObject<CValue, t_CParent::mc_ContainerFlags>;
 		using CArray = NContainer::TCVector<CValue>;
 
 		struct CKeyValue
@@ -181,7 +216,9 @@ namespace NMib::NEncoding
 		bool f_RemoveMember(NStr::CStr const &_Name);
 		CValue f_GetMemberValue(NStr::CStr const &_Name, CValue const &_Default) const;
 		CValue f_GetMemberValue(NStr::CStr const &_Name, CValue &&_Default) const;
-		void f_SortObjectsLexicographically();
+		void f_SortObjectsLexicographically()
+			requires (!CValue::mc_bPreserveComments)
+		;
 
 		//
 		// Array helpers
@@ -213,15 +250,31 @@ namespace NMib::NEncoding
 		// Parsing/generating
 		// ==============
 
-		static CValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, bool _bConvertNullToSpace = false, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
+		template <typename t_CParseContext>
+		static CValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
+		template <typename t_CParseContext>
 		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
+		template <typename t_CParseContext>
 		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 
+		static CValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
+		static CValue fs_FromStringStrict(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
+		static CValue fs_FromStringJsonC(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
+		static CValue fs_FromStringJson5(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
+
+		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
+		NStr::CStr f_ToStringJsonC(ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
+		NStr::CStr f_ToStringJson5(ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
+
+		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
+		NStr::CStr f_ToStringColoredJsonC(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
+		NStr::CStr f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
+
 	protected:
-		template <typename t_CJsonValue2, bool t_bOrdered2>
+		template <typename t_CJsonValue2, EJsonContainerFlag t_ContainerFlags2>
 		friend struct TCJsonObject;
 
-		template <template <typename t_CParent2> class t_TCValue2, typename t_CTypes2, bool t_bOrdered2>
+		template <template <typename t_CParent2> class t_TCValue2, typename t_CTypes2, EJsonContainerFlag t_ContainerFlags2>
 		friend struct NPrivate::TCJsonValueBase;
 
 		template <typename tf_CParent>
@@ -235,18 +288,22 @@ namespace NMib::NEncoding
 		inline_always void fp_PromoteType(EJsonType _Type);
 	};
 
-	template <typename t_CJsonValue, bool t_bOrdered>
+	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
 	struct TCJsonObject
 	{
+		static constexpr EJsonContainerFlag mc_ContainerFlags = t_ContainerFlags;
+		static constexpr bool mc_bOrdered = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bOrdered;
+		static constexpr bool mc_bPreserveComments = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveComments;
+
 	public:
-		using CObjectEntry = NPrivate::TCObjectEntry<t_CJsonValue, t_bOrdered>;
+		using CObjectEntry = NPrivate::TCObjectEntry<t_CJsonValue, t_ContainerFlags>;
 	private:
 		using CCompare = typename NPrivate::CObjectEntryBase::CCompare;
 
-		using CObjects = TCConditional<t_bOrdered, NContainer::TCLinkedList<CObjectEntry>, NContainer::TCMap<NStr::CStr, CObjectEntry>>;
+		using CObjects = TCConditional<mc_bOrdered, NContainer::TCLinkedList<CObjectEntry>, NContainer::TCMap<NStr::CStr, CObjectEntry>>;
 		using CObjectsTree = TCConditional
 			<
-				t_bOrdered
+				mc_bOrdered
 				, NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>
 				, CEmpty
 			>
@@ -258,10 +315,10 @@ namespace NMib::NEncoding
 		TCJsonObject(TCJsonObject const &_Other);
 		TCJsonObject(TCJsonObject &&_Other);
 
-		template <typename tf_CJsonValue, bool tf_bOrdered>
-		explicit TCJsonObject(TCJsonObject<tf_CJsonValue, tf_bOrdered> const &_Other);
-		template <typename tf_CJsonValue, bool tf_bOrdered>
-		explicit TCJsonObject(TCJsonObject<tf_CJsonValue, tf_bOrdered> &&_Other);
+		template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
+		explicit TCJsonObject(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> const &_Other);
+		template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
+		explicit TCJsonObject(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> &&_Other);
 
 		bool operator == (TCJsonObject const &_Right) const noexcept;
 		COrdering_Partial operator <=> (TCJsonObject const &_Right) const noexcept;
@@ -272,6 +329,8 @@ namespace NMib::NEncoding
 		t_CJsonValue *f_GetMember(NStr::CStr const &_Name, EJsonType _Type);
 		t_CJsonValue f_GetMemberValue(NStr::CStr const &_Name, t_CJsonValue const &_Default) const;
 		t_CJsonValue f_GetMemberValue(NStr::CStr const &_Name, t_CJsonValue &&_Default) const;
+		CObjectEntry &f_CreateMemberEntry(NStr::CStr const &_Name);
+		CObjectEntry &f_CreateMemberEntry(NStr::CStr &&_Name);
 		t_CJsonValue &f_CreateMember(NStr::CStr const &_Name);
 		t_CJsonValue &f_CreateMember(NStr::CStr &&_Name);
 
@@ -281,18 +340,18 @@ namespace NMib::NEncoding
 
 		bool f_RemoveMember(NStr::CStr const &_Name);
 		void f_RemoveMember(typename CObjects::CIteratorConst &_Iterator)
-			requires (t_bOrdered)
+			requires (mc_bOrdered)
 		;
 		void f_RemoveMember(typename CObjects::CIterator &_Iterator);
 		void f_RemoveMember(typename NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>::CIterator &_Iterator)
-			requires (t_bOrdered)
+			requires (mc_bOrdered)
 		;
 
 		typename CObjects::CIteratorConst f_OrderedIterator() const;
 		typename CObjects::CIterator f_OrderedIterator();
 
 		typename NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>::CIterator f_SortedIterator() const
-			requires (t_bOrdered)
+			requires (mc_bOrdered)
 		;
 
 		template <typename tf_FOnObject>
@@ -304,21 +363,23 @@ namespace NMib::NEncoding
 		void f_Feed(tf_CStream &_Stream) const;
 		template <typename tf_CStream>
 		void f_Consume(tf_CStream &_Stream);
-		void f_SortObjectsLexicographically();
+		void f_SortObjectsLexicographically()
+			requires (!mc_bPreserveComments)
+		;
 
 		// Type aliases for destructive iteration
 		// Ordered mode: custom types that manage linked list + AVL tree
-		using CObjectEntryHandle = TCConditional<t_bOrdered, TCJsonObjectEntryHandle<TCJsonObject>, typename NContainer::TCMap<NStr::CStr, CObjectEntry>::CNodeHandle>;
+		using CObjectEntryHandle = TCConditional<mc_bOrdered, TCJsonObjectEntryHandle<TCJsonObject>, typename NContainer::TCMap<NStr::CStr, CObjectEntry>::CNodeHandle>;
 		using COrderedDestructiveIterator = TCConditional
 			<
-				t_bOrdered
+				mc_bOrdered
 				, TCJsonOrderedDestructiveIterator<TCJsonObject>
 				, typename NContainer::TCMap<NStr::CStr, CObjectEntry>::CKeyValueIteratorBidirectionalDestructive
 			>
 		;
 		using CSortedDestructiveIterator = TCConditional
 			<
-				t_bOrdered
+				mc_bOrdered
 				, TCJsonSortedDestructiveIterator<TCJsonObject>
 				, typename NContainer::TCMap<NStr::CStr, CObjectEntry>::CKeyValueIteratorBidirectionalDestructive
 			>
@@ -335,7 +396,7 @@ namespace NMib::NEncoding
 		t_CJsonValue &f_InsertOrAssign(CObjectEntryHandle &&_Handle);
 
 	private:
-		template <typename t_CJsonValue2, bool t_bOrdered2>
+		template <typename t_CJsonValue2, EJsonContainerFlag t_ContainerFlags2>
 		friend struct TCJsonObject;
 
  		using CJsonValue = t_CJsonValue;
@@ -349,26 +410,26 @@ namespace NMib::NEncoding
 	};
 
 #ifndef DDocumentation_Doxygen
-	template <typename tf_CJsonValue, bool tf_bOrdered>
-	auto begin(TCJsonObject<tf_CJsonValue, tf_bOrdered> &_JsonObject)
+	template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
+	auto begin(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> &_JsonObject)
 	{
 		return _JsonObject.f_OrderedIterator();
 	}
 
-	template <typename tf_CJsonValue, bool tf_bOrdered>
-	NContainer::CIteratorEndSentinel end(TCJsonObject<tf_CJsonValue, tf_bOrdered> &_JsonObject)
+	template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
+	NContainer::CIteratorEndSentinel end(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> &_JsonObject)
 	{
 		return NContainer::CIteratorEndSentinel();
 	}
 
-	template <typename tf_CJsonValue, bool tf_bOrdered>
-	auto begin(TCJsonObject<tf_CJsonValue, tf_bOrdered> const &_JsonObject)
+	template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
+	auto begin(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> const &_JsonObject)
 	{
 		return _JsonObject.f_OrderedIterator();
 	}
 
-	template <typename tf_CJsonValue, bool tf_bOrdered>
-	NContainer::CIteratorEndSentinel end(TCJsonObject<tf_CJsonValue, tf_bOrdered> const &_JsonObject)
+	template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
+	NContainer::CIteratorEndSentinel end(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> const &_JsonObject)
 	{
 		return NContainer::CIteratorEndSentinel();
 	}
@@ -498,21 +559,30 @@ namespace NMib::NEncoding
 }
 
 #include "Malterlib_Encoding_Json_Internal.h"
+#include "Malterlib_Encoding_Json_Trivia.hpp"
 
 namespace NMib::NEncoding
 {
-	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, bool t_bOrdered>
-	using TCJson = t_TCValue<NPrivate::TCJsonValueBase<t_TCValue, t_CTypes, t_bOrdered>>;
+	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
+	using TCJson = t_TCValue<NPrivate::TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>>;
 
-	using CJsonOrdered = TCJson<TCJsonValue, NPrivate::CJsonExtraTypes, true>;
-	using CJsonSorted = TCJson<TCJsonValue, NPrivate::CJsonExtraTypes, false>;
+	using CJsonOrdered = TCJson<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_Ordered>;
+	using CJsonSorted = TCJson<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_None>;
+	using CJsonOrderedWithComments = TCJson<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_Ordered | EJsonContainerFlag::mc_PreserveComments>;
+	using CJsonSortedWithComments = TCJson<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_PreserveComments>;
 
 #ifdef DMibEncodingJsonExternTemplate
-	using CJsonValueBaseOrdered = NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, true>;
+	using CJsonValueBaseOrdered = NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_Ordered>;
 	using CJsonValueJsonOrdered = TCJsonValue<CJsonValueBaseOrdered>;
 
-	using CJsonValueBaseSorted = NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, false>;
+	using CJsonValueBaseSorted = NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_None>;
 	using CJsonValueJsonSorted = TCJsonValue<CJsonValueBaseSorted>;
+
+	using CJsonValueBaseOrderedWithComments = NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_Ordered | EJsonContainerFlag::mc_PreserveComments>;
+	using CJsonValueJsonOrderedWithComments = TCJsonValue<CJsonValueBaseOrderedWithComments>;
+
+	using CJsonValueBaseSortedWithComments = NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_PreserveComments>;
+	using CJsonValueJsonSortedWithComments = TCJsonValue<CJsonValueBaseSortedWithComments>;
 #endif
 }
 
@@ -521,9 +591,13 @@ namespace NMib::NEncoding
 #ifdef DMibEncodingJsonExternTemplate
 #	include "Malterlib_Encoding_Json_Instantiated.hpp"
 #	include "Malterlib_Encoding_Json_InstantiatedSorted.hpp"
+#	include "Malterlib_Encoding_Json_InstantiatedWithComments.hpp"
+#	include "Malterlib_Encoding_Json_InstantiatedSortedWithComments.hpp"
 #else
 #	include "Malterlib_Encoding_Json.hpp"
 #endif
+
+#include "Malterlib_Encoding_Json_Parse.h"
 
 #ifndef DMibPNoShortCuts
 	using namespace NMib::NEncoding;
