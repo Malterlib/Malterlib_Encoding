@@ -107,13 +107,7 @@ namespace NMib::NEncoding
 				&& !NPrivate::TCIsTCJsonValue<NTraits::TCRemoveReferenceAndQualifiers<tf_CType>>::mc_Value
 				&& !NPrivate::TCIsTCEJsonValue<NTraits::TCRemoveReferenceAndQualifiers<tf_CType>>::mc_Value
 			)
-#ifdef DCompiler_MSVC_Workaround
-			: TCJsonValue<t_CParent>(fg_Forward<tf_CType>(_Type))
-		{
-		}
-#else
 		;
-#endif
 
 		TCEJsonValue();
 		TCEJsonValue(EEJsonType _Type);

@@ -87,13 +87,7 @@ namespace NMib::NEncoding
 				&& !NPrivate::TCIsTCJsonValue<NTraits::TCRemoveReferenceAndQualifiers<tf_CType>>::mc_Value
 				&& !NPrivate::TCIsTCEJsonValue<NTraits::TCRemoveReferenceAndQualifiers<tf_CType>>::mc_Value
 			)
-#ifdef DCompiler_MSVC_Workaround
-			: t_CParent(fg_Forward<tf_CType>(_Type))
-		{
-		}
-#else
 		;
-#endif
 		TCJsonValue();
 		TCJsonValue(TCJsonValue const &_Other);
 		TCJsonValue(TCJsonValue &&_Other);
@@ -111,15 +105,7 @@ namespace NMib::NEncoding
 		TCJsonValue(NContainer::CSecureByteVector &&_Value) = delete;
 
 		template <typename tf_CType>
-		auto operator = (tf_CType &&_Value) -> TCEnableIf<!NTraits::cIsSame<decltype(this->mp_Value = fg_Forward<tf_CType>(_Value)), CDummy>, CValue> &
-#ifdef DCompiler_MSVC_Workaround
-		{
-			this->mp_Value = fg_Forward<tf_CType>(_Value);
-			return static_cast<CValue &>(*this);
-		}
-#else
-		;
-#endif
+		auto operator = (tf_CType &&_Value) -> TCEnableIf<!NTraits::cIsSame<decltype(this->mp_Value = fg_Forward<tf_CType>(_Value)), CDummy>, CValue> &;
 
 		CValue &operator = (NContainer::CSecureByteVector const &_Value) = delete;
 		CValue &operator = (NContainer::CSecureByteVector &_Value) = delete;

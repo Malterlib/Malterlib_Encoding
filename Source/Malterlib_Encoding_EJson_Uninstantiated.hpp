@@ -7,7 +7,6 @@
 
 namespace NMib::NEncoding
 {
-#ifndef DCompiler_MSVC_Workaround
 	template <typename t_CParent>
 	template <typename tf_CType>
 	TCEJsonValue<t_CParent>::TCEJsonValue(tf_CType &&_Type)
@@ -20,7 +19,6 @@ namespace NMib::NEncoding
 		: TCJsonValue<t_CParent>(fg_Forward<tf_CType>(_Type))
 	{
 	}
-#endif
 
 	template <typename t_CParent>
 	template <typename ...tfp_CValues>

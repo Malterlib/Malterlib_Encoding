@@ -82,13 +82,7 @@ namespace NMib::NEncoding::NPrivate
 		template <typename tf_CType>
 		TCJsonValueBase(tf_CType &&_Value)
 			requires (NTraits::cIsPlacementNewConstructibleWith<CVariantType, tf_CType &&>)
-#ifdef DCompiler_MSVC_Workaround
-			: mp_Value(fg_Forward<tf_CType>(_Value))
-		{
-		}
-#else
 		;
-#endif
 		TCJsonValueBase(TCJsonValueBase const &_Value);
 		TCJsonValueBase(TCJsonValueBase &_Value);
 		TCJsonValueBase(TCJsonValueBase &&_Value);

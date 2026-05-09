@@ -7,7 +7,6 @@
 
 namespace NMib::NEncoding
 {
-#ifndef DCompiler_MSVC_Workaround
 	template <typename t_CParent>
 	template <typename tf_CType>
 	TCJsonValue<t_CParent>::TCJsonValue(tf_CType &&_Type)
@@ -20,9 +19,7 @@ namespace NMib::NEncoding
 		: t_CParent(fg_Forward<tf_CType>(_Type))
 	{
 	}
-#endif
 
-#ifndef DCompiler_MSVC_Workaround
 	template <typename t_CParent>
 	template <typename tf_CType>
 	auto TCJsonValue<t_CParent>::operator = (tf_CType &&_Value) -> TCEnableIf<!NTraits::cIsSame<decltype(this->mp_Value = fg_Forward<tf_CType>(_Value)), CDummy>, CValue> &
@@ -30,7 +27,6 @@ namespace NMib::NEncoding
 		this->mp_Value = fg_Forward<tf_CType>(_Value);
 		return static_cast<CValue &>(*this);
 	}
-#endif
 
 	template <typename t_CParent>
 	template <typename ...tfp_CValues>
