@@ -24,7 +24,32 @@ namespace NMib::NEncoding
 	template <typename tf_CType>
 	auto TCJsonValue<t_CParent>::operator = (tf_CType &&_Value) -> TCEnableIf<!NTraits::cIsSame<decltype(this->mp_Value = fg_Forward<tf_CType>(_Value)), CDummy>, CValue> &
 	{
+		EJsonType OldType = CValue::mc_bPreserveYamlMetadata ? f_Type() : EJsonType_Invalid;
+
+		TCConditional<CValue::mc_bPreserveYamlMetadata, NStr::CStr, CEmpty> OldTagResolved;
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+			OldTagResolved = fg_Const(this->mp_ValueYamlMetadata).f_StringMetadata().m_TagResolved;
+
 		this->mp_Value = fg_Forward<tf_CType>(_Value);
+
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+		{
+			bool bKeepScalarMetadata = OldType == f_Type();
+			if (!OldTagResolved.f_IsEmpty())
+			{
+				bKeepScalarMetadata =
+					(OldTagResolved == "tag:yaml.org,2002:str" && f_IsString())
+					|| (OldTagResolved == "tag:yaml.org,2002:int" && f_IsInteger())
+					|| (OldTagResolved == "tag:yaml.org,2002:float" && f_IsFloat())
+					|| (OldTagResolved == "tag:yaml.org,2002:bool" && f_IsBoolean())
+					|| (OldTagResolved == "tag:yaml.org,2002:null" && f_IsNull())
+				;
+			}
+
+			if (!bKeepScalarMetadata)
+				this->mp_ValueYamlMetadata.f_ClearScalarMetadata();
+		}
+
 		return static_cast<CValue &>(*this);
 	}
 
@@ -197,6 +222,9 @@ namespace NMib::NEncoding::NPrivate
 			}
 			_Stream << mp_ValueTrivia;
 		}
+
+		if constexpr (mc_bPreserveYamlMetadata)
+			_Stream << mp_ValueYamlMetadata;
 	}
 
 	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
@@ -215,6 +243,9 @@ namespace NMib::NEncoding::NPrivate
 			}
 			_Stream >> mp_ValueTrivia;
 		}
+
+		if constexpr (mc_bPreserveYamlMetadata)
+			_Stream >> mp_ValueYamlMetadata;
 	}
 
 	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
@@ -232,6 +263,9 @@ namespace NMib::NEncoding::NPrivate
 			_Stream << KeyUserData;
 			_Stream << mp_KeyTrivia;
 		}
+
+		if constexpr (mc_bPreserveYamlMetadata)
+			_Stream << mp_KeyYamlMetadata;
 	}
 
 	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
@@ -250,6 +284,9 @@ namespace NMib::NEncoding::NPrivate
 			const_cast<NStr::CStr &>(f_Name()).f_SetUserData(KeyUserData);
 			_Stream >> mp_KeyTrivia;
 		}
+
+		if constexpr (mc_bPreserveYamlMetadata)
+			_Stream >> mp_KeyYamlMetadata;
 	}
 
 	template <typename tf_CStream>
@@ -314,6 +351,97 @@ namespace NMib::NEncoding::NPrivate
 		m_bTrailingSet = (Flags & uint8(fg_Bit(1))) != 0;
 		m_bLeadingHasComma = (Flags & uint8(fg_Bit(2))) != 0;
 	}
+
+	template <typename tf_CStream>
+	void CYamlValueMetadataSlots::f_Feed(tf_CStream &_Stream) const
+	{
+		uint8 bHasStringMetadata = m_pStringMetadata && !m_pStringMetadata->f_IsEmpty();
+		_Stream << bHasStringMetadata;
+		if (bHasStringMetadata)
+		{
+			auto const &Strings = *m_pStringMetadata;
+			_Stream << Strings.m_AnchorName;
+			_Stream << Strings.m_AliasName;
+			_Stream << Strings.m_TagHandle;
+			_Stream << Strings.m_TagSuffix;
+			_Stream << Strings.m_TagResolved;
+			_Stream << Strings.m_LeadingComment;
+			_Stream << Strings.m_LineComment;
+			_Stream << Strings.m_TrailingComment;
+			_Stream << Strings.m_DocumentTagHandles;
+		}
+		_Stream << m_ScalarStyle;
+		_Stream << m_NodeStyle;
+		_Stream << m_ChompIndicator;
+		_Stream << m_BlockIndentHint;
+	}
+
+	template <typename tf_CStream>
+	void CYamlValueMetadataSlots::f_Consume(tf_CStream &_Stream)
+	{
+		uint8 bHasStringMetadata;
+		_Stream >> bHasStringMetadata;
+		if (bHasStringMetadata)
+		{
+			auto &Strings = f_StringMetadata();
+			_Stream >> Strings.m_AnchorName;
+			_Stream >> Strings.m_AliasName;
+			_Stream >> Strings.m_TagHandle;
+			_Stream >> Strings.m_TagSuffix;
+			_Stream >> Strings.m_TagResolved;
+			_Stream >> Strings.m_LeadingComment;
+			_Stream >> Strings.m_LineComment;
+			_Stream >> Strings.m_TrailingComment;
+			_Stream >> Strings.m_DocumentTagHandles;
+		}
+		else
+			m_pStringMetadata = nullptr;
+		_Stream >> m_ScalarStyle;
+		_Stream >> m_NodeStyle;
+		_Stream >> m_ChompIndicator;
+		_Stream >> m_BlockIndentHint;
+	}
+
+	template <typename tf_CStream>
+	void CYamlKeyMetadataSlots::f_Feed(tf_CStream &_Stream) const
+	{
+		uint8 bHasStringMetadata = m_pStringMetadata && !m_pStringMetadata->f_IsEmpty();
+		_Stream << bHasStringMetadata;
+		if (bHasStringMetadata)
+		{
+			auto const &Strings = *m_pStringMetadata;
+			_Stream << Strings.m_AnchorName;
+			_Stream << Strings.m_AliasName;
+			_Stream << Strings.m_TagHandle;
+			_Stream << Strings.m_TagSuffix;
+			_Stream << Strings.m_TagResolved;
+			_Stream << Strings.m_LeadingComment;
+			_Stream << Strings.m_LineComment;
+		}
+		_Stream << m_ScalarStyle;
+	}
+
+	template <typename tf_CStream>
+	void CYamlKeyMetadataSlots::f_Consume(tf_CStream &_Stream)
+	{
+		uint8 bHasStringMetadata;
+		_Stream >> bHasStringMetadata;
+		if (bHasStringMetadata)
+		{
+			auto &Strings = f_StringMetadata();
+			_Stream >> Strings.m_AnchorName;
+			_Stream >> Strings.m_AliasName;
+			_Stream >> Strings.m_TagHandle;
+			_Stream >> Strings.m_TagSuffix;
+			_Stream >> Strings.m_TagResolved;
+			_Stream >> Strings.m_LeadingComment;
+			_Stream >> Strings.m_LineComment;
+		}
+		else
+			m_pStringMetadata = nullptr;
+		_Stream >> m_ScalarStyle;
+	}
+
 	template <typename tf_CStream>
 	void CJsonNull::f_Feed(tf_CStream &_Stream) const
 	{

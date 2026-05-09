@@ -13,6 +13,7 @@ namespace NMib::NEncoding
 		TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>::TCJsonValueBase(TCJsonValueBase const &_Value)
 			: mp_Value(_Value.mp_Value)
 			, mp_ValueTrivia(_Value.mp_ValueTrivia)
+			, mp_ValueYamlMetadata(_Value.mp_ValueYamlMetadata)
 		{
 		}
 
@@ -20,6 +21,7 @@ namespace NMib::NEncoding
 		TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>::TCJsonValueBase(TCJsonValueBase &_Value)
 			: mp_Value(_Value.mp_Value)
 			, mp_ValueTrivia(_Value.mp_ValueTrivia)
+			, mp_ValueYamlMetadata(_Value.mp_ValueYamlMetadata)
 		{
 		}
 
@@ -27,6 +29,7 @@ namespace NMib::NEncoding
 		TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>::TCJsonValueBase(TCJsonValueBase &&_Value)
 			: mp_Value(fg_Move(_Value.mp_Value))
 			, mp_ValueTrivia(fg_Move(_Value.mp_ValueTrivia))
+			, mp_ValueYamlMetadata(fg_Move(_Value.mp_ValueYamlMetadata))
 		{
 			_Value.mp_Value.template f_Set<EJsonType_Invalid>();
 		}
@@ -56,6 +59,10 @@ namespace NMib::NEncoding
 			constexpr bool c_bOtherPreservesComments = TCJsonContainerFlagTraits<tf_ContainerFlags>::mc_bPreserveComments;
 			if constexpr (mc_bPreserveComments && c_bOtherPreservesComments)
 				mp_ValueTrivia = _Value.mp_ValueTrivia;
+
+			constexpr bool c_bOtherPreservesYamlMetadata = TCJsonContainerFlagTraits<tf_ContainerFlags>::mc_bPreserveYamlMetadata;
+			if constexpr (mc_bPreserveYamlMetadata && c_bOtherPreservesYamlMetadata)
+				mp_ValueYamlMetadata = _Value.mp_ValueYamlMetadata;
 		}
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
@@ -83,6 +90,10 @@ namespace NMib::NEncoding
 			constexpr bool c_bOtherPreservesComments = TCJsonContainerFlagTraits<tf_ContainerFlags>::mc_bPreserveComments;
 			if constexpr (mc_bPreserveComments && c_bOtherPreservesComments)
 				mp_ValueTrivia = _Value.mp_ValueTrivia;
+
+			constexpr bool c_bOtherPreservesYamlMetadata = TCJsonContainerFlagTraits<tf_ContainerFlags>::mc_bPreserveYamlMetadata;
+			if constexpr (mc_bPreserveYamlMetadata && c_bOtherPreservesYamlMetadata)
+				mp_ValueYamlMetadata = _Value.mp_ValueYamlMetadata;
 		}
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
@@ -110,6 +121,11 @@ namespace NMib::NEncoding
 			constexpr bool c_bOtherPreservesComments = TCJsonContainerFlagTraits<tf_ContainerFlags>::mc_bPreserveComments;
 			if constexpr (mc_bPreserveComments && c_bOtherPreservesComments)
 				mp_ValueTrivia = fg_Move(_Value.mp_ValueTrivia);
+
+			constexpr bool c_bOtherPreservesYamlMetadata = TCJsonContainerFlagTraits<tf_ContainerFlags>::mc_bPreserveYamlMetadata;
+			if constexpr (mc_bPreserveYamlMetadata && c_bOtherPreservesYamlMetadata)
+				mp_ValueYamlMetadata = fg_Move(_Value.mp_ValueYamlMetadata);
+
 			_Value.mp_Value.template f_Set<EJsonType_Invalid>();
 		}
 
@@ -162,6 +178,20 @@ namespace NMib::NEncoding
 			return TCJsonTriviaConstView<TCJsonValueBase>(*this);
 		}
 
+		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
+		TCYamlView<TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>> TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>::f_Yaml()
+			requires (mc_bPreserveYamlMetadata)
+		{
+			return TCYamlView<TCJsonValueBase>(*this);
+		}
+
+		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
+		TCYamlConstView<TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>> TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>::f_Yaml() const
+			requires (mc_bPreserveYamlMetadata)
+		{
+			return TCYamlConstView<TCJsonValueBase>(*this);
+		}
+
 		template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
 		TCObjectEntry<t_CJsonValue, t_ContainerFlags>::TCObjectEntry()
 		{
@@ -206,6 +236,20 @@ namespace NMib::NEncoding
 			requires (mc_bPreserveComments)
 		{
 			return TCJsonKeyTriviaConstView<TCObjectEntry>(*this);
+		}
+
+		template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
+		TCYamlKeyView<TCObjectEntry<t_CJsonValue, t_ContainerFlags>> TCObjectEntry<t_CJsonValue, t_ContainerFlags>::f_KeyYaml()
+			requires (mc_bPreserveYamlMetadata)
+		{
+			return TCYamlKeyView<TCObjectEntry>(*this);
+		}
+
+		template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
+		TCYamlKeyConstView<TCObjectEntry<t_CJsonValue, t_ContainerFlags>> TCObjectEntry<t_CJsonValue, t_ContainerFlags>::f_KeyYaml() const
+			requires (mc_bPreserveYamlMetadata)
+		{
+			return TCYamlKeyConstView<TCObjectEntry>(*this);
 		}
 
 		template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>

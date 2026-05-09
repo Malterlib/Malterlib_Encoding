@@ -28,6 +28,9 @@ namespace NMib::NEncoding::NPrivate
 
 			DestTrivia.f_SetInterior(fg_TempCopy(SourceTrivia.f_Interior()));
 		}
+
+		if constexpr (tf_CDestValue::mc_bPreserveYamlMetadata && tf_CSourceValue::mc_bPreserveYamlMetadata)
+			_Dest.f_Yaml().f_SetMetadataSlots(_Source.f_Yaml().f_MetadataSlots());
 	}
 
 	template <typename tf_CDestValue, typename tf_CSourceValue>
@@ -50,6 +53,12 @@ namespace NMib::NEncoding::NPrivate
 
 			DestTrivia.f_SetInterior(SourceTrivia.f_MoveInterior());
 		}
+
+		if constexpr (tf_CDestValue::mc_bPreserveYamlMetadata && tf_CSourceValue::mc_bPreserveYamlMetadata)
+		{
+			_Dest.f_Yaml().f_SetMetadataSlots(_Source.f_Yaml().f_MoveMetadataSlots());
+			_Source.f_Yaml().f_ResetYamlMetadata();
+		}
 	}
 
 	template <typename tf_CDestEntry, typename tf_CSourceEntry>
@@ -70,6 +79,9 @@ namespace NMib::NEncoding::NPrivate
 			else
 				DestTrivia.f_UnsetTrailing();
 		}
+
+		if constexpr (tf_CDestEntry::mc_bPreserveYamlMetadata && tf_CSourceEntry::mc_bPreserveYamlMetadata)
+			_Dest.f_KeyYaml().f_SetMetadataSlots(_Source.f_KeyYaml().f_MetadataSlots());
 	}
 
 	template <typename tf_CDestEntry, typename tf_CSourceEntry>
@@ -90,6 +102,12 @@ namespace NMib::NEncoding::NPrivate
 			else
 				DestTrivia.f_UnsetTrailing();
 		}
+
+		if constexpr (tf_CDestEntry::mc_bPreserveYamlMetadata && tf_CSourceEntry::mc_bPreserveYamlMetadata)
+		{
+			_Dest.f_KeyYaml().f_SetMetadataSlots(_Source.f_KeyYaml().f_MoveMetadataSlots());
+			_Source.f_KeyYaml().f_ResetMetadataSlots();
+		}
 	}
 
 	template <typename tf_CDestValue, typename tf_CSourceValue>
@@ -100,6 +118,18 @@ namespace NMib::NEncoding::NPrivate
 			auto SourceTrivia = _Source.f_Trivia();
 			if (!SourceTrivia.f_Interior().f_IsEmpty())
 				_Dest.f_Trivia().f_SetTrailing(fg_TempCopy(SourceTrivia.f_Interior()), false);
+		}
+	}
+
+	template <typename tf_CValue>
+	inline void fg_ClearEJsonWrapperYamlScalarMetadata(tf_CValue &_Value)
+	{
+		if constexpr (tf_CValue::mc_bPreserveYamlMetadata)
+		{
+			_Value.f_Yaml().f_SetTag(NStr::CStr(), NStr::CStr(), NStr::CStr());
+			_Value.f_Yaml().f_SetScalarStyle(EYamlScalarStyle_Unspecified);
+			_Value.f_Yaml().f_SetChompIndicator(0);
+			_Value.f_Yaml().f_SetBlockIndentHint(-1);
 		}
 	}
 
@@ -261,6 +291,12 @@ namespace NMib::NEncoding
 	template <typename t_CParent>
 	void TCEJsonValue<t_CParent>::f_SetType(EJsonType _Type)
 	{
+		if (f_EType() == EEJsonType(_Type))
+			return;
+
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+			this->mp_ValueYamlMetadata.f_ClearScalarMetadata();
+
 		switch (EEJsonType(_Type))
 		{
 		case EEJsonType_Date:
@@ -476,6 +512,7 @@ namespace NMib::NEncoding
 	template <typename t_CParent>
 	void TCEJsonValue<t_CParent>::fp_ToJson(CJsonType &_Ret) const &
 	{
+		auto OriginalType = this->f_EType();
 		switch (this->f_EType())
 		{
 		case EEJsonType_Null:
@@ -511,10 +548,12 @@ namespace NMib::NEncoding
 				if (!f_Date().f_IsValid())
 				{
 					DateValue = nullptr;
+					NPrivate::fg_ClearEJsonWrapperYamlScalarMetadata(DateValue);
 					NPrivate::fg_CopyEJsonSemanticValueTrivia(DateValue, *this);
 					break;
 				}
 				DateValue = NTime::CTimeConvert(f_Date()).f_UnixMilliseconds();
+				NPrivate::fg_ClearEJsonWrapperYamlScalarMetadata(DateValue);
 				NPrivate::fg_CopyEJsonSemanticValueTrivia(DateValue, *this);
 			}
 			break;
@@ -522,6 +561,7 @@ namespace NMib::NEncoding
 			{
 				auto &BinaryValue = _Ret[CEJsonConstStrings::mc_Binary];
 				BinaryValue = NEncoding::fg_Base64Encode(f_Binary());
+				NPrivate::fg_ClearEJsonWrapperYamlScalarMetadata(BinaryValue);
 				NPrivate::fg_CopyEJsonSemanticValueTrivia(BinaryValue, *this);
 			}
 			break;
@@ -532,6 +572,7 @@ namespace NMib::NEncoding
 				Object[CEJsonConstStrings::mc_Type] = UserType.m_Type;
 				auto &UserValue = Object[CEJsonConstStrings::mc_Value];
 				UserValue = UserType.m_Value;
+				NPrivate::fg_ClearEJsonWrapperYamlScalarMetadata(UserValue);
 				NPrivate::fg_CopyEJsonSemanticValueTrivia(UserValue, *this);
 			}
 			break;
@@ -540,11 +581,18 @@ namespace NMib::NEncoding
 		}
 
 		NPrivate::fg_CopyEJsonValueTrivia(_Ret, *this);
+
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+		{
+			if (OriginalType == EEJsonType_Date || OriginalType == EEJsonType_Binary || OriginalType == EEJsonType_UserType)
+				NPrivate::fg_ClearEJsonWrapperYamlScalarMetadata(_Ret);
+		}
 	}
 
 	template <typename t_CParent>
 	void TCEJsonValue<t_CParent>::fp_ToJson(CJsonType &_Ret) &&
 	{
+		auto OriginalType = this->f_EType();
 		switch (this->f_EType())
 		{
 		case EEJsonType_Null:
@@ -580,10 +628,12 @@ namespace NMib::NEncoding
 				if (!f_Date().f_IsValid())
 				{
 					DateValue = nullptr;
+					NPrivate::fg_ClearEJsonWrapperYamlScalarMetadata(DateValue);
 					NPrivate::fg_CopyEJsonSemanticValueTrivia(DateValue, *this);
 					break;
 				}
 				DateValue = NTime::CTimeConvert(f_Date()).f_UnixMilliseconds();
+				NPrivate::fg_ClearEJsonWrapperYamlScalarMetadata(DateValue);
 				NPrivate::fg_CopyEJsonSemanticValueTrivia(DateValue, *this);
 			}
 			break;
@@ -591,6 +641,7 @@ namespace NMib::NEncoding
 			{
 				auto &BinaryValue = _Ret[CEJsonConstStrings::mc_Binary];
 				BinaryValue = NEncoding::fg_Base64Encode(f_Binary());
+				NPrivate::fg_ClearEJsonWrapperYamlScalarMetadata(BinaryValue);
 				NPrivate::fg_CopyEJsonSemanticValueTrivia(BinaryValue, *this);
 			}
 			break;
@@ -602,13 +653,21 @@ namespace NMib::NEncoding
 				Object[CEJsonConstStrings::mc_Type] = fg_Move(UserType.m_Type);
 				auto &UserValue = Object[CEJsonConstStrings::mc_Value];
 				UserValue = fg_Move(UserType.m_Value);
+				NPrivate::fg_ClearEJsonWrapperYamlScalarMetadata(UserValue);
 				NPrivate::fg_CopyEJsonSemanticValueTrivia(UserValue, *this);
 			}
 			break;
 		case EEJsonType_Invalid:
 			break; // Leave as default which is invalid
 		}
+
 		NPrivate::fg_MoveEJsonValueTrivia(_Ret, *this);
+
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+		{
+			if (OriginalType == EEJsonType_Date || OriginalType == EEJsonType_Binary || OriginalType == EEJsonType_UserType)
+				NPrivate::fg_ClearEJsonWrapperYamlScalarMetadata(_Ret);
+		}
 	}
 
 	template <typename t_CParent>
@@ -930,6 +989,13 @@ namespace NMib::NEncoding
 			break;
 		}
 
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+		{
+			NPrivate::fg_CopyEJsonValueTrivia(_Ret, _From);
+			if (bCollapsedObject)
+				NPrivate::fg_ClearEJsonWrapperYamlScalarMetadata(_Ret);
+		}
+
 		if constexpr (CValue::mc_bPreserveComments)
 		{
 			if (bCollapsedObject)
@@ -980,6 +1046,13 @@ namespace NMib::NEncoding
 			break;
 		}
 
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+		{
+			NPrivate::fg_MoveEJsonValueTrivia(_Ret, _From);
+			if (bCollapsedObject)
+				NPrivate::fg_ClearEJsonWrapperYamlScalarMetadata(_Ret);
+		}
+
 		if constexpr (CValue::mc_bPreserveComments)
 		{
 			if (bCollapsedObject)
@@ -1001,6 +1074,24 @@ namespace NMib::NEncoding
 		TCEJsonValue Return;
 		fsp_FromJson(Return, fg_Move(_Json));
 		return Return;
+	}
+
+	template <typename tf_CUserType>
+	auto fg_GetYamlUserTypeValue(tf_CUserType const &_UserType) -> TCEJsonUserTypeValueYamlType<tf_CUserType>
+	{
+		return TCEJsonUserTypeValueYamlType<tf_CUserType>::fs_FromJson(_UserType.m_Value);
+	}
+
+	template <typename tf_CUserType>
+	void fg_SetYamlUserTypeValue(tf_CUserType &o_UserType, TCEJsonUserTypeValueYamlType<tf_CUserType> const &_Value)
+	{
+		o_UserType.m_Value = _Value.f_ToJson();
+	}
+
+	template <typename tf_CUserType>
+	void fg_SetYamlUserTypeValue(tf_CUserType &o_UserType, TCEJsonUserTypeValueYamlType<tf_CUserType> &&_Value)
+	{
+		o_UserType.m_Value = fg_Move(_Value).f_ToJson();
 	}
 
 	template <typename t_CParent>

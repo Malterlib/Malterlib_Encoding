@@ -103,6 +103,30 @@ namespace NMib::NEncoding
 	{
 	}
 
+	CEJsonUserTypeOrdered::CEJsonUserTypeOrdered(CEJsonUserTypeOrderedYaml const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonOrdered::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeOrdered::CEJsonUserTypeOrdered(CEJsonUserTypeOrderedYaml &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonOrdered::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeOrdered::CEJsonUserTypeOrdered(CEJsonUserTypeSortedYaml const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonOrdered::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeOrdered::CEJsonUserTypeOrdered(CEJsonUserTypeSortedYaml &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonOrdered::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
 	CEJsonUserTypeSorted::CEJsonUserTypeSorted(CEJsonUserTypeOrdered const &_Other)
 		: m_Type(_Other.m_Type)
 		, m_Value(CJsonSorted::fs_FromCompatible(_Other.m_Value))
@@ -134,6 +158,30 @@ namespace NMib::NEncoding
 	}
 
 	CEJsonUserTypeSorted::CEJsonUserTypeSorted(CEJsonUserTypeSortedWithComments &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonSorted::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeSorted::CEJsonUserTypeSorted(CEJsonUserTypeOrderedYaml const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonSorted::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeSorted::CEJsonUserTypeSorted(CEJsonUserTypeOrderedYaml &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonSorted::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeSorted::CEJsonUserTypeSorted(CEJsonUserTypeSortedYaml const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonSorted::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeSorted::CEJsonUserTypeSorted(CEJsonUserTypeSortedYaml &&_Other)
 		: m_Type(fg_Move(_Other.m_Type))
 		, m_Value(CJsonSorted::fs_FromCompatible(fg_Move(_Other.m_Value)))
 	{
@@ -214,6 +262,30 @@ namespace NMib::NEncoding
 	{
 	}
 
+	CEJsonUserTypeOrderedWithComments::CEJsonUserTypeOrderedWithComments(CEJsonUserTypeOrderedYaml const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonOrderedWithComments::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeOrderedWithComments::CEJsonUserTypeOrderedWithComments(CEJsonUserTypeOrderedYaml &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonOrderedWithComments::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeOrderedWithComments::CEJsonUserTypeOrderedWithComments(CEJsonUserTypeSortedYaml const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonOrderedWithComments::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeOrderedWithComments::CEJsonUserTypeOrderedWithComments(CEJsonUserTypeSortedYaml &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonOrderedWithComments::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
 	bool CEJsonUserTypeOrderedWithComments::operator == (CEJsonUserTypeOrderedWithComments const &_Right) const noexcept
 	{
 		if (m_Type != _Right.m_Type)
@@ -289,6 +361,30 @@ namespace NMib::NEncoding
 	{
 	}
 
+	CEJsonUserTypeSortedWithComments::CEJsonUserTypeSortedWithComments(CEJsonUserTypeOrderedYaml const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonSortedWithComments::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeSortedWithComments::CEJsonUserTypeSortedWithComments(CEJsonUserTypeOrderedYaml &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonSortedWithComments::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeSortedWithComments::CEJsonUserTypeSortedWithComments(CEJsonUserTypeSortedYaml const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonSortedWithComments::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeSortedWithComments::CEJsonUserTypeSortedWithComments(CEJsonUserTypeSortedYaml &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonSortedWithComments::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
 	bool CEJsonUserTypeSortedWithComments::operator == (CEJsonUserTypeSortedWithComments const &_Right) const noexcept
 	{
 		if (m_Type != _Right.m_Type)
@@ -312,6 +408,182 @@ namespace NMib::NEncoding
 	CEJsonUserTypeSortedWithComments fg_UserTypeSortedWithComments(NStr::CStr const &_Type, CJsonSortedWithComments &&_Value)
 	{
 		return CEJsonUserTypeSortedWithComments{_Type, fg_Move(_Value)};
+	}
+
+	CEJsonUserTypeOrderedYaml::CEJsonUserTypeOrderedYaml() = default;
+
+	CEJsonUserTypeOrderedYaml::CEJsonUserTypeOrderedYaml(NStr::CStr const &_Type, CJsonOrderedYaml const &_Value)
+		: m_Type(_Type)
+		, m_Value(_Value)
+	{
+	}
+
+	CEJsonUserTypeOrderedYaml::CEJsonUserTypeOrderedYaml(CEJsonUserTypeOrdered const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonOrderedYaml::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeOrderedYaml::CEJsonUserTypeOrderedYaml(CEJsonUserTypeOrdered &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonOrderedYaml::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeOrderedYaml::CEJsonUserTypeOrderedYaml(CEJsonUserTypeSorted const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonOrderedYaml::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeOrderedYaml::CEJsonUserTypeOrderedYaml(CEJsonUserTypeSorted &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonOrderedYaml::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeOrderedYaml::CEJsonUserTypeOrderedYaml(CEJsonUserTypeOrderedWithComments const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonOrderedYaml::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeOrderedYaml::CEJsonUserTypeOrderedYaml(CEJsonUserTypeOrderedWithComments &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonOrderedYaml::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeOrderedYaml::CEJsonUserTypeOrderedYaml(CEJsonUserTypeSortedWithComments const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonOrderedYaml::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeOrderedYaml::CEJsonUserTypeOrderedYaml(CEJsonUserTypeSortedWithComments &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonOrderedYaml::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeOrderedYaml::CEJsonUserTypeOrderedYaml(CEJsonUserTypeSortedYaml const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonOrderedYaml::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeOrderedYaml::CEJsonUserTypeOrderedYaml(CEJsonUserTypeSortedYaml &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonOrderedYaml::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeOrderedYaml::CEJsonUserTypeOrderedYaml(NStr::CStr const &_Type, CJsonOrderedYaml &&_Value)
+		: m_Type(_Type)
+		, m_Value(fg_Move(_Value))
+	{
+	}
+
+	bool CEJsonUserTypeOrderedYaml::operator == (CEJsonUserTypeOrderedYaml const &_Right) const noexcept
+	{
+		if (m_Type != _Right.m_Type)
+			return false;
+		return m_Value == _Right.m_Value;
+	}
+
+	COrdering_Partial CEJsonUserTypeOrderedYaml::operator <=> (CEJsonUserTypeOrderedYaml const &_Right) const noexcept
+	{
+		if (auto Result = m_Type <=> _Right.m_Type; Result != 0)
+			return Result;
+		return m_Value <=> _Right.m_Value;
+	}
+
+	CEJsonUserTypeSortedYaml::CEJsonUserTypeSortedYaml() = default;
+
+	CEJsonUserTypeSortedYaml::CEJsonUserTypeSortedYaml(NStr::CStr const &_Type, CJsonSortedYaml const &_Value)
+		: m_Type(_Type)
+		, m_Value(_Value)
+	{
+	}
+
+	CEJsonUserTypeSortedYaml::CEJsonUserTypeSortedYaml(CEJsonUserTypeOrdered const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonSortedYaml::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeSortedYaml::CEJsonUserTypeSortedYaml(CEJsonUserTypeOrdered &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonSortedYaml::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeSortedYaml::CEJsonUserTypeSortedYaml(CEJsonUserTypeSorted const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonSortedYaml::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeSortedYaml::CEJsonUserTypeSortedYaml(CEJsonUserTypeSorted &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonSortedYaml::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeSortedYaml::CEJsonUserTypeSortedYaml(CEJsonUserTypeOrderedWithComments const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonSortedYaml::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeSortedYaml::CEJsonUserTypeSortedYaml(CEJsonUserTypeOrderedWithComments &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonSortedYaml::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeSortedYaml::CEJsonUserTypeSortedYaml(CEJsonUserTypeSortedWithComments const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonSortedYaml::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeSortedYaml::CEJsonUserTypeSortedYaml(CEJsonUserTypeSortedWithComments &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonSortedYaml::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeSortedYaml::CEJsonUserTypeSortedYaml(CEJsonUserTypeOrderedYaml const &_Other)
+		: m_Type(_Other.m_Type)
+		, m_Value(CJsonSortedYaml::fs_FromCompatible(_Other.m_Value))
+	{
+	}
+
+	CEJsonUserTypeSortedYaml::CEJsonUserTypeSortedYaml(CEJsonUserTypeOrderedYaml &&_Other)
+		: m_Type(fg_Move(_Other.m_Type))
+		, m_Value(CJsonSortedYaml::fs_FromCompatible(fg_Move(_Other.m_Value)))
+	{
+	}
+
+	CEJsonUserTypeSortedYaml::CEJsonUserTypeSortedYaml(NStr::CStr const &_Type, CJsonSortedYaml &&_Value)
+		: m_Type(_Type)
+		, m_Value(fg_Move(_Value))
+	{
+	}
+
+	bool CEJsonUserTypeSortedYaml::operator == (CEJsonUserTypeSortedYaml const &_Right) const noexcept
+	{
+		if (m_Type != _Right.m_Type)
+			return false;
+		return m_Value == _Right.m_Value;
+	}
+
+	COrdering_Partial CEJsonUserTypeSortedYaml::operator <=> (CEJsonUserTypeSortedYaml const &_Right) const noexcept
+	{
+		if (auto Result = m_Type <=> _Right.m_Type; Result != 0)
+			return Result;
+		return m_Value <=> _Right.m_Value;
 	}
 
 	NStr::CStr fg_EJsonTypeToString(EEJsonType _Type)

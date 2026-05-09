@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 #include "Malterlib_Encoding_EJson.h"
+#include "Malterlib_Encoding_Yaml.h"
 #include "Malterlib_Encoding_EJson.hpp"
 #include "Malterlib_Encoding_EJson_Generate.h"
 #include "Malterlib_Encoding_EJson_Parse.h"

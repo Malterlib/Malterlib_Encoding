@@ -29,6 +29,8 @@ namespace NMib::NEncoding
 	struct CEJsonUserTypeSorted;
 	struct CEJsonUserTypeOrderedWithComments;
 	struct CEJsonUserTypeSortedWithComments;
+	struct CEJsonUserTypeOrderedYaml;
+	struct CEJsonUserTypeSortedYaml;
 
 	struct CEJsonUserTypeOrdered final
 	{
@@ -41,6 +43,10 @@ namespace NMib::NEncoding
 		CEJsonUserTypeOrdered(CEJsonUserTypeOrderedWithComments &&_Other);
 		CEJsonUserTypeOrdered(CEJsonUserTypeSortedWithComments const &_Other);
 		CEJsonUserTypeOrdered(CEJsonUserTypeSortedWithComments &&_Other);
+		CEJsonUserTypeOrdered(CEJsonUserTypeOrderedYaml const &_Other);
+		CEJsonUserTypeOrdered(CEJsonUserTypeOrderedYaml &&_Other);
+		CEJsonUserTypeOrdered(CEJsonUserTypeSortedYaml const &_Other);
+		CEJsonUserTypeOrdered(CEJsonUserTypeSortedYaml &&_Other);
 
 		CEJsonUserTypeOrdered(NStr::CStr const &_Type, CJsonOrdered const &_Value);
 		CEJsonUserTypeOrdered(NStr::CStr const &_Type, CJsonOrdered &&_Value);
@@ -68,6 +74,10 @@ namespace NMib::NEncoding
 		CEJsonUserTypeSorted(CEJsonUserTypeOrderedWithComments &&_Other);
 		CEJsonUserTypeSorted(CEJsonUserTypeSortedWithComments const &_Other);
 		CEJsonUserTypeSorted(CEJsonUserTypeSortedWithComments &&_Other);
+		CEJsonUserTypeSorted(CEJsonUserTypeOrderedYaml const &_Other);
+		CEJsonUserTypeSorted(CEJsonUserTypeOrderedYaml &&_Other);
+		CEJsonUserTypeSorted(CEJsonUserTypeSortedYaml const &_Other);
+		CEJsonUserTypeSorted(CEJsonUserTypeSortedYaml &&_Other);
 		CEJsonUserTypeSorted(NStr::CStr const &_Type, CJsonSorted const &_Value);
 		CEJsonUserTypeSorted(NStr::CStr const &_Type, CJsonSorted &&_Value);
 
@@ -94,6 +104,10 @@ namespace NMib::NEncoding
 		CEJsonUserTypeOrderedWithComments(CEJsonUserTypeSorted &&_Other);
 		CEJsonUserTypeOrderedWithComments(CEJsonUserTypeSortedWithComments const &_Other);
 		CEJsonUserTypeOrderedWithComments(CEJsonUserTypeSortedWithComments &&_Other);
+		CEJsonUserTypeOrderedWithComments(CEJsonUserTypeOrderedYaml const &_Other);
+		CEJsonUserTypeOrderedWithComments(CEJsonUserTypeOrderedYaml &&_Other);
+		CEJsonUserTypeOrderedWithComments(CEJsonUserTypeSortedYaml const &_Other);
+		CEJsonUserTypeOrderedWithComments(CEJsonUserTypeSortedYaml &&_Other);
 		CEJsonUserTypeOrderedWithComments(NStr::CStr const &_Type, CJsonOrderedWithComments const &_Value);
 		CEJsonUserTypeOrderedWithComments(NStr::CStr const &_Type, CJsonOrderedWithComments &&_Value);
 
@@ -120,6 +134,10 @@ namespace NMib::NEncoding
 		CEJsonUserTypeSortedWithComments(CEJsonUserTypeSorted &&_Other);
 		CEJsonUserTypeSortedWithComments(CEJsonUserTypeOrderedWithComments const &_Other);
 		CEJsonUserTypeSortedWithComments(CEJsonUserTypeOrderedWithComments &&_Other);
+		CEJsonUserTypeSortedWithComments(CEJsonUserTypeOrderedYaml const &_Other);
+		CEJsonUserTypeSortedWithComments(CEJsonUserTypeOrderedYaml &&_Other);
+		CEJsonUserTypeSortedWithComments(CEJsonUserTypeSortedYaml const &_Other);
+		CEJsonUserTypeSortedWithComments(CEJsonUserTypeSortedYaml &&_Other);
 		CEJsonUserTypeSortedWithComments(NStr::CStr const &_Type, CJsonSortedWithComments const &_Value);
 		CEJsonUserTypeSortedWithComments(NStr::CStr const &_Type, CJsonSortedWithComments &&_Value);
 
@@ -133,6 +151,66 @@ namespace NMib::NEncoding
 
 		NStr::CStr m_Type;
 		CJsonSortedWithComments m_Value;
+	};
+
+	struct CEJsonUserTypeOrderedYaml final
+	{
+		CEJsonUserTypeOrderedYaml();
+		CEJsonUserTypeOrderedYaml(CEJsonUserTypeOrderedYaml const &_Other) = default;
+		CEJsonUserTypeOrderedYaml(CEJsonUserTypeOrderedYaml &&_Other) = default;
+		CEJsonUserTypeOrderedYaml(CEJsonUserTypeOrdered const &_Other);
+		CEJsonUserTypeOrderedYaml(CEJsonUserTypeOrdered &&_Other);
+		CEJsonUserTypeOrderedYaml(CEJsonUserTypeSorted const &_Other);
+		CEJsonUserTypeOrderedYaml(CEJsonUserTypeSorted &&_Other);
+		CEJsonUserTypeOrderedYaml(CEJsonUserTypeOrderedWithComments const &_Other);
+		CEJsonUserTypeOrderedYaml(CEJsonUserTypeOrderedWithComments &&_Other);
+		CEJsonUserTypeOrderedYaml(CEJsonUserTypeSortedWithComments const &_Other);
+		CEJsonUserTypeOrderedYaml(CEJsonUserTypeSortedWithComments &&_Other);
+		CEJsonUserTypeOrderedYaml(CEJsonUserTypeSortedYaml const &_Other);
+		CEJsonUserTypeOrderedYaml(CEJsonUserTypeSortedYaml &&_Other);
+		CEJsonUserTypeOrderedYaml(NStr::CStr const &_Type, CJsonOrderedYaml const &_Value);
+		CEJsonUserTypeOrderedYaml(NStr::CStr const &_Type, CJsonOrderedYaml &&_Value);
+
+		bool operator == (CEJsonUserTypeOrderedYaml const &_Right) const noexcept;
+		COrdering_Partial operator <=> (CEJsonUserTypeOrderedYaml const &_Right) const noexcept;
+
+		template <typename tf_CStream>
+		void f_Feed(tf_CStream &_Stream) const;
+		template <typename tf_CStream>
+		void f_Consume(tf_CStream &_Stream);
+
+		NStr::CStr m_Type;
+		CJsonOrderedYaml m_Value;
+	};
+
+	struct CEJsonUserTypeSortedYaml final
+	{
+		CEJsonUserTypeSortedYaml();
+		CEJsonUserTypeSortedYaml(CEJsonUserTypeSortedYaml const &_Other) = default;
+		CEJsonUserTypeSortedYaml(CEJsonUserTypeSortedYaml &&_Other) = default;
+		CEJsonUserTypeSortedYaml(CEJsonUserTypeOrdered const &_Other);
+		CEJsonUserTypeSortedYaml(CEJsonUserTypeOrdered &&_Other);
+		CEJsonUserTypeSortedYaml(CEJsonUserTypeSorted const &_Other);
+		CEJsonUserTypeSortedYaml(CEJsonUserTypeSorted &&_Other);
+		CEJsonUserTypeSortedYaml(CEJsonUserTypeOrderedWithComments const &_Other);
+		CEJsonUserTypeSortedYaml(CEJsonUserTypeOrderedWithComments &&_Other);
+		CEJsonUserTypeSortedYaml(CEJsonUserTypeSortedWithComments const &_Other);
+		CEJsonUserTypeSortedYaml(CEJsonUserTypeSortedWithComments &&_Other);
+		CEJsonUserTypeSortedYaml(CEJsonUserTypeOrderedYaml const &_Other);
+		CEJsonUserTypeSortedYaml(CEJsonUserTypeOrderedYaml &&_Other);
+		CEJsonUserTypeSortedYaml(NStr::CStr const &_Type, CJsonSortedYaml const &_Value);
+		CEJsonUserTypeSortedYaml(NStr::CStr const &_Type, CJsonSortedYaml &&_Value);
+
+		bool operator == (CEJsonUserTypeSortedYaml const &_Right) const noexcept;
+		COrdering_Partial operator <=> (CEJsonUserTypeSortedYaml const &_Right) const noexcept;
+
+		template <typename tf_CStream>
+		void f_Feed(tf_CStream &_Stream) const;
+		template <typename tf_CStream>
+		void f_Consume(tf_CStream &_Stream);
+
+		NStr::CStr m_Type;
+		CJsonSortedYaml m_Value;
 	};
 
 	CEJsonUserTypeOrdered fg_UserTypeOrdered(NStr::CStr const &_Type, CJsonOrdered const &_Value);
@@ -164,16 +242,26 @@ namespace NMib::NEncoding
 		using CKeyValue = typename TCJsonValue<t_CParent>::CKeyValue;
 		using CUserType = TCConditional
 			<
-				CValue::mc_bPreserveComments
-				, TCConditional<CValue::mc_bOrdered, CEJsonUserTypeOrderedWithComments, CEJsonUserTypeSortedWithComments>
-				, TCConditional<CValue::mc_bOrdered, CEJsonUserTypeOrdered, CEJsonUserTypeSorted>
+				CValue::mc_bPreserveYamlMetadata
+				, TCConditional<CValue::mc_bOrdered, CEJsonUserTypeOrderedYaml, CEJsonUserTypeSortedYaml>
+				, TCConditional
+				<
+					CValue::mc_bPreserveComments
+					, TCConditional<CValue::mc_bOrdered, CEJsonUserTypeOrderedWithComments, CEJsonUserTypeSortedWithComments>
+					, TCConditional<CValue::mc_bOrdered, CEJsonUserTypeOrdered, CEJsonUserTypeSorted>
+				>
 			>
 		;
 		using CJsonType = TCConditional
 			<
-				CValue::mc_bPreserveComments
-				, TCConditional<CValue::mc_bOrdered, CJsonOrderedWithComments, CJsonSortedWithComments>
-				, TCConditional<CValue::mc_bOrdered, CJsonOrdered, CJsonSorted>
+				CValue::mc_bPreserveYamlMetadata
+				, TCConditional<CValue::mc_bOrdered, CJsonOrderedYaml, CJsonSortedYaml>
+				, TCConditional
+				<
+					CValue::mc_bPreserveComments
+					, TCConditional<CValue::mc_bOrdered, CJsonOrderedWithComments, CJsonSortedWithComments>
+					, TCConditional<CValue::mc_bOrdered, CJsonOrdered, CJsonSorted>
+				>
 			>
 		;
 
@@ -350,12 +438,89 @@ namespace NMib::NEncoding
 				>
 			;
 		};
+
+		struct CEJsonExtraTypesOrderedYaml
+		{
+			using CTypes = NMeta::TCTypeList
+				<
+					NStorage::TCMember<NTime::CTime, (EJsonType)EEJsonType_Date>
+					, NStorage::TCMember<NContainer::CByteVector, (EJsonType)EEJsonType_Binary>
+					, NStorage::TCMember<NStorage::TCIndirection<CEJsonUserTypeOrderedYaml>, (EJsonType)EEJsonType_UserType>
+				>
+			;
+		};
+
+		struct CEJsonExtraTypesSortedYaml
+		{
+			using CTypes = NMeta::TCTypeList
+				<
+					NStorage::TCMember<NStorage::TCIndirection<NTime::CTime>, (EJsonType)EEJsonType_Date>
+					, NStorage::TCMember<NContainer::CByteVector, (EJsonType)EEJsonType_Binary>
+					, NStorage::TCMember<NStorage::TCIndirection<CEJsonUserTypeSortedYaml>, (EJsonType)EEJsonType_UserType>
+				>
+			;
+		};
 	}
 
 	using CEJsonOrdered = TCJson<TCEJsonValue, NPrivate::CEJsonExtraTypesOrdered, EJsonContainerFlag::mc_Ordered>;
 	using CEJsonSorted = TCJson<TCEJsonValue, NPrivate::CEJsonExtraTypesSorted, EJsonContainerFlag::mc_None>;
 	using CEJsonOrderedWithComments = TCJson<TCEJsonValue, NPrivate::CEJsonExtraTypesOrderedWithComments, EJsonContainerFlag::mc_Ordered | EJsonContainerFlag::mc_PreserveComments>;
 	using CEJsonSortedWithComments = TCJson<TCEJsonValue, NPrivate::CEJsonExtraTypesSortedWithComments, EJsonContainerFlag::mc_PreserveComments>;
+	using CEJsonOrderedYaml = TCJson<TCEJsonValue, NPrivate::CEJsonExtraTypesOrderedYaml, EJsonContainerFlag::mc_Ordered | EJsonContainerFlag::mc_PreserveYamlMetadata>;
+	using CEJsonSortedYaml = TCJson<TCEJsonValue, NPrivate::CEJsonExtraTypesSortedYaml, EJsonContainerFlag::mc_PreserveYamlMetadata>;
+
+	namespace NPrivate
+	{
+		template <typename tf_CUserType>
+		struct TCEJsonForUserType;
+
+		template <>
+		struct TCEJsonForUserType<CEJsonUserTypeOrdered>
+		{
+			using CType = CEJsonOrdered;
+		};
+
+		template <>
+		struct TCEJsonForUserType<CEJsonUserTypeSorted>
+		{
+			using CType = CEJsonSorted;
+		};
+
+		template <>
+		struct TCEJsonForUserType<CEJsonUserTypeOrderedWithComments>
+		{
+			using CType = CEJsonOrderedWithComments;
+		};
+
+		template <>
+		struct TCEJsonForUserType<CEJsonUserTypeSortedWithComments>
+		{
+			using CType = CEJsonSortedWithComments;
+		};
+
+		template <>
+		struct TCEJsonForUserType<CEJsonUserTypeOrderedYaml>
+		{
+			using CType = CEJsonOrderedYaml;
+		};
+
+		template <>
+		struct TCEJsonForUserType<CEJsonUserTypeSortedYaml>
+		{
+			using CType = CEJsonSortedYaml;
+		};
+	}
+
+	template <typename tf_CUserType>
+	using TCEJsonUserTypeValueYamlType = typename NPrivate::TCEJsonForUserType<NTraits::TCRemoveReferenceAndQualifiers<tf_CUserType>>::CType;
+
+	template <typename tf_CUserType>
+	auto fg_GetYamlUserTypeValue(tf_CUserType const &_UserType) -> TCEJsonUserTypeValueYamlType<tf_CUserType>;
+
+	template <typename tf_CUserType>
+	void fg_SetYamlUserTypeValue(tf_CUserType &o_UserType, TCEJsonUserTypeValueYamlType<tf_CUserType> const &_Value);
+	template <typename tf_CUserType>
+	void fg_SetYamlUserTypeValue(tf_CUserType &o_UserType, TCEJsonUserTypeValueYamlType<tf_CUserType> &&_Value);
 
 #ifdef DMibEncodingJsonExternTemplate
 	using CEJsonValueBaseOrdered = NPrivate::TCJsonValueBase<TCEJsonValue, NPrivate::CEJsonExtraTypesOrdered, EJsonContainerFlag::mc_Ordered>;
@@ -375,6 +540,18 @@ namespace NMib::NEncoding
 
 	using CEJsonValueBaseSortedWithComments = NPrivate::TCJsonValueBase<TCEJsonValue, NPrivate::CEJsonExtraTypesSortedWithComments, EJsonContainerFlag::mc_PreserveComments>;
 	using CJsonValueEJsonSortedWithComments = TCJsonValue<CEJsonValueBaseSortedWithComments>;
+
+	using CEJsonValueBaseOrderedYaml = NPrivate::TCJsonValueBase
+		<
+			TCEJsonValue
+			, NPrivate::CEJsonExtraTypesOrderedYaml
+			, EJsonContainerFlag::mc_Ordered | EJsonContainerFlag::mc_PreserveYamlMetadata
+		>
+	;
+	using CJsonValueEJsonOrderedYaml = TCJsonValue<CEJsonValueBaseOrderedYaml>;
+
+	using CEJsonValueBaseSortedYaml = NPrivate::TCJsonValueBase<TCEJsonValue, NPrivate::CEJsonExtraTypesSortedYaml, EJsonContainerFlag::mc_PreserveYamlMetadata>;
+	using CJsonValueEJsonSortedYaml = TCJsonValue<CEJsonValueBaseSortedYaml>;
 #endif
 }
 
@@ -385,6 +562,8 @@ namespace NMib::NEncoding
 #	include "Malterlib_Encoding_EJson_InstantiatedWithComments.hpp"
 #	include "Malterlib_Encoding_EJson_InstantiatedSorted.hpp"
 #	include "Malterlib_Encoding_EJson_InstantiatedSortedWithComments.hpp"
+#	include "Malterlib_Encoding_EJson_InstantiatedYaml.hpp"
+#	include "Malterlib_Encoding_EJson_InstantiatedSortedYaml.hpp"
 #else
 #	include "Malterlib_Encoding_EJson.hpp"
 #endif

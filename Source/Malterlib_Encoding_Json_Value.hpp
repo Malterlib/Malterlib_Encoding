@@ -93,6 +93,13 @@ namespace NMib::NEncoding
 	template <typename t_CParent>
 	auto TCJsonValue<t_CParent>::operator = (ch8 const *_pValue) -> CValue &
 	{
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+		{
+			bool bTypeChange = f_Type() != EJsonType_String;
+			if (bTypeChange)
+				this->mp_ValueYamlMetadata.f_ClearScalarMetadata();
+		}
+
 		this->mp_Value = _pValue;
 		return static_cast<CValue &>(*this);
 	}
@@ -108,6 +115,10 @@ namespace NMib::NEncoding
 	{
 		if (f_Type() == _Type)
 			return;
+
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+			this->mp_ValueYamlMetadata.f_ClearScalarMetadata();
+
 		switch (_Type)
 		{
 		case EJsonType_Invalid:
@@ -521,6 +532,10 @@ namespace NMib::NEncoding
 
 		if constexpr (CValue::mc_bPreserveComments)
 			this->mp_ValueTrivia = _Value.mp_ValueTrivia;
+
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+			this->mp_ValueYamlMetadata = _Value.mp_ValueYamlMetadata;
+
 		return static_cast<CValue &>(*this);
 	}
 
@@ -533,34 +548,70 @@ namespace NMib::NEncoding
 
 		if constexpr (CValue::mc_bPreserveComments)
 			this->mp_ValueTrivia = fg_Move(_Value.mp_ValueTrivia);
+
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+			this->mp_ValueYamlMetadata = fg_Move(_Value.mp_ValueYamlMetadata);
+
 		return static_cast<CValue &>(*this);
 	}
 
 	template <typename t_CParent>
 	auto TCJsonValue<t_CParent>::operator = (pfp64 _Value) -> CValue &
 	{
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+		{
+			bool bTypeChange = f_Type() != EJsonType_Float;
+			if (bTypeChange)
+				this->mp_ValueYamlMetadata.f_ClearScalarMetadata();
+		}
+
 		this->mp_Value = fp64(_Value);
+
 		return static_cast<CValue &>(*this);
 	}
 
 	template <typename t_CParent>
 	auto TCJsonValue<t_CParent>::operator = (pfp32 _Value) -> CValue &
 	{
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+		{
+			bool bTypeChange = f_Type() != EJsonType_Float;
+			if (bTypeChange)
+				this->mp_ValueYamlMetadata.f_ClearScalarMetadata();
+		}
+
 		this->mp_Value = fp64(_Value);
+
 		return static_cast<CValue &>(*this);
 	}
 
 	template <typename t_CParent>
 	auto TCJsonValue<t_CParent>::operator = (fp32 _Value) -> CValue &
 	{
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+		{
+			bool bTypeChange = f_Type() != EJsonType_Float;
+			if (bTypeChange)
+				this->mp_ValueYamlMetadata.f_ClearScalarMetadata();
+		}
+
 		this->mp_Value = fp64(_Value);
+
 		return static_cast<CValue &>(*this);
 	}
 
 	template <typename t_CParent>
 	auto TCJsonValue<t_CParent>::operator = (bool _Value) -> CValue &
 	{
+		if constexpr (CValue::mc_bPreserveYamlMetadata)
+		{
+			bool bTypeChange = f_Type() != EJsonType_Boolean;
+			if (bTypeChange)
+				this->mp_ValueYamlMetadata.f_ClearScalarMetadata();
+		}
+
 		this->mp_Value = NPrivate::CJsonBoolean(_Value);
+
 		return static_cast<CValue &>(*this);
 	}
 

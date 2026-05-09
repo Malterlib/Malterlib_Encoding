@@ -77,6 +77,9 @@ namespace NMib::NEncoding
 
 				EntryValueTrivia.f_SetInterior(fg_TempCopy(OtherValueTrivia.f_Interior()));
 			}
+
+			if constexpr (mc_bPreserveYamlMetadata && TCJsonContainerFlagTraits<tf_ContainerFlags>::mc_bPreserveYamlMetadata)
+				Entry.mp_KeyYamlMetadata = Object.mp_KeyYamlMetadata;
 		}
 	}
 
@@ -108,6 +111,9 @@ namespace NMib::NEncoding
 				else
 					EntryTrivia.f_UnsetTrailing();
 			}
+
+			if constexpr (mc_bPreserveYamlMetadata && TCJsonContainerFlagTraits<tf_ContainerFlags>::mc_bPreserveYamlMetadata)
+				Entry.mp_KeyYamlMetadata = fg_Move(Object.mp_KeyYamlMetadata);
 		}
 	}
 

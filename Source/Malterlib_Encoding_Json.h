@@ -14,6 +14,7 @@ namespace NMib::NEncoding
 		mc_None = 0
 		, mc_Ordered = DMibBit(0)
 		, mc_PreserveComments = DMibBit(1)
+		, mc_PreserveYamlMetadata = DMibBit(2)
 	};
 
 	template <EJsonContainerFlag t_ContainerFlags>
@@ -22,6 +23,8 @@ namespace NMib::NEncoding
 		static constexpr EJsonContainerFlag mc_ContainerFlags = t_ContainerFlags;
 		static constexpr bool mc_bOrdered = (t_ContainerFlags & EJsonContainerFlag::mc_Ordered) != EJsonContainerFlag::mc_None;
 		static constexpr bool mc_bPreserveComments = (t_ContainerFlags & EJsonContainerFlag::mc_PreserveComments) != EJsonContainerFlag::mc_None;
+		static constexpr bool mc_bPreserveYamlMetadata = (t_ContainerFlags & EJsonContainerFlag::mc_PreserveYamlMetadata) != EJsonContainerFlag::mc_None;
+		static_assert(!mc_bPreserveComments || !mc_bPreserveYamlMetadata, "JSON comment trivia and YAML metadata preservation are mutually exclusive");
 	};
 
 	namespace NPrivate
@@ -261,10 +264,19 @@ namespace NMib::NEncoding
 		static CValue fs_FromStringStrict(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
 		static CValue fs_FromStringJsonC(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
 		static CValue fs_FromStringJson5(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
+		template <typename t_CParseContext>
+		static CValue fs_FromStringYaml(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
+		static CValue fs_FromStringYaml(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
+		static CValue fs_FromStringYamlBlock(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
+		static CValue fs_FromStringYamlFlow(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
 
 		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringJsonC(ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringJson5(ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
+		template <typename t_CParseContext>
+		NStr::CStr f_ToStringYamlContext(ch8 const *_pPrettySeparator = "  ", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
+		NStr::CStr f_ToStringYaml(ch8 const *_pPrettySeparator = "  ", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
+		NStr::CStr f_ToStringYamlFlow(ch8 const *_pPrettySeparator = nullptr, EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 
 		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringColoredJsonC(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
@@ -294,6 +306,7 @@ namespace NMib::NEncoding
 		static constexpr EJsonContainerFlag mc_ContainerFlags = t_ContainerFlags;
 		static constexpr bool mc_bOrdered = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bOrdered;
 		static constexpr bool mc_bPreserveComments = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveComments;
+		static constexpr bool mc_bPreserveYamlMetadata = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveYamlMetadata;
 
 	public:
 		using CObjectEntry = NPrivate::TCObjectEntry<t_CJsonValue, t_ContainerFlags>;
@@ -411,25 +424,25 @@ namespace NMib::NEncoding
 
 #ifndef DDocumentation_Doxygen
 	template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
-	auto begin(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> &_JsonObject)
+	constexpr inline_always auto begin(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> &_JsonObject)
 	{
 		return _JsonObject.f_OrderedIterator();
 	}
 
 	template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
-	NContainer::CIteratorEndSentinel end(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> &_JsonObject)
+	constexpr inline_always NContainer::CIteratorEndSentinel end(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> &_JsonObject)
 	{
 		return NContainer::CIteratorEndSentinel();
 	}
 
 	template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
-	auto begin(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> const &_JsonObject)
+	constexpr inline_always auto begin(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> const &_JsonObject)
 	{
 		return _JsonObject.f_OrderedIterator();
 	}
 
 	template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
-	NContainer::CIteratorEndSentinel end(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> const &_JsonObject)
+	constexpr inline_always NContainer::CIteratorEndSentinel end(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> const &_JsonObject)
 	{
 		return NContainer::CIteratorEndSentinel();
 	}
@@ -570,6 +583,8 @@ namespace NMib::NEncoding
 	using CJsonSorted = TCJson<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_None>;
 	using CJsonOrderedWithComments = TCJson<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_Ordered | EJsonContainerFlag::mc_PreserveComments>;
 	using CJsonSortedWithComments = TCJson<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_PreserveComments>;
+	using CJsonOrderedYaml = TCJson<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_Ordered | EJsonContainerFlag::mc_PreserveYamlMetadata>;
+	using CJsonSortedYaml = TCJson<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_PreserveYamlMetadata>;
 
 #ifdef DMibEncodingJsonExternTemplate
 	using CJsonValueBaseOrdered = NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_Ordered>;
@@ -583,6 +598,12 @@ namespace NMib::NEncoding
 
 	using CJsonValueBaseSortedWithComments = NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_PreserveComments>;
 	using CJsonValueJsonSortedWithComments = TCJsonValue<CJsonValueBaseSortedWithComments>;
+
+	using CJsonValueBaseOrderedYaml = NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_Ordered | EJsonContainerFlag::mc_PreserveYamlMetadata>;
+	using CJsonValueJsonOrderedYaml = TCJsonValue<CJsonValueBaseOrderedYaml>;
+
+	using CJsonValueBaseSortedYaml = NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_PreserveYamlMetadata>;
+	using CJsonValueJsonSortedYaml = TCJsonValue<CJsonValueBaseSortedYaml>;
 #endif
 }
 
@@ -593,6 +614,8 @@ namespace NMib::NEncoding
 #	include "Malterlib_Encoding_Json_InstantiatedSorted.hpp"
 #	include "Malterlib_Encoding_Json_InstantiatedWithComments.hpp"
 #	include "Malterlib_Encoding_Json_InstantiatedSortedWithComments.hpp"
+#	include "Malterlib_Encoding_Json_InstantiatedYaml.hpp"
+#	include "Malterlib_Encoding_Json_InstantiatedSortedYaml.hpp"
 #else
 #	include "Malterlib_Encoding_Json.hpp"
 #endif

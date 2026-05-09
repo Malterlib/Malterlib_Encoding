@@ -74,6 +74,7 @@ namespace NMib::NEncoding::NPrivate
 		static constexpr EJsonContainerFlag mc_ContainerFlags = t_ContainerFlags;
 		static constexpr bool mc_bOrdered = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bOrdered;
 		static constexpr bool mc_bPreserveComments = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveComments;
+		static constexpr bool mc_bPreserveYamlMetadata = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveYamlMetadata;
 		static constexpr bool mc_bHasDefaultTypes = NMeta::gc_TypeList_Len<typename t_CTypes::CTypes> == 0;
 
 		using CValue = t_TCValue<TCJsonValueBase>;
@@ -113,6 +114,13 @@ namespace NMib::NEncoding::NPrivate
 			requires (mc_bPreserveComments)
 		;
 
+		TCYamlView<TCJsonValueBase> f_Yaml()
+			requires (mc_bPreserveYamlMetadata)
+		;
+		TCYamlConstView<TCJsonValueBase> f_Yaml() const
+			requires (mc_bPreserveYamlMetadata)
+		;
+
 	protected:
 		template <typename t_CParent2>
 		friend struct TCJsonValue;
@@ -124,9 +132,15 @@ namespace NMib::NEncoding::NPrivate
 		template <typename t_CValueBase>
 		friend struct NEncoding::TCJsonTriviaView;
 
+		template <typename t_CValueBase>
+		friend struct NEncoding::TCYamlConstView;
+		template <typename t_CValueBase>
+		friend struct NEncoding::TCYamlView;
+
 		// Members
 		CVariantType mp_Value;
 		DMibNoUniqueAddress TCConditional<mc_bPreserveComments, CJsonValueTriviaSlots, CEmpty> mp_ValueTrivia;
+		DMibNoUniqueAddress TCConditional<mc_bPreserveYamlMetadata, CYamlValueMetadataSlots, CYamlMetadataEmpty> mp_ValueYamlMetadata;
 	};
 
 	struct CJsonExtraTypes

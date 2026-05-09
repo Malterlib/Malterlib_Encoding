@@ -93,4 +93,32 @@ namespace NMib::NEncoding
 		m_Type.f_SetUserData(TypeUserData);
 		_Stream >> m_Value;
 	}
+
+	template <typename tf_CStream>
+	void CEJsonUserTypeOrderedYaml::f_Feed(tf_CStream &_Stream) const
+	{
+		_Stream << m_Type;
+		_Stream << m_Value;
+	}
+
+	template <typename tf_CStream>
+	void CEJsonUserTypeOrderedYaml::f_Consume(tf_CStream &_Stream)
+	{
+		_Stream >> m_Type;
+		_Stream >> m_Value;
+	}
+
+	template <typename tf_CStream>
+	void CEJsonUserTypeSortedYaml::f_Feed(tf_CStream &_Stream) const
+	{
+		_Stream << m_Type;
+		_Stream << m_Value;
+	}
+
+	template <typename tf_CStream>
+	void CEJsonUserTypeSortedYaml::f_Consume(tf_CStream &_Stream)
+	{
+		_Stream >> m_Type;
+		_Stream >> m_Value;
+	}
 }

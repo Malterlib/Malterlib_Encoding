@@ -4,6 +4,7 @@
 #include "Malterlib_Encoding_Json.h"
 #include "Malterlib_Encoding_Json_Parse.h"
 #include "Malterlib_Encoding_Json_Generate.h"
+#include "Malterlib_Encoding_Yaml.h"
 #include "Malterlib_Encoding_Json.hpp"
 #include "Malterlib_Encoding_Json_GenerateColored.hpp"
 
