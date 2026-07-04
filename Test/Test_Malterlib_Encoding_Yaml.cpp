@@ -1868,6 +1868,187 @@ namespace
 						;
 					}
 				};
+
+				DMibTestCategory("JsonCommentConversion")
+				{
+					using CJsonWithComments = TCConditional<tf_bOrdered, CJsonOrderedWithComments, CJsonSortedWithComments>;
+					using CEJsonWithComments = TCConditional<tf_bOrdered, CEJsonOrderedWithComments, CEJsonSortedWithComments>;
+
+					auto JsonC = CJsonWithComments::fs_FromStringJsonC
+						(
+							"// header\n"
+							"{\n"
+							"	// section\n"
+							"	\"a\": 1, // a-line\n"
+							"	\"b\":\n"
+							"	[\n"
+							"		// item leading\n"
+							"		2,\n"
+							"		3 // three\n"
+							"	]\n"
+							"}\n"
+							"// footer\n"
+						)
+					;
+
+					auto Yaml = CJsonWithMeta::fs_FromCompatible(JsonC);
+					DMibExpect(Yaml.f_Yaml().f_LeadingComment(), ==, "# header\n");
+					DMibExpect(Yaml["a"].f_Yaml().f_LineComment(), ==, " # a-line");
+					DMibExpect(Yaml["b"][0].f_Yaml().f_LeadingComment(), ==, "# item leading\n");
+					DMibExpect(Yaml["b"][1].f_Yaml().f_LineComment(), ==, " # three");
+					DMibExpect(Yaml.f_Yaml().f_TrailingComment(), ==, "# footer\n");
+					DMibExpect
+						(
+							Yaml.f_ToStringYaml()
+							, ==
+							, "# header\n"
+							"# section\n"
+							"a: 1 # a-line\n"
+							"b:\n"
+							"  # item leading\n"
+							"  - 2\n"
+							"  - 3 # three\n"
+							"# footer\n"
+						)
+					;
+
+					auto RoundTripped = CJsonWithComments::fs_FromCompatible(Yaml);
+					DMibExpect
+						(
+							RoundTripped.f_ToStringJsonC()
+							, ==
+							, "// header\n"
+							"{\n"
+							"	// section\n"
+							"	\"a\": 1, // a-line\n"
+							"	\"b\": [\n"
+							"		// item leading\n"
+							"		2,\n"
+							"		3 // three\n"
+							"	]\n"
+							"}\n"
+							"// footer\n"
+						)
+					;
+
+					auto Yaml2 = CJsonWithMeta::fs_FromStringYamlBlock
+						(
+							"# top\n"
+							"a: 1 # a-line\n"
+							"# b-lead\n"
+							"b:\n"
+							"  c: 2 # c-line\n"
+							"# tail\n"
+						)
+					;
+
+					auto JsonC2 = CJsonWithComments::fs_FromCompatible(Yaml2);
+					DMibExpect
+						(
+							JsonC2.f_ToStringJsonC()
+							, ==
+							, "// top\n"
+							"{\n"
+							"	\"a\": 1, // a-line\n"
+							"	// b-lead\n"
+							"	\"b\": {\n"
+							"		\"c\": 2 // c-line\n"
+							"	}\n"
+							"	// tail\n"
+							"}"
+						)
+					;
+
+					auto YamlCycle = CJsonWithMeta::fs_FromCompatible(JsonC2);
+					DMibExpect
+						(
+							YamlCycle.f_ToStringYaml()
+							, ==
+							, "# top\n"
+							"a: 1 # a-line\n"
+							"# b-lead\n"
+							"b:\n"
+							"  c: 2 # c-line\n"
+							"# tail\n"
+						)
+					;
+
+					auto EJsonC = CEJsonWithComments::fs_FromStringJsonC
+						(
+							"{\n"
+							"	// when\n"
+							"	\"Time\": {\"$date\": 1672628645000}, // time-line\n"
+							"	\"Value\": 5\n"
+							"}\n"
+						)
+					;
+
+					auto EYaml = CEJsonWithMeta::fs_FromCompatible(EJsonC);
+					DMibExpect(EYaml["Value"].f_Integer(), ==, 5);
+					DMibExpect(EYaml["Time"].f_IsDate(), ==, true);
+					DMibExpect(EYaml["Time"].f_Yaml().f_LineComment(), ==, " # time-line");
+
+					auto JsonCMoveSource = JsonC;
+					auto YamlMoved = CJsonWithMeta::fs_FromCompatible(fg_Move(JsonCMoveSource));
+					DMibExpect(YamlMoved.f_ToStringYaml(), ==, Yaml.f_ToStringYaml());
+
+					auto YamlMoveSource = Yaml;
+					auto JsonCMoved = CJsonWithComments::fs_FromCompatible(fg_Move(YamlMoveSource));
+					DMibExpect(JsonCMoved.f_ToStringJsonC(), ==, RoundTripped.f_ToStringJsonC());
+
+					auto BlockJsonC = CJsonWithComments::fs_FromStringJsonC
+						(
+							"/* header block */\n"
+							"{\n"
+							"	/* multi\n"
+							"	   line */\n"
+							"	\"a\": 1, /* same-line */\n"
+							"	\"b\": 2, /* tail same-line */\n"
+							"	/* key-note */ \"c\": 3,\n"
+							"	\"d\": /* value-note */ 4\n"
+							"}\n"
+						)
+					;
+
+					auto BlockYaml = CJsonWithMeta::fs_FromCompatible(BlockJsonC);
+					DMibExpect(BlockYaml.f_Yaml().f_LeadingComment(), ==, "# header block\n");
+					DMibExpect(BlockYaml["a"].f_Yaml().f_LineComment(), ==, " # same-line");
+					DMibExpect(BlockYaml["b"].f_Yaml().f_LineComment(), ==, " # tail same-line");
+					DMibExpect
+						(
+							BlockYaml.f_ToStringYaml()
+							, ==
+							, "# header block\n"
+							"# multi\n"
+							"# line\n"
+							"a: 1 # same-line\n"
+							"b: 2 # tail same-line\n"
+							"# key-note\n"
+							"c: 3\n"
+							"# value-note\n"
+							"d: 4\n"
+						)
+					;
+
+					auto BlockRoundTripped = CJsonWithComments::fs_FromCompatible(fg_Move(BlockYaml));
+					DMibExpect
+						(
+							BlockRoundTripped.f_ToStringJsonC()
+							, ==
+							, "// header block\n"
+							"{\n"
+							"	// multi\n"
+							"	// line\n"
+							"	\"a\": 1, // same-line\n"
+							"	\"b\": 2, // tail same-line\n"
+							"	// key-note\n"
+							"	\"c\": 3,\n"
+							"	// value-note\n"
+							"	\"d\": 4\n"
+							"}"
+						)
+					;
+				};
 			};
 		}
 

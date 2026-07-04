@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Malterlib_Encoding_EJson.h"
+#include "Malterlib_Encoding_Json_ConvertComments.hpp"
 #include <Mib/Encoding/Base64>
 
 namespace NMib::NEncoding::NPrivate
@@ -1353,21 +1354,35 @@ namespace NMib::NEncoding
 	template <typename tf_CParent>
 	auto TCEJsonValue<t_CParent>::fs_FromCompatible(TCEJsonValue<tf_CParent> const &_Other) -> TCEJsonValue
 	{
-		return TCEJsonValue(_Other);
+		TCEJsonValue Return(_Other);
+		NPrivate::fg_ConvertCompatibleComments(Return, _Other);
+		return Return;
 	}
 
 	template <typename t_CParent>
 	template <typename tf_CParent>
 	auto TCEJsonValue<t_CParent>::fs_FromCompatible(TCEJsonValue<tf_CParent> &&_Other) -> TCEJsonValue
 	{
-		return TCEJsonValue(fg_Move(_Other));
+		if constexpr (NPrivate::gc_JsonNeedsCommentConversion<TCEJsonValue, TCEJsonValue<tf_CParent>>)
+		{
+			// Record the translated comments while the source is still intact, then move the
+			// values and replay the comments onto the converted tree.
+			NContainer::TCVector<NPrivate::CJsonConvertedComments> Records;
+			NPrivate::fg_RecordCompatibleComments<TCEJsonValue>(_Other, Records);
+
+			TCEJsonValue Return(fg_Move(_Other));
+			NPrivate::fg_ApplyCompatibleComments(Return, Records);
+			return Return;
+		}
+		else
+			return TCEJsonValue(fg_Move(_Other));
 	}
 
 	template <typename t_CParent>
 	template <typename tf_CParent>
 	auto TCEJsonValue<t_CParent>::fs_FromCompatible(TCEJsonValue<tf_CParent> const &&_Other) -> TCEJsonValue
 	{
-		return TCEJsonValue(_Other);
+		return fs_FromCompatible(_Other);
 	}
 
 	template <typename t_CParent>

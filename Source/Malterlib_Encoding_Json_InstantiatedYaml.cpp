@@ -72,6 +72,58 @@ namespace NMib::NEncoding
 	template CJsonValueBaseOrderedYaml::TCJsonValueBase(CJsonValueBaseSortedYaml &);
 	template CJsonValueBaseOrderedYaml::TCJsonValueBase(CJsonValueBaseSortedYaml &&);
 
+	template CJsonValueJsonOrderedYaml::TCJsonValue(CJsonValueBaseOrderedWithComments const &);
+	template CJsonValueJsonOrderedYaml::TCJsonValue(CJsonValueBaseOrderedWithComments const &&);
+	template CJsonValueJsonOrderedYaml::TCJsonValue(CJsonValueBaseOrderedWithComments &&);
+	template CJsonValueJsonOrderedYaml::TCJsonValue(CJsonValueBaseSortedWithComments const &);
+	template CJsonValueJsonOrderedYaml::TCJsonValue(CJsonValueBaseSortedWithComments const &&);
+	template CJsonValueJsonOrderedYaml::TCJsonValue(CJsonValueBaseSortedWithComments &&);
+
+	template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseOrderedWithComments>
+		(
+			TCJsonValue<CJsonValueBaseOrderedWithComments> const &
+		)
+	;
+	template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseOrderedWithComments>
+		(
+			TCJsonValue<CJsonValueBaseOrderedWithComments> &&
+		)
+	;
+	template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseOrderedWithComments>
+		(
+			TCJsonValue<CJsonValueBaseOrderedWithComments> const &&
+		)
+	;
+	template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseSortedWithComments>
+		(
+			TCJsonValue<CJsonValueBaseSortedWithComments> const &
+		)
+	;
+	template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseSortedWithComments>
+		(
+			TCJsonValue<CJsonValueBaseSortedWithComments> &&
+		)
+	;
+	template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseSortedWithComments>
+		(
+			TCJsonValue<CJsonValueBaseSortedWithComments> const &&
+		)
+	;
+
+	template CJsonOrderedYaml::TCJsonValue(TCJsonValue<CJsonValueBaseOrderedWithComments> const &);
+	template CJsonOrderedYaml::TCJsonValue(TCJsonValue<CJsonValueBaseOrderedWithComments> &&);
+	template CJsonOrderedYaml::TCJsonValue(TCJsonValue<CJsonValueBaseOrderedWithComments> const &&);
+	template CJsonOrderedYaml::TCJsonValue(TCJsonValue<CJsonValueBaseSortedWithComments> const &);
+	template CJsonOrderedYaml::TCJsonValue(TCJsonValue<CJsonValueBaseSortedWithComments> &&);
+	template CJsonOrderedYaml::TCJsonValue(TCJsonValue<CJsonValueBaseSortedWithComments> const &&);
+
+	template CJsonValueBaseOrderedYaml::TCJsonValueBase(CJsonValueBaseOrderedWithComments const &);
+	template CJsonValueBaseOrderedYaml::TCJsonValueBase(CJsonValueBaseOrderedWithComments &);
+	template CJsonValueBaseOrderedYaml::TCJsonValueBase(CJsonValueBaseOrderedWithComments &&);
+	template CJsonValueBaseOrderedYaml::TCJsonValueBase(CJsonValueBaseSortedWithComments const &);
+	template CJsonValueBaseOrderedYaml::TCJsonValueBase(CJsonValueBaseSortedWithComments &);
+	template CJsonValueBaseOrderedYaml::TCJsonValueBase(CJsonValueBaseSortedWithComments &&);
+
 	template CJsonOrderedYaml::TCJsonValue(CNullPtr &&);
 	template CJsonOrderedYaml::TCJsonValue(CNullPtr &);
 	template CJsonOrderedYaml::TCJsonValue(CNullPtr const &);

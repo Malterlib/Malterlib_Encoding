@@ -11,6 +11,11 @@ namespace NMib::NEncoding
 	namespace
 	{
 		constexpr EJsonDialectFlag gc_JsonDialectFlags = EJsonDialectFlag_AllowUndefined | EJsonDialectFlag_AllowInvalidFloat;
+
+		bool fg_IsYamlFile(NStr::CStr const &_FileName)
+		{
+			return _FileName.f_EndsWith(".yaml") || _FileName.f_EndsWith(".yml");
+		}
 	}
 
 	CSimpleJsonDatabase::CSimpleJsonDatabase(NStr::CStr const &_FileName)
@@ -43,11 +48,16 @@ namespace NMib::NEncoding
 		auto BlockingActorCheckout = NConcurrency::fg_BlockingActor();
 		auto Data = co_await
 			(
-				NConcurrency::g_Dispatch(BlockingActorCheckout) / [FileName = mp_FileName]() -> CEJsonSorted
+				NConcurrency::g_Dispatch(BlockingActorCheckout) / [FileName = mp_FileName]() -> CEJsonSortedYaml
 				{
 					if (!NFile::CFile::fs_FileExists(FileName))
-						return CEJsonSorted();
-					return CEJsonSorted::fs_FromString(NFile::CFile::fs_ReadStringFromFile(FileName, true), FileName, gc_JsonDialectFlags);
+						return CEJsonSortedYaml();
+
+					auto FileData = NFile::CFile::fs_ReadStringFromFile(FileName, true);
+					if (fg_IsYamlFile(FileName))
+						return CEJsonSortedYaml::fs_FromStringYaml(FileData, FileName, gc_JsonDialectFlags);
+
+					return CEJsonSortedYaml::fs_FromCompatible(CEJsonSortedWithComments::fs_FromStringJsonC(FileData, FileName, gc_JsonDialectFlags));
 				}
 			)
 		;
@@ -75,7 +85,14 @@ namespace NMib::NEncoding
 					CFile::fs_CreateDirectory(CFile::fs_GetPath(FileName));
 					EFileAttrib FileAttributes = EFileAttrib_UnixAttributesValid | EFileAttrib_UserRead | EFileAttrib_UserWrite;
 					CStr TempFileName = "{}.{}"_f << FileName << NCryptography::fg_FastRandomID();
-					CFile::fs_WriteStringToFile(TempFileName, Data.f_ToString("\t", gc_JsonDialectFlags), true, FileAttributes);
+
+					CStr FileData;
+					if (fg_IsYamlFile(FileName))
+						FileData = Data.f_ToStringYaml("  ", gc_JsonDialectFlags);
+					else
+						FileData = CEJsonSortedWithComments::fs_FromCompatible(Data).f_ToStringJsonC("\t", gc_JsonDialectFlags);
+
+					CFile::fs_WriteStringToFile(TempFileName, FileData, true, FileAttributes);
 					CFile::fs_AtomicReplaceFile(TempFileName, FileName);
 				}
 			)
