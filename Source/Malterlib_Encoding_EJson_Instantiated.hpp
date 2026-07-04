@@ -55,6 +55,58 @@ namespace NMib::NEncoding
 	extern template CEJsonValueBaseOrdered::TCJsonValueBase(CEJsonValueBaseSortedWithComments const &);
 	extern template CEJsonValueBaseOrdered::TCJsonValueBase(CEJsonValueBaseSortedWithComments &);
 	extern template CEJsonValueBaseOrdered::TCJsonValueBase(CEJsonValueBaseSortedWithComments &&);
+
+	extern template CJsonValueEJsonOrdered::TCJsonValue(CEJsonValueBaseOrderedYaml const &);
+	extern template CJsonValueEJsonOrdered::TCJsonValue(CEJsonValueBaseOrderedYaml const &&);
+	extern template CJsonValueEJsonOrdered::TCJsonValue(CEJsonValueBaseOrderedYaml &&);
+	extern template CJsonValueEJsonOrdered::TCJsonValue(CEJsonValueBaseSortedYaml const &);
+	extern template CJsonValueEJsonOrdered::TCJsonValue(CEJsonValueBaseSortedYaml const &&);
+	extern template CJsonValueEJsonOrdered::TCJsonValue(CEJsonValueBaseSortedYaml &&);
+
+	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseOrderedYaml>
+		(
+			TCEJsonValue<CEJsonValueBaseOrderedYaml> const &
+		)
+	;
+	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseOrderedYaml>
+		(
+			TCEJsonValue<CEJsonValueBaseOrderedYaml> &&
+		)
+	;
+	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseOrderedYaml>
+		(
+			TCEJsonValue<CEJsonValueBaseOrderedYaml> const &&
+		)
+	;
+	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseSortedYaml>
+		(
+			TCEJsonValue<CEJsonValueBaseSortedYaml> const &
+		)
+	;
+	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseSortedYaml>
+		(
+			TCEJsonValue<CEJsonValueBaseSortedYaml> &&
+		)
+	;
+	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseSortedYaml>
+		(
+			TCEJsonValue<CEJsonValueBaseSortedYaml> const &&
+		)
+	;
+
+	extern template CEJsonOrdered::TCEJsonValue(TCEJsonValue<CEJsonValueBaseOrderedYaml> const &);
+	extern template CEJsonOrdered::TCEJsonValue(TCEJsonValue<CEJsonValueBaseOrderedYaml> &&);
+	extern template CEJsonOrdered::TCEJsonValue(TCEJsonValue<CEJsonValueBaseOrderedYaml> const &&);
+	extern template CEJsonOrdered::TCEJsonValue(TCEJsonValue<CEJsonValueBaseSortedYaml> const &);
+	extern template CEJsonOrdered::TCEJsonValue(TCEJsonValue<CEJsonValueBaseSortedYaml> &&);
+	extern template CEJsonOrdered::TCEJsonValue(TCEJsonValue<CEJsonValueBaseSortedYaml> const &&);
+
+	extern template CEJsonValueBaseOrdered::TCJsonValueBase(CEJsonValueBaseOrderedYaml const &);
+	extern template CEJsonValueBaseOrdered::TCJsonValueBase(CEJsonValueBaseOrderedYaml &);
+	extern template CEJsonValueBaseOrdered::TCJsonValueBase(CEJsonValueBaseOrderedYaml &&);
+	extern template CEJsonValueBaseOrdered::TCJsonValueBase(CEJsonValueBaseSortedYaml const &);
+	extern template CEJsonValueBaseOrdered::TCJsonValueBase(CEJsonValueBaseSortedYaml &);
+	extern template CEJsonValueBaseOrdered::TCJsonValueBase(CEJsonValueBaseSortedYaml &&);
 	extern template CJsonValueEJsonOrdered::TCJsonValue(CNullPtr &&);
 	extern template CJsonValueEJsonOrdered::TCJsonValue(CNullPtr &);
 	extern template CJsonValueEJsonOrdered::TCJsonValue(CNullPtr const &);
