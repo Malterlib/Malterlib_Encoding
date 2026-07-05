@@ -47,7 +47,11 @@ namespace NMib::NEncoding::NYaml
 			auto pCommentLineStart = pComment;
 			NStr::fg_ParseToEndOfLine(pComment);
 
-			o_String.f_AddString(pCommentLineStart, pComment - pCommentLineStart);
+			{
+				auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Comment);
+
+				o_String.f_AddString(pCommentLineStart, pComment - pCommentLineStart);
+			}
 			o_String += '\n';
 
 			NStr::fg_ParseEndOfLine(pComment);
@@ -264,7 +268,11 @@ namespace NMib::NEncoding::NYaml
 			auto pLineStart = pLine;
 			NStr::fg_ParseToEndOfLine(pLine);
 
-			o_String.f_AddString(pLineStart, pLine - pLineStart);
+			{
+				auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_String);
+
+				o_String.f_AddString(pLineStart, pLine - pLineStart);
+			}
 			o_String += '\n';
 
 			NStr::fg_ParseEndOfLine(pLine);
@@ -364,6 +372,8 @@ namespace NMib::NEncoding::NYaml
 
 				if (bEmitKeyAlias)
 				{
+					auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
 					o_String += '*';
 					o_String += Child.f_KeyYaml().f_Alias();
 				}
@@ -375,6 +385,8 @@ namespace NMib::NEncoding::NYaml
 						&& Child.f_KeyYaml().f_HasTag()
 					;
 
+					auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Key);
+
 					if (Child.f_KeyYaml().f_ScalarStyle() == EYamlScalarStyle_SingleQuoted && fg_IsYamlSingleQuotedSafe(Child.f_Name()))
 						fg_GenerateYamlSingleQuotedString(o_String, Child.f_Name());
 					else if (Child.f_KeyYaml().f_ScalarStyle() == EYamlScalarStyle_DoubleQuoted)
@@ -385,10 +397,15 @@ namespace NMib::NEncoding::NYaml
 						fg_GenerateYamlQuotedString(o_String, Child.f_Name());
 				}
 			}
-			else if (fg_IsYamlPlainSafe(Child.f_Name()))
-				o_String += Child.f_Name();
 			else
-				fg_GenerateYamlQuotedString(o_String, Child.f_Name());
+			{
+				auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Key);
+
+				if (fg_IsYamlPlainSafe(Child.f_Name()))
+					o_String += Child.f_Name();
+				else
+					fg_GenerateYamlQuotedString(o_String, Child.f_Name());
+			}
 
 			o_String += ":";
 
@@ -567,8 +584,12 @@ namespace NMib::NEncoding::NYaml
 				{
 					fg_AddYamlBlockIndent(o_String, _Depth, _pPrettySeparator);
 
-					o_String += '*';
-					o_String += _Value.f_Yaml().f_Alias();
+					{
+						auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
+						o_String += '*';
+						o_String += _Value.f_Yaml().f_Alias();
+					}
 					o_String += '\n';
 
 					return;
@@ -666,10 +687,18 @@ namespace NMib::NEncoding::NYaml
 
 				if (_Value.f_Yaml().f_HasAnchor() || bHasExplicitTag)
 					fg_GenerateYamlMetadataPrefix(o_String, _Value.f_Yaml(), o_pState, fg_ShouldEmitYamlTag(_Value));
-				else if (fg_CanGenerateYamlCoreTags(o_pState))
-					o_String += "!!binary ";
 				else
-					o_String += "!<tag:yaml.org,2002:binary> ";
+				{
+					{
+						auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
+						if (fg_CanGenerateYamlCoreTags(o_pState))
+							o_String += "!!binary";
+						else
+							o_String += "!<tag:yaml.org,2002:binary>";
+					}
+					o_String += ' ';
+				}
 
 				tf_CJson BinaryText(fg_Base64Encode(_Value.f_Binary()));
 				BinaryText.f_Yaml().f_SetScalarStyle(_Value.f_Yaml().f_ScalarStyle());
@@ -801,6 +830,108 @@ namespace NMib::NEncoding::NYaml
 		{
 			if (_Depth == 0 && !bInlineAlias && !_Value.f_Yaml().f_TrailingComment().f_IsEmpty())
 				fg_GenerateYamlBlockComment(o_String, fg_YamlTrailingCommentForGeneration(_Value.f_Yaml()), _Depth, _pPrettySeparator);
+		}
+	}
+
+	// Emits a complete YAML document (directives plus the root node) for _Value into any string-like sink; shared by
+	// the plain and colored ToString implementations.
+	template <typename t_CParseContext, typename tf_CSink, typename tf_CJson>
+	void fg_GenerateYamlDocument(tf_CSink &o_Sink, tf_CJson const &_Value, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags)
+	{
+		TCYamlGenerationState<tf_CJson> GenerationState;
+
+		if constexpr (tf_CJson::mc_bPreserveYamlMetadata)
+		{
+			fg_PrepassYamlGenerationValue(GenerationState, _Value);
+			GenerationState.m_pDocumentTagHandles = &_Value.f_Yaml().f_DocumentTagHandles();
+			GenerationState.m_Position = 0;
+		}
+
+		if constexpr (tf_CJson::mc_bPreserveYamlMetadata)
+		{
+			bool bEmittedDirective = false;
+
+			for (auto const &Handle : _Value.f_Yaml().f_DocumentTagHandles().f_Entries())
+			{
+				{
+					auto ColorScope = fg_YamlColorScope(o_Sink, EYamlColorToken_Metadata);
+
+					o_Sink += "%TAG ";
+					o_Sink += Handle.f_Key();
+					o_Sink += ' ';
+					o_Sink += Handle.f_Value();
+				}
+				o_Sink += '\n';
+				bEmittedDirective = true;
+			}
+
+			if (bEmittedDirective)
+			{
+				{
+					auto ColorScope = fg_YamlColorScope(o_Sink, EYamlColorToken_Metadata);
+
+					o_Sink += "---";
+				}
+				o_Sink += '\n';
+			}
+		}
+
+		bool bUseFlowStyle = _pPrettySeparator == nullptr;
+		if constexpr (tf_CJson::mc_bPreserveYamlMetadata && t_CParseContext::mc_bAllowFlowStyle)
+		{
+			if (_Value.f_Yaml().f_NodeStyle() == EYamlNodeStyle_Flow)
+				bUseFlowStyle = true;
+			else if (_Value.f_Yaml().f_NodeStyle() == EYamlNodeStyle_Block)
+				bUseFlowStyle = false;
+		}
+
+		if constexpr (t_CParseContext::mc_bAllowBlockStyle)
+		{
+			if constexpr (t_CParseContext::mc_bCustomGenerate)
+			{
+				if
+				(
+					t_CParseContext::template fs_GenerateValue<t_CParseContext>
+					(
+						o_Sink
+						, _Value
+						, 0
+						, bUseFlowStyle ? nullptr : (_pPrettySeparator ? _pPrettySeparator : "  ")
+						, _Flags
+					)
+				)
+				{
+					return;
+				}
+			}
+
+			if constexpr (tf_CJson::mc_bPreserveYamlMetadata || requires (tf_CJson const &Value) { Value.f_EType(); })
+			{
+				if (bUseFlowStyle)
+					fg_GenerateYamlNode(o_Sink, _Value, _Flags, &GenerationState);
+				else
+					fg_GenerateYamlBlockNode(o_Sink, _Value, 0, _pPrettySeparator ? _pPrettySeparator : "  ", _Flags, &GenerationState);
+			}
+			else
+			{
+				if (bUseFlowStyle)
+					fg_GenerateYamlNode(o_Sink, _Value, _Flags, static_cast<TCYamlGenerationState<tf_CJson> *>(nullptr));
+				else
+					fg_GenerateYamlBlockNode(o_Sink, _Value, 0, _pPrettySeparator ? _pPrettySeparator : "  ", _Flags, static_cast<TCYamlGenerationState<tf_CJson> *>(nullptr));
+			}
+		}
+		else
+		{
+			if constexpr (t_CParseContext::mc_bCustomGenerate)
+			{
+				if (t_CParseContext::template fs_GenerateValue<t_CParseContext>(o_Sink, _Value, 0, nullptr, _Flags))
+					return;
+			}
+
+			if constexpr (tf_CJson::mc_bPreserveYamlMetadata || requires (tf_CJson const &Value) { Value.f_EType(); })
+				fg_GenerateYamlNode(o_Sink, _Value, _Flags, &GenerationState);
+			else
+				fg_GenerateYamlNode(o_Sink, _Value, _Flags, static_cast<TCYamlGenerationState<tf_CJson> *>(nullptr));
 		}
 	}
 }

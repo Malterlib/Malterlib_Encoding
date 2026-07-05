@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 #include <Mib/Encoding/Yaml>
+#include <Mib/CommandLine/AnsiEncodingParse>
 #include <Mib/Test/Exception>
 
 namespace
@@ -256,6 +257,55 @@ namespace
 					;
 					DMibExpect(FoldedYaml["text"].f_Yaml().f_ScalarStyle(), ==, EYamlScalarStyle_Folded);
 					DMibExpect(FoldedYaml.f_ToStringYaml(), ==, "text: >\n  hello world\n");
+				};
+
+				DMibTestCategory("Colored")
+				{
+					NStr::CStr Text =
+						"# leading\n"
+						"name: test # inline\n"
+						"count: 3\n"
+						"ratio: 1.5\n"
+						"enabled: true\n"
+						"missing: null\n"
+						"quoted: \"a: b\"\n"
+						"block: |\n"
+						"  line\n"
+						"items:\n"
+						"  - &a 1\n"
+						"  - *a\n"
+					;
+					auto Json = CJsonWithMeta::fs_FromStringYamlBlock(Text);
+
+					DMibExpect(Json.f_ToStringColoredYaml(NCommandLine::EAnsiEncodingFlag_None), ==, Json.f_ToStringYaml());
+					DMibExpect
+						(
+							NCommandLine::CAnsiEncodingParse::fs_StripEncoding(Json.f_ToStringColoredYaml(NCommandLine::EAnsiEncodingFlag_AllFeatures))
+							, ==
+							, Json.f_ToStringYaml()
+						)
+					;
+					DMibExpect(Json.f_ToStringColoredYaml(NCommandLine::EAnsiEncodingFlag_AllFeatures), !=, Json.f_ToStringYaml());
+
+					auto Flow = CJsonWithoutMeta::fs_FromStringYamlFlow("{a: 1, b: [2, true, null], c: text}");
+					DMibExpect(Flow.f_ToStringColoredYamlFlow(NCommandLine::EAnsiEncodingFlag_None), ==, Flow.f_ToStringYamlFlow());
+					DMibExpect
+						(
+							NCommandLine::CAnsiEncodingParse::fs_StripEncoding(Flow.f_ToStringColoredYamlFlow(NCommandLine::EAnsiEncodingFlag_AllFeatures))
+							, ==
+							, Flow.f_ToStringYamlFlow()
+						)
+					;
+
+					auto EJson = CEJsonWithMeta::fs_FromStringYamlFlow("{data: !!binary aGVsbG8=, custom: !Thing {x: 1}}");
+					DMibExpect(EJson.f_ToStringColoredYamlFlow(NCommandLine::EAnsiEncodingFlag_None), ==, EJson.f_ToStringYamlFlow());
+					DMibExpect
+						(
+							NCommandLine::CAnsiEncodingParse::fs_StripEncoding(EJson.f_ToStringColoredYamlFlow(NCommandLine::EAnsiEncodingFlag_AllFeatures))
+							, ==
+							, EJson.f_ToStringYamlFlow()
+						)
+					;
 				};
 
 				DMibTestCategory("ScalarStyles")
