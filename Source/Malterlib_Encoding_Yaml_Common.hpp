@@ -5,6 +5,50 @@
 
 namespace NMib::NEncoding::NYaml
 {
+	// Semantic token classes the YAML generators mark while emitting. A sink that satisfies cYamlColorSink receives
+	// f_YamlColorBegin/f_YamlColorEnd around each token; plain string sinks compile the marks away.
+	enum EYamlColorToken
+	{
+		EYamlColorToken_Key
+		, EYamlColorToken_String
+		, EYamlColorToken_Number
+		, EYamlColorToken_Constant
+		, EYamlColorToken_Comment
+		, EYamlColorToken_Metadata // Tags, anchors, aliases, and document directives
+	};
+
+	template <typename t_CStr>
+	concept cYamlColorSink = requires (t_CStr &_String)
+		{
+			_String.f_YamlColorBegin(EYamlColorToken_Key);
+			_String.f_YamlColorEnd();
+		}
+	;
+
+	// The non-trivial destructor keeps -Wunused-variable quiet for plain string sinks.
+	struct CYamlColorScopeNone
+	{
+		~CYamlColorScopeNone()
+		{
+		}
+	};
+
+	template <typename tf_CStr>
+	inline_always auto fg_YamlColorScope(tf_CStr &o_String, EYamlColorToken _Token)
+	{
+		if constexpr (cYamlColorSink<tf_CStr>)
+		{
+			o_String.f_YamlColorBegin(_Token);
+			return g_OnScopeExit / [&o_String]
+				{
+					o_String.f_YamlColorEnd();
+				}
+			;
+		}
+		else
+			return CYamlColorScopeNone{};
+	}
+
 	inline bool fg_YamlParseNDigits(ch8 const *&o_pParse, aint _nDigits, int64 &o_Value)
 	{
 		auto pParse = o_pParse;

@@ -281,6 +281,16 @@ namespace NMib::NEncoding
 		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringColoredJsonC(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
+		template <typename t_CParseContext>
+		NStr::CStr f_ToStringColoredYamlContext
+			(
+				NCommandLine::EAnsiEncodingFlag _AnsiFlags
+				, ch8 const *_pPrettySeparator = "  "
+				, EJsonDialectFlag _Flags = EJsonDialectFlag_None
+			) const
+		;
+		NStr::CStr f_ToStringColoredYaml(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "  ", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
+		NStr::CStr f_ToStringColoredYamlFlow(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = nullptr, EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 
 	protected:
 		template <typename t_CJsonValue2, EJsonContainerFlag t_ContainerFlags2>

@@ -561,22 +561,26 @@ namespace NMib::NEncoding::NYaml
 				}
 			}
 
-			if (_Yaml.f_TagHandle() == NStr::gc_Str<"!">.m_Str && _Yaml.f_TagSuffix() == _Yaml.f_TagResolved() && !_Yaml.f_TagResolved().f_IsEmpty())
 			{
-				o_String += "!<";
-				o_String += _Yaml.f_TagResolved();
-				o_String += ">";
-			}
-			else if (bUseHandle)
-			{
-				o_String += _Yaml.f_TagHandle();
-				o_String += _Yaml.f_TagSuffix();
-			}
-			else
-			{
-				o_String += "!<";
-				o_String += _Yaml.f_TagResolved();
-				o_String += ">";
+				auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
+				if (_Yaml.f_TagHandle() == NStr::gc_Str<"!">.m_Str && _Yaml.f_TagSuffix() == _Yaml.f_TagResolved() && !_Yaml.f_TagResolved().f_IsEmpty())
+				{
+					o_String += "!<";
+					o_String += _Yaml.f_TagResolved();
+					o_String += ">";
+				}
+				else if (bUseHandle)
+				{
+					o_String += _Yaml.f_TagHandle();
+					o_String += _Yaml.f_TagSuffix();
+				}
+				else
+				{
+					o_String += "!<";
+					o_String += _Yaml.f_TagResolved();
+					o_String += ">";
+				}
 			}
 
 			if (_bTrailingSpace)
@@ -585,8 +589,12 @@ namespace NMib::NEncoding::NYaml
 
 		if (_Yaml.f_HasAnchor())
 		{
-			o_String += '&';
-			o_String += _Yaml.f_Anchor();
+			{
+				auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
+				o_String += '&';
+				o_String += _Yaml.f_Anchor();
+			}
 			o_String += ' ';
 		}
 	}
@@ -614,6 +622,8 @@ namespace NMib::NEncoding::NYaml
 	template <typename tf_CStr, typename tf_CJson, typename tf_CGenerationState>
 	void fg_GenerateYamlUserTypeTag(tf_CStr &o_String, tf_CJson const &_Value, tf_CGenerationState *o_pState)
 	{
+		auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
 		if (_Value.f_UserType().m_Type.f_StartsWith(NStr::gc_Str<"!">.m_Str) && fg_CanGenerateYamlPrimaryTags(o_pState))
 			o_String += _Value.f_UserType().m_Type;
 		else if (fg_CanGenerateYamlPrimaryTags(o_pState) && fg_IsYamlLocalTagSafe(_Value.f_UserType().m_Type))
@@ -729,6 +739,9 @@ namespace NMib::NEncoding::NYaml
 		{
 			if (LineComment[0] != ' ' && LineComment[0] != '\t')
 				o_String += ' ';
+
+			auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Comment);
+
 			o_String += LineComment;
 		}
 	}
@@ -767,6 +780,8 @@ namespace NMib::NEncoding::NYaml
 
 				if (bEmitKeyAlias)
 				{
+					auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
 					o_String += '*';
 					o_String += Child.f_KeyYaml().f_Alias();
 				}
@@ -775,6 +790,8 @@ namespace NMib::NEncoding::NYaml
 					fg_GenerateYamlMetadataPrefix(o_String, Child.f_KeyYaml(), o_pState);
 
 					bool bTaggedPlainKey = Child.f_KeyYaml().f_ScalarStyle() == EYamlScalarStyle_Plain && Child.f_KeyYaml().f_HasTag();
+
+					auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Key);
 
 					if (Child.f_KeyYaml().f_ScalarStyle() == EYamlScalarStyle_SingleQuoted && fg_IsYamlSingleQuotedSafe(Child.f_Name()))
 						fg_GenerateYamlSingleQuotedString(o_String, Child.f_Name());
@@ -786,10 +803,15 @@ namespace NMib::NEncoding::NYaml
 						fg_GenerateYamlQuotedString(o_String, Child.f_Name());
 				}
 			}
-			else if (fg_IsYamlPlainSafe(Child.f_Name()))
-				o_String += Child.f_Name();
 			else
-				fg_GenerateYamlQuotedString(o_String, Child.f_Name());
+			{
+				auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Key);
+
+				if (fg_IsYamlPlainSafe(Child.f_Name()))
+					o_String += Child.f_Name();
+				else
+					fg_GenerateYamlQuotedString(o_String, Child.f_Name());
+			}
 
 			o_String += ": ";
 			if (o_pState && !bConsumedKeyPosition)
@@ -812,7 +834,11 @@ namespace NMib::NEncoding::NYaml
 			if (_bEmitComments && !_Value.f_Yaml().f_LeadingComment().f_IsEmpty())
 			{
 				auto const &LeadingComment = fg_YamlLeadingCommentForGeneration(_Value.f_Yaml());
-				o_String += LeadingComment;
+				{
+					auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Comment);
+
+					o_String += LeadingComment;
+				}
 
 				if
 				(
@@ -835,8 +861,12 @@ namespace NMib::NEncoding::NYaml
 					if (_Value.f_Yaml().f_HasAnchor() || _Value.f_Yaml().f_HasTag())
 						fg_GenerateYamlMetadataPrefix(o_String, _Value.f_Yaml(), o_pState, fg_ShouldEmitYamlTag(_Value));
 
-					o_String += '*';
-					o_String += _Value.f_Yaml().f_Alias();
+					{
+						auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
+						o_String += '*';
+						o_String += _Value.f_Yaml().f_Alias();
+					}
 					goto l_EmitComments;
 				}
 
@@ -865,35 +895,46 @@ namespace NMib::NEncoding::NYaml
 		switch (_Value.f_Type())
 		{
 		case EJsonType_Null:
-			o_String += NStr::gc_Str<"null">.m_Str;
+			{
+				auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Constant);
+
+				o_String += NStr::gc_Str<"null">.m_Str;
+			}
 			break;
 		case EJsonType_String:
-			if constexpr (tf_CJson::mc_bPreserveYamlMetadata)
 			{
-				if (_Value.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_SingleQuoted && fg_IsYamlSingleQuotedSafe(_Value.f_String()))
-					fg_GenerateYamlSingleQuotedString(o_String, _Value.f_String());
-				else if
-				(
-					_Value.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_Plain
-					&& (fg_IsYamlPlainSafe(_Value.f_String()) || (bEmittedYamlTag && fg_IsYamlPlainSyntaxSafe(_Value.f_String())))
-				)
+				auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_String);
+
+				if constexpr (tf_CJson::mc_bPreserveYamlMetadata)
 				{
-					o_String += _Value.f_String();
+					if (_Value.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_SingleQuoted && fg_IsYamlSingleQuotedSafe(_Value.f_String()))
+						fg_GenerateYamlSingleQuotedString(o_String, _Value.f_String());
+					else if
+					(
+						_Value.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_Plain
+						&& (fg_IsYamlPlainSafe(_Value.f_String()) || (bEmittedYamlTag && fg_IsYamlPlainSyntaxSafe(_Value.f_String())))
+					)
+					{
+						o_String += _Value.f_String();
+					}
+					else
+						fg_GenerateYamlQuotedString(o_String, _Value.f_String());
 				}
 				else
-					fg_GenerateYamlQuotedString(o_String, _Value.f_String());
-			}
-			else
-			{
-				if (fg_IsYamlPlainSafe(_Value.f_String()))
-					o_String += _Value.f_String();
-				else
-					fg_GenerateYamlQuotedString(o_String, _Value.f_String());
+				{
+					if (fg_IsYamlPlainSafe(_Value.f_String()))
+						o_String += _Value.f_String();
+					else
+						fg_GenerateYamlQuotedString(o_String, _Value.f_String());
+				}
 			}
 			break;
 		case EJsonType_Integer:
 			{
 				auto Text = NStr::CFStr32::fs_ToStr(int64(_Value.f_Integer()));
+
+				auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Number);
+
 				if constexpr (tf_CJson::mc_bPreserveYamlMetadata)
 					fg_GenerateYamlStyledScalarString(o_String, Text, _Value.f_Yaml());
 				else
@@ -917,6 +958,8 @@ namespace NMib::NEncoding::NYaml
 				else
 					Text = NStr::CFStr128::fs_ToStr(fp64(Value));
 
+				auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Number);
+
 				if constexpr (tf_CJson::mc_bPreserveYamlMetadata)
 					fg_GenerateYamlStyledScalarString(o_String, Text, _Value.f_Yaml());
 				else
@@ -924,10 +967,14 @@ namespace NMib::NEncoding::NYaml
 			}
 			break;
 		case EJsonType_Boolean:
-			if constexpr (tf_CJson::mc_bPreserveYamlMetadata)
-				fg_GenerateYamlStyledScalarString(o_String, _Value.f_Boolean() ? NStr::gc_Str<"true">.m_Str : NStr::gc_Str<"false">.m_Str, _Value.f_Yaml());
-			else
-				o_String += _Value.f_Boolean() ? NStr::gc_Str<"true">.m_Str : NStr::gc_Str<"false">.m_Str;
+			{
+				auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Constant);
+
+				if constexpr (tf_CJson::mc_bPreserveYamlMetadata)
+					fg_GenerateYamlStyledScalarString(o_String, _Value.f_Boolean() ? NStr::gc_Str<"true">.m_Str : NStr::gc_Str<"false">.m_Str, _Value.f_Yaml());
+				else
+					o_String += _Value.f_Boolean() ? NStr::gc_Str<"true">.m_Str : NStr::gc_Str<"false">.m_Str;
+			}
 			break;
 		case EJsonType_Object:
 			fg_GenerateYamlObject(o_String, _Value.f_Object(), _Flags, o_pState);
@@ -965,43 +1012,56 @@ namespace NMib::NEncoding::NYaml
 							&& TagSuffix != "map"
 						)
 						{
-							o_String += "!!";
-							o_String += TagSuffix;
+							{
+								auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
+								o_String += "!!";
+								o_String += TagSuffix;
+							}
 							o_String += ' ';
 							fg_GenerateYamlUserTypeStoredPayload(o_String, _Value.f_UserType(), _Flags, o_pState);
 							break;
 						}
 
-						o_String += "!<";
-						o_String += _Value.f_UserType().m_Type;
-						o_String += "> ";
+						{
+							auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
+							o_String += "!<";
+							o_String += _Value.f_UserType().m_Type;
+							o_String += ">";
+						}
+						o_String += ' ';
 						fg_GenerateYamlUserTypeStoredPayload(o_String, _Value.f_UserType(), _Flags, o_pState);
 						break;
 					}
 
 					if (!bEmittedYamlTag)
 					{
-						if (_Value.f_UserType().m_Type.f_StartsWith(NStr::gc_Str<"!">.m_Str) && fg_CanGenerateYamlPrimaryTags(o_pState))
 						{
-							if (!fg_IsYamlLocalTagSafe(_Value.f_UserType().m_Type.f_Extract(1)))
+							auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
+							if (_Value.f_UserType().m_Type.f_StartsWith(NStr::gc_Str<"!">.m_Str) && fg_CanGenerateYamlPrimaryTags(o_pState))
+							{
+								if (!fg_IsYamlLocalTagSafe(_Value.f_UserType().m_Type.f_Extract(1)))
+								{
+									o_String += "!<";
+									o_String += _Value.f_UserType().m_Type;
+									o_String += ">";
+								}
+								else
+									o_String += _Value.f_UserType().m_Type;
+							}
+							else if (fg_CanGenerateYamlPrimaryTags(o_pState) && fg_IsYamlLocalTagSafe(_Value.f_UserType().m_Type))
+							{
+								o_String += '!';
+								o_String += _Value.f_UserType().m_Type;
+							}
+							else
 							{
 								o_String += "!<";
 								o_String += _Value.f_UserType().m_Type;
 								o_String += ">";
 							}
-							else
-								o_String += _Value.f_UserType().m_Type;
-						}
-						else if (fg_CanGenerateYamlPrimaryTags(o_pState) && fg_IsYamlLocalTagSafe(_Value.f_UserType().m_Type))
-						{
-							o_String += '!';
-							o_String += _Value.f_UserType().m_Type;
-						}
-						else
-						{
-							o_String += "!<";
-							o_String += _Value.f_UserType().m_Type;
-							o_String += ">";
 						}
 
 						o_String += ' ';
@@ -1013,11 +1073,18 @@ namespace NMib::NEncoding::NYaml
 				{
 					if (!bEmittedYamlTag)
 					{
-						if (fg_CanGenerateYamlCoreTags(o_pState))
-							o_String += "!!binary ";
-						else
-							o_String += "!<tag:yaml.org,2002:binary> ";
+						{
+							auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
+							if (fg_CanGenerateYamlCoreTags(o_pState))
+								o_String += "!!binary";
+							else
+								o_String += "!<tag:yaml.org,2002:binary>";
+						}
+						o_String += ' ';
 					}
+
+					auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_String);
 
 					o_String += fg_Base64Encode(_Value.f_Binary());
 				}
@@ -1027,11 +1094,18 @@ namespace NMib::NEncoding::NYaml
 					{
 						if (!bEmittedYamlTag)
 						{
-							if (fg_CanGenerateYamlCoreTags(o_pState))
-								o_String += "!!timestamp ";
-							else
-								o_String += "!<tag:yaml.org,2002:timestamp> ";
+							{
+								auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
+								if (fg_CanGenerateYamlCoreTags(o_pState))
+									o_String += "!!timestamp";
+								else
+									o_String += "!<tag:yaml.org,2002:timestamp>";
+							}
+							o_String += ' ';
 						}
+
+						auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Number);
 
 						if constexpr (tf_CJson::mc_bPreserveYamlMetadata)
 						{
@@ -1053,20 +1127,35 @@ namespace NMib::NEncoding::NYaml
 					{
 						if (!bEmittedYamlTag)
 						{
-							if (fg_CanGenerateYamlCoreTags(o_pState))
-								o_String += "!!timestamp ";
-							else
-								o_String += "!<tag:yaml.org,2002:timestamp> ";
+							{
+								auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Metadata);
+
+								if (fg_CanGenerateYamlCoreTags(o_pState))
+									o_String += "!!timestamp";
+								else
+									o_String += "!<tag:yaml.org,2002:timestamp>";
+							}
+							o_String += ' ';
 						}
+
+						auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Constant);
 
 						o_String += "null";
 					}
 				}
 				else
+				{
+					auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Constant);
+
 					o_String += NStr::gc_Str<"null">.m_Str;
+				}
 			}
 			else
+			{
+				auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Constant);
+
 				o_String += NStr::gc_Str<"null">.m_Str;
+			}
 
 			break;
 		}
@@ -1084,6 +1173,9 @@ namespace NMib::NEncoding::NYaml
 			{
 				if (_Value.f_Yaml().f_LineComment().f_IsEmpty())
 					o_String += '\n';
+
+				auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Comment);
+
 				o_String += fg_YamlTrailingCommentForGeneration(_Value.f_Yaml());
 			}
 		}
