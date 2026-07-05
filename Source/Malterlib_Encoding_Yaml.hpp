@@ -126,92 +126,10 @@ namespace NMib::NEncoding
 	NStr::CStr TCJsonValue<t_CParent>::f_ToStringYamlContext(ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags) const
 	{
 		NStr::CStr Return;
-		NStr::CStr::CAppender Appender(Return);
-		NYaml::TCYamlGenerationState<CValue> GenerationState;
-
-		if constexpr (CValue::mc_bPreserveYamlMetadata)
 		{
-			NYaml::fg_PrepassYamlGenerationValue(GenerationState, static_cast<CValue const &>(*this));
-			GenerationState.m_pDocumentTagHandles = &this->f_Yaml().f_DocumentTagHandles();
-			GenerationState.m_Position = 0;
+			NStr::CStr::CAppender Appender(Return);
+			NYaml::fg_GenerateYamlDocument<t_CParseContext>(Appender, static_cast<CValue const &>(*this), _pPrettySeparator, _Flags);
 		}
-
-		if constexpr (CValue::mc_bPreserveYamlMetadata)
-		{
-			bool bEmittedDirective = false;
-
-			for (auto const &Handle : this->f_Yaml().f_DocumentTagHandles().f_Entries())
-			{
-				Appender += "%TAG ";
-				Appender += Handle.f_Key();
-				Appender += ' ';
-				Appender += Handle.f_Value();
-				Appender += '\n';
-				bEmittedDirective = true;
-			}
-
-			if (bEmittedDirective)
-				Appender += "---\n";
-		}
-
-		bool bUseFlowStyle = _pPrettySeparator == nullptr;
-		if constexpr (CValue::mc_bPreserveYamlMetadata && t_CParseContext::mc_bAllowFlowStyle)
-		{
-			if (this->f_Yaml().f_NodeStyle() == EYamlNodeStyle_Flow)
-				bUseFlowStyle = true;
-			else if (this->f_Yaml().f_NodeStyle() == EYamlNodeStyle_Block)
-				bUseFlowStyle = false;
-		}
-
-		if constexpr (t_CParseContext::mc_bAllowBlockStyle)
-		{
-			if constexpr (t_CParseContext::mc_bCustomGenerate)
-			{
-				if
-				(
-					t_CParseContext::template fs_GenerateValue<t_CParseContext>
-					(
-						Appender
-						, static_cast<CValue const &>(*this)
-						, 0
-						, bUseFlowStyle ? nullptr : (_pPrettySeparator ? _pPrettySeparator : "  ")
-						, _Flags
-					)
-				)
-				{
-					return Return;
-				}
-			}
-
-			if constexpr (CValue::mc_bPreserveYamlMetadata || requires (CValue const &Value) { Value.f_EType(); })
-			{
-				if (bUseFlowStyle)
-					NYaml::fg_GenerateYamlNode(Appender, static_cast<CValue const &>(*this), _Flags, &GenerationState);
-				else
-					NYaml::fg_GenerateYamlBlockNode(Appender, static_cast<CValue const &>(*this), 0, _pPrettySeparator ? _pPrettySeparator : "  ", _Flags, &GenerationState);
-			}
-			else
-			{
-				if (bUseFlowStyle)
-					NYaml::fg_GenerateYamlNode(Appender, static_cast<CValue const &>(*this), _Flags, static_cast<NYaml::TCYamlGenerationState<CValue> *>(nullptr));
-				else
-					NYaml::fg_GenerateYamlBlockNode(Appender, static_cast<CValue const &>(*this), 0, _pPrettySeparator ? _pPrettySeparator : "  ", _Flags, static_cast<NYaml::TCYamlGenerationState<CValue> *>(nullptr));
-			}
-		}
-		else
-		{
-			if constexpr (t_CParseContext::mc_bCustomGenerate)
-			{
-				if (t_CParseContext::template fs_GenerateValue<t_CParseContext>(Appender, static_cast<CValue const &>(*this), 0, nullptr, _Flags))
-					return Return;
-			}
-
-			if constexpr (CValue::mc_bPreserveYamlMetadata || requires (CValue const &Value) { Value.f_EType(); })
-				NYaml::fg_GenerateYamlNode(Appender, static_cast<CValue const &>(*this), _Flags, &GenerationState);
-			else
-				NYaml::fg_GenerateYamlNode(Appender, static_cast<CValue const &>(*this), _Flags, static_cast<NYaml::TCYamlGenerationState<CValue> *>(nullptr));
-		}
-
 		return Return;
 	}
 
@@ -227,3 +145,5 @@ namespace NMib::NEncoding
 		return f_ToStringYamlContext<NYaml::CFlowOnlyParseContext>(_pPrettySeparator, _Flags);
 	}
 }
+
+#include "Malterlib_Encoding_Yaml_GenerateColored.hpp"
