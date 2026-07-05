@@ -228,6 +228,78 @@ namespace
 					DMibExpectException(CJsonWithoutMeta::fs_FromStringYamlFlow("{true: value}"), fs_MakeParseException("YAML mapping key must be a string", 1, 2, 1));
 				};
 
+				DMibTestCategory("SameIndentSequence")
+				{
+					// A block sequence as a mapping value may sit at the same indentation as its key (the "- "
+					// indicator provides the extra indentation) — the style remarshal and many other emitters use.
+					auto Json = CJsonWithoutMeta::fs_FromStringYaml
+						(
+							"OAuth:\n"
+							"  AllowedEmailDomains:\n"
+							"  - example.com\n"
+							"  AllowedEmails: []\n"
+							"  Providers:\n"
+							"    Microsoft:\n"
+							"      Enabled: true\n"
+						)
+					;
+					DMibExpect(Json["OAuth"]["AllowedEmailDomains"][0].f_String(), ==, "example.com");
+					DMibExpect(Json["OAuth"]["AllowedEmails"].f_IsArray(), ==, true);
+					DMibExpect(Json["OAuth"]["Providers"]["Microsoft"]["Enabled"].f_Boolean(), ==, true);
+
+					auto Root = CJsonWithoutMeta::fs_FromStringYamlBlock
+						(
+							"items:\n"
+							"- 1\n"
+							"- 2\n"
+							"name: test\n"
+						)
+					;
+					DMibExpect(Root["items"][0].f_Integer(), ==, 1);
+					DMibExpect(Root["items"][1].f_Integer(), ==, 2);
+					DMibExpect(Root["name"].f_String(), ==, "test");
+
+					auto Compact = CJsonWithoutMeta::fs_FromStringYamlBlock
+						(
+							"providers:\n"
+							"- id: github\n"
+							"  repositories:\n"
+							"  - \"*\"\n"
+							"  root: x\n"
+							"- id: two\n"
+						)
+					;
+					DMibExpect(Compact["providers"][0]["repositories"][0].f_String(), ==, "*");
+					DMibExpect(Compact["providers"][0]["root"].f_String(), ==, "x");
+					DMibExpect(Compact["providers"][1]["id"].f_String(), ==, "two");
+
+					auto Commented = CJsonWithoutMeta::fs_FromStringYamlBlock
+						(
+							"list: # comment\n"
+							"- 1\n"
+						)
+					;
+					DMibExpect(Commented["list"][0].f_Integer(), ==, 1);
+
+					// For a sequence entry with no inline value, a same-indent "-" on the next line is a sibling
+					// entry, never a nested sequence.
+					auto Siblings = CJsonWithoutMeta::fs_FromStringYamlBlock
+						(
+							"items:\n"
+							"-\n"
+							"- a\n"
+						)
+					;
+					DMibExpect(Siblings["items"].f_Array().f_GetLen(), ==, umint(2));
+					DMibExpect(Siblings["items"][0].f_IsNull(), ==, true);
+					DMibExpect(Siblings["items"][1].f_String(), ==, "a");
+
+					auto WithMeta = CJsonWithMeta::fs_FromStringYamlBlock("a:\n- 1\nb: 2\n");
+					DMibExpect(WithMeta["a"][0].f_Integer(), ==, 1);
+					DMibExpect(WithMeta["b"].f_Integer(), ==, 2);
+					DMibExpect(CJsonWithMeta::fs_FromStringYamlBlock(WithMeta.f_ToStringYaml()), ==, WithMeta);
+				};
+
 				DMibTestCategory("BlockScalars")
 				{
 					auto Literal = CJsonWithoutMeta::fs_FromStringYamlBlock
