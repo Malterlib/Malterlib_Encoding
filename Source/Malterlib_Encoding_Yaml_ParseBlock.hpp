@@ -409,8 +409,11 @@ namespace NMib::NEncoding::NYaml
 		}
 	}
 
+	// _bMappingValue: the value being parsed belongs to a mapping key, where YAML permits a block sequence at the
+	// same indentation as the key (the "- " indicator provides the extra indentation). Sequence entries must not use
+	// this rule — a same-indent "-" there is a sibling entry.
 	template <typename tf_CValue, typename tf_CParseContext>
-	void fg_ParseYamlInlineOrNestedBlockValue(tf_CValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors, umint _Indent)
+	void fg_ParseYamlInlineOrNestedBlockValue(tf_CValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors, umint _Indent, bool _bMappingValue = false)
 	{
 		using CMetadataString = TCConditional<tf_CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata, NStr::CStr, CEmpty>;
 
@@ -545,7 +548,17 @@ namespace NMib::NEncoding::NYaml
 			fg_SkipYamlBlockBlankLines(pBlockStart, _Context);
 
 			auto nIndent = *pBlockStart ? fg_GetYamlLineIndent(pBlockStart, _Context) : 0;
-			if (!*pBlockStart || nIndent <= _Indent)
+
+			// A mapping value may be a block sequence at the same indentation as its key.
+			bool bSameIndentSequence =
+				_bMappingValue
+				&& *pBlockStart
+				&& nIndent == _Indent
+				&& pBlockStart[nIndent] == '-'
+				&& fg_IsYamlSeparation(pBlockStart[nIndent + 1])
+			;
+
+			if (!*pBlockStart || (nIndent <= _Indent && !bSameIndentSequence))
 				o_Value = nullptr;
 			else
 				fg_ParseYamlBlockNode(o_Value, pParse, _Context, _Anchors, nIndent, TagResolved.f_IsEmpty());
@@ -912,7 +925,7 @@ namespace NMib::NEncoding::NYaml
 
 				++pParse;
 
-				fg_ParseYamlInlineOrNestedBlockValue(Entry.f_Value(), pParse, _Context, _Anchors, _Indent + 2);
+				fg_ParseYamlInlineOrNestedBlockValue(Entry.f_Value(), pParse, _Context, _Anchors, _Indent + 2, true);
 
 				if constexpr (tf_CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata)
 				{
@@ -1358,7 +1371,16 @@ namespace NMib::NEncoding::NYaml
 				fg_SkipYamlBlockBlankLines(pParse, _Context, LeadingComment, _Indent + 2);
 
 				auto nValueIndent = *pParse ? fg_GetYamlLineIndent(pParse, _Context) : 0;
-				if (!*pParse || nValueIndent <= _Indent)
+
+				// A mapping value may be a block sequence at the same indentation as its key.
+				bool bSameIndentSequence =
+					*pParse
+					&& nValueIndent == _Indent
+					&& pParse[nValueIndent] == '-'
+					&& fg_IsYamlSeparation(pParse[nValueIndent + 1])
+				;
+
+				if (!*pParse || (nValueIndent <= _Indent && !bSameIndentSequence))
 					Entry.f_Value() = nullptr;
 				else
 					fg_ParseYamlBlockNode(Entry.f_Value(), pParse, _Context, _Anchors, nValueIndent);
@@ -1367,7 +1389,7 @@ namespace NMib::NEncoding::NYaml
 					fg_AttachYamlLeadingCommentToFirstChildOrValue<tf_CValue, tf_CParseContext>(Entry.f_Value(), fg_Move(LeadingComment));
 			}
 			else
-				fg_ParseYamlInlineOrNestedBlockValue(Entry.f_Value(), pParse, _Context, _Anchors, _Indent);
+				fg_ParseYamlInlineOrNestedBlockValue(Entry.f_Value(), pParse, _Context, _Anchors, _Indent, true);
 		}
 	}
 
