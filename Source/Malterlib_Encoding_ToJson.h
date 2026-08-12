@@ -38,8 +38,8 @@ namespace NMib::NEncoding
 	CEJsonSorted fg_ToJson(NTime::CTimeSpan const &_Value);
 	CEJsonSorted fg_ToJson(NContainer::CByteVector const &_Value);
 
-	template <typename tf_CValue>
-	CEJsonSorted fg_ToJson(NStorage::TCOptional<tf_CValue> const &_Value);
+	template <typename tf_CValue, NStorage::EOptionalMoveSemantics tf_MoveSemantics>
+	CEJsonSorted fg_ToJson(NStorage::TCOptional<tf_CValue, tf_MoveSemantics> const &_Value);
 
 	template <typename tf_CValue>
 	CEJsonSorted fg_ToJson(NContainer::TCVector<tf_CValue> const &_Value);
