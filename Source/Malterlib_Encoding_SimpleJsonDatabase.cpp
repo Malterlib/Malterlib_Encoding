@@ -39,11 +39,19 @@ namespace NMib::NEncoding
 
 	NConcurrency::TCUnsafeFuture<void> CSimpleJsonDatabase::f_Load()
 	{
-		auto pWasDeleted = mp_pWasDeleted;
 		auto BlockingActorCheckout = NConcurrency::fg_BlockingActor();
+		co_await f_Load(BlockingActorCheckout);
+
+		co_return {};
+	}
+
+	// Queues file I/O on the supplied blocking actor, allowing callers to share its checkout across loads.
+	NConcurrency::TCUnsafeFuture<void> CSimpleJsonDatabase::f_Load(NConcurrency::CBlockingActorCheckout &_BlockingActorCheckout)
+	{
+		auto pWasDeleted = mp_pWasDeleted;
 		auto Data = co_await
 			(
-				NConcurrency::g_Dispatch(BlockingActorCheckout) / [FileName = mp_FileName]() -> CEJsonSorted
+				NConcurrency::g_Dispatch(_BlockingActorCheckout) / [FileName = mp_FileName]() -> CEJsonSorted
 				{
 					if (!NFile::CFile::fs_FileExists(FileName))
 						return CEJsonSorted();

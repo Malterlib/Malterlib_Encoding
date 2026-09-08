@@ -14,6 +14,7 @@ namespace NMib::NEncoding
 		~CSimpleJsonDatabase();
 
 		NConcurrency::TCUnsafeFuture<void> f_Load();
+		NConcurrency::TCUnsafeFuture<void> f_Load(NConcurrency::CBlockingActorCheckout &_BlockingActorCheckout);
 		NConcurrency::TCUnsafeFuture<void> f_Save();
 
 		NStr::CStr const &f_GetFileName() const;
