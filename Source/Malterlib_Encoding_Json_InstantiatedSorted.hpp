@@ -145,7 +145,6 @@ namespace NMib::NEncoding
 	extern template CJsonSorted::TCJsonValue(bool &);
 	extern template CJsonSorted::TCJsonValue(bool const &);
 
-
 	extern template CJsonSorted &CJsonSorted::f_Insert<NMib::NEncoding::EJsonType>(NMib::NEncoding::EJsonType &&);
 	extern template CJsonSorted &CJsonSorted::f_Insert<NMib::NEncoding::EJsonType &>(NMib::NEncoding::EJsonType &);
 	extern template CJsonSorted &CJsonSorted::f_Insert<NMib::NEncoding::EJsonType const &>(NMib::NEncoding::EJsonType const &);
@@ -252,9 +251,12 @@ namespace NMib::NEncoding
 	extern template CJsonSorted &CJsonSorted::operator = <bool &>(bool &);
 	extern template CJsonSorted &CJsonSorted::operator = <bool const &>(bool const &);
 
-	extern template void CJsonSorted::f_Format
-		<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonSorted, false>::CLocalOptions>
-		(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonSorted, false>::CLocalOptions const &) const
+	extern template void CJsonSorted::f_Format<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonSorted, false>::CLocalOptions>
+		(
+			NStr::CStr &
+			, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonSorted, false>::CLocalOptions const &
+		)
+		const
 	;
 #endif
 }

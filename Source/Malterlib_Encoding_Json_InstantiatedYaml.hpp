@@ -33,21 +33,9 @@ namespace NMib::NEncoding
 	extern template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseSorted>(TCJsonValue<CJsonValueBaseSorted> const &);
 	extern template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseSorted>(TCJsonValue<CJsonValueBaseSorted> &&);
 	extern template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseSorted>(TCJsonValue<CJsonValueBaseSorted> const &&);
-	extern template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseSortedYaml>
-		(
-			TCJsonValue<CJsonValueBaseSortedYaml> const &
-		)
-	;
-	extern template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseSortedYaml>
-		(
-			TCJsonValue<CJsonValueBaseSortedYaml> &&
-		)
-	;
-	extern template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseSortedYaml>
-		(
-			TCJsonValue<CJsonValueBaseSortedYaml> const &&
-		)
-	;
+	extern template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseSortedYaml>(TCJsonValue<CJsonValueBaseSortedYaml> const &);
+	extern template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseSortedYaml>(TCJsonValue<CJsonValueBaseSortedYaml> &&);
+	extern template TCJsonValue<CJsonValueBaseOrderedYaml> CJsonOrderedYaml::fs_FromCompatible<CJsonValueBaseSortedYaml>(TCJsonValue<CJsonValueBaseSortedYaml> const &&);
 
 	extern template CJsonOrderedYaml::TCJsonValue(TCJsonValue<CJsonValueBaseOrdered> const &);
 	extern template CJsonOrderedYaml::TCJsonValue(TCJsonValue<CJsonValueBaseOrdered> &&);
@@ -276,9 +264,12 @@ namespace NMib::NEncoding
 	extern template CJsonOrderedYaml &CJsonOrderedYaml::operator = <bool &>(bool &);
 	extern template CJsonOrderedYaml &CJsonOrderedYaml::operator = <bool const &>(bool const &);
 
-	extern template void CJsonOrderedYaml::f_Format
-		<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonOrderedYaml, true>::CLocalOptions>
-		(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonOrderedYaml, true>::CLocalOptions const &) const
+	extern template void CJsonOrderedYaml::f_Format<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonOrderedYaml, true>::CLocalOptions>
+		(
+			NStr::CStr &
+			, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonOrderedYaml, true>::CLocalOptions const &
+		)
+		const
 	;
 #endif
 }

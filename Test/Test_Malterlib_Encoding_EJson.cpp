@@ -15,6 +15,7 @@ namespace
 	class CEJson_Tests : public NTest::CTest
 	{
 		NStr::CStr mp_TestFilePath;
+
 	public:
 		static umint fs_CountForegroundColorChanges(NStr::CStr const &_Text)
 		{
@@ -513,7 +514,7 @@ namespace
 				auto MoveToJson = fg_Move(Value).f_ToJson();
 				DMibExpect(CEJsonSorted::fs_FromJson(fg_Move(MoveToJson)), ==, CEJsonSorted::fs_FromCompatible(fs_GetEJson()));
 
-				DMibExpectTrue((_= {}).f_IsObject());
+				DMibExpectTrue((_={}).f_IsObject());
 				DMibExpectFalse((CEJsonSorted{}).f_IsValid());
 			};
 			DMibTestSuite("JSONC")
@@ -674,7 +675,10 @@ namespace
 				auto EmptyEscapedObjectColoredJson = CJsonOrderedWithComments::fs_FromStringJson5(EmptyEscapedObjectText);
 				DMibExpect
 					(
-						NCommandLine::CAnsiEncodingParse::fs_StripEncoding(CEJsonOrderedWithComments::fs_FromJson(EmptyEscapedObjectColoredJson).f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag_AllFeatures))
+						NCommandLine::CAnsiEncodingParse::fs_StripEncoding
+						(
+							CEJsonOrderedWithComments::fs_FromJson(EmptyEscapedObjectColoredJson).f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag_AllFeatures)
+						)
 						, ==
 						, EmptyEscapedObject.f_ToStringJson5()
 					)
@@ -837,7 +841,7 @@ namespace
 						CEJsonSorted OriginalEJson;
 						OriginalEJson = OriginalTime;
 						CEJsonSorted ConvertedEJson = CEJsonSorted::fs_FromJson(OriginalEJson.f_ToJson());
-						DMibExpect(ConvertedEJson.f_Date(), == , OriginalTime);
+						DMibExpect(ConvertedEJson.f_Date(), ==, OriginalTime);
 					}
 				;
 				{

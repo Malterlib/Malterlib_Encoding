@@ -34,16 +34,16 @@ namespace NMib::NEncoding
 
 	protected:
 		DMibStreamImplementProtected(TCBinaryStream_Bin128);
+
 	public:
 		DMibStreamImplementOperators(TCBinaryStream_Bin128);
 
 	public:
-
 		TCBinaryStream_Bin128(bool _bUseUpper = false);
 		~TCBinaryStream_Bin128();
 		void f_Close();
 		void f_Open(NStream::CBinaryStream *_pStream, NFile::EFileOpen _OpenFlags, NStream::CFilePos _ParentLength = -1);
-		void f_FeedBytes(const void *_pMem, umint _nBytes);
+		void f_FeedBytes(void const *_pMem, umint _nBytes);
 		void f_ConsumeBytes(void *_pMem, umint _nBytes);
 		bool f_IsValid() const;
 		bool f_IsAtEndOfStream() const;
@@ -56,8 +56,10 @@ namespace NMib::NEncoding
 		void f_SetCacheSize(umint _CacheSize);
 		NStream::CFilePos f_GetLength() const;
 		umint f_ContainerLengthLimit() const;
-		void f_SetLength(NStream::CFilePos _Length) { DMibError("Not supported"); }
-
+		void f_SetLength(NStream::CFilePos _Length)
+		{
+			DMibError("Not supported");
+		}
 	};
 
 	NContainer::CByteVector fg_Bin128Encode(NContainer::CByteVector const &_Data, bool _bUseUpper = false);

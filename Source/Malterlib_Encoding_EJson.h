@@ -291,7 +291,7 @@ namespace NMib::NEncoding
 		TCEJsonValue(NContainer::CSecureByteVector &_Value) = delete;
 		TCEJsonValue(NContainer::CSecureByteVector &&_Value) = delete;
 
-		using TCJsonValue<t_CParent>::operator = ;
+		using TCJsonValue<t_CParent>::operator =;
 
 		TCEJsonValue &operator = (TCEJsonValue const &_Value);
 		TCEJsonValue &operator = (TCEJsonValue &_Value);

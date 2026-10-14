@@ -11,12 +11,12 @@ namespace NMib::NEncoding
 	template <typename tf_CJson>
 	struct TCJsonConstants
 	{
-		constexpr static auto mc_Null = EJsonType_Null;
-		constexpr static auto mc_EmptyString = EJsonType_String;
-		constexpr static auto mc_EmptyObject = EJsonType_Object;
-		constexpr static auto mc_EmptyArray = EJsonType_Array;
-		constexpr static auto mc_InvalidDate = EEJsonType_Date;
-		constexpr static auto mc_EmptyBinary = EEJsonType_Binary;
+		static constexpr auto mc_Null = EJsonType_Null;
+		static constexpr auto mc_EmptyString = EJsonType_String;
+		static constexpr auto mc_EmptyObject = EJsonType_Object;
+		static constexpr auto mc_EmptyArray = EJsonType_Array;
+		static constexpr auto mc_InvalidDate = EEJsonType_Date;
+		static constexpr auto mc_EmptyBinary = EEJsonType_Binary;
 
 		static typename tf_CJson::CKey operator () (NStr::CStr const &_Key);
 
@@ -36,7 +36,7 @@ namespace NMib::NEncoding
 		}
 
 		template <typename ...tfp_CValue>
-		tf_CJson operator [] (tfp_CValue && ... p_Values) const
+		tf_CJson operator [] (tfp_CValue && ...p_Values) const
 		{
 			tf_CJson Return;
 
@@ -53,11 +53,11 @@ namespace NMib::NEncoding
 	extern template CJsonSorted::CKey TCJsonConstants<CJsonSorted>::operator () (NStr::CStr const &_Key);
 }
 
-NMib::NEncoding::CEJsonOrdered::CKey operator ""_o (const char *_pStr, std::size_t _Len);
-NMib::NEncoding::CJsonOrdered::CKey operator ""_jo (const char *_pStr, std::size_t _Len);
+NMib::NEncoding::CEJsonOrdered::CKey operator ""_o (char const *_pStr, std::size_t _Len);
+NMib::NEncoding::CJsonOrdered::CKey operator ""_jo (char const *_pStr, std::size_t _Len);
 
-NMib::NEncoding::CEJsonSorted::CKey operator ""_ (const char *_pStr, std::size_t _Len);
-NMib::NEncoding::CJsonSorted::CKey operator ""_j (const char *_pStr, std::size_t _Len);
+NMib::NEncoding::CEJsonSorted::CKey operator ""_ (char const *_pStr, std::size_t _Len);
+NMib::NEncoding::CJsonSorted::CKey operator ""_j (char const *_pStr, std::size_t _Len);
 
 constexpr NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CEJsonOrdered> _o;
 constexpr NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CEJsonSorted> _;

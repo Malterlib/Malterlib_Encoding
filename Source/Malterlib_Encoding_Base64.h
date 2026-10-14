@@ -22,8 +22,8 @@ namespace NMib::NEncoding
 
 		enum
 		{
-			EChunkSizeBase64 = 4,
-			EChunkSizeData = 3
+			EChunkSizeBase64 = 4
+			, EChunkSizeData = 3
 		};
 
 		NStream::CFilePos mp_FilePos;
@@ -34,18 +34,18 @@ namespace NMib::NEncoding
 
 	protected:
 		DMibStreamImplementProtected(TCBinaryStream_Base64);
+
 	public:
 		DMibStreamImplementOperators(TCBinaryStream_Base64);
 
 	//private:
 
 	public:
-
 		TCBinaryStream_Base64();
 		~TCBinaryStream_Base64();
 		void f_Close();
 		void f_Open(NStream::CBinaryStream *_pStream, NFile::EFileOpen _OpenFlags);
-		void f_FeedBytes(const void *_pMem, umint _nBytes);
+		void f_FeedBytes(void const *_pMem, umint _nBytes);
 		void f_ConsumeBytes(void *_pMem, umint _nBytes);
 		bool f_IsValid() const;
 		bool f_IsAtEndOfStream() const;
@@ -58,15 +58,17 @@ namespace NMib::NEncoding
 		void f_SetCacheSize(umint _CacheSize);
 		NStream::CFilePos f_GetLength() const;
 		umint f_ContainerLengthLimit() const;
-		void f_SetLength(NStream::CFilePos _Length) { DMibError("Not supported"); }
-
+		void f_SetLength(NStream::CFilePos _Length)
+		{
+			DMibError("Not supported");
+		}
 	};
 
 	NStr::CStr fg_Base64Encode(NStr::CStr const &_String);
 	NStr::CStr fg_Base64Decode(NStr::CStr const &_String);
 
-	NStr::CStr fg_Base64Encode(const NContainer::CByteVector &_Data);
-	NStr::CStrSecure fg_Base64Encode(const NContainer::CSecureByteVector &_Data);
+	NStr::CStr fg_Base64Encode(NContainer::CByteVector const &_Data);
+	NStr::CStrSecure fg_Base64Encode(NContainer::CSecureByteVector const &_Data);
 	void fg_Base64Decode(NStr::CStr const &_String, NContainer::CByteVector &_Data);
 	void fg_Base64Decode(NStr::CStrSecure const &_String, NContainer::CSecureByteVector &_Data);
 }

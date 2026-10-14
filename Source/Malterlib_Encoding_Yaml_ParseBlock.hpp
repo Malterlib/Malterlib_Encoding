@@ -26,7 +26,7 @@ namespace NMib::NEncoding::NYaml
 	template <typename tf_CParseContext, typename tf_CLeadingComment, typename tf_CTrailingComment>
 	void fg_SkipYamlBlockBlankLines
 		(
-			uch8 const *&o_pParse
+			uch8 const * &o_pParse
 			, tf_CParseContext &_Context
 			, tf_CLeadingComment &o_LeadingComment
 			, umint _MinCommentIndent
@@ -108,14 +108,14 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CParseContext, typename tf_CLeadingComment>
-	void fg_SkipYamlBlockBlankLines(uch8 const *&o_pParse, tf_CParseContext &_Context, tf_CLeadingComment &o_LeadingComment, umint _MinCommentIndent = 0)
+	void fg_SkipYamlBlockBlankLines(uch8 const * &o_pParse, tf_CParseContext &_Context, tf_CLeadingComment &o_LeadingComment, umint _MinCommentIndent = 0)
 	{
 		CEmpty TrailingCommentBeforeBlank;
 		fg_SkipYamlBlockBlankLines(o_pParse, _Context, o_LeadingComment, _MinCommentIndent, TrailingCommentBeforeBlank);
 	}
 
 	template <typename tf_CParseContext>
-	void fg_SkipYamlBlockBlankLines(uch8 const *&o_pParse, tf_CParseContext &_Context, umint _MinCommentIndent = 0)
+	void fg_SkipYamlBlockBlankLines(uch8 const * &o_pParse, tf_CParseContext &_Context, umint _MinCommentIndent = 0)
 	{
 		CEmpty LeadingComment;
 		CEmpty TrailingCommentBeforeBlank;
@@ -123,7 +123,7 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CParseContext, typename tf_CLineComment>
-	void fg_ConsumeYamlLineEnd(uch8 const *&o_pParse, tf_CParseContext &_Context, tf_CLineComment &o_LineComment)
+	void fg_ConsumeYamlLineEnd(uch8 const * &o_pParse, tf_CParseContext &_Context, tf_CLineComment &o_LineComment)
 	{
 		auto pParse = o_pParse;
 		auto UpdateParse = g_OnScopeExit / [&]
@@ -132,11 +132,7 @@ namespace NMib::NEncoding::NYaml
 			}
 		;
 
-		auto pRawComment =
-			pParse > _Context.m_pStartParse && (*pParse == '#') && (pParse[-1] == ' ' || pParse[-1] == '\t')
-			? pParse - 1
-			: pParse
-		;
+		auto pRawComment = pParse > _Context.m_pStartParse && (*pParse == '#') && (pParse[-1] == ' ' || pParse[-1] == '\t') ? pParse - 1 : pParse;
 
 		while (*pParse == ' ' || *pParse == '\t')
 			++pParse;
@@ -157,14 +153,14 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CParseContext>
-	void fg_ConsumeYamlLineEnd(uch8 const *&o_pParse, tf_CParseContext &_Context)
+	void fg_ConsumeYamlLineEnd(uch8 const * &o_pParse, tf_CParseContext &_Context)
 	{
 		CEmpty LineComment;
 		fg_ConsumeYamlLineEnd(o_pParse, _Context, LineComment);
 	}
 
 	template <typename tf_CParseContext>
-	NStr::CStr fg_TakeYamlLineCommentRaw(uch8 const *&o_pParse, tf_CParseContext &_Context)
+	NStr::CStr fg_TakeYamlLineCommentRaw(uch8 const * &o_pParse, tf_CParseContext &_Context)
 	{
 		auto pParse = o_pParse;
 		auto UpdateParse = g_OnScopeExit / [&]
@@ -185,7 +181,16 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CParseContext, typename tf_CLineComment>
-	NStr::CStr fg_ParseYamlBlockScalar(uch8 const *&o_pParse, tf_CParseContext &_Context, umint _ParentIndent, bool _bFolded, uch8 &o_ChompIndicator, smint &o_BlockIndentHint, tf_CLineComment &o_LineComment)
+	NStr::CStr fg_ParseYamlBlockScalar
+		(
+			uch8 const * &o_pParse
+			, tf_CParseContext &_Context
+			, umint _ParentIndent
+			, bool _bFolded
+			, uch8 &o_ChompIndicator
+			, smint &o_BlockIndentHint
+			, tf_CLineComment &o_LineComment
+		)
 	{
 		auto pParse = o_pParse;
 		auto UpdateParse = g_OnScopeExit / [&]
@@ -336,7 +341,7 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CValue, typename tf_CParseContext>
-	void fg_ParseYamlBlockNode(tf_CValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors, umint _Indent, bool _bStandaloneNode = true);
+	void fg_ParseYamlBlockNode(tf_CValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors, umint _Indent, bool _bStandaloneNode = true);
 
 	template <typename tf_CValue, typename tf_CParseContext>
 	void fg_SetYamlValueLeadingComment(tf_CValue &o_Value, NStr::CStr &&_Comment)
@@ -570,7 +575,14 @@ namespace NMib::NEncoding::NYaml
 					o_Value.f_Yaml().f_SetNodeStyle(EYamlNodeStyle_Unspecified);
 			}
 
-			if constexpr (tf_CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata && requires { o_Value.f_EType(); o_Value.f_UserType(); })
+			if constexpr
+			(
+				tf_CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata && requires
+				{
+					o_Value.f_EType();
+					o_Value.f_UserType();
+				}
+			)
 			{
 				if (!TagResolved.f_IsEmpty() && o_Value.f_EType() == EEJsonType_UserType)
 					o_Value.f_Yaml().f_SetNodeStyle(EYamlNodeStyle_Unspecified);
@@ -759,7 +771,7 @@ namespace NMib::NEncoding::NYaml
 			return;
 		}
 
-		auto fParseCompactMappingEntry = [&] (auto _LeadingComment) -> bool
+		auto fParseCompactMappingEntry = [&](auto _LeadingComment) -> bool
 			{
 				auto pKeyStart = pParse;
 				auto pColon = pParse;
@@ -1052,7 +1064,7 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CValue, typename tf_CParseContext>
-	void fg_ParseYamlBlockSequence(tf_CValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors, umint _Indent)
+	void fg_ParseYamlBlockSequence(tf_CValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors, umint _Indent)
 	{
 		using CMetadataString = TCConditional<tf_CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata, NStr::CStr, CEmpty>;
 
@@ -1130,7 +1142,7 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CValue, typename tf_CParseContext>
-	void fg_ParseYamlBlockMapping(tf_CValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors, umint _Indent)
+	void fg_ParseYamlBlockMapping(tf_CValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors, umint _Indent)
 	{
 		using CMetadataString = TCConditional<tf_CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata, NStr::CStr, CEmpty>;
 
@@ -1392,7 +1404,7 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CValue, typename tf_CParseContext>
-	void fg_ParseYamlBlockNode(tf_CValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors, umint _Indent, bool _bStandaloneNode)
+	void fg_ParseYamlBlockNode(tf_CValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors, umint _Indent, bool _bStandaloneNode)
 	{
 		using CMetadataString = TCConditional<tf_CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata, NStr::CStr, CEmpty>;
 
@@ -1461,7 +1473,14 @@ namespace NMib::NEncoding::NYaml
 
 			fg_ParseYamlInlineOrNestedBlockValue(o_Value, pParse, _Context, _Anchors, _Indent);
 
-			if constexpr (tf_CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata && requires { o_Value.f_EType(); o_Value.f_UserType(); })
+			if constexpr
+			(
+				tf_CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata && requires
+				{
+					o_Value.f_EType();
+					o_Value.f_UserType();
+				}
+			)
 			{
 				if (_bStandaloneNode && o_Value.f_EType() == EEJsonType_UserType)
 					o_Value.f_Yaml().f_SetNodeStyle(EYamlNodeStyle_Block);
@@ -1476,6 +1495,5 @@ namespace NMib::NEncoding::NYaml
 
 		if constexpr (tf_CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata)
 			fg_AttachYamlLeadingCommentToFirstChildOrValue<tf_CValue, tf_CParseContext>(o_Value, fg_Move(LeadingComment));
-
 	}
 }

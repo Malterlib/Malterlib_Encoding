@@ -94,7 +94,10 @@ namespace NMib::NEncoding
 	{
 	protected:
 		using CValue = typename t_CParent::CValue;
-		struct CDummy {};
+		struct CDummy
+		{
+		};
+
 	public:
 		using CObject = TCJsonObject<CValue, t_CParent::mc_ContainerFlags>;
 		using CArray = NContainer::TCVector<CValue>;
@@ -113,6 +116,7 @@ namespace NMib::NEncoding
 			inline_always CKeyValue operator = (CValue &&_Value) &&;
 			inline_always CKeyValue operator = (CValue const &_Value) &&;
 			inline_always CKeyValue operator = (std::initializer_list<CVoidTag> const &_Initializer) &&;
+
 		private:
 			CKey(CKey const &_Other);
 		};
@@ -320,17 +324,12 @@ namespace NMib::NEncoding
 
 	public:
 		using CObjectEntry = NPrivate::TCObjectEntry<t_CJsonValue, t_ContainerFlags>;
+
 	private:
 		using CCompare = typename NPrivate::CObjectEntryBase::CCompare;
 
 		using CObjects = TCConditional<mc_bOrdered, NContainer::TCLinkedList<CObjectEntry>, NContainer::TCMap<NStr::CStr, CObjectEntry>>;
-		using CObjectsTree = TCConditional
-			<
-				mc_bOrdered
-				, NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>
-				, CEmpty
-			>
-		;
+		using CObjectsTree = TCConditional<mc_bOrdered, NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>, CEmpty>;
 
 	public:
 		TCJsonObject();
@@ -422,7 +421,7 @@ namespace NMib::NEncoding
 		template <typename t_CJsonValue2, EJsonContainerFlag t_ContainerFlags2>
 		friend struct TCJsonObject;
 
- 		using CJsonValue = t_CJsonValue;
+		using CJsonValue = t_CJsonValue;
 
 		template <typename> friend struct TCJsonObjectEntryHandle;
 		template <typename> friend struct TCJsonOrderedDestructiveIterator;
@@ -483,7 +482,7 @@ namespace NMib::NEncoding
 		TCJsonObjectEntryHandle &operator = (TCJsonObjectEntryHandle const &) = delete;
 
 		[[nodiscard]] bool f_IsEmpty() const noexcept;
-		[[nodiscard]] explicit operator bool() const noexcept;
+		[[nodiscard]] explicit operator bool () const noexcept;
 
 		NStr::CStr &f_Name() noexcept;
 		NStr::CStr const &f_Name() const noexcept;
@@ -518,12 +517,12 @@ namespace NMib::NEncoding
 		TCJsonOrderedDestructiveIterator &operator = (TCJsonOrderedDestructiveIterator &&_Other) noexcept;
 		~TCJsonOrderedDestructiveIterator();
 
-		explicit operator bool() const;
+		explicit operator bool () const;
 		CObjectEntry *f_GetCurrent() const;
-		CObjectEntry *operator->() const;
-		CObjectEntry &operator*() const;
+		CObjectEntry *operator -> () const;
+		CObjectEntry &operator * () const;
 
-		void operator++();
+		void operator ++ ();
 
 		// Extract current entry and advance iterator
 		CObjectEntryHandle f_ExtractNode();
@@ -557,11 +556,11 @@ namespace NMib::NEncoding
 		TCJsonSortedDestructiveIterator &operator = (TCJsonSortedDestructiveIterator &&_Other) noexcept;
 		~TCJsonSortedDestructiveIterator();
 
-		explicit operator bool() const;
+		explicit operator bool () const;
 		CObjectEntry *f_GetCurrent() const;
-		CObjectEntry *operator->() const;
-		CObjectEntry &operator*() const;
-		void operator++();
+		CObjectEntry *operator -> () const;
+		CObjectEntry &operator * () const;
+		void operator ++ ();
 
 		// Extract current entry and advance iterator
 		CObjectEntryHandle f_ExtractNode();

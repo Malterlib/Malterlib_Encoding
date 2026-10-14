@@ -384,7 +384,14 @@ namespace NMib::NEncoding::NYaml
 				fg_AddYamlGenerationAnchor(o_State, _Value.f_Yaml().f_Anchor(), _Value, Position);
 		}
 
-		if constexpr (requires { _Value.f_EType(); _Value.f_UserType(); })
+		if constexpr
+		(
+			requires
+			{
+				_Value.f_EType();
+				_Value.f_UserType();
+			}
+		)
 		{
 			if (_Value.f_IsUserType())
 			{
@@ -500,10 +507,26 @@ namespace NMib::NEncoding::NYaml
 
 					Anchor.m_Name = OuterAnchor.m_Name;
 
-					if constexpr (requires { Anchor.m_Value = OuterAnchor.m_Value; })
+					if constexpr
+					(
+						requires
+						{
+							Anchor.m_Value = OuterAnchor.m_Value;
+						}
+					)
+					{
 						Anchor.m_Value = OuterAnchor.m_Value;
-					else if constexpr (requires { OuterAnchor.m_Value.f_ToJson(); })
+					}
+					else if constexpr
+					(
+						requires
+						{
+							OuterAnchor.m_Value.f_ToJson();
+						}
+					)
+					{
 						Anchor.m_Value = OuterAnchor.m_Value.f_ToJson();
+					}
 					else
 						Anchor.m_Value = OuterAnchor.m_Value;
 
@@ -671,7 +694,16 @@ namespace NMib::NEncoding::NYaml
 			if (Tag == "tag:yaml.org,2002:map")
 				return _Value.f_IsObject();
 
-			if constexpr (requires (tf_CJson const &Value) { Value.f_EType(); Value.f_UserType(); Value.f_Binary(); Value.f_Date(); })
+			if constexpr
+			(
+				requires (tf_CJson const &Value)
+				{
+					Value.f_EType();
+					Value.f_UserType();
+					Value.f_Binary();
+					Value.f_Date();
+				}
+			)
 			{
 				if (Tag == "tag:yaml.org,2002:binary")
 					return _Value.f_EType() == EEJsonType_Binary;
@@ -840,18 +872,8 @@ namespace NMib::NEncoding::NYaml
 					o_String += LeadingComment;
 				}
 
-				if
-				(
-					LeadingComment.f_IsEmpty()
-					||
-					(
-						LeadingComment[LeadingComment.f_GetLen() - 1] != '\n'
-						&& LeadingComment[LeadingComment.f_GetLen() - 1] != '\r'
-					)
-				)
-				{
+				if (LeadingComment.f_IsEmpty() || (LeadingComment[LeadingComment.f_GetLen() - 1] != '\n' && LeadingComment[LeadingComment.f_GetLen() - 1] != '\r'))
 					o_String += '\n';
-				}
 			}
 
 			if (!_bSuppressAlias && !_Value.f_Yaml().f_Alias().f_IsEmpty())
@@ -877,15 +899,7 @@ namespace NMib::NEncoding::NYaml
 
 			bool bEmitYamlTag = fg_ShouldEmitYamlTag(_Value);
 
-			if
-			(
-				!bInlineAlias
-				&&
-				(
-					(bEmitYamlTag && _Value.f_Yaml().f_HasTag())
-					|| _Value.f_Yaml().f_HasAnchor()
-				)
-			)
+			if (!bInlineAlias && ((bEmitYamlTag && _Value.f_Yaml().f_HasTag()) || _Value.f_Yaml().f_HasAnchor()))
 			{
 				bEmittedYamlTag = bEmitYamlTag && _Value.f_Yaml().f_HasTag();
 				fg_GenerateYamlMetadataPrefix(o_String, _Value.f_Yaml(), o_pState, bEmitYamlTag);
@@ -976,14 +990,17 @@ namespace NMib::NEncoding::NYaml
 					o_String += _Value.f_Boolean() ? NStr::gc_Str<"true">.m_Str : NStr::gc_Str<"false">.m_Str;
 			}
 			break;
-		case EJsonType_Object:
-			fg_GenerateYamlObject(o_String, _Value.f_Object(), _Flags, o_pState);
-			break;
-		case EJsonType_Array:
-			fg_GenerateYamlArray(o_String, _Value.f_Array(), _Flags, o_pState);
-			break;
+		case EJsonType_Object: fg_GenerateYamlObject(o_String, _Value.f_Object(), _Flags, o_pState); break;
+		case EJsonType_Array: fg_GenerateYamlArray(o_String, _Value.f_Array(), _Flags, o_pState); break;
 		default:
-			if constexpr (requires (tf_CJson const &Value) { Value.f_EType(); Value.f_Binary(); })
+			if constexpr
+			(
+				requires (tf_CJson const &Value)
+				{
+					Value.f_EType();
+					Value.f_Binary();
+				}
+			)
 			{
 				if (_Value.f_EType() == EEJsonType_UserType)
 				{
@@ -1180,5 +1197,4 @@ namespace NMib::NEncoding::NYaml
 			}
 		}
 	}
-
 }

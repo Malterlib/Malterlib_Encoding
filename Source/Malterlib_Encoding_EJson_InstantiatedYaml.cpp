@@ -36,21 +36,9 @@ namespace NMib::NEncoding
 	template TCEJsonValue<CEJsonValueBaseOrderedYaml> CEJsonOrderedYaml::fs_FromCompatible<CEJsonValueBaseSorted>(TCEJsonValue<CEJsonValueBaseSorted> const &);
 	template TCEJsonValue<CEJsonValueBaseOrderedYaml> CEJsonOrderedYaml::fs_FromCompatible<CEJsonValueBaseSorted>(TCEJsonValue<CEJsonValueBaseSorted> &&);
 	template TCEJsonValue<CEJsonValueBaseOrderedYaml> CEJsonOrderedYaml::fs_FromCompatible<CEJsonValueBaseSorted>(TCEJsonValue<CEJsonValueBaseSorted> const &&);
-	template TCEJsonValue<CEJsonValueBaseOrderedYaml> CEJsonOrderedYaml::fs_FromCompatible<CEJsonValueBaseSortedYaml>
-		(
-			TCEJsonValue<CEJsonValueBaseSortedYaml> const &
-		)
-	;
-	template TCEJsonValue<CEJsonValueBaseOrderedYaml> CEJsonOrderedYaml::fs_FromCompatible<CEJsonValueBaseSortedYaml>
-		(
-			TCEJsonValue<CEJsonValueBaseSortedYaml> &&
-		)
-	;
-	template TCEJsonValue<CEJsonValueBaseOrderedYaml> CEJsonOrderedYaml::fs_FromCompatible<CEJsonValueBaseSortedYaml>
-		(
-			TCEJsonValue<CEJsonValueBaseSortedYaml> const &&
-		)
-	;
+	template TCEJsonValue<CEJsonValueBaseOrderedYaml> CEJsonOrderedYaml::fs_FromCompatible<CEJsonValueBaseSortedYaml>(TCEJsonValue<CEJsonValueBaseSortedYaml> const &);
+	template TCEJsonValue<CEJsonValueBaseOrderedYaml> CEJsonOrderedYaml::fs_FromCompatible<CEJsonValueBaseSortedYaml>(TCEJsonValue<CEJsonValueBaseSortedYaml> &&);
+	template TCEJsonValue<CEJsonValueBaseOrderedYaml> CEJsonOrderedYaml::fs_FromCompatible<CEJsonValueBaseSortedYaml>(TCEJsonValue<CEJsonValueBaseSortedYaml> const &&);
 
 	template CEJsonOrderedYaml::TCEJsonValue(TCEJsonValue<CEJsonValueBaseOrdered> const &);
 	template CEJsonOrderedYaml::TCEJsonValue(TCEJsonValue<CEJsonValueBaseOrdered> &&);
@@ -177,9 +165,9 @@ namespace NMib::NEncoding
 	template CEJsonOrderedYaml::TCEJsonValue(EJsonType &);
 	template CEJsonOrderedYaml::TCEJsonValue(EJsonType const &);
 
-	template CEJsonOrderedYaml::TCEJsonValue(ch8 const *&&);
-	template CEJsonOrderedYaml::TCEJsonValue(ch8 const *&);
-	template CEJsonOrderedYaml::TCEJsonValue(ch8 const *const &);
+	template CEJsonOrderedYaml::TCEJsonValue(ch8 const * &&);
+	template CEJsonOrderedYaml::TCEJsonValue(ch8 const * &);
+	template CEJsonOrderedYaml::TCEJsonValue(ch8 const * const &);
 
 	template CEJsonOrderedYaml::TCEJsonValue(CNullPtr &&);
 	template CEJsonOrderedYaml::TCEJsonValue(CNullPtr &);
@@ -336,9 +324,13 @@ namespace NMib::NEncoding
 	template CEJsonOrderedYaml &CJsonValueEJsonOrderedYaml::operator = <bool &>(bool &);
 	template CEJsonOrderedYaml &CJsonValueEJsonOrderedYaml::operator = <bool const &>(bool const &);
 
-	template void CJsonValueEJsonOrderedYaml::f_Format
-		<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonOrderedYaml, true>::CLocalOptions>
-		(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonOrderedYaml, true>::CLocalOptions const &) const
+	template void CJsonValueEJsonOrderedYaml
+		::f_Format<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonOrderedYaml, true>::CLocalOptions>
+		(
+			NStr::CStr &
+			, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonOrderedYaml, true>::CLocalOptions const &
+		)
+		const
 	;
 #endif
 }

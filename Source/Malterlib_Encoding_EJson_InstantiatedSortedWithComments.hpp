@@ -27,20 +27,14 @@ namespace NMib::NEncoding
 	extern template TCEJsonValue<CEJsonValueBaseSortedWithComments> CEJsonSortedWithComments::fs_FromCompatible<CEJsonValueBaseOrdered>(TCEJsonValue<CEJsonValueBaseOrdered> const &);
 	extern template TCEJsonValue<CEJsonValueBaseSortedWithComments> CEJsonSortedWithComments::fs_FromCompatible<CEJsonValueBaseOrdered>(TCEJsonValue<CEJsonValueBaseOrdered> &&);
 	extern template TCEJsonValue<CEJsonValueBaseSortedWithComments> CEJsonSortedWithComments::fs_FromCompatible<CEJsonValueBaseOrdered>(TCEJsonValue<CEJsonValueBaseOrdered> const &&);
-	extern template TCEJsonValue<CEJsonValueBaseSortedWithComments> CEJsonSortedWithComments::fs_FromCompatible<CEJsonValueBaseOrderedWithComments>
-		(
-			TCEJsonValue<CEJsonValueBaseOrderedWithComments> const &
-		)
+	extern template auto CEJsonSortedWithComments::fs_FromCompatible<CEJsonValueBaseOrderedWithComments>(TCEJsonValue<CEJsonValueBaseOrderedWithComments> const &)
+		-> TCEJsonValue<CEJsonValueBaseSortedWithComments>
 	;
-	extern template TCEJsonValue<CEJsonValueBaseSortedWithComments> CEJsonSortedWithComments::fs_FromCompatible<CEJsonValueBaseOrderedWithComments>
-		(
-			TCEJsonValue<CEJsonValueBaseOrderedWithComments> &&
-		)
+	extern template auto CEJsonSortedWithComments::fs_FromCompatible<CEJsonValueBaseOrderedWithComments>(TCEJsonValue<CEJsonValueBaseOrderedWithComments> &&)
+		-> TCEJsonValue<CEJsonValueBaseSortedWithComments>
 	;
-	extern template TCEJsonValue<CEJsonValueBaseSortedWithComments> CEJsonSortedWithComments::fs_FromCompatible<CEJsonValueBaseOrderedWithComments>
-		(
-			TCEJsonValue<CEJsonValueBaseOrderedWithComments> const &&
-		)
+	extern template auto CEJsonSortedWithComments::fs_FromCompatible<CEJsonValueBaseOrderedWithComments>(TCEJsonValue<CEJsonValueBaseOrderedWithComments> const &&)
+		-> TCEJsonValue<CEJsonValueBaseSortedWithComments>
 	;
 	extern template TCEJsonValue<CEJsonValueBaseSortedWithComments> CEJsonSortedWithComments::fs_FromCompatible<CEJsonValueBaseSorted>(TCEJsonValue<CEJsonValueBaseSorted> const &);
 	extern template TCEJsonValue<CEJsonValueBaseSortedWithComments> CEJsonSortedWithComments::fs_FromCompatible<CEJsonValueBaseSorted>(TCEJsonValue<CEJsonValueBaseSorted> &&);
@@ -171,9 +165,9 @@ namespace NMib::NEncoding
 	extern template CEJsonSortedWithComments::TCEJsonValue(EJsonType &);
 	extern template CEJsonSortedWithComments::TCEJsonValue(EJsonType const &);
 
-	extern template CEJsonSortedWithComments::TCEJsonValue(ch8 const *&&);
-	extern template CEJsonSortedWithComments::TCEJsonValue(ch8 const *&);
-	extern template CEJsonSortedWithComments::TCEJsonValue(ch8 const *const &);
+	extern template CEJsonSortedWithComments::TCEJsonValue(ch8 const * &&);
+	extern template CEJsonSortedWithComments::TCEJsonValue(ch8 const * &);
+	extern template CEJsonSortedWithComments::TCEJsonValue(ch8 const * const &);
 
 	extern template CEJsonSortedWithComments::TCEJsonValue(CNullPtr &&);
 	extern template CEJsonSortedWithComments::TCEJsonValue(CNullPtr &);
@@ -330,9 +324,13 @@ namespace NMib::NEncoding
 	extern template CEJsonSortedWithComments &CJsonValueEJsonSortedWithComments::operator = <bool &>(bool &);
 	extern template CEJsonSortedWithComments &CJsonValueEJsonSortedWithComments::operator = <bool const &>(bool const &);
 
-	extern template void CJsonValueEJsonSortedWithComments::f_Format
-		<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonSortedWithComments, false>::CLocalOptions>
-		(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonSortedWithComments, false>::CLocalOptions const &) const
+	extern template void CJsonValueEJsonSortedWithComments
+		::f_Format<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonSortedWithComments, false>::CLocalOptions>
+		(
+			NStr::CStr &
+			, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonSortedWithComments, false>::CLocalOptions const &
+		)
+		const
 	;
 #endif
 }

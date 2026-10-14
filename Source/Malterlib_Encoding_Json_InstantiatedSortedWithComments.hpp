@@ -29,20 +29,14 @@ namespace NMib::NEncoding
 	extern template TCJsonValue<CJsonValueBaseSortedWithComments> CJsonSortedWithComments::fs_FromCompatible<CJsonValueBaseOrdered>(TCJsonValue<CJsonValueBaseOrdered> const &);
 	extern template TCJsonValue<CJsonValueBaseSortedWithComments> CJsonSortedWithComments::fs_FromCompatible<CJsonValueBaseOrdered>(TCJsonValue<CJsonValueBaseOrdered> &&);
 	extern template TCJsonValue<CJsonValueBaseSortedWithComments> CJsonSortedWithComments::fs_FromCompatible<CJsonValueBaseOrdered>(TCJsonValue<CJsonValueBaseOrdered> const &&);
-	extern template TCJsonValue<CJsonValueBaseSortedWithComments> CJsonSortedWithComments::fs_FromCompatible<CJsonValueBaseOrderedWithComments>
-		(
-			TCJsonValue<CJsonValueBaseOrderedWithComments> const &
-		)
+	extern template auto CJsonSortedWithComments::fs_FromCompatible<CJsonValueBaseOrderedWithComments>(TCJsonValue<CJsonValueBaseOrderedWithComments> const &)
+		-> TCJsonValue<CJsonValueBaseSortedWithComments>
 	;
-	extern template TCJsonValue<CJsonValueBaseSortedWithComments> CJsonSortedWithComments::fs_FromCompatible<CJsonValueBaseOrderedWithComments>
-		(
-			TCJsonValue<CJsonValueBaseOrderedWithComments> &&
-		)
+	extern template auto CJsonSortedWithComments::fs_FromCompatible<CJsonValueBaseOrderedWithComments>(TCJsonValue<CJsonValueBaseOrderedWithComments> &&)
+		-> TCJsonValue<CJsonValueBaseSortedWithComments>
 	;
-	extern template TCJsonValue<CJsonValueBaseSortedWithComments> CJsonSortedWithComments::fs_FromCompatible<CJsonValueBaseOrderedWithComments>
-		(
-			TCJsonValue<CJsonValueBaseOrderedWithComments> const &&
-		)
+	extern template auto CJsonSortedWithComments::fs_FromCompatible<CJsonValueBaseOrderedWithComments>(TCJsonValue<CJsonValueBaseOrderedWithComments> const &&)
+		-> TCJsonValue<CJsonValueBaseSortedWithComments>
 	;
 
 	extern template CJsonSortedWithComments::TCJsonValue(TCJsonValue<CJsonValueBaseSorted> const &);
@@ -272,9 +266,13 @@ namespace NMib::NEncoding
 	extern template CJsonSortedWithComments &CJsonSortedWithComments::operator = <bool &>(bool &);
 	extern template CJsonSortedWithComments &CJsonSortedWithComments::operator = <bool const &>(bool const &);
 
-	extern template void CJsonSortedWithComments::f_Format
-		<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonSortedWithComments, false>::CLocalOptions>
-		(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonSortedWithComments, false>::CLocalOptions const &) const
+	extern template void CJsonSortedWithComments
+		::f_Format<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonSortedWithComments, false>::CLocalOptions>
+		(
+			NStr::CStr &
+			, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CJsonSortedWithComments, false>::CLocalOptions const &
+		)
+		const
 	;
 #endif
 }

@@ -162,9 +162,9 @@ namespace NMib::NEncoding
 	extern template CEJsonOrdered::TCEJsonValue(EJsonType &);
 	extern template CEJsonOrdered::TCEJsonValue(EJsonType const &);
 
-	extern template CEJsonOrdered::TCEJsonValue(ch8 const *&&);
-	extern template CEJsonOrdered::TCEJsonValue(ch8 const *&);
-	extern template CEJsonOrdered::TCEJsonValue(ch8 const *const &);
+	extern template CEJsonOrdered::TCEJsonValue(ch8 const * &&);
+	extern template CEJsonOrdered::TCEJsonValue(ch8 const * &);
+	extern template CEJsonOrdered::TCEJsonValue(ch8 const * const &);
 
 	extern template CEJsonOrdered::TCEJsonValue(CNullPtr &&);
 	extern template CEJsonOrdered::TCEJsonValue(CNullPtr &);
@@ -323,9 +323,13 @@ namespace NMib::NEncoding
 	extern template CEJsonOrdered &CJsonValueEJsonOrdered::operator = <bool &>(bool &);
 	extern template CEJsonOrdered &CJsonValueEJsonOrdered::operator = <bool const &>(bool const &);
 
-	extern template void CJsonValueEJsonOrdered::f_Format
-		<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonOrdered, true>::CLocalOptions>
-		(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonOrdered, true>::CLocalOptions const &) const
+	extern template void CJsonValueEJsonOrdered
+		::f_Format<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonOrdered, true>::CLocalOptions>
+		(
+			NStr::CStr &
+			, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonOrdered, true>::CLocalOptions const &
+		)
+		const
 	;
 }
 

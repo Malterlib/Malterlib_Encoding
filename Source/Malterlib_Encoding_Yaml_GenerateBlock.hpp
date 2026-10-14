@@ -76,7 +76,14 @@ namespace NMib::NEncoding::NYaml
 	template <typename tf_CJson>
 	bool fg_YamlUserTypeStoredPayloadIsObjectOrArray(tf_CJson const &_Value)
 	{
-		if constexpr (requires (tf_CJson const &Value) { Value.f_EType(); Value.f_UserType(); })
+		if constexpr
+		(
+			requires (tf_CJson const &Value)
+			{
+				Value.f_EType();
+				Value.f_UserType();
+			}
+		)
 		{
 			if (_Value.f_EType() == EEJsonType_UserType)
 			{
@@ -127,15 +134,17 @@ namespace NMib::NEncoding::NYaml
 	template <typename tf_CJson>
 	bool fg_YamlUserTypeStoredPayloadHasBlockStyle(tf_CJson const &_Value)
 	{
-		if constexpr (tf_CJson::mc_bPreserveYamlMetadata && requires (tf_CJson const &Value) { Value.f_EType(); Value.f_UserType(); })
+		if constexpr
+		(
+			tf_CJson::mc_bPreserveYamlMetadata && requires (tf_CJson const &Value)
+			{
+				Value.f_EType();
+				Value.f_UserType();
+			}
+		)
 		{
 			if (fg_YamlUserTypeStoredPayloadIsObjectOrArray(_Value))
-			{
-				return
-					_Value.f_Yaml().f_NodeStyle() == EYamlNodeStyle_Block
-					|| _Value.f_UserType().m_Value.f_Yaml().f_NodeStyle() == EYamlNodeStyle_Block
-				;
-			}
+				return _Value.f_Yaml().f_NodeStyle() == EYamlNodeStyle_Block || _Value.f_UserType().m_Value.f_Yaml().f_NodeStyle() == EYamlNodeStyle_Block;
 		}
 
 		return false;
@@ -164,7 +173,14 @@ namespace NMib::NEncoding::NYaml
 			if (_Value.f_Yaml().f_HasAnchor() || (_Value.f_Yaml().f_HasTag() && !_Value.f_IsObject() && !_Value.f_IsArray()))
 				return false;
 
-			if constexpr (requires (tf_CJson const &Value) { Value.f_EType(); Value.f_Binary(); })
+			if constexpr
+			(
+				requires (tf_CJson const &Value)
+				{
+					Value.f_EType();
+					Value.f_Binary();
+				}
+			)
 			{
 				if (_Value.f_EType() == EEJsonType_Binary && (_Value.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_Literal || _Value.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_Folded))
 					return true;
@@ -212,9 +228,8 @@ namespace NMib::NEncoding::NYaml
 			else
 				o_String += '|';
 
-			bool bEndsWithLineBreak =
-				!_Value.f_String().f_IsEmpty()
-				&& (_Value.f_String()[_Value.f_String().f_GetLen() - 1] == '\n' || _Value.f_String()[_Value.f_String().f_GetLen() - 1] == '\r')
+			bool bEndsWithLineBreak
+				= !_Value.f_String().f_IsEmpty() && (_Value.f_String()[_Value.f_String().f_GetLen() - 1] == '\n' || _Value.f_String()[_Value.f_String().f_GetLen() - 1] == '\r')
 			;
 
 			if (_Value.f_Yaml().f_ChompIndicator())
@@ -284,7 +299,13 @@ namespace NMib::NEncoding::NYaml
 	{
 		for (auto const &Child : _Value)
 		{
-			if constexpr (requires { Child.f_Yaml().f_LeadingComment(); })
+			if constexpr
+			(
+				requires
+				{
+					Child.f_Yaml().f_LeadingComment();
+				}
+			)
 			{
 				if (!Child.f_Yaml().f_LeadingComment().f_IsEmpty())
 					fg_GenerateYamlBlockComment(o_String, fg_YamlLeadingCommentForGeneration(Child.f_Yaml()), _Depth, _pPrettySeparator);
@@ -296,7 +317,13 @@ namespace NMib::NEncoding::NYaml
 
 			if (fg_YamlValueNeedsBlockLine(Child))
 			{
-				if constexpr (requires { Child.f_Yaml().f_Anchor(); })
+				if constexpr
+				(
+					requires
+					{
+						Child.f_Yaml().f_Anchor();
+					}
+				)
 				{
 					if (Child.f_IsObject() || Child.f_IsArray())
 					{
@@ -307,12 +334,7 @@ namespace NMib::NEncoding::NYaml
 					if
 					(
 						!Child.f_Yaml().f_LineComment().f_IsEmpty()
-						&&
-						!
-						(
-							Child.f_IsString()
-							&& (Child.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_Literal || Child.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_Folded)
-						)
+						&& !(Child.f_IsString() && (Child.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_Literal || Child.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_Folded))
 					)
 					{
 						fg_GenerateYamlLineComment(o_String, Child.f_Yaml());
@@ -329,7 +351,13 @@ namespace NMib::NEncoding::NYaml
 
 				fg_GenerateYamlNode(o_String, Child, _Flags, o_pState, false, false);
 
-				if constexpr (requires { Child.f_Yaml().f_LineComment(); })
+				if constexpr
+				(
+					requires
+					{
+						Child.f_Yaml().f_LineComment();
+					}
+				)
 				{
 					if (!Child.f_Yaml().f_LineComment().f_IsEmpty())
 						fg_GenerateYamlLineComment(o_String, Child.f_Yaml());
@@ -338,7 +366,13 @@ namespace NMib::NEncoding::NYaml
 				o_String += '\n';
 			}
 
-			if constexpr (requires { Child.f_Yaml().f_TrailingComment(); })
+			if constexpr
+			(
+				requires
+				{
+					Child.f_Yaml().f_TrailingComment();
+				}
+			)
 			{
 				if (!Child.f_Yaml().f_TrailingComment().f_IsEmpty())
 					fg_GenerateYamlBlockComment(o_String, fg_YamlTrailingCommentForGeneration(Child.f_Yaml()), _Depth, _pPrettySeparator);
@@ -380,10 +414,7 @@ namespace NMib::NEncoding::NYaml
 				else
 				{
 					fg_GenerateYamlMetadataPrefix(o_String, Child.f_KeyYaml(), o_pState);
-					bool bTaggedPlainKey =
-						Child.f_KeyYaml().f_ScalarStyle() == EYamlScalarStyle_Plain
-						&& Child.f_KeyYaml().f_HasTag()
-					;
+					bool bTaggedPlainKey = Child.f_KeyYaml().f_ScalarStyle() == EYamlScalarStyle_Plain && Child.f_KeyYaml().f_HasTag();
 
 					auto ColorScope = fg_YamlColorScope(o_String, EYamlColorToken_Key);
 
@@ -483,7 +514,14 @@ namespace NMib::NEncoding::NYaml
 						}
 					}
 
-					if constexpr (tf_CJson::mc_bPreserveYamlMetadata && requires { Child.f_Value().f_EType(); Child.f_Value().f_UserType(); })
+					if constexpr
+					(
+						tf_CJson::mc_bPreserveYamlMetadata && requires
+						{
+							Child.f_Value().f_EType();
+							Child.f_Value().f_UserType();
+						}
+					)
 					{
 						if (fg_YamlUserTypeStoredPayloadHasBlockStyle(Child.f_Value()) && Child.f_Value().f_Yaml().f_NodeStyle() == EYamlNodeStyle_Block)
 						{
@@ -602,17 +640,7 @@ namespace NMib::NEncoding::NYaml
 
 			bool bEmitYamlTag = fg_ShouldEmitYamlTag(_Value);
 
-			if
-			(
-				_Depth == 0
-				&& !bInlineAlias
-				&& (_Value.f_IsObject() || _Value.f_IsArray())
-				&&
-				(
-					(bEmitYamlTag && _Value.f_Yaml().f_HasTag())
-					|| _Value.f_Yaml().f_HasAnchor()
-				)
-			)
+			if (_Depth == 0 && !bInlineAlias && (_Value.f_IsObject() || _Value.f_IsArray()) && ((bEmitYamlTag && _Value.f_Yaml().f_HasTag()) || _Value.f_Yaml().f_HasAnchor()))
 			{
 				fg_AddYamlBlockIndent(o_String, _Depth, _pPrettySeparator);
 				fg_GenerateYamlMetadataPrefix(o_String, _Value.f_Yaml(), o_pState, bEmitYamlTag, false);
@@ -622,7 +650,14 @@ namespace NMib::NEncoding::NYaml
 			}
 		}
 
-		if constexpr (tf_CJson::mc_bPreserveYamlMetadata && requires (tf_CJson const &Value) { Value.f_EType(); Value.f_UserType(); })
+		if constexpr
+		(
+			tf_CJson::mc_bPreserveYamlMetadata && requires (tf_CJson const &Value)
+			{
+				Value.f_EType();
+				Value.f_UserType();
+			}
+		)
 		{
 			if (fg_YamlUserTypeStoredPayloadHasBlockStyle(_Value))
 			{
@@ -673,13 +708,16 @@ namespace NMib::NEncoding::NYaml
 
 			fg_GenerateYamlBlockScalar(o_String, _Value, _Depth, _pPrettySeparator);
 		}
-		else if constexpr (tf_CJson::mc_bPreserveYamlMetadata && requires (tf_CJson const &Value) { Value.f_EType(); Value.f_Binary(); })
+		else if constexpr
+		(
+			tf_CJson::mc_bPreserveYamlMetadata && requires (tf_CJson const &Value)
+			{
+				Value.f_EType();
+				Value.f_Binary();
+			}
+		)
 		{
-			if
-			(
-				_Value.f_EType() == EEJsonType_Binary
-				&& (_Value.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_Literal || _Value.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_Folded)
-			)
+			if (_Value.f_EType() == EEJsonType_Binary && (_Value.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_Literal || _Value.f_Yaml().f_ScalarStyle() == EYamlScalarStyle_Folded))
 			{
 				fg_AddYamlBlockIndent(o_String, _Depth, _pPrettySeparator);
 

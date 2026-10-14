@@ -69,7 +69,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CValueBase>
-	TCJsonTriviaView<t_CValueBase>::operator TCJsonTriviaConstView<t_CValueBase>() const
+	TCJsonTriviaView<t_CValueBase>::operator TCJsonTriviaConstView<t_CValueBase> () const
 	{
 		return TCJsonTriviaConstView<t_CValueBase>(mp_Value);
 	}
@@ -242,7 +242,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CObjectEntry>
-	TCJsonKeyTriviaView<t_CObjectEntry>::operator TCJsonKeyTriviaConstView<t_CObjectEntry>() const
+	TCJsonKeyTriviaView<t_CObjectEntry>::operator TCJsonKeyTriviaConstView<t_CObjectEntry> () const
 	{
 		return TCJsonKeyTriviaConstView<t_CObjectEntry>(mp_Entry);
 	}
