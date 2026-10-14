@@ -113,10 +113,10 @@ Provides convenient literal operators for JSON construction.
 **Operators**:
 - `"key"_j` - Creates a JSON key
 - `_j[]` - Creates an empty JSON array
-- `_j= {}` - Creates a JSON object
+- `_j={}` - Creates a JSON object
 - `"key"_` - Creates a EJSON key
 - `_[]` - Creates an empty EJSON array
-- `_= {}` - Creates a EJSON object
+- `_={}` - Creates a EJSON object
 
 **Usage Example**:
 ```cpp
