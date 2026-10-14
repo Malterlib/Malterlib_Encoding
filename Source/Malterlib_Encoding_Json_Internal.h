@@ -11,8 +11,8 @@ namespace NMib::NEncoding::NPrivate
 	{
 		CJsonBoolean() = default;
 		inline_always CJsonBoolean(bool _bValue);
-		inline_always operator bool const &() const;
-		inline_always operator bool &();
+		inline_always operator bool const & () const;
+		inline_always operator bool & ();
 
 		template <typename tf_CStream>
 		void f_Feed(tf_CStream &_Stream) const;
@@ -44,8 +44,7 @@ namespace NMib::NEncoding::NPrivate
 		template <typename t_CValue, EJsonContainerFlag t_ContainerFlags, typename ...tp_CTypes>
 		struct TCGetJsonValueVariant<t_CValue, t_ContainerFlags, NMeta::TCTypeList<tp_CTypes...>>
 		{
-			using CType =
-				NStorage::TCStreamableVariant
+			using CType = NStorage::TCStreamableVariant
 				<
 					EJsonType
 					, NStorage::TCMember<void, EJsonType_Invalid>
@@ -59,7 +58,7 @@ namespace NMib::NEncoding::NPrivate
 					, tp_CTypes...
 				>
 			;
-		} ;
+		};
 	};
 
 	template <typename t_CParent>

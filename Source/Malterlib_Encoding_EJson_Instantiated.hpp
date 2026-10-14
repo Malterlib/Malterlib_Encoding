@@ -63,36 +63,12 @@ namespace NMib::NEncoding
 	extern template CJsonValueEJsonOrdered::TCJsonValue(CEJsonValueBaseSortedYaml const &&);
 	extern template CJsonValueEJsonOrdered::TCJsonValue(CEJsonValueBaseSortedYaml &&);
 
-	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseOrderedYaml>
-		(
-			TCEJsonValue<CEJsonValueBaseOrderedYaml> const &
-		)
-	;
-	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseOrderedYaml>
-		(
-			TCEJsonValue<CEJsonValueBaseOrderedYaml> &&
-		)
-	;
-	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseOrderedYaml>
-		(
-			TCEJsonValue<CEJsonValueBaseOrderedYaml> const &&
-		)
-	;
-	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseSortedYaml>
-		(
-			TCEJsonValue<CEJsonValueBaseSortedYaml> const &
-		)
-	;
-	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseSortedYaml>
-		(
-			TCEJsonValue<CEJsonValueBaseSortedYaml> &&
-		)
-	;
-	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseSortedYaml>
-		(
-			TCEJsonValue<CEJsonValueBaseSortedYaml> const &&
-		)
-	;
+	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseOrderedYaml>(TCEJsonValue<CEJsonValueBaseOrderedYaml> const &);
+	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseOrderedYaml>(TCEJsonValue<CEJsonValueBaseOrderedYaml> &&);
+	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseOrderedYaml>(TCEJsonValue<CEJsonValueBaseOrderedYaml> const &&);
+	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseSortedYaml>(TCEJsonValue<CEJsonValueBaseSortedYaml> const &);
+	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseSortedYaml>(TCEJsonValue<CEJsonValueBaseSortedYaml> &&);
+	extern template TCEJsonValue<CEJsonValueBaseOrdered> CEJsonOrdered::fs_FromCompatible<CEJsonValueBaseSortedYaml>(TCEJsonValue<CEJsonValueBaseSortedYaml> const &&);
 
 	extern template CEJsonOrdered::TCEJsonValue(TCEJsonValue<CEJsonValueBaseOrderedYaml> const &);
 	extern template CEJsonOrdered::TCEJsonValue(TCEJsonValue<CEJsonValueBaseOrderedYaml> &&);
@@ -147,11 +123,11 @@ namespace NMib::NEncoding
 	extern template CJsonValueEJsonOrdered::TCJsonValue(fp64 &);
 	extern template CJsonValueEJsonOrdered::TCJsonValue(fp64 const &);
 
-#ifdef DMibPUniqueType_int
+#	ifdef DMibPUniqueType_int
 	extern template CJsonValueEJsonOrdered::TCJsonValue(int &&);
 	extern template CJsonValueEJsonOrdered::TCJsonValue(int &);
 	extern template CJsonValueEJsonOrdered::TCJsonValue(int const &);
-#endif
+#	endif
 	extern template CJsonValueEJsonOrdered::TCJsonValue(bool &&);
 	extern template CJsonValueEJsonOrdered::TCJsonValue(bool &);
 	extern template CJsonValueEJsonOrdered::TCJsonValue(bool const &);
@@ -162,9 +138,9 @@ namespace NMib::NEncoding
 	extern template CEJsonOrdered::TCEJsonValue(EJsonType &);
 	extern template CEJsonOrdered::TCEJsonValue(EJsonType const &);
 
-	extern template CEJsonOrdered::TCEJsonValue(ch8 const *&&);
-	extern template CEJsonOrdered::TCEJsonValue(ch8 const *&);
-	extern template CEJsonOrdered::TCEJsonValue(ch8 const *const &);
+	extern template CEJsonOrdered::TCEJsonValue(ch8 const * &&);
+	extern template CEJsonOrdered::TCEJsonValue(ch8 const * &);
+	extern template CEJsonOrdered::TCEJsonValue(ch8 const * const &);
 
 	extern template CEJsonOrdered::TCEJsonValue(CNullPtr &&);
 	extern template CEJsonOrdered::TCEJsonValue(CNullPtr &);
@@ -206,11 +182,11 @@ namespace NMib::NEncoding
 	extern template CEJsonOrdered::TCEJsonValue(fp64 &);
 	extern template CEJsonOrdered::TCEJsonValue(fp64 const &);
 
-#ifdef DMibPUniqueType_int
+#	ifdef DMibPUniqueType_int
 	extern template CEJsonOrdered::TCEJsonValue(int &&);
 	extern template CEJsonOrdered::TCEJsonValue(int &);
 	extern template CEJsonOrdered::TCEJsonValue(int const &);
-#endif
+#	endif
 	extern template CEJsonOrdered::TCEJsonValue(bool &&);
 	extern template CEJsonOrdered::TCEJsonValue(bool &);
 	extern template CEJsonOrdered::TCEJsonValue(bool const &);
@@ -260,11 +236,11 @@ namespace NMib::NEncoding
 	extern template CEJsonOrdered &CJsonValueEJsonOrdered::f_Insert<fp64 &>(fp64 &);
 	extern template CEJsonOrdered &CJsonValueEJsonOrdered::f_Insert<fp64 const &>(fp64 const &);
 
-#ifdef DMibPUniqueType_int
+#	ifdef DMibPUniqueType_int
 	extern template CEJsonOrdered &CJsonValueEJsonOrdered::f_Insert<int>(int &&);
 	extern template CEJsonOrdered &CJsonValueEJsonOrdered::f_Insert<int &>(int &);
 	extern template CEJsonOrdered &CJsonValueEJsonOrdered::f_Insert<int const &>(int const &);
-#endif
+#	endif
 	extern template CEJsonOrdered &CJsonValueEJsonOrdered::f_Insert<bool>(bool &&);
 	extern template CEJsonOrdered &CJsonValueEJsonOrdered::f_Insert<bool &>(bool &);
 	extern template CEJsonOrdered &CJsonValueEJsonOrdered::f_Insert<bool const &>(bool const &);
@@ -323,9 +299,13 @@ namespace NMib::NEncoding
 	extern template CEJsonOrdered &CJsonValueEJsonOrdered::operator = <bool &>(bool &);
 	extern template CEJsonOrdered &CJsonValueEJsonOrdered::operator = <bool const &>(bool const &);
 
-	extern template void CJsonValueEJsonOrdered::f_Format
-		<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonOrdered, true>::CLocalOptions>
-		(NStr::CStr &, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonOrdered, true>::CLocalOptions const &) const
+	extern template void CJsonValueEJsonOrdered
+		::f_Format<NStr::CStr, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonOrdered, true>::CLocalOptions>
+		(
+			NStr::CStr &
+			, NMib::NStr::TCStrFormatType_Inline<NMib::NStr::TCFormat<NMib::NStr::CStrTraits_CStr>, CEJsonOrdered, true>::CLocalOptions const &
+		)
+		const
 	;
 }
 

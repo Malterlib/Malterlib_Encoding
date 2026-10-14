@@ -77,7 +77,7 @@ namespace NMib::NEncoding
 	{
 		explicit TCYamlView(t_CValueBase &_Value);
 
-		operator TCYamlConstView<t_CValueBase>() const;
+		operator TCYamlConstView<t_CValueBase> () const;
 
 		NStr::CStr const &f_Anchor() const
 			requires (t_CValueBase::mc_bPreserveYamlMetadata)
@@ -229,7 +229,7 @@ namespace NMib::NEncoding
 	{
 		explicit TCYamlKeyView(t_CObjectEntry &_Entry);
 
-		operator TCYamlKeyConstView<t_CObjectEntry>() const;
+		operator TCYamlKeyConstView<t_CObjectEntry> () const;
 
 		NStr::CStr const &f_Anchor() const
 			requires (t_CObjectEntry::mc_bPreserveYamlMetadata)

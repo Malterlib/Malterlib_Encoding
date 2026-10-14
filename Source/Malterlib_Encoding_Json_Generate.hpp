@@ -85,25 +85,15 @@ namespace NMib::NEncoding::NJson
 				o_String += '\\';
 				o_String += t_QuoteCharacter;
 				break;
-			case '\\':
-				o_String += "\\\\";
-				break;
-			case 0x08:
-				o_String += "\\b";
-				break;
-			case 0x0C:
-				o_String += "\\f";
-				break;
+			case '\\': o_String += "\\\\"; break;
+			case 0x08: o_String += "\\b"; break;
+			case 0x0C: o_String += "\\f"; break;
 			case 0x0A:
 			case 0x0D:
 				if (UnsignedChar == 0x0A)
-				{
 					o_String += "\\n";
-				}
 				else
-				{
 					o_String += "\\r";
-				}
 
 				if constexpr (tf_CParseContext::mc_ParseJsonStringFlags & EParseJsonStringFlag_AllowMultiLine)
 				{
@@ -118,9 +108,7 @@ namespace NMib::NEncoding::NJson
 					o_String += t_QuoteCharacter;
 				}
 				break;
-			case 0x09:
-				o_String += "\\t";
-				break;
+			case 0x09: o_String += "\\t"; break;
 			default:
 				if (UnsignedChar < 32)
 				{
@@ -305,11 +293,7 @@ namespace NMib::NEncoding::NJson
 			bool bFirstChild = true;
 			for (auto iStyleChild = _Value.f_OrderedIterator(); iStyleChild; ++iStyleChild)
 			{
-				if
-				(
-					!bFirstChild
-					&& (iStyleChild->f_KeyTrivia().f_HasLeadingComma() || fg_FindTopLevelCommaInTrailing<tf_CParseContext>(iStyleChild->f_KeyTrivia().f_Leading()) >= 0)
-				)
+				if (!bFirstChild && (iStyleChild->f_KeyTrivia().f_HasLeadingComma() || fg_FindTopLevelCommaInTrailing<tf_CParseContext>(iStyleChild->f_KeyTrivia().f_Leading()) >= 0))
 				{
 					bUseLeadingCommaForAutomaticSeparators = true;
 					break;
@@ -349,9 +333,7 @@ namespace NMib::NEncoding::NJson
 				}
 			}
 			if (_pPrettySeparator && !bWroteLeading)
-			{
 				fg_AddPrefix(o_String, _Depth + 1, _pPrettySeparator);
-			}
 			if (bUseLeadingCommaForAutomaticSeparators && !bFirstChild && !bChildCommaInLeading)
 			{
 				o_String += ",";
@@ -471,11 +453,7 @@ namespace NMib::NEncoding::NJson
 			bool bFirstChild = true;
 			for (auto iStyleChild = _Value.f_GetIterator(); iStyleChild; ++iStyleChild)
 			{
-				if
-					(
-						!bFirstChild
-						&& ((*iStyleChild).f_Trivia().f_HasLeadingComma() || fg_FindTopLevelCommaInTrailing<tf_CParseContext>((*iStyleChild).f_Trivia().f_Leading()) >= 0)
-					)
+				if (!bFirstChild && ((*iStyleChild).f_Trivia().f_HasLeadingComma() || fg_FindTopLevelCommaInTrailing<tf_CParseContext>((*iStyleChild).f_Trivia().f_Leading()) >= 0))
 				{
 					bUseLeadingCommaForAutomaticSeparators = true;
 					break;
@@ -514,9 +492,7 @@ namespace NMib::NEncoding::NJson
 				}
 			}
 			if (_pPrettySeparator && !bWroteLeading)
-			{
 				fg_AddPrefix(o_String, _Depth + 1, _pPrettySeparator);
-			}
 			if (bUseLeadingCommaForAutomaticSeparators && !bFirstChild && !bChildCommaInLeading)
 			{
 				o_String += ",";
@@ -619,9 +595,7 @@ namespace NMib::NEncoding::NJson
 
 		switch (JsonValue.f_Type())
 		{
-		case EJsonType_String:
-			tf_CParseContext::template fs_GenerateString<tf_CParseContext>(o_String, JsonValue.f_String());
-			break;
+		case EJsonType_String: tf_CParseContext::template fs_GenerateString<tf_CParseContext>(o_String, JsonValue.f_String()); break;
 		case EJsonType_Integer:
 			{
 				using CFormatType = typename TCStringFormatterAll<typename tf_CStr::CString::CFormat, int64>::CFormatType;
@@ -671,15 +645,9 @@ namespace NMib::NEncoding::NJson
 				}
 			}
 			break;
-		case EJsonType_Object:
-			fg_GenerateJsonObject<tf_CParseContext>(o_String, _Value.f_Object(), _Depth, _pPrettySeparator, _Flags & EJsonDialectFlag_All);
-			break;
-		case EJsonType_Array:
-			fg_GenerateJsonArray<tf_CParseContext>(o_String, _Value.f_Array(), _Depth, _pPrettySeparator, _Flags & EJsonDialectFlag_All);
-			break;
-		case EJsonType_Null:
-			o_String += "null";
-			break;
+		case EJsonType_Object: fg_GenerateJsonObject<tf_CParseContext>(o_String, _Value.f_Object(), _Depth, _pPrettySeparator, _Flags & EJsonDialectFlag_All); break;
+		case EJsonType_Array: fg_GenerateJsonArray<tf_CParseContext>(o_String, _Value.f_Array(), _Depth, _pPrettySeparator, _Flags & EJsonDialectFlag_All); break;
+		case EJsonType_Null: o_String += "null"; break;
 		case EJsonType_Boolean:
 			if (JsonValue.f_Boolean())
 				o_String += "true";
@@ -693,9 +661,7 @@ namespace NMib::NEncoding::NJson
 				break;
 			}
 			[[fallthrough]];
-		default:
-			DMibError("Invalid JSON type in value node");
-		break;
+		default: DMibError("Invalid JSON type in value node"); break;
 		}
 	}
 }
@@ -704,7 +670,7 @@ namespace NMib::NEncoding
 {
 	template <typename t_CParent>
 	template <typename t_CParseContext>
-	NStr::CStr TCJsonValue<t_CParent>::f_ToString(ch8 const * _pPrettySeparator, EJsonDialectFlag _Flags) const
+	NStr::CStr TCJsonValue<t_CParent>::f_ToString(ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags) const
 	{
 		using namespace NStr;
 
@@ -727,26 +693,20 @@ namespace NMib::NEncoding
 				}
 			}
 
-			if
-				(
-					_pPrettySeparator
-					&& !(_Flags & EJsonDialectFlag_TrimWhitespace)
-					&& !bWroteRootTrailing
-					&& !(CValue::mc_bPreserveComments && t_CParseContext::mc_bAllowComments)
-				)
+			if (_pPrettySeparator && !(_Flags & EJsonDialectFlag_TrimWhitespace) && !bWroteRootTrailing && !(CValue::mc_bPreserveComments && t_CParseContext::mc_bAllowComments))
 				StringAppender += "\n";
 		}
 		return Return;
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCJsonValue<t_CParent>::f_ToString(ch8 const * _pPrettySeparator, EJsonDialectFlag _Flags) const
+	NStr::CStr TCJsonValue<t_CParent>::f_ToString(ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags) const
 	{
 		return f_ToString<NJson::CParseContext>(_pPrettySeparator, _Flags);
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCJsonValue<t_CParent>::f_ToStringJsonC(ch8 const * _pPrettySeparator, EJsonDialectFlag _Flags) const
+	NStr::CStr TCJsonValue<t_CParent>::f_ToStringJsonC(ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags) const
 	{
 		if constexpr (CValue::mc_bPreserveComments)
 			return f_ToString<NJson::CJsonCRecordingParseContext>(_pPrettySeparator, _Flags);
@@ -755,7 +715,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	NStr::CStr TCJsonValue<t_CParent>::f_ToStringJson5(ch8 const * _pPrettySeparator, EJsonDialectFlag _Flags) const
+	NStr::CStr TCJsonValue<t_CParent>::f_ToStringJson5(ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags) const
 	{
 		if constexpr (CValue::mc_bPreserveComments)
 			return f_ToString<NJson::CJson5RecordingParseContext>(_pPrettySeparator, _Flags);

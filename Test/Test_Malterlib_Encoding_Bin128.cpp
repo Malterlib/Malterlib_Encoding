@@ -22,7 +22,6 @@ namespace
 		}
 
 	public:
-
 		void f_DoTests()
 		{
 			DMibTestSuite("Roundtrip")

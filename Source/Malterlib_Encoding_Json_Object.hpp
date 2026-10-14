@@ -301,7 +301,6 @@ namespace NMib::NEncoding
 		return f_CreateMember(_Name);
 	}
 
-
 	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
 	t_CJsonValue &TCJsonObject<t_CJsonValue, t_ContainerFlags>::operator () (NStr::CStr const &_Name)
 	{
@@ -437,7 +436,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJsonObject>
-	TCJsonObjectEntryHandle<t_CJsonObject>::operator bool() const noexcept
+	TCJsonObjectEntryHandle<t_CJsonObject>::operator bool () const noexcept
 	{
 		return !!mp_ListHandle;
 	}
@@ -508,7 +507,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJsonObject>
-	TCJsonOrderedDestructiveIterator<t_CJsonObject>::operator bool() const
+	TCJsonOrderedDestructiveIterator<t_CJsonObject>::operator bool () const
 	{
 		return !!mp_Iter;
 	}
@@ -520,19 +519,19 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJsonObject>
-	auto TCJsonOrderedDestructiveIterator<t_CJsonObject>::operator->() const -> CObjectEntry *
+	auto TCJsonOrderedDestructiveIterator<t_CJsonObject>::operator -> () const -> CObjectEntry *
 	{
 		return f_GetCurrent();
 	}
 
 	template <typename t_CJsonObject>
-	auto TCJsonOrderedDestructiveIterator<t_CJsonObject>::operator*() const -> CObjectEntry &
+	auto TCJsonOrderedDestructiveIterator<t_CJsonObject>::operator * () const -> CObjectEntry &
 	{
 		return *f_GetCurrent();
 	}
 
 	template <typename t_CJsonObject>
-	void TCJsonOrderedDestructiveIterator<t_CJsonObject>::operator++()
+	void TCJsonOrderedDestructiveIterator<t_CJsonObject>::operator ++ ()
 	{
 		++mp_Iter;
 	}
@@ -587,7 +586,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJsonObject>
-	TCJsonSortedDestructiveIterator<t_CJsonObject>::operator bool() const
+	TCJsonSortedDestructiveIterator<t_CJsonObject>::operator bool () const
 	{
 		return !!mp_Iter;
 	}
@@ -599,19 +598,19 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJsonObject>
-	auto TCJsonSortedDestructiveIterator<t_CJsonObject>::operator->() const -> CObjectEntry *
+	auto TCJsonSortedDestructiveIterator<t_CJsonObject>::operator -> () const -> CObjectEntry *
 	{
 		return f_GetCurrent();
 	}
 
 	template <typename t_CJsonObject>
-	auto TCJsonSortedDestructiveIterator<t_CJsonObject>::operator*() const -> CObjectEntry &
+	auto TCJsonSortedDestructiveIterator<t_CJsonObject>::operator * () const -> CObjectEntry &
 	{
 		return *f_GetCurrent();
 	}
 
 	template <typename t_CJsonObject>
-	void TCJsonSortedDestructiveIterator<t_CJsonObject>::operator++()
+	void TCJsonSortedDestructiveIterator<t_CJsonObject>::operator ++ ()
 	{
 		++mp_Iter;
 	}
@@ -645,8 +644,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
-	auto TCJsonObject<t_CJsonValue, t_ContainerFlags>::f_OrderedDestructiveIterator() &&
-		-> COrderedDestructiveIterator
+	auto TCJsonObject<t_CJsonValue, t_ContainerFlags>::f_OrderedDestructiveIterator() && -> COrderedDestructiveIterator
 	{
 		if constexpr (mc_bOrdered)
 			return COrderedDestructiveIterator(*this);
@@ -655,8 +653,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
-	auto TCJsonObject<t_CJsonValue, t_ContainerFlags>::f_SortedDestructiveIterator() &&
-		-> CSortedDestructiveIterator
+	auto TCJsonObject<t_CJsonValue, t_ContainerFlags>::f_SortedDestructiveIterator() && -> CSortedDestructiveIterator
 	{
 		if constexpr (mc_bOrdered)
 			return CSortedDestructiveIterator(*this);
@@ -678,13 +675,12 @@ namespace NMib::NEncoding
 						auto &Entry = mp_Objects.f_Insert(fg_Move(_Handle.mp_ListHandle));
 						return &Entry;
 					}
-				)->f_Value()
+				)
+				->f_Value()
 			;
 		}
 		else
-		{
 			return mp_Objects.f_Insert(fg_Move(_Handle)).f_Value();
-		}
 	}
 
 	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
@@ -710,8 +706,6 @@ namespace NMib::NEncoding
 			return pResult->f_Value();
 		}
 		else
-		{
 			return mp_Objects.f_InsertOrAssign(fg_Move(_Handle)).f_Value();
-		}
 	}
 }

@@ -11,9 +11,9 @@ namespace NMib::NEncoding
 {
 	enum class EJsonContainerFlag : uint32
 	{
-		mc_None = 0
-		, mc_Ordered = DMibBit(0)
-		, mc_PreserveComments = DMibBit(1)
+		mc_None                   = 0
+		, mc_Ordered              = DMibBit(0)
+		, mc_PreserveComments     = DMibBit(1)
 		, mc_PreserveYamlMetadata = DMibBit(2)
 	};
 
@@ -59,16 +59,16 @@ namespace NMib::NEncoding
 		, EJsonType_Boolean
 		, EJsonType_Object
 		, EJsonType_Array
-		, EJsonType_Max = 32
+		, EJsonType_Max   = 32
 	};
 
 	enum EJsonDialectFlag : uint32
 	{
-		EJsonDialectFlag_None = 0
-		, EJsonDialectFlag_AllowUndefined = DMibBit(0)
-		, EJsonDialectFlag_AllowInvalidFloat = DMibBit(1)
+		EJsonDialectFlag_None                 = 0
+		, EJsonDialectFlag_AllowUndefined     = DMibBit(0)
+		, EJsonDialectFlag_AllowInvalidFloat  = DMibBit(1)
 		, EJsonDialectFlag_HighPrecisionFloat = DMibBit(2)
-		, EJsonDialectFlag_TrimWhitespace = DMibBit(3)
+		, EJsonDialectFlag_TrimWhitespace     = DMibBit(3)
 
 		, EJsonDialectFlag_All = EJsonDialectFlag_AllowUndefined | EJsonDialectFlag_AllowInvalidFloat | EJsonDialectFlag_HighPrecisionFloat | EJsonDialectFlag_TrimWhitespace
 
@@ -94,7 +94,10 @@ namespace NMib::NEncoding
 	{
 	protected:
 		using CValue = typename t_CParent::CValue;
-		struct CDummy {};
+		struct CDummy
+		{
+		};
+
 	public:
 		using CObject = TCJsonObject<CValue, t_CParent::mc_ContainerFlags>;
 		using CArray = NContainer::TCVector<CValue>;
@@ -113,6 +116,7 @@ namespace NMib::NEncoding
 			inline_always CKeyValue operator = (CValue &&_Value) &&;
 			inline_always CKeyValue operator = (CValue const &_Value) &&;
 			inline_always CKeyValue operator = (std::initializer_list<CVoidTag> const &_Initializer) &&;
+
 		private:
 			CKey(CKey const &_Other);
 		};
@@ -282,13 +286,7 @@ namespace NMib::NEncoding
 		NStr::CStr f_ToStringColoredJsonC(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		template <typename t_CParseContext>
-		NStr::CStr f_ToStringColoredYamlContext
-			(
-				NCommandLine::EAnsiEncodingFlag _AnsiFlags
-				, ch8 const *_pPrettySeparator = "  "
-				, EJsonDialectFlag _Flags = EJsonDialectFlag_None
-			) const
-		;
+		NStr::CStr f_ToStringColoredYamlContext(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "  ", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringColoredYaml(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "  ", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringColoredYamlFlow(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = nullptr, EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 
@@ -320,17 +318,12 @@ namespace NMib::NEncoding
 
 	public:
 		using CObjectEntry = NPrivate::TCObjectEntry<t_CJsonValue, t_ContainerFlags>;
+
 	private:
 		using CCompare = typename NPrivate::CObjectEntryBase::CCompare;
 
 		using CObjects = TCConditional<mc_bOrdered, NContainer::TCLinkedList<CObjectEntry>, NContainer::TCMap<NStr::CStr, CObjectEntry>>;
-		using CObjectsTree = TCConditional
-			<
-				mc_bOrdered
-				, NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>
-				, CEmpty
-			>
-		;
+		using CObjectsTree = TCConditional<mc_bOrdered, NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>, CEmpty>;
 
 	public:
 		TCJsonObject();
@@ -422,7 +415,7 @@ namespace NMib::NEncoding
 		template <typename t_CJsonValue2, EJsonContainerFlag t_ContainerFlags2>
 		friend struct TCJsonObject;
 
- 		using CJsonValue = t_CJsonValue;
+		using CJsonValue = t_CJsonValue;
 
 		template <typename> friend struct TCJsonObjectEntryHandle;
 		template <typename> friend struct TCJsonOrderedDestructiveIterator;
@@ -483,7 +476,7 @@ namespace NMib::NEncoding
 		TCJsonObjectEntryHandle &operator = (TCJsonObjectEntryHandle const &) = delete;
 
 		[[nodiscard]] bool f_IsEmpty() const noexcept;
-		[[nodiscard]] explicit operator bool() const noexcept;
+		[[nodiscard]] explicit operator bool () const noexcept;
 
 		NStr::CStr &f_Name() noexcept;
 		NStr::CStr const &f_Name() const noexcept;
@@ -518,12 +511,12 @@ namespace NMib::NEncoding
 		TCJsonOrderedDestructiveIterator &operator = (TCJsonOrderedDestructiveIterator &&_Other) noexcept;
 		~TCJsonOrderedDestructiveIterator();
 
-		explicit operator bool() const;
+		explicit operator bool () const;
 		CObjectEntry *f_GetCurrent() const;
-		CObjectEntry *operator->() const;
-		CObjectEntry &operator*() const;
+		CObjectEntry *operator -> () const;
+		CObjectEntry &operator * () const;
 
-		void operator++();
+		void operator ++ ();
 
 		// Extract current entry and advance iterator
 		CObjectEntryHandle f_ExtractNode();
@@ -557,11 +550,11 @@ namespace NMib::NEncoding
 		TCJsonSortedDestructiveIterator &operator = (TCJsonSortedDestructiveIterator &&_Other) noexcept;
 		~TCJsonSortedDestructiveIterator();
 
-		explicit operator bool() const;
+		explicit operator bool () const;
 		CObjectEntry *f_GetCurrent() const;
-		CObjectEntry *operator->() const;
-		CObjectEntry &operator*() const;
-		void operator++();
+		CObjectEntry *operator -> () const;
+		CObjectEntry &operator * () const;
+		void operator ++ ();
 
 		// Extract current entry and advance iterator
 		CObjectEntryHandle f_ExtractNode();
@@ -633,5 +626,5 @@ namespace NMib::NEncoding
 #include "Malterlib_Encoding_Json_Parse.h"
 
 #ifndef DMibPNoShortCuts
-	using namespace NMib::NEncoding;
+using namespace NMib::NEncoding;
 #endif

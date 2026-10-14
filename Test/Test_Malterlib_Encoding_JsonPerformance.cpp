@@ -20,7 +20,7 @@
 #include <Mib/Cryptography/RandomID>
 
 #ifdef DCompiler_MSVC
-#pragma warning(disable:4996)
+#	pragma warning(disable:4996)
 #endif
 
 #include <rapidjson/document.h>
@@ -42,7 +42,8 @@ struct CCoordinate
 	template <typename tf_CStr>
 	void f_Format(tf_CStr &o_String) const
 	{
-		o_String += typename tf_CStr::CFormat("\n   x: {ffs,fdb} Mantissa {nfh}\n   y: {ffs,fdb} Mantissa {nfh}\n   z: {ffs,fdb} Mantissa {nfh}\n")
+		o_String
+			+= typename tf_CStr::CFormat("\n   x: {ffs,fdb} Mantissa {nfh}\n   y: {ffs,fdb} Mantissa {nfh}\n   z: {ffs,fdb} Mantissa {nfh}\n")
 			<< m_CoordinateX
 			<< fp64(m_CoordinateX).f_GetMantissa()
 			<< m_CoordinateY
@@ -57,7 +58,7 @@ struct CCoordinate
 		return {m_CoordinateX / double(_Length), m_CoordinateY / double(_Length), m_CoordinateZ / double(_Length)};
 	}
 
-	auto operator == (const CCoordinate &_Right) const noexcept
+	auto operator == (CCoordinate const &_Right) const noexcept
 	{
 		return fp64(m_CoordinateX).f_AlmostEqual(fp64(_Right.m_CoordinateX), 2)
 			&& fp64(m_CoordinateY).f_AlmostEqual(fp64(_Right.m_CoordinateY), 2)
@@ -73,13 +74,13 @@ struct CCoordinates
 
 namespace daw::json
 {
-	template<>
+	template <>
 	struct json_data_contract<CCoordinate>
 	{
 		using type = json_member_list<json_number<"x">, json_number<"y">, json_number<"z">>;
 	};
 
-	template<>
+	template <>
 	struct json_data_contract<CCoordinates>
 	{
 		using type = json_member_list<json_array<"coordinates", CCoordinate>>;
@@ -95,7 +96,6 @@ namespace
 	class CJsonPerformance_Tests : public NTest::CTest
 	{
 	public:
-
 #if defined(DMibDebug) || defined(DMibSanitizerEnabled)
 		static constexpr umint mc_TestDataLength = 16 * 1024;
 		static constexpr umint mc_ArrayLength = 16 * 1024;
@@ -162,12 +162,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto Output = NStream::fg_ToByteVector(Document);
-								MalterlibStreamLen = Output.f_GetLen();
-							}
-							()
-						;
+						{
+							auto Output = NStream::fg_ToByteVector(Document);
+							MalterlibStreamLen = Output.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_AddBaseline(Measure);
@@ -182,17 +181,16 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								rapidjson::StringBuffer Buffer;
+						{
+							rapidjson::StringBuffer Buffer;
 
-								rapidjson::Writer<rapidjson::StringBuffer> Writer(Buffer);
-								Document.Accept(Writer);
+							rapidjson::Writer<rapidjson::StringBuffer> Writer(Buffer);
+							Document.Accept(Writer);
 
-								Buffer.GetString();
-								RapidJsonLen = Buffer.GetLength();
-							}
-							()
-						;
+							Buffer.GetString();
+							RapidJsonLen = Buffer.GetLength();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_AddBaseline(Measure);
@@ -207,12 +205,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto Dump = Document.dump();
-								NlohmannJsonLen = Dump.length();
-							}
-							()
-						;
+						{
+							auto Dump = Document.dump();
+							NlohmannJsonLen = Dump.length();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_AddReference(Measure);
@@ -226,12 +223,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToString(nullptr);
-								MalterlibLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToString(nullptr);
+							MalterlibLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -245,12 +241,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToString();
-								MalterlibPLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToString();
+							MalterlibPLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -264,12 +259,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringJsonC(nullptr);
-								MalterlibJsonCLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringJsonC(nullptr);
+							MalterlibJsonCLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -283,12 +277,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringJsonC();
-								MalterlibJsonCPLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringJsonC();
+							MalterlibJsonCPLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -302,12 +295,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringJsonC();
-								MalterlibJsonCWithCommentsLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringJsonC();
+							MalterlibJsonCWithCommentsLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -321,12 +313,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringJson5(nullptr);
-								MalterlibJson5Len = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringJson5(nullptr);
+							MalterlibJson5Len = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -340,12 +331,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringJson5();
-								MalterlibJson5PLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringJson5();
+							MalterlibJson5PLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -359,12 +349,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringJson5();
-								MalterlibJson5WithCommentsLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringJson5();
+							MalterlibJson5WithCommentsLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -378,12 +367,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToString(nullptr);
-								MalterlibEJsonLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToString(nullptr);
+							MalterlibEJsonLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -397,12 +385,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToString();
-								MalterlibEJsonPLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToString();
+							MalterlibEJsonPLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -416,12 +403,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringJsonC(nullptr);
-								MalterlibEJsonCLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringJsonC(nullptr);
+							MalterlibEJsonCLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -435,12 +421,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringJsonC();
-								MalterlibEJsonCPLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringJsonC();
+							MalterlibEJsonCPLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -454,12 +439,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringJsonC();
-								MalterlibEJsonCWithCommentsLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringJsonC();
+							MalterlibEJsonCWithCommentsLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -473,12 +457,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringJson5(nullptr);
-								MalterlibEJson5Len = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringJson5(nullptr);
+							MalterlibEJson5Len = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -492,12 +475,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringJson5();
-								MalterlibEJson5PLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringJson5();
+							MalterlibEJson5PLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -511,12 +493,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringJson5();
-								MalterlibEJson5WithCommentsLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringJson5();
+							MalterlibEJson5WithCommentsLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -530,12 +511,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringYaml();
-								MalterlibYamlLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringYaml();
+							MalterlibYamlLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -549,12 +529,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringYamlFlow();
-								MalterlibYamlFlowLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringYamlFlow();
+							MalterlibYamlFlowLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -568,12 +547,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringYaml();
-								MalterlibYamlPreLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringYaml();
+							MalterlibYamlPreLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -587,12 +565,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringYamlFlow();
-								MalterlibYamlFlowPreLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringYamlFlow();
+							MalterlibYamlFlowPreLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -606,12 +583,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringYaml();
-								MalterlibEYamlLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringYaml();
+							MalterlibEYamlLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -625,12 +601,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringYamlFlow();
-								MalterlibEYamlFlowLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringYamlFlow();
+							MalterlibEYamlFlowLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -644,12 +619,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringYaml();
-								MalterlibEYamlPreLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringYaml();
+							MalterlibEYamlPreLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 
@@ -664,12 +638,11 @@ namespace
 					{
 						Measure.f_Start();
 						[&]() inline_never
-							{
-								auto String = Document.f_ToStringYamlFlow();
-								MalterlibEYamlFlowPreLen = String.f_GetLen();
-							}
-							()
-						;
+						{
+							auto String = Document.f_ToStringYamlFlow();
+							MalterlibEYamlFlowPreLen = String.f_GetLen();
+						}
+						();
 						Measure.f_Stop(mc_ArrayLength);
 					}
 					PerfTotal.f_Add(Measure);
@@ -892,7 +865,6 @@ namespace
 								}
 								else
 									return {};
-
 							}
 							()
 						;
@@ -929,7 +901,6 @@ namespace
 								}
 								else
 									return {};
-
 							}
 							()
 						;
@@ -965,7 +936,6 @@ namespace
 								}
 								else
 									return {};
-
 							}
 							()
 						;
@@ -1000,7 +970,6 @@ namespace
 								}
 								else
 									return {};
-
 							}
 							()
 						;
@@ -1035,7 +1004,6 @@ namespace
 								}
 								else
 									return {};
-
 							}
 							()
 						;
@@ -1070,7 +1038,6 @@ namespace
 								}
 								else
 									return {};
-
 							}
 							()
 						;

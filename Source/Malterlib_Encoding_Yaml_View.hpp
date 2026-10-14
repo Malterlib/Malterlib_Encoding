@@ -132,7 +132,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CValueBase>
-	TCYamlView<t_CValueBase>::operator TCYamlConstView<t_CValueBase>() const
+	TCYamlView<t_CValueBase>::operator TCYamlConstView<t_CValueBase> () const
 	{
 		return TCYamlConstView<t_CValueBase>(mp_Value);
 	}
@@ -407,7 +407,14 @@ namespace NMib::NEncoding
 				Child.f_Value().f_Yaml().f_ResetYamlMetadata();
 			}
 		}
-		else if constexpr (requires { Value.f_EType(); Value.f_UserType(); })
+		else if constexpr
+		(
+			requires
+			{
+				Value.f_EType();
+				Value.f_UserType();
+			}
+		)
 		{
 			if (Value.f_EType() == EEJsonType_UserType)
 				Value.f_UserType().m_Value.f_Yaml().f_ResetYamlMetadata();
@@ -506,7 +513,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CObjectEntry>
-	TCYamlKeyView<t_CObjectEntry>::operator TCYamlKeyConstView<t_CObjectEntry>() const
+	TCYamlKeyView<t_CObjectEntry>::operator TCYamlKeyConstView<t_CObjectEntry> () const
 	{
 		return TCYamlKeyConstView<t_CObjectEntry>(mp_Entry);
 	}

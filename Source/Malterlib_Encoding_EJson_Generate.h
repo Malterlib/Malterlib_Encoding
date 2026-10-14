@@ -32,16 +32,8 @@ namespace NMib::NEncoding
 				}
 			}
 
-			if
-			(
-				_pPrettySeparator
-				&& !(_Flags & EJsonDialectFlag_TrimWhitespace)
-				&& !bWroteRootTrailing
-				&& !(CValue::mc_bPreserveComments && t_CParseContext::mc_bAllowComments)
-			)
-			{
+			if (_pPrettySeparator && !(_Flags & EJsonDialectFlag_TrimWhitespace) && !bWroteRootTrailing && !(CValue::mc_bPreserveComments && t_CParseContext::mc_bAllowComments))
 				StringAppender += "\n";
-			}
 		}
 		return Return;
 	}

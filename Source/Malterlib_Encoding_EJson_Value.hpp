@@ -300,17 +300,10 @@ namespace NMib::NEncoding
 
 		switch (EEJsonType(_Type))
 		{
-		case EEJsonType_Date:
-			this->mp_Value.template f_Set<(EJsonType)EEJsonType_Date>();
-			break;
-		case EEJsonType_Binary:
-			this->mp_Value.template f_Set<(EJsonType)EEJsonType_Binary>();
-			break;
-		case EEJsonType_UserType:
-			this->mp_Value.template f_Set<(EJsonType)EEJsonType_UserType>();
-			break;
-		default:
-			TCJsonValue<t_CParent>::f_SetType((EJsonType)_Type);
+		case EEJsonType_Date: this->mp_Value.template f_Set<(EJsonType)EEJsonType_Date>(); break;
+		case EEJsonType_Binary: this->mp_Value.template f_Set<(EJsonType)EEJsonType_Binary>(); break;
+		case EEJsonType_UserType: this->mp_Value.template f_Set<(EJsonType)EEJsonType_UserType>(); break;
+		default: TCJsonValue<t_CParent>::f_SetType((EJsonType)_Type);
 		}
 	}
 
@@ -423,7 +416,7 @@ namespace NMib::NEncoding
 	{
 		auto &DestObject = _Ret.f_Object();
 		bool bFirst = true;
-		for (auto iMember = _Value.f_OrderedIterator(); iMember; )
+		for (auto iMember = _Value.f_OrderedIterator(); iMember;)
 		{
 			auto &Member = *iMember;
 			++iMember;
@@ -516,24 +509,12 @@ namespace NMib::NEncoding
 		auto OriginalType = this->f_EType();
 		switch (this->f_EType())
 		{
-		case EEJsonType_Null:
-			_Ret = nullptr;
-			break;
-		case EEJsonType_String:
-			_Ret = this->f_String();
-			break;
-		case EEJsonType_Integer:
-			_Ret = this->f_Integer();
-			break;
-		case EEJsonType_Float:
-			_Ret = this->f_Float();
-			break;
-		case EEJsonType_Boolean:
-			_Ret = this->f_Boolean();
-			break;
-		case EEJsonType_Object:
-			fsp_ToJson_Object(_Ret, this->f_Object());
-			break;
+		case EEJsonType_Null: _Ret = nullptr; break;
+		case EEJsonType_String: _Ret = this->f_String(); break;
+		case EEJsonType_Integer: _Ret = this->f_Integer(); break;
+		case EEJsonType_Float: _Ret = this->f_Float(); break;
+		case EEJsonType_Boolean: _Ret = this->f_Boolean(); break;
+		case EEJsonType_Object: fsp_ToJson_Object(_Ret, this->f_Object()); break;
 		case EEJsonType_Array:
 			{
 				_Ret = EJsonType_Array;
@@ -577,8 +558,7 @@ namespace NMib::NEncoding
 				NPrivate::fg_CopyEJsonSemanticValueTrivia(UserValue, *this);
 			}
 			break;
-		case EEJsonType_Invalid:
-			break; // Leave as default which is invalid
+		case EEJsonType_Invalid: break; // Leave as default which is invalid
 		}
 
 		NPrivate::fg_CopyEJsonValueTrivia(_Ret, *this);
@@ -596,24 +576,12 @@ namespace NMib::NEncoding
 		auto OriginalType = this->f_EType();
 		switch (this->f_EType())
 		{
-		case EEJsonType_Null:
-			_Ret = nullptr;
-			break;
-		case EEJsonType_String:
-			_Ret = fg_Move(this->f_String());
-			break;
-		case EEJsonType_Integer:
-			_Ret = this->f_Integer();
-			break;
-		case EEJsonType_Float:
-			_Ret = this->f_Float();
-			break;
-		case EEJsonType_Boolean:
-			_Ret = this->f_Boolean();
-			break;
-		case EEJsonType_Object:
-			fg_Move(*this).fsp_ToJson_Object(_Ret, fg_Move(this->f_Object()));
-			break;
+		case EEJsonType_Null: _Ret = nullptr; break;
+		case EEJsonType_String: _Ret = fg_Move(this->f_String()); break;
+		case EEJsonType_Integer: _Ret = this->f_Integer(); break;
+		case EEJsonType_Float: _Ret = this->f_Float(); break;
+		case EEJsonType_Boolean: _Ret = this->f_Boolean(); break;
+		case EEJsonType_Object: fg_Move(*this).fsp_ToJson_Object(_Ret, fg_Move(this->f_Object())); break;
 		case EEJsonType_Array:
 			{
 				_Ret = EJsonType_Array;
@@ -658,8 +626,7 @@ namespace NMib::NEncoding
 				NPrivate::fg_CopyEJsonSemanticValueTrivia(UserValue, *this);
 			}
 			break;
-		case EEJsonType_Invalid:
-			break; // Leave as default which is invalid
+		case EEJsonType_Invalid: break; // Leave as default which is invalid
 		}
 
 		NPrivate::fg_MoveEJsonValueTrivia(_Ret, *this);
@@ -958,24 +925,12 @@ namespace NMib::NEncoding
 
 		switch (_From.f_Type())
 		{
-		case EJsonType_Null:
-			_Ret = nullptr;
-			break;
-		case EJsonType_String:
-			_Ret = _From.f_String();
-			break;
-		case EJsonType_Integer:
-			_Ret = _From.f_Integer();
-			break;
-		case EJsonType_Float:
-			_Ret = _From.f_Float();
-			break;
-		case EJsonType_Boolean:
-			_Ret = _From.f_Boolean();
-			break;
-		case EJsonType_Object:
-			bCollapsedObject = fsp_FromJson_Object(_Ret, _From.f_Object(), &SemanticTrivia);
-			break;
+		case EJsonType_Null: _Ret = nullptr; break;
+		case EJsonType_String: _Ret = _From.f_String(); break;
+		case EJsonType_Integer: _Ret = _From.f_Integer(); break;
+		case EJsonType_Float: _Ret = _From.f_Float(); break;
+		case EJsonType_Boolean: _Ret = _From.f_Boolean(); break;
+		case EJsonType_Object: bCollapsedObject = fsp_FromJson_Object(_Ret, _From.f_Object(), &SemanticTrivia); break;
 		case EJsonType_Array:
 			{
 				_Ret = EJsonType_Array;
@@ -983,11 +938,8 @@ namespace NMib::NEncoding
 					CValue::fsp_FromJson(_Ret.f_Insert(), Member);
 			}
 			break;
-		case EJsonType_Invalid:
-			break; // Default is invalid
-		case EJsonType_Max:
-			DMibNeverGetHere;
-			break;
+		case EJsonType_Invalid: break; // Default is invalid
+		case EJsonType_Max: DMibNeverGetHere; break;
 		}
 
 		if constexpr (CValue::mc_bPreserveYamlMetadata)
@@ -1015,24 +967,12 @@ namespace NMib::NEncoding
 
 		switch (_From.f_Type())
 		{
-		case EJsonType_Null:
-			_Ret = nullptr;
-			break;
-		case EJsonType_String:
-			_Ret = fg_Move(_From.f_String());
-			break;
-		case EJsonType_Integer:
-			_Ret = _From.f_Integer();
-			break;
-		case EJsonType_Float:
-			_Ret = _From.f_Float();
-			break;
-		case EJsonType_Boolean:
-			_Ret = _From.f_Boolean();
-			break;
-		case EJsonType_Object:
-			bCollapsedObject = fsp_FromJson_Object(_Ret, fg_Move(_From.f_Object()), &SemanticTrivia);
-			break;
+		case EJsonType_Null: _Ret = nullptr; break;
+		case EJsonType_String: _Ret = fg_Move(_From.f_String()); break;
+		case EJsonType_Integer: _Ret = _From.f_Integer(); break;
+		case EJsonType_Float: _Ret = _From.f_Float(); break;
+		case EJsonType_Boolean: _Ret = _From.f_Boolean(); break;
+		case EJsonType_Object: bCollapsedObject = fsp_FromJson_Object(_Ret, fg_Move(_From.f_Object()), &SemanticTrivia); break;
 		case EJsonType_Array:
 			{
 				_Ret = EJsonType_Array;
@@ -1040,11 +980,8 @@ namespace NMib::NEncoding
 					CValue::fsp_FromJson(_Ret.f_Insert(), fg_Move(Member));
 			}
 			break;
-		case EJsonType_Invalid:
-			break; // Default is invalid
-		case EJsonType_Max:
-			DMibNeverGetHere;
-			break;
+		case EJsonType_Invalid: break; // Default is invalid
+		case EJsonType_Max: DMibNeverGetHere; break;
 		}
 
 		if constexpr (CValue::mc_bPreserveYamlMetadata)
@@ -1165,24 +1102,12 @@ namespace NMib::NEncoding
 	{
 		switch (_From.f_Type())
 		{
-		case EJsonType_Null:
-			_Ret = nullptr;
-			break;
-		case EJsonType_String:
-			_Ret = _From.f_String();
-			break;
-		case EJsonType_Integer:
-			_Ret = _From.f_Integer();
-			break;
-		case EJsonType_Float:
-			_Ret = _From.f_Float();
-			break;
-		case EJsonType_Boolean:
-			_Ret = _From.f_Boolean();
-			break;
-		case EJsonType_Object:
-			fsp_FromJsonNoConvert_Object(_Ret, _From.f_Object());
-			break;
+		case EJsonType_Null: _Ret = nullptr; break;
+		case EJsonType_String: _Ret = _From.f_String(); break;
+		case EJsonType_Integer: _Ret = _From.f_Integer(); break;
+		case EJsonType_Float: _Ret = _From.f_Float(); break;
+		case EJsonType_Boolean: _Ret = _From.f_Boolean(); break;
+		case EJsonType_Object: fsp_FromJsonNoConvert_Object(_Ret, _From.f_Object()); break;
 		case EJsonType_Array:
 			{
 				_Ret = EJsonType_Array;
@@ -1190,11 +1115,8 @@ namespace NMib::NEncoding
 					CValue::fsp_FromJsonNoConvert(_Ret.f_Insert(), Member);
 			}
 			break;
-		case EJsonType_Invalid:
-			break; // Default is invalid
-		case EJsonType_Max:
-			DMibNeverGetHere;
-			break;
+		case EJsonType_Invalid: break; // Default is invalid
+		case EJsonType_Max: DMibNeverGetHere; break;
 		}
 		NPrivate::fg_CopyEJsonValueTrivia(_Ret, _From);
 	}
@@ -1204,24 +1126,12 @@ namespace NMib::NEncoding
 	{
 		switch (_From.f_Type())
 		{
-		case EJsonType_Null:
-			_Ret = nullptr;
-			break;
-		case EJsonType_String:
-			_Ret = fg_Move(_From.f_String());
-			break;
-		case EJsonType_Integer:
-			_Ret = _From.f_Integer();
-			break;
-		case EJsonType_Float:
-			_Ret = _From.f_Float();
-			break;
-		case EJsonType_Boolean:
-			_Ret = _From.f_Boolean();
-			break;
-		case EJsonType_Object:
-			fsp_FromJsonNoConvert_Object(_Ret, fg_Move(_From.f_Object()));
-			break;
+		case EJsonType_Null: _Ret = nullptr; break;
+		case EJsonType_String: _Ret = fg_Move(_From.f_String()); break;
+		case EJsonType_Integer: _Ret = _From.f_Integer(); break;
+		case EJsonType_Float: _Ret = _From.f_Float(); break;
+		case EJsonType_Boolean: _Ret = _From.f_Boolean(); break;
+		case EJsonType_Object: fsp_FromJsonNoConvert_Object(_Ret, fg_Move(_From.f_Object())); break;
 		case EJsonType_Array:
 			{
 				_Ret = EJsonType_Array;
@@ -1229,11 +1139,8 @@ namespace NMib::NEncoding
 					CValue::fsp_FromJsonNoConvert(_Ret.f_Insert(), fg_Move(Member));
 			}
 			break;
-		case EJsonType_Invalid:
-			break; // Default is invalid
-		case EJsonType_Max:
-			DMibNeverGetHere;
-			break;
+		case EJsonType_Invalid: break; // Default is invalid
+		case EJsonType_Max: DMibNeverGetHere; break;
 		}
 		NPrivate::fg_MoveEJsonValueTrivia(_Ret, _From);
 	}
@@ -1242,7 +1149,7 @@ namespace NMib::NEncoding
 	void TCEJsonValue<t_CParent>::fsp_ToJsonNoConvert_Object(CJsonType &_Ret, typename TCJsonValue<t_CParent>::CObject const &_Value)
 	{
 		auto &DestObject = _Ret.f_Object();
-		for (auto iMember = _Value.f_OrderedIterator(); iMember; )
+		for (auto iMember = _Value.f_OrderedIterator(); iMember;)
 		{
 			auto &Member = *iMember;
 			++iMember;
@@ -1271,24 +1178,12 @@ namespace NMib::NEncoding
 	{
 		switch (this->f_EType())
 		{
-		case EEJsonType_Null:
-			_Ret = nullptr;
-			break;
-		case EEJsonType_String:
-			_Ret = this->f_String();
-			break;
-		case EEJsonType_Integer:
-			_Ret = this->f_Integer();
-			break;
-		case EEJsonType_Float:
-			_Ret = this->f_Float();
-			break;
-		case EEJsonType_Boolean:
-			_Ret = this->f_Boolean();
-			break;
-		case EEJsonType_Object:
-			fsp_ToJsonNoConvert_Object(_Ret, this->f_Object());
-			break;
+		case EEJsonType_Null: _Ret = nullptr; break;
+		case EEJsonType_String: _Ret = this->f_String(); break;
+		case EEJsonType_Integer: _Ret = this->f_Integer(); break;
+		case EEJsonType_Float: _Ret = this->f_Float(); break;
+		case EEJsonType_Boolean: _Ret = this->f_Boolean(); break;
+		case EEJsonType_Object: fsp_ToJsonNoConvert_Object(_Ret, this->f_Object()); break;
 		case EEJsonType_Array:
 			{
 				_Ret = EJsonType_Array;
@@ -1302,8 +1197,7 @@ namespace NMib::NEncoding
 		case EEJsonType_UserType:
 			DMibError("EJSON contains data that cannot be represented as JSON without conversion");
 			break;
-		case EEJsonType_Invalid:
-			break; // Leave as default which is invalid
+		case EEJsonType_Invalid: break; // Leave as default which is invalid
 		}
 		NPrivate::fg_CopyEJsonValueTrivia(_Ret, *this);
 	}
@@ -1313,24 +1207,12 @@ namespace NMib::NEncoding
 	{
 		switch (this->f_EType())
 		{
-		case EEJsonType_Null:
-			_Ret = nullptr;
-			break;
-		case EEJsonType_String:
-			_Ret = fg_Move(this->f_String());
-			break;
-		case EEJsonType_Integer:
-			_Ret = this->f_Integer();
-			break;
-		case EEJsonType_Float:
-			_Ret = this->f_Float();
-			break;
-		case EEJsonType_Boolean:
-			_Ret = this->f_Boolean();
-			break;
-		case EEJsonType_Object:
-			fg_Move(*this).fsp_ToJsonNoConvert_Object(_Ret, fg_Move(this->f_Object()));
-			break;
+		case EEJsonType_Null: _Ret = nullptr; break;
+		case EEJsonType_String: _Ret = fg_Move(this->f_String()); break;
+		case EEJsonType_Integer: _Ret = this->f_Integer(); break;
+		case EEJsonType_Float: _Ret = this->f_Float(); break;
+		case EEJsonType_Boolean: _Ret = this->f_Boolean(); break;
+		case EEJsonType_Object: fg_Move(*this).fsp_ToJsonNoConvert_Object(_Ret, fg_Move(this->f_Object())); break;
 		case EEJsonType_Array:
 			{
 				_Ret = EJsonType_Array;
@@ -1344,8 +1226,7 @@ namespace NMib::NEncoding
 		case EEJsonType_UserType:
 			DMibError("EJSON contains data that cannot be represented as JSON without conversion");
 			break;
-		case EEJsonType_Invalid:
-			break; // Leave as default which is invalid
+		case EEJsonType_Invalid: break; // Leave as default which is invalid
 		}
 		NPrivate::fg_MoveEJsonValueTrivia(_Ret, *this);
 	}
@@ -1404,5 +1285,4 @@ namespace NMib::NEncoding
 		: TCJsonValue<t_CParent>(static_cast<TCJsonValue<tf_CParent> const &>(_Other))
 	{
 	}
-
 }
