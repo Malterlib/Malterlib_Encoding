@@ -81,12 +81,7 @@ namespace NMib::NEncoding
 {
 	template <typename t_CParent>
 	template <typename t_CParseContext>
-	NStr::CStr TCJsonValue<t_CParent>::f_ToStringColoredYamlContext
-		(
-			NCommandLine::EAnsiEncodingFlag _AnsiFlags
-			, ch8 const *_pPrettySeparator
-			, EJsonDialectFlag _Flags
-		) const
+	NStr::CStr TCJsonValue<t_CParent>::f_ToStringColoredYamlContext(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags) const
 	{
 		NStr::CStr Return;
 		{

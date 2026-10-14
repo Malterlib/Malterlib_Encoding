@@ -135,33 +135,15 @@ namespace NMib::NEncoding
 
 		switch (_Type)
 		{
-		case EJsonType_Invalid:
-			this->mp_Value.template f_Set<EJsonType_Invalid>();
-			break;
-		case EJsonType_Null:
-			this->mp_Value.template f_Set<EJsonType_Null>();
-			break;
-		case EJsonType_String:
-			this->mp_Value.template f_Set<EJsonType_String>();
-			break;
-		case EJsonType_Integer:
-			this->mp_Value.template f_Set<EJsonType_Integer>();
-			break;
-		case EJsonType_Float:
-			this->mp_Value.template f_Set<EJsonType_Float>();
-			break;
-		case EJsonType_Boolean:
-			this->mp_Value.template f_Set<EJsonType_Boolean>();
-			break;
-		case EJsonType_Object:
-			this->mp_Value.template f_Set<EJsonType_Object>();
-			break;
-		case EJsonType_Array:
-			this->mp_Value.template f_Set<EJsonType_Array>();
-			break;
-		default:
-			DMibNeverGetHere;
-			break;
+		case EJsonType_Invalid: this->mp_Value.template f_Set<EJsonType_Invalid>(); break;
+		case EJsonType_Null: this->mp_Value.template f_Set<EJsonType_Null>(); break;
+		case EJsonType_String: this->mp_Value.template f_Set<EJsonType_String>(); break;
+		case EJsonType_Integer: this->mp_Value.template f_Set<EJsonType_Integer>(); break;
+		case EJsonType_Float: this->mp_Value.template f_Set<EJsonType_Float>(); break;
+		case EJsonType_Boolean: this->mp_Value.template f_Set<EJsonType_Boolean>(); break;
+		case EJsonType_Object: this->mp_Value.template f_Set<EJsonType_Object>(); break;
+		case EJsonType_Array: this->mp_Value.template f_Set<EJsonType_Array>(); break;
+		default: DMibNeverGetHere; break;
 		}
 	}
 
@@ -366,22 +348,14 @@ namespace NMib::NEncoding
 	{
 		switch (f_Type())
 		{
-		case EJsonType_Null:
-			return "null";
-		case EJsonType_String:
-			return f_String();
-		case EJsonType_Integer:
-			return NStr::CStr::fs_ToStr(f_Integer());
-		case EJsonType_Float:
-			return NStr::CStr::fs_ToStr(f_Float());
-		case EJsonType_Boolean:
-			return f_Boolean() ? "true" : "false";
-		case EJsonType_Object:
-			return static_cast<CValue const &>(*this).f_ToString();
-		case EJsonType_Array:
-			return static_cast<CValue const &>(*this).f_ToString();
-		default:
-			DMibError("JSON type cannot be converted to string");
+		case EJsonType_Null: return "null";
+		case EJsonType_String: return f_String();
+		case EJsonType_Integer: return NStr::CStr::fs_ToStr(f_Integer());
+		case EJsonType_Float: return NStr::CStr::fs_ToStr(f_Float());
+		case EJsonType_Boolean: return f_Boolean() ? "true" : "false";
+		case EJsonType_Object: return static_cast<CValue const &>(*this).f_ToString();
+		case EJsonType_Array: return static_cast<CValue const &>(*this).f_ToString();
+		default: DMibError("JSON type cannot be converted to string");
 		}
 	}
 
@@ -390,16 +364,11 @@ namespace NMib::NEncoding
 	{
 		switch (f_Type())
 		{
-		case EJsonType_String:
-			return f_String().f_ToInt(int64(0));
-		case EJsonType_Integer:
-			return f_Integer();
-		case EJsonType_Float:
-			return f_Float().f_ToIntRound();
-		case EJsonType_Boolean:
-			return f_Boolean() ? 1 : 0;
-		default:
-			DMibError("JSON type cannot be converted to integer");
+		case EJsonType_String: return f_String().f_ToInt(int64(0));
+		case EJsonType_Integer: return f_Integer();
+		case EJsonType_Float: return f_Float().f_ToIntRound();
+		case EJsonType_Boolean: return f_Boolean() ? 1 : 0;
+		default: DMibError("JSON type cannot be converted to integer");
 		}
 	}
 
@@ -426,14 +395,10 @@ namespace NMib::NEncoding
 				else
 					return f_String().f_ToFloat(fp64::fs_SNan());
 			}
-		case EJsonType_Integer:
-			return f_Integer();
-		case EJsonType_Float:
-			return f_Float();
-		case EJsonType_Boolean:
-			return f_Boolean() ? 1.0 : 0.0;
-		default:
-			DMibError("JSON type cannot be converted to float");
+		case EJsonType_Integer: return f_Integer();
+		case EJsonType_Float: return f_Float();
+		case EJsonType_Boolean: return f_Boolean() ? 1.0 : 0.0;
+		default: DMibError("JSON type cannot be converted to float");
 		}
 	}
 
@@ -447,14 +412,10 @@ namespace NMib::NEncoding
 				auto &String = f_String();
 				return String.f_CmpNoCase("true") == 0 || String.f_ToInt(0) != 0;
 			}
-		case EJsonType_Integer:
-			return f_Integer() != 0;
-		case EJsonType_Float:
-			return f_Float() != 0.0;
-		case EJsonType_Boolean:
-			return f_Boolean();
-		default:
-			DMibError("JSON type cannot be converted to boolean");
+		case EJsonType_Integer: return f_Integer() != 0;
+		case EJsonType_Float: return f_Float() != 0.0;
+		case EJsonType_Boolean: return f_Boolean();
+		default: DMibError("JSON type cannot be converted to boolean");
 		}
 	}
 
@@ -463,22 +424,14 @@ namespace NMib::NEncoding
 	{
 		switch (f_Type())
 		{
-		case EJsonType_Null:
-			return "null";
-		case EJsonType_String:
-			return f_String();
-		case EJsonType_Integer:
-			return NStr::CStr::fs_ToStr(f_Integer());
-		case EJsonType_Float:
-			return NStr::CStr::fs_ToStr(f_Float());
-		case EJsonType_Boolean:
-			return f_Boolean() ? "true" : "false";
-		case EJsonType_Object:
-			return static_cast<CValue const &>(*this).f_ToString();
-		case EJsonType_Array:
-			return static_cast<CValue const &>(*this).f_ToString();
-		default:
-			return _Default;
+		case EJsonType_Null: return "null";
+		case EJsonType_String: return f_String();
+		case EJsonType_Integer: return NStr::CStr::fs_ToStr(f_Integer());
+		case EJsonType_Float: return NStr::CStr::fs_ToStr(f_Float());
+		case EJsonType_Boolean: return f_Boolean() ? "true" : "false";
+		case EJsonType_Object: return static_cast<CValue const &>(*this).f_ToString();
+		case EJsonType_Array: return static_cast<CValue const &>(*this).f_ToString();
+		default: return _Default;
 		}
 	}
 
@@ -487,16 +440,11 @@ namespace NMib::NEncoding
 	{
 		switch (f_Type())
 		{
-		case EJsonType_String:
-			return f_String().f_ToInt(_Default);
-		case EJsonType_Integer:
-			return f_Integer();
-		case EJsonType_Float:
-			return f_Float().f_ToIntRound();
-		case EJsonType_Boolean:
-			return f_Boolean() ? 1 : 0;
-		default:
-			return _Default;
+		case EJsonType_String: return f_String().f_ToInt(_Default);
+		case EJsonType_Integer: return f_Integer();
+		case EJsonType_Float: return f_Float().f_ToIntRound();
+		case EJsonType_Boolean: return f_Boolean() ? 1 : 0;
+		default: return _Default;
 		}
 	}
 
@@ -505,16 +453,11 @@ namespace NMib::NEncoding
 	{
 		switch (f_Type())
 		{
-		case EJsonType_String:
-			return f_String().f_ToFloat(_Default);
-		case EJsonType_Integer:
-			return f_Integer();
-		case EJsonType_Float:
-			return f_Float();
-		case EJsonType_Boolean:
-			return f_Boolean() ? 1.0 : 0.0;
-		default:
-			return _Default;
+		case EJsonType_String: return f_String().f_ToFloat(_Default);
+		case EJsonType_Integer: return f_Integer();
+		case EJsonType_Float: return f_Float();
+		case EJsonType_Boolean: return f_Boolean() ? 1.0 : 0.0;
+		default: return _Default;
 		}
 	}
 
@@ -528,14 +471,10 @@ namespace NMib::NEncoding
 				auto &String = f_String();
 				return String.f_CmpNoCase("true") == 0 || String.f_ToInt(0) != 0;
 			}
-		case EJsonType_Integer:
-			return f_Integer() != 0;
-		case EJsonType_Float:
-			return f_Float() != 0.0;
-		case EJsonType_Boolean:
-			return f_Boolean();
-		default:
-			return _Default;
+		case EJsonType_Integer: return f_Integer() != 0;
+		case EJsonType_Float: return f_Float() != 0.0;
+		case EJsonType_Boolean: return f_Boolean();
+		default: return _Default;
 		}
 	}
 
@@ -703,7 +642,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJsonValue<t_CParent>::operator [](NStr::CStr const &_Name) -> CValue &
+	auto TCJsonValue<t_CParent>::operator [] (NStr::CStr const &_Name) -> CValue &
 	{
 		return f_Object().f_CreateMember(_Name);
 	}
@@ -758,28 +697,28 @@ namespace NMib::NEncoding
 		struct CJsonEqualsVisitor
 		{
 			template <typename tf_CTypeLeft, typename tf_CTypeRight>
-			bool operator ()(tf_CTypeLeft const &, tf_CTypeRight const &)
+			bool operator () (tf_CTypeLeft const &, tf_CTypeRight const &)
 			{
 				return false;
 			}
 
 			template <typename tf_CType>
-			bool operator ()(tf_CType const &_Left, tf_CType const &_Right)
+			bool operator () (tf_CType const &_Left, tf_CType const &_Right)
 			{
 				return _Left == _Right;
 			}
 
-			bool operator ()(fp64 const &_Left, fp64 const &_Right)
+			bool operator () (fp64 const &_Left, fp64 const &_Right)
 			{
 				return _Left.f_EqualIncludingNan(_Right);
 			}
 
-			bool operator ()(CVoidTag const &_Left, CVoidTag const &_Right)
+			bool operator () (CVoidTag const &_Left, CVoidTag const &_Right)
 			{
 				return true;
 			}
 
-			bool operator ()(CJsonNull const &_Left, CJsonNull const &_Right)
+			bool operator () (CJsonNull const &_Left, CJsonNull const &_Right)
 			{
 				return true;
 			}
@@ -788,28 +727,28 @@ namespace NMib::NEncoding
 		struct CJsonSpaceshipVisitor
 		{
 			template <typename tf_CTypeLeft, typename tf_CTypeRight>
-			COrdering_Partial operator ()(tf_CTypeLeft const &, tf_CTypeRight const &)
+			COrdering_Partial operator () (tf_CTypeLeft const &, tf_CTypeRight const &)
 			{
 				return COrdering_Partial::unordered;
 			}
 
-			COrdering_Partial operator ()(CVoidTag const &_Left, CVoidTag const &_Right)
+			COrdering_Partial operator () (CVoidTag const &_Left, CVoidTag const &_Right)
 			{
 				return COrdering_Partial::equivalent;
 			}
 
-			COrdering_Partial operator ()(CJsonNull const &_Left, CJsonNull const &_Right)
+			COrdering_Partial operator () (CJsonNull const &_Left, CJsonNull const &_Right)
 			{
 				return COrdering_Partial::equivalent;
 			}
 
-			COrdering_Partial operator ()(fp64 const &_Left, fp64 const &_Right)
+			COrdering_Partial operator () (fp64 const &_Left, fp64 const &_Right)
 			{
 				return _Left.f_SpaceshipIncludingNan(_Right);
 			}
 
 			template <typename tf_CType>
-			COrdering_Partial operator ()(tf_CType const &_Left, tf_CType const &_Right)
+			COrdering_Partial operator () (tf_CType const &_Left, tf_CType const &_Right)
 			{
 				return _Left <=> _Right;
 			}

@@ -6,7 +6,7 @@
 namespace NMib::NEncoding::NYaml
 {
 	template <typename tf_CValue, typename tf_CParseContext>
-	void fg_ParseYamlFlowSequence(tf_CValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors)
+	void fg_ParseYamlFlowSequence(tf_CValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors)
 	{
 		using CMetadataString = TCConditional<tf_CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata, NStr::CStr, CEmpty>;
 
@@ -80,7 +80,7 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CValue, typename tf_CParseContext>
-	void fg_ParseYamlFlowMapping(tf_CValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors)
+	void fg_ParseYamlFlowMapping(tf_CValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors)
 	{
 		using CMetadataString = TCConditional<tf_CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata, NStr::CStr, CEmpty>;
 
@@ -280,7 +280,7 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CValue, typename tf_CParseContext>
-	void fg_ParseYamlNode(tf_CValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors)
+	void fg_ParseYamlNode(tf_CValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors)
 	{
 		using CMetadataString = TCConditional<tf_CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata, NStr::CStr, CEmpty>;
 
@@ -620,7 +620,7 @@ namespace NMib::NEncoding::NYaml
 				bool bHasTokenOutput = false;
 				ch8 LastTokenChar = 0;
 
-				auto fAppendTokenRange = [&] (uch8 const *_pStart, uch8 const *_pEnd)
+				auto fAppendTokenRange = [&](uch8 const *_pStart, uch8 const *_pEnd)
 					{
 						if (_pStart == _pEnd)
 							return;
@@ -631,7 +631,7 @@ namespace NMib::NEncoding::NYaml
 					}
 				;
 
-				auto fAppendTokenChar = [&] (uch8 _Character)
+				auto fAppendTokenChar = [&](uch8 _Character)
 					{
 						Appender += _Character;
 						bHasTokenOutput = true;
@@ -673,11 +673,7 @@ namespace NMib::NEncoding::NYaml
 						if (*pNextLine == '\n')
 							++pNextLine;
 
-						if
-						(
-							(pNextLine[0] == '-' && pNextLine[1] == '-' && pNextLine[2] == '-')
-							|| (pNextLine[0] == '.' && pNextLine[1] == '.' && pNextLine[2] == '.')
-						)
+						if ((pNextLine[0] == '-' && pNextLine[1] == '-' && pNextLine[2] == '-') || (pNextLine[0] == '.' && pNextLine[1] == '.' && pNextLine[2] == '.'))
 						{
 							if (fg_IsYamlSeparation(pNextLine[3]))
 								break;
@@ -754,5 +750,4 @@ namespace NMib::NEncoding::NYaml
 
 		bSuccessful = true;
 	}
-
 }

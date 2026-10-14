@@ -13,15 +13,15 @@ namespace NMib::NEncoding
 {
 	enum EEJsonType : uint8
 	{
-		EEJsonType_Invalid = EJsonType_Invalid
-		, EEJsonType_Null = EJsonType_Null
-		, EEJsonType_String = EJsonType_String
+		EEJsonType_Invalid   = EJsonType_Invalid
+		, EEJsonType_Null    = EJsonType_Null
+		, EEJsonType_String  = EJsonType_String
 		, EEJsonType_Integer = EJsonType_Integer
-		, EEJsonType_Float = EJsonType_Float
+		, EEJsonType_Float   = EJsonType_Float
 		, EEJsonType_Boolean = EJsonType_Boolean
-		, EEJsonType_Object = EJsonType_Object
-		, EEJsonType_Array = EJsonType_Array
-		, EEJsonType_Date = EJsonType_Max
+		, EEJsonType_Object  = EJsonType_Object
+		, EEJsonType_Array   = EJsonType_Array
+		, EEJsonType_Date    = EJsonType_Max
 		, EEJsonType_Binary
 		, EEJsonType_UserType
 	};
@@ -291,7 +291,7 @@ namespace NMib::NEncoding
 		TCEJsonValue(NContainer::CSecureByteVector &_Value) = delete;
 		TCEJsonValue(NContainer::CSecureByteVector &&_Value) = delete;
 
-		using TCJsonValue<t_CParent>::operator = ;
+		using TCJsonValue<t_CParent>::operator =;
 
 		TCEJsonValue &operator = (TCEJsonValue const &_Value);
 		TCEJsonValue &operator = (TCEJsonValue &_Value);
@@ -571,5 +571,5 @@ namespace NMib::NEncoding
 #include "Malterlib_Encoding_EJson_Generate.h"
 
 #ifndef DMibPNoShortCuts
-	using namespace NMib::NEncoding;
+using namespace NMib::NEncoding;
 #endif

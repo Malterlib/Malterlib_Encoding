@@ -21,8 +21,7 @@ namespace NMib::NEncoding::NPrivate
 
 	bool CYamlValueStringMetadata::f_IsEmpty() const
 	{
-		return
-			m_AnchorName.f_IsEmpty()
+		return m_AnchorName.f_IsEmpty()
 			&& m_AliasName.f_IsEmpty()
 			&& m_TagHandle.f_IsEmpty()
 			&& m_TagSuffix.f_IsEmpty()
@@ -60,7 +59,7 @@ namespace NMib::NEncoding::NPrivate
 	CYamlValueStringMetadata const &CYamlValueMetadataSlots::f_StringMetadata() const
 	{
 		// All metadata members are constexpr-constructible, so this can stay in static storage without runtime setup.
-		constexpr static CYamlValueStringMetadata c_Empty;
+		static constexpr CYamlValueStringMetadata c_Empty;
 		return m_pStringMetadata ? *m_pStringMetadata : c_Empty;
 	}
 
@@ -79,8 +78,7 @@ namespace NMib::NEncoding::NPrivate
 
 	bool CYamlKeyStringMetadata::f_IsEmpty() const
 	{
-		return
-			m_AnchorName.f_IsEmpty()
+		return m_AnchorName.f_IsEmpty()
 			&& m_AliasName.f_IsEmpty()
 			&& m_TagHandle.f_IsEmpty()
 			&& m_TagSuffix.f_IsEmpty()
@@ -110,7 +108,7 @@ namespace NMib::NEncoding::NPrivate
 	CYamlKeyStringMetadata const &CYamlKeyMetadataSlots::f_StringMetadata() const
 	{
 		// All metadata members are constexpr-constructible, so this can stay in static storage without runtime setup.
-		constexpr static CYamlKeyStringMetadata c_Empty;
+		static constexpr CYamlKeyStringMetadata c_Empty;
 		return m_pStringMetadata ? *m_pStringMetadata : c_Empty;
 	}
 

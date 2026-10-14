@@ -130,8 +130,7 @@ namespace NMib::NEncoding::NPrivate
 
 					return true;
 				}
-			default:
-				break;
+			default: break;
 			}
 			return false;
 		}
@@ -276,20 +275,19 @@ namespace NMib::NEncoding::NPrivate
 
 					return true;
 				}
-			default:
-				break;
+			default: break;
 			}
 			return false;
 		}
 
 		template <typename tf_CParseContext, typename tf_CJson>
-		bool f_ParseValue(tf_CJson &o_Value, uch8 const *&o_pParse)
+		bool f_ParseValue(tf_CJson &o_Value, uch8 const * &o_pParse)
 		{
 			return false;
 		}
 
 		template <typename tf_CParseContext>
-		void f_ParseKey(NStr::CStr &o_Key, uch8 const *&o_pParse)
+		void f_ParseKey(NStr::CStr &o_Key, uch8 const * &o_pParse)
 		{
 			NJson::CParseContext::f_ParseKey<tf_CParseContext>(o_Key, o_pParse);
 
@@ -303,17 +301,17 @@ namespace NMib::NEncoding::NPrivate
 		}
 
 		template <typename tf_CParseContext, typename tf_CJson>
-		void f_PreParse(tf_CJson &o_Value, uch8 const *&o_pParse)
+		void f_PreParse(tf_CJson &o_Value, uch8 const * &o_pParse)
 		{
 		}
 
 		template <typename tf_CParseContext, typename tf_CJson>
-		void f_PostParse(tf_CJson &o_Value, uch8 const *&o_pParse)
+		void f_PostParse(tf_CJson &o_Value, uch8 const * &o_pParse)
 		{
 		}
 
 		template <typename tf_CParseContext, typename tf_CJson>
-		void f_ParseAfterValue(tf_CJson &o_Value, uch8 const *&o_pParse)
+		void f_ParseAfterValue(tf_CJson &o_Value, uch8 const * &o_pParse)
 		{
 			if (!o_Value.f_IsObject())
 				return;
@@ -448,10 +446,10 @@ namespace NMib::NEncoding::NPrivate
 					return;
 
 				if
-					(
-						(Name == CEJsonConstStrings::mc_Type && iMember->f_Name() == CEJsonConstStrings::mc_Value)
-						|| (Name == CEJsonConstStrings::mc_Value && iMember->f_Name() == CEJsonConstStrings::mc_Type)
-					)
+				(
+					(Name == CEJsonConstStrings::mc_Type && iMember->f_Name() == CEJsonConstStrings::mc_Value)
+					|| (Name == CEJsonConstStrings::mc_Value && iMember->f_Name() == CEJsonConstStrings::mc_Type)
+				)
 				{
 					++iMember;
 					if (!iMember)
@@ -638,12 +636,7 @@ namespace NMib::NEncoding
 	TCEJsonValue<t_CParent> TCEJsonValue<t_CParent>::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, EJsonDialectFlag _Flags)
 	{
 		using namespace NStr;
-		static_assert
-			(
-				!t_CParseContext::mc_bRecordComments || CValue::mc_bPreserveComments
-				, "recording JSON5 comments requires a comment-preserving alias (e.g. CEJsonOrderedWithComments)"
-			)
-		;
+		static_assert(!t_CParseContext::mc_bRecordComments || CValue::mc_bPreserveComments, "recording JSON5 comments requires a comment-preserving alias (e.g. CEJsonOrderedWithComments)");
 		TCEJsonValue<t_CParent> Output;
 		CStr ToParse = _String;
 

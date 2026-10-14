@@ -75,7 +75,7 @@ namespace NMib::NEncoding
 
 	CEJsonUserTypeOrdered::CEJsonUserTypeOrdered(CEJsonUserTypeSorted &&_Other)
 		: m_Type(fg_Move(_Other.m_Type))
-		, m_Value(CJsonOrdered::fs_FromCompatible(fg_Move(_Other.m_Value) ))
+		, m_Value(CJsonOrdered::fs_FromCompatible(fg_Move(_Other.m_Value)))
 	{
 	}
 
@@ -601,7 +601,9 @@ namespace NMib::NEncoding
 		case EEJsonType_Date: return "date";
 		case EEJsonType_Binary: return "binary";
 		case EEJsonType_UserType: return "user type";
-		default: DMibNeverGetHere; return "unknown";
+		default:
+			DMibNeverGetHere;
+			return "unknown";
 		}
 	}
 

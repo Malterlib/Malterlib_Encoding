@@ -22,30 +22,28 @@ namespace NMib::NEncoding
 	template CJsonSorted::CKey TCJsonConstants<CJsonSorted>::operator () (NStr::CStr const &_Key);
 }
 
-NMib::NEncoding::CEJsonOrdered::CKey operator ""_o (const char *_pStr, std::size_t _Len)
+NMib::NEncoding::CEJsonOrdered::CKey operator ""_o (char const *_pStr, std::size_t _Len)
 {
 	NMib::NEncoding::CEJsonOrdered::CKey Ret;
 	Ret.m_Key = NMib::NStr::CStr(_pStr, _Len);
 	return Ret;
 }
 
-
-NMib::NEncoding::CJsonOrdered::CKey operator ""_jo (const char *_pStr, std::size_t _Len)
+NMib::NEncoding::CJsonOrdered::CKey operator ""_jo (char const *_pStr, std::size_t _Len)
 {
 	NMib::NEncoding::CJsonOrdered::CKey Ret;
 	Ret.m_Key = NMib::NStr::CStr(_pStr, _Len);
 	return Ret;
 }
 
-NMib::NEncoding::CEJsonSorted::CKey operator ""_ (const char *_pStr, std::size_t _Len)
+NMib::NEncoding::CEJsonSorted::CKey operator ""_ (char const *_pStr, std::size_t _Len)
 {
 	NMib::NEncoding::CEJsonSorted::CKey Ret;
 	Ret.m_Key = NMib::NStr::CStr(_pStr, _Len);
 	return Ret;
 }
 
-
-NMib::NEncoding::CJsonSorted::CKey operator ""_j (const char *_pStr, std::size_t _Len)
+NMib::NEncoding::CJsonSorted::CKey operator ""_j (char const *_pStr, std::size_t _Len)
 {
 	NMib::NEncoding::CJsonSorted::CKey Ret;
 	Ret.m_Key = NMib::NStr::CStr(_pStr, _Len);
