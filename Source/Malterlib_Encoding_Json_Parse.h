@@ -23,9 +23,9 @@ namespace NMib::NEncoding::NJson
 {
 	enum EParseJsonStringFlag
 	{
-		EParseJsonStringFlag_None = 0
+		EParseJsonStringFlag_None             = 0
 		, EParseJsonStringFlag_AllowMultiLine = DMibBit(0)
-		, EParseJsonStringFlag_NoQuotes = DMibBit(1)
+		, EParseJsonStringFlag_NoQuotes       = DMibBit(1)
 	};
 
 	struct CParseContext
@@ -33,19 +33,12 @@ namespace NMib::NEncoding::NJson
 		template <typename tf_CParseContext>
 		NStr::CParseLocation f_GetLocation(uch8 const *_pParse) const;
 		template <typename tf_CParseContext>
-		static NStr::CParseLocation fs_GetLocation
-			(
-				NStr::CStr const &_FileName
-				, uint32 _StartLine
-				, uint32 _StartColumn
-				, uint32 _StartCharacter
-				, uch8 const *_pStartParse
-				, uch8 const *_pParse
-			)
+		static auto fs_GetLocation(NStr::CStr const &_FileName, uint32 _StartLine, uint32 _StartColumn, uint32 _StartCharacter, uch8 const *_pStartParse, uch8 const *_pParse)
+			-> NStr::CParseLocation
 		;
 
 		template <typename tf_CParseContext>
-		void f_ParseKey(NStr::CStr &o_Key, uch8 const *&o_pParse);
+		void f_ParseKey(NStr::CStr &o_Key, uch8 const * &o_pParse);
 		template <typename tf_CParseContext, typename tf_CStr, typename tf_CSourceStr>
 		static void fs_GenerateString(tf_CStr &o_String, tf_CSourceStr const &_Value);
 		template <typename tf_CParseContext, typename tf_CStr, typename tf_CSourceStr>
@@ -172,36 +165,36 @@ namespace NMib::NEncoding::NJson
 	};
 
 	bool fg_IsJson5WhiteSpace(uch8 const *_pParse);
-	void fg_ParseJson5WhiteSpace(uch8 const *&o_pParse);
+	void fg_ParseJson5WhiteSpace(uch8 const * &o_pParse);
 	bool fg_IsJson5LineTerminator(uch8 const *_pParse);
-	bool fg_ParseJson5LineTerminator(uch8 const *&o_pParse);
+	bool fg_ParseJson5LineTerminator(uch8 const * &o_pParse);
 	template <typename tf_CParseContext>
 	bool fg_IsJsonLineTerminator(uch8 const *_pParse);
 	template <typename tf_CParseContext>
-	bool fg_ParseJsonLineTerminator(uch8 const *&o_pParse);
+	bool fg_ParseJsonLineTerminator(uch8 const * &o_pParse);
 	template <typename tf_CParseContext>
 	bool fg_IsJsonWhiteSpace(uch8 const *_pParse);
 	template <typename tf_CParseContext>
-	void fg_ParseJsonWhiteSpace(uch8 const *&o_pParse);
+	void fg_ParseJsonWhiteSpace(uch8 const * &o_pParse);
 	template <typename tf_CParseContext>
 	NStr::CParseLocation fg_GetJsonParseLocation(tf_CParseContext const &_Context, uch8 const *_pParse);
 	template <typename tf_CParseContext>
 	void fg_ThrowJsonParseError(tf_CParseContext const &_Context, NStr::CStr const &_Error, uch8 const *_pLocation);
 
 	template <typename tf_CParseContext, typename tf_CCommentSink>
-	inline_always void fg_ParseWhiteSpaceAndComments(uch8 const *&o_pParse, tf_CParseContext &_Context, tf_CCommentSink &_Sink);
+	inline_always void fg_ParseWhiteSpaceAndComments(uch8 const * &o_pParse, tf_CParseContext &_Context, tf_CCommentSink &_Sink);
 
 	template <typename tf_CParseContext>
 	inline_always bool fg_IsValueTerminator(uch8 const *_pParse) noexcept;
 
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static void fg_ParseJsonArray(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
+	static void fg_ParseJsonArray(tf_COutValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context);
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static void fg_ParseJsonObject(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
+	static void fg_ParseJsonObject(tf_COutValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context);
 	template <uch8 t_QuoteCharacter, EParseJsonStringFlag t_Flags, typename tf_CParseContext, typename tf_FExtraParse = bool>
-	static bool fg_ParseJsonString(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext &_Context, tf_FExtraParse &&_fExtraParse = false);
+	static bool fg_ParseJsonString(NStr::CStr &o_String, uch8 const * &o_pParse, tf_CParseContext &_Context, tf_FExtraParse &&_fExtraParse = false);
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static void fg_ParseJsonValue(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context);
+	static void fg_ParseJsonValue(tf_COutValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context);
 }
 
 namespace NMib::NEncoding

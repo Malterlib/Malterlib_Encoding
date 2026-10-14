@@ -47,7 +47,7 @@ namespace NMib::NEncoding::NYaml
 			return CYamlColorScopeNone{};
 	}
 
-	inline bool fg_YamlParseNDigits(ch8 const *&o_pParse, aint _nDigits, int64 &o_Value)
+	inline bool fg_YamlParseNDigits(ch8 const * &o_pParse, aint _nDigits, int64 &o_Value)
 	{
 		auto pParse = o_pParse;
 		auto UpdateParse = g_OnScopeExit / [&]
@@ -68,7 +68,7 @@ namespace NMib::NEncoding::NYaml
 		return true;
 	}
 
-	inline bool fg_YamlParseVariableDigits(ch8 const *&o_pParse, aint _nMinDigits, aint _nMaxDigits, int64 &o_Value)
+	inline bool fg_YamlParseVariableDigits(ch8 const * &o_pParse, aint _nMinDigits, aint _nMaxDigits, int64 &o_Value)
 	{
 		auto pParse = o_pParse;
 		auto UpdateParse = g_OnScopeExit / [&]
@@ -121,7 +121,7 @@ namespace NMib::NEncoding::NYaml
 		return _Char == ' ' || _Char == '\b' || _Char == '\t' || _Char == '\n' || _Char == '\r';
 	}
 
-	inline void fg_TrimYamlStringRange(uch8 const *&o_pStart, uch8 const *&o_pEnd)
+	inline void fg_TrimYamlStringRange(uch8 const * &o_pStart, uch8 const * &o_pEnd)
 	{
 		while (o_pStart < o_pEnd && fg_IsYamlTrimChar(*o_pStart))
 			++o_pStart;
@@ -147,7 +147,7 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CParseContext, typename tf_CComments>
-	void fg_ParseYamlWhiteSpaceAndComments(uch8 const *&o_pParse, tf_CParseContext &_Context, tf_CComments &o_Comments)
+	void fg_ParseYamlWhiteSpaceAndComments(uch8 const * &o_pParse, tf_CParseContext &_Context, tf_CComments &o_Comments)
 	{
 		auto pParse = o_pParse;
 		auto UpdateParse = g_OnScopeExit / [&]
@@ -200,11 +200,7 @@ namespace NMib::NEncoding::NYaml
 
 		while (*pParse)
 		{
-			auto pRawCommentStart =
-				pParse > _Context.m_pStartParse && (*pParse == '#') && (pParse[-1] == ' ' || pParse[-1] == '\t')
-				? pParse - 1
-				: pParse
-			;
+			auto pRawCommentStart = pParse > _Context.m_pStartParse && (*pParse == '#') && (pParse[-1] == ' ' || pParse[-1] == '\t') ? pParse - 1 : pParse;
 
 			while (fg_IsFlowWhitespace(*pParse))
 			{
@@ -243,13 +239,13 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CParseContext>
-	void fg_ParseYamlWhiteSpaceAndComments(uch8 const *&o_pParse, tf_CParseContext &_Context)
+	void fg_ParseYamlWhiteSpaceAndComments(uch8 const * &o_pParse, tf_CParseContext &_Context)
 	{
 		CEmpty Comments;
 		fg_ParseYamlWhiteSpaceAndComments(o_pParse, _Context, Comments);
 	}
 
-	inline void fg_ParseYamlFlowWhiteSpaceAndCommentsNoMetadata(uch8 const *&o_pParse)
+	inline void fg_ParseYamlFlowWhiteSpaceAndCommentsNoMetadata(uch8 const * &o_pParse)
 	{
 		while (*o_pParse)
 		{
@@ -267,7 +263,7 @@ namespace NMib::NEncoding::NYaml
 	template <typename tf_CParseContext>
 	void fg_EnsureYamlTagHandles(tf_CParseContext &_Context);
 
-	inline NStr::CStr fg_ParseYamlDirectiveToken(uch8 const *&o_pParse)
+	inline NStr::CStr fg_ParseYamlDirectiveToken(uch8 const * &o_pParse)
 	{
 		auto pStart = o_pParse;
 		while (*o_pParse && *o_pParse != ' ' && *o_pParse != '\t' && *o_pParse != '\r' && *o_pParse != '\n')
@@ -277,7 +273,7 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CParseContext, typename tf_CComments>
-	void fg_ParseYamlDirectives(uch8 const *&o_pParse, tf_CParseContext &_Context, tf_CComments &o_Comments)
+	void fg_ParseYamlDirectives(uch8 const * &o_pParse, tf_CParseContext &_Context, tf_CComments &o_Comments)
 	{
 		auto pParse = o_pParse;
 		auto UpdateParse = g_OnScopeExit / [&]
@@ -340,7 +336,7 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CParseContext>
-	void fg_ParseYamlDirectives(uch8 const *&o_pParse, tf_CParseContext &_Context)
+	void fg_ParseYamlDirectives(uch8 const * &o_pParse, tf_CParseContext &_Context)
 	{
 		CEmpty Comments;
 		fg_ParseYamlDirectives(o_pParse, _Context, Comments);
@@ -367,7 +363,7 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CParseContext>
-	NStr::CStr fg_ParseYamlName(uch8 const *&o_pParse, tf_CParseContext &_Context)
+	NStr::CStr fg_ParseYamlName(uch8 const * &o_pParse, tf_CParseContext &_Context)
 	{
 		auto pParse = o_pParse;
 		auto UpdateParse = g_OnScopeExit / [&]
@@ -389,7 +385,7 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CParseContext>
-	void fg_ParseYamlTag(uch8 const *&o_pParse, tf_CParseContext &_Context, NStr::CStr &o_Handle, NStr::CStr &o_Suffix, NStr::CStr &o_Resolved)
+	void fg_ParseYamlTag(uch8 const * &o_pParse, tf_CParseContext &_Context, NStr::CStr &o_Handle, NStr::CStr &o_Suffix, NStr::CStr &o_Resolved)
 	{
 		auto pParse = o_pParse;
 		auto UpdateParse = g_OnScopeExit / [&]
@@ -745,12 +741,18 @@ namespace NMib::NEncoding::NYaml
 		}
 		else if (_TagResolved == "tag:yaml.org,2002:binary")
 		{
-			if constexpr (requires (tf_CValue &Value) { Value.f_Binary(); })
+			if constexpr
+			(
+				requires (tf_CValue &Value)
+				{
+					Value.f_Binary();
+				}
+			)
 			{
 				NStr::CStr Compact;
 				{
 					NStr::CStr::CAppender Appender(Compact);
-					for (auto pRawScalarScan = _RawScalar.f_GetStr(); *pRawScalarScan; )
+					for (auto pRawScalarScan = _RawScalar.f_GetStr(); *pRawScalarScan;)
 					{
 						while (*pRawScalarScan == ' ' || *pRawScalarScan == '\t' || *pRawScalarScan == '\r' || *pRawScalarScan == '\n')
 							++pRawScalarScan;
@@ -774,7 +776,13 @@ namespace NMib::NEncoding::NYaml
 		}
 		else if (_TagResolved == "tag:yaml.org,2002:timestamp")
 		{
-			if constexpr (requires (tf_CValue &Value) { Value.f_Date(); })
+			if constexpr
+			(
+				requires (tf_CValue &Value)
+				{
+					Value.f_Date();
+				}
+			)
 			{
 				o_Value.f_SetEType(EEJsonType_Date);
 
@@ -807,7 +815,13 @@ namespace NMib::NEncoding::NYaml
 		}
 		else
 		{
-			if constexpr (requires (tf_CValue &Value) { Value.f_UserType(); })
+			if constexpr
+			(
+				requires (tf_CValue &Value)
+				{
+					Value.f_UserType();
+				}
+			)
 			{
 				auto CurrentValue = fg_Move(o_Value);
 				auto Payload = fg_Move(CurrentValue).f_ToJson();

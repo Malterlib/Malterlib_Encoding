@@ -238,7 +238,6 @@ namespace
 					Json["TestArray"] = Array;
 					Json["TestInvalid"];
 
-
 					DMibExpect(Json["TestNull"].f_AsString(), ==, "null");
 					DMibExpect(Json["TestString"].f_AsString(), ==, "String");
 					DMibExpect(Json["TestInt"].f_AsString(), ==, "54");
@@ -264,7 +263,6 @@ namespace
 					Array.f_Insert(6);
 					Json["TestArray"] = Array;
 					Json["TestInvalid"];
-
 
 					DMibExpectException(Json["TestNull"].f_AsInteger(), DMibErrorInstance("JSON type cannot be converted to integer"));
 					DMibExpect(Json["TestString"].f_AsInteger(), ==, 66);
@@ -354,7 +352,6 @@ namespace
 					Json["TestArray"] = Array;
 					Json["TestInvalid"];
 
-
 					DMibExpect(Json["TestNull"].f_AsString("Default"), ==, "null");
 					DMibExpect(Json["TestString"].f_AsString("Default"), ==, "String");
 					DMibExpect(Json["TestInt"].f_AsString("Default"), ==, "54");
@@ -380,7 +377,6 @@ namespace
 					Array.f_Insert(6);
 					Json["TestArray"] = Array;
 					Json["TestInvalid"];
-
 
 					DMibExpect(Json["TestNull"].f_AsInteger(77), ==, 77);
 					DMibExpect(Json["TestString"].f_AsInteger(77), ==, 66);
@@ -509,9 +505,7 @@ namespace
 					TCVector<CStr> Keys;
 
 					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; ++Iter)
-					{
 						Keys.f_InsertLast(Iter->f_Key());
-					}
 
 					// Should be in sorted order for both ordered and sorted
 					DMibExpect(Keys.f_GetLen(), ==, 3u);
@@ -536,7 +530,7 @@ namespace
 
 					TCVector<CStr> ExtractOrder;
 
-					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; )
+					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter;)
 					{
 						ExtractOrder.f_InsertLast(Iter->f_Key());
 						auto Handle = Iter.f_ExtractNode();
@@ -573,7 +567,7 @@ namespace
 					Dest = EJsonType_Object;
 
 					// Extract only values less than 3 (in sorted key order)
-					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; )
+					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter;)
 					{
 						int64 Value;
 						if constexpr (t_CJson::mc_bOrdered)
@@ -587,9 +581,7 @@ namespace
 							Dest.f_Object().f_Insert(fg_Move(Handle));
 						}
 						else
-						{
 							++Iter;
-						}
 					}
 
 					// Source should be empty (destructive iterator clears remaining)
@@ -613,7 +605,7 @@ namespace
 					Dest = EJsonType_Object;
 
 					TCVector<CStr> Order;
-					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; )
+					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter;)
 					{
 						Order.f_InsertLast(Iter->f_Key());
 						auto Handle = Iter.f_ExtractNode();
@@ -646,7 +638,7 @@ namespace
 					TCVector<CStr> Names;
 					TCVector<CStr> Values;
 
-					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; )
+					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter;)
 					{
 						auto Handle = Iter.f_ExtractNode();
 						Names.f_InsertLast(Handle.f_Name());
@@ -675,7 +667,7 @@ namespace
 					t_CJson Dest;
 					Dest = EJsonType_Object;
 
-					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter; )
+					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter;)
 					{
 						auto Handle = Iter.f_ExtractNode();
 						Dest.f_Object().f_Insert(fg_Move(Handle));
@@ -699,7 +691,7 @@ namespace
 					t_CJson Dest;
 					Dest = EJsonType_Object;
 
-					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter; )
+					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter;)
 					{
 						int64 Value;
 						if constexpr (t_CJson::mc_bOrdered)
@@ -713,9 +705,7 @@ namespace
 							Dest.f_Object().f_Insert(fg_Move(Handle));
 						}
 						else
-						{
 							++Iter;
-						}
 					}
 
 					// Source should be empty (destructive iterator clears remaining)
@@ -749,7 +739,7 @@ namespace
 					t_CJson Dest;
 					Dest = EJsonType_Object;
 
-					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter; )
+					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter;)
 					{
 						auto Handle = Iter.f_ExtractNode();
 						Dest.f_Object().f_Insert(fg_Move(Handle));
@@ -770,7 +760,7 @@ namespace
 					Dest["a"] = 1;
 					Dest["b"] = 2;
 
-					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter; )
+					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter;)
 					{
 						auto Handle = Iter.f_ExtractNode();
 						Dest.f_Object().f_Insert(fg_Move(Handle));
@@ -792,7 +782,7 @@ namespace
 					Dest["a"] = 1;
 					Dest["b"] = 2;
 
-					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter; )
+					for (auto Iter = fg_Move(Source.f_Object()).f_OrderedDestructiveIterator(); Iter;)
 					{
 						auto Handle = Iter.f_ExtractNode();
 						Dest.f_Object().f_InsertOrAssign(fg_Move(Handle));
@@ -817,7 +807,7 @@ namespace
 					Dest["b"] = 2;
 					Dest["c"] = 3;
 
-					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; )
+					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter;)
 					{
 						auto Handle = Iter.f_ExtractNode();
 						Dest.f_Object().f_Insert(fg_Move(Handle));
@@ -842,7 +832,7 @@ namespace
 					Dest["b"] = 2;
 					Dest["c"] = 3;
 
-					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter; )
+					for (auto Iter = fg_Move(Source.f_Object()).f_SortedDestructiveIterator(); Iter;)
 					{
 						auto Handle = Iter.f_ExtractNode();
 						Dest.f_Object().f_InsertOrAssign(fg_Move(Handle));

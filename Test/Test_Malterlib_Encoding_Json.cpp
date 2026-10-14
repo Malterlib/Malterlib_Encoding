@@ -313,7 +313,7 @@ namespace
 
 				DMibExpect(Value, ==, CJsonSorted::fs_FromCompatible(fs_GetJson()));
 
-				DMibExpectTrue((_j= {}).f_IsObject());
+				DMibExpectTrue((_j={}).f_IsObject());
 				DMibExpectFalse((CJsonSorted{}).f_IsValid());
 			};
 			DMibTestSuite("JSONC")
@@ -496,16 +496,7 @@ namespace
 				auto NullJson = CJsonOrdered::fs_FromString<CJson5ConvertNullToSpace>("{ nul: '\\0', hexNul: '\\x00' }");
 				DMibExpect(NullJson["nul"].f_String(), ==, " ");
 				DMibExpect(NullJson["hexNul"].f_String(), ==, " ");
-				fs_ExpectParseError<CJson5ParseContext>
-					(
-						"Json5NullEscape"
-						, "{ nul: '\\0' }"
-						, "Null characters not supported in this implementation"
-						, 1
-						, 10
-						, 9
-					)
-				;
+				fs_ExpectParseError<CJson5ParseContext>("Json5NullEscape", "{ nul: '\\0' }", "Null characters not supported in this implementation", 1, 10, 9);
 
 				auto AccentJson = CJsonOrdered::fs_FromStringJson5("{ accent: '\\xE9' }");
 				DMibExpect(AccentJson["accent"].f_String(), ==, NStr::CStr("\xC3" "\xA9"));
@@ -591,7 +582,16 @@ namespace
 						, 5
 					)
 				;
-				fs_ExpectParseError<CJson5ParseContext>("Json5RawLs", "['raw" "\xE2" "\x80" "\xA8" "line']", "Raw line terminators are not allowed in strings. Use escaped line continuation.", 1, 6, 5);
+				fs_ExpectParseError<CJson5ParseContext>
+					(
+						"Json5RawLs"
+						, "['raw" "\xE2" "\x80" "\xA8" "line']"
+						, "Raw line terminators are not allowed in strings. Use escaped line continuation."
+						, 1
+						, 6
+						, 5
+					)
+				;
 
 				DMibExpectNoException(CJsonOrdered::fs_FromString<CJsonTrailingCommaOnlyParseContext>("{\"a\":[1,]}"));
 				fs_ExpectParseError<CJsonTrailingCommaOnlyParseContext>("TrailingOnlyUnquotedKey", "{a:1}", "Expected \" to start object key name", 1, 2, 1);
@@ -930,7 +930,12 @@ namespace
 				;
 				CJsonOrderedWithComments AddedTrailingCommaObjectHead(EJsonType_Object);
 				AddedTrailingCommaObjectHead["head"] = 0;
-				AddedTrailingCommaObjectHead.f_Trivia().f_SetTrailing(fg_TempCopy(TrailingCommaObjectHeadSource.f_Trivia().f_Trailing()), TrailingCommaObjectHeadSource.f_Trivia().f_HasTrailingComma());
+				AddedTrailingCommaObjectHead.f_Trivia().f_SetTrailing
+					(
+						fg_TempCopy(TrailingCommaObjectHeadSource.f_Trivia().f_Trailing())
+						, TrailingCommaObjectHeadSource.f_Trivia().f_HasTrailingComma()
+					)
+				;
 				TrailingCommaObjectHeadSource.f_Object().f_ExtractAll
 					(
 						[&](auto &&_Handle)
@@ -961,7 +966,12 @@ namespace
 				;
 				CJsonOrderedWithComments AddedLeadingCommaObjectHead(EJsonType_Object);
 				AddedLeadingCommaObjectHead["head"] = 0;
-				AddedLeadingCommaObjectHead.f_Trivia().f_SetTrailing(fg_TempCopy(LeadingCommaObjectHeadSource.f_Trivia().f_Trailing()), LeadingCommaObjectHeadSource.f_Trivia().f_HasTrailingComma());
+				AddedLeadingCommaObjectHead.f_Trivia().f_SetTrailing
+					(
+						fg_TempCopy(LeadingCommaObjectHeadSource.f_Trivia().f_Trailing())
+						, LeadingCommaObjectHeadSource.f_Trivia().f_HasTrailingComma()
+					)
+				;
 				LeadingCommaObjectHeadSource.f_Object().f_ExtractAll
 					(
 						[&](auto &&_Handle)
@@ -1270,12 +1280,7 @@ namespace
 				DMibExpect(SortedStreamedSingleQuotedValue.f_ToStringJson5(), ==, SortedSingleQuotedValueRoundTripText);
 
 				DMibTestPath("UnterminatedBlockComment");
-				DMibExpectException
-					(
-						CJsonOrderedWithComments::fs_FromStringJson5("/* unterminated")
-						, fs_MakeParseException("Unterminated block comment", 1, 1, 0)
-					)
-				;
+				DMibExpectException(CJsonOrderedWithComments::fs_FromStringJson5("/* unterminated"), fs_MakeParseException("Unterminated block comment", 1, 1, 0));
 			};
 			DMibTestSuite("Stream")
 			{

@@ -31,5 +31,5 @@ namespace NMib::NEncoding
 }
 
 #ifndef DMibPNoShortCuts
-	using namespace NMib::NEncoding;
+using namespace NMib::NEncoding;
 #endif

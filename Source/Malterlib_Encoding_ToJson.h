@@ -10,7 +10,7 @@ namespace NMib::NEncoding
 {
 	template <typename tf_CValue>
 	CEJsonSorted fg_ToJson(tf_CValue &&_Value)
-		requires requires(tf_CValue &&_Value)
+		requires requires (tf_CValue &&_Value)
 		{
 			fg_Forward<tf_CValue>(_Value).f_ToJson();
 		}

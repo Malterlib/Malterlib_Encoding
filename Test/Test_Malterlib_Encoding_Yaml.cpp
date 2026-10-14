@@ -93,22 +93,26 @@ namespace
 
 					DMibExpectException
 						(
-							CJsonWithMeta::fs_FromStringYamlFlow("{value: &v 123, copy: !!str *v}"), fs_MakeParseException("YAML alias node must not specify properties", 1, 27, 26)
+							CJsonWithMeta::fs_FromStringYamlFlow("{value: &v 123, copy: !!str *v}")
+							, fs_MakeParseException("YAML alias node must not specify properties", 1, 27, 26)
 						)
 					;
 					DMibExpectException
 						(
-							CJsonWithMeta::fs_FromStringYamlFlow("{value: &v \"123\", copy: !!int *v}"), fs_MakeParseException("YAML alias node must not specify properties", 1, 31, 30)
+							CJsonWithMeta::fs_FromStringYamlFlow("{value: &v \"123\", copy: !!int *v}")
+							, fs_MakeParseException("YAML alias node must not specify properties", 1, 31, 30)
 						)
 					;
 					DMibExpectException
 						(
-							CJsonWithMeta::fs_FromStringYamlFlow("{value: &v \"true\", copy: !!bool *v}"), fs_MakeParseException("YAML alias node must not specify properties", 1, 33, 32)
+							CJsonWithMeta::fs_FromStringYamlFlow("{value: &v \"true\", copy: !!bool *v}")
+							, fs_MakeParseException("YAML alias node must not specify properties", 1, 33, 32)
 						)
 					;
 					DMibExpectException
 						(
-							CJsonWithMeta::fs_FromStringYamlFlow("{value: &v 123, copy: &a *v}"), fs_MakeParseException("YAML alias node must not specify properties", 1, 27, 26)
+							CJsonWithMeta::fs_FromStringYamlFlow("{value: &v 123, copy: &a *v}")
+							, fs_MakeParseException("YAML alias node must not specify properties", 1, 27, 26)
 						)
 					;
 					DMibExpectException
@@ -206,6 +210,7 @@ namespace
 					if constexpr (tf_bOrdered)
 						DMibExpect(Json.f_ToStringYaml(), ==, Text);
 					else
+					{
 						DMibExpect
 							(
 								Json.f_ToStringYaml()
@@ -219,6 +224,7 @@ namespace
 								"  value: ok\n"
 							)
 						;
+					}
 					DMibExpect(CJsonWithMeta::fs_FromStringYamlBlock(Text).f_Yaml().f_NodeStyle(), ==, EYamlNodeStyle_Block);
 
 					DMibExpect(CJsonWithoutMeta::fs_FromStringYamlBlock("'42': ok\n")["42"].f_String(), ==, "ok");
@@ -346,13 +352,7 @@ namespace
 					auto Json = CJsonWithMeta::fs_FromStringYamlBlock(Text);
 
 					DMibExpect(Json.f_ToStringColoredYaml(NCommandLine::EAnsiEncodingFlag_None), ==, Json.f_ToStringYaml());
-					DMibExpect
-						(
-							NCommandLine::CAnsiEncodingParse::fs_StripEncoding(Json.f_ToStringColoredYaml(NCommandLine::EAnsiEncodingFlag_AllFeatures))
-							, ==
-							, Json.f_ToStringYaml()
-						)
-					;
+					DMibExpect(NCommandLine::CAnsiEncodingParse::fs_StripEncoding(Json.f_ToStringColoredYaml(NCommandLine::EAnsiEncodingFlag_AllFeatures)), ==, Json.f_ToStringYaml());
 					DMibExpect(Json.f_ToStringColoredYaml(NCommandLine::EAnsiEncodingFlag_AllFeatures), !=, Json.f_ToStringYaml());
 
 					auto Flow = CJsonWithoutMeta::fs_FromStringYamlFlow("{a: 1, b: [2, true, null], c: text}");
@@ -942,11 +942,11 @@ namespace
 					DMibExpectException
 						(
 							CJsonWithMeta::fs_FromStringYamlBlock
-								(
-									"value: &v\n"
-									"  x: 1\n"
-									"copy: !!map *v\n"
-								)
+							(
+								"value: &v\n"
+								"  x: 1\n"
+								"copy: !!map *v\n"
+							)
 							, fs_MakeParseException("YAML alias node must not specify properties", 3, 13, 26)
 						)
 					;
@@ -1134,11 +1134,7 @@ namespace
 
 				DMibTestCategory("RegressionDashPrefixedScalar")
 				{
-					auto Json = CJsonWithMeta::fs_FromStringYamlBlock
-						(
-							"name: -value\n"
-						)
-					;
+					auto Json = CJsonWithMeta::fs_FromStringYamlBlock("name: -value\n");
 					DMibExpect(Json["name"].f_IsString(), ==, true);
 					DMibExpect(Json["name"].f_String(), ==, "-value");
 				};
@@ -1169,17 +1165,7 @@ namespace
 					DMibExpectException(CEJsonWithMeta::fs_FromStringYamlFlow("!!timestamp 2024-01-15 14:30:00 +25:00"), DMibErrorInstance("YAML timestamp timezone hour out of range"));
 					DMibExpectException(CEJsonWithMeta::fs_FromStringYamlFlow("!!timestamp 2024-01-15 14:30:00 +02:75"), DMibErrorInstance("YAML timestamp timezone minute out of range"));
 
-					auto RoundsToNextSecond = NTime::CTimeConvert::fs_CreateTimeIntFrac
-						(
-							2024
-							, 1
-							, 15
-							, 12
-							, 0
-							, 59
-							, NTime::NPrivate::CConst::mc_FractionDividend - 1
-						)
-					;
+					auto RoundsToNextSecond = NTime::CTimeConvert::fs_CreateTimeIntFrac(2024, 1, 15, 12, 0, 59, NTime::NPrivate::CConst::mc_FractionDividend - 1);
 					DMibExpect(fg_FormatYamlTimestamp(RoundsToNextSecond), ==, "2024-01-15T12:01:00Z");
 
 					auto NineDigitFraction = CEJsonWithMeta::fs_FromStringYamlFlow("!!timestamp 2024-01-15T12:00:00.999999999Z");
@@ -1564,11 +1550,11 @@ namespace
 					DMibExpectException
 						(
 							CJsonWithMeta::fs_FromStringYamlBlock
-								(
-									"value: &v\n"
-									"  x: 1\n"
-									"copy: !!map *v\n"
-								)
+							(
+								"value: &v\n"
+								"  x: 1\n"
+								"copy: !!map *v\n"
+							)
 							, fs_MakeParseException("YAML alias node must not specify properties", 3, 13, 26)
 						)
 					;
@@ -1696,8 +1682,8 @@ namespace
 							Mapping.f_ToStringYaml()
 							, ==
 							, "a: 1\n"
-							  "b: 2\n"
-							  "# trailing\n"
+							"b: 2\n"
+							"# trailing\n"
 						)
 					;
 
@@ -1714,9 +1700,9 @@ namespace
 							AfterSequence.f_ToStringYaml()
 							, ==
 							, "items:\n"
-							  "  - one\n"
-							  "  - two\n"
-							  "# trailing\n"
+							"  - one\n"
+							"  - two\n"
+							"# trailing\n"
 						)
 					;
 				};
@@ -1850,45 +1836,45 @@ namespace
 					DMibExpectException
 						(
 							CJsonWithoutMeta::fs_FromStringYamlBlock
-								(
-									"key: 1\n"
-									"? - one\n"
-									": value\n"
-								)
+							(
+								"key: 1\n"
+								"? - one\n"
+								": value\n"
+							)
 							, fs_MakeParseException("complex YAML keys not supported", 2, 3, 9)
 						)
 					;
 					DMibExpectException
 						(
 							CJsonWithoutMeta::fs_FromStringYamlBlock
-								(
-									"key: 1\n"
-									"? [1, 2]\n"
-									": value\n"
-								)
+							(
+								"key: 1\n"
+								"? [1, 2]\n"
+								": value\n"
+							)
 							, fs_MakeParseException("complex YAML keys not supported", 2, 3, 9)
 						)
 					;
 					DMibExpectException
 						(
 							CJsonWithoutMeta::fs_FromStringYamlBlock
-								(
-									"key: 1\n"
-									"? - one\n"
-									"  - two\n"
-									": value\n"
-								)
+							(
+								"key: 1\n"
+								"? - one\n"
+								"  - two\n"
+								": value\n"
+							)
 							, fs_MakeParseException("complex YAML keys not supported", 2, 3, 9)
 						)
 					;
 					DMibExpectException
 						(
 							CJsonWithoutMeta::fs_FromStringYamlBlock
-								(
-									"key: 1\n"
-									"? {a: 1, b: 2}\n"
-									": value\n"
-								)
+							(
+								"key: 1\n"
+								"? {a: 1, b: 2}\n"
+								": value\n"
+							)
 							, fs_MakeParseException("complex YAML keys not supported", 2, 3, 9)
 						)
 					;

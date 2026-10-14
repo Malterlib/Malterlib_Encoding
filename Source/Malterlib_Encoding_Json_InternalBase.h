@@ -181,7 +181,6 @@ namespace NMib::NEncoding::NPrivate
 		friend struct NEncoding::TCJsonObject;
 
 	protected:
-
 		NStr::CStr mp_Name;
 		NIntrusive::TCAVLLink<> mp_Link;
 
@@ -264,24 +263,24 @@ namespace NMib::NEncoding::NPrivate
 	template <typename t_CType>
 	struct TCIsTCJsonValue
 	{
-		constexpr static bool mc_Value = false;
+		static constexpr bool mc_Value = false;
 	};
 
 	template <typename t_CParent>
 	struct TCIsTCJsonValue<TCJsonValue<t_CParent>>
 	{
-		constexpr static bool mc_Value = true;
+		static constexpr bool mc_Value = true;
 	};
 
 	template <typename t_CType>
 	struct TCIsTCEJsonValue
 	{
-		constexpr static bool mc_Value = false;
+		static constexpr bool mc_Value = false;
 	};
 
 	template <typename t_CParent>
 	struct TCIsTCEJsonValue<TCEJsonValue<t_CParent>>
 	{
-		constexpr static bool mc_Value = true;
+		static constexpr bool mc_Value = true;
 	};
 }

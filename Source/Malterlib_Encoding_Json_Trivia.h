@@ -41,7 +41,7 @@ namespace NMib::NEncoding
 	{
 		explicit TCJsonTriviaView(t_CValueBase &_Value);
 
-		operator TCJsonTriviaConstView<t_CValueBase>() const;
+		operator TCJsonTriviaConstView<t_CValueBase> () const;
 
 		NStr::CStr const &f_Leading() const
 			requires (t_CValueBase::mc_bPreserveComments)
@@ -126,7 +126,7 @@ namespace NMib::NEncoding
 	{
 		explicit TCJsonKeyTriviaView(t_CObjectEntry &_Entry);
 
-		operator TCJsonKeyTriviaConstView<t_CObjectEntry>() const;
+		operator TCJsonKeyTriviaConstView<t_CObjectEntry> () const;
 
 		NStr::CStr const &f_Leading() const
 			requires (t_CObjectEntry::mc_bPreserveComments)
