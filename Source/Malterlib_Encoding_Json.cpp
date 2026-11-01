@@ -37,7 +37,9 @@ namespace NMib::NEncoding
 		case EJsonType_Boolean: return "boolean";
 		case EJsonType_Object: return "object";
 		case EJsonType_Array: return "array";
-		default: DMibNeverGetHere; return "unknown";
+		default:
+			DMibNeverGetHere;
+			return "unknown";
 		}
 	}
 }

@@ -6,7 +6,7 @@
 namespace NMib::NEncoding::NYaml
 {
 	template <typename tf_CParseContext>
-	void fg_ParseYamlSingleQuotedScalar(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	void fg_ParseYamlSingleQuotedScalar(NStr::CStr &o_String, uch8 const * &o_pParse, tf_CParseContext &_Context)
 	{
 		auto pParse = o_pParse;
 		auto UpdateParse = g_OnScopeExit / [&]
@@ -19,7 +19,7 @@ namespace NMib::NEncoding::NYaml
 		bool bHasOutput = Appender.f_GetStrLen() != 0;
 		ch8 LastChar = bHasOutput ? o_String[o_String.f_GetLen() - 1] : 0;
 
-		auto fAppendChar = [&] (uch8 _Character)
+		auto fAppendChar = [&](uch8 _Character)
 			{
 				Appender += _Character;
 				bHasOutput = true;
@@ -27,7 +27,7 @@ namespace NMib::NEncoding::NYaml
 			}
 		;
 
-		auto fAppendString = [&] (uch8 const *_pStart, uch8 const *_pEnd)
+		auto fAppendString = [&](uch8 const *_pStart, uch8 const *_pEnd)
 			{
 				if (_pStart == _pEnd)
 					return;
@@ -111,7 +111,7 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CParseContext>
-	void fg_ParseYamlDoubleQuotedScalar(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	void fg_ParseYamlDoubleQuotedScalar(NStr::CStr &o_String, uch8 const * &o_pParse, tf_CParseContext &_Context)
 	{
 		auto pParse = o_pParse;
 		auto UpdateParse = g_OnScopeExit / [&]
@@ -124,7 +124,7 @@ namespace NMib::NEncoding::NYaml
 		bool bHasOutput = Appender.f_GetStrLen() != 0;
 		ch8 LastChar = bHasOutput ? o_String[o_String.f_GetLen() - 1] : 0;
 
-		auto fAppendChar = [&] (uch8 _Character)
+		auto fAppendChar = [&](uch8 _Character)
 			{
 				Appender += _Character;
 				bHasOutput = true;
@@ -132,7 +132,7 @@ namespace NMib::NEncoding::NYaml
 			}
 		;
 
-		auto fAppendString = [&] (uch8 const *_pStart, uch8 const *_pEnd)
+		auto fAppendString = [&](uch8 const *_pStart, uch8 const *_pEnd)
 			{
 				if (_pStart == _pEnd)
 					return;
@@ -143,7 +143,7 @@ namespace NMib::NEncoding::NYaml
 			}
 		;
 
-		auto fAppendNull = [&] (uch8 const *_pLocation)
+		auto fAppendNull = [&](uch8 const *_pLocation)
 			{
 				if constexpr (tf_CParseContext::mc_bConvertNullToSpace)
 					fAppendChar(' ');
@@ -152,7 +152,7 @@ namespace NMib::NEncoding::NYaml
 			}
 		;
 
-		auto fParseHex = [&] (umint _Digits) -> uint32
+		auto fParseHex = [&](umint _Digits) -> uint32
 			{
 				uint32 Value = 0;
 				for (umint i = 0; i < _Digits; ++i)
@@ -177,7 +177,7 @@ namespace NMib::NEncoding::NYaml
 			}
 		;
 
-		auto fAppendCodepoint = [&] (uint32 _Codepoint)
+		auto fAppendCodepoint = [&](uint32 _Codepoint)
 			{
 				if (_Codepoint > 0x10ffff || (_Codepoint >= 0xd800 && _Codepoint <= 0xdfff))
 					fg_ThrowYamlParseError(_Context, "Invalid YAML Unicode escape", pParse);
@@ -267,8 +267,7 @@ namespace NMib::NEncoding::NYaml
 					++pParse;
 					fAppendCodepoint(fParseHex(8));
 					continue;
-				default:
-					fg_ThrowYamlParseError(_Context, "Unsupported YAML escape", pParse);
+				default: fg_ThrowYamlParseError(_Context, "Unsupported YAML escape", pParse);
 				}
 
 				++pParse;
@@ -355,19 +354,10 @@ namespace NMib::NEncoding::NYaml
 			return;
 		}
 
-		if
-		(
-			(nTokenLen == 4 && pToken[0] == '.')
-			|| (nTokenLen == 5 && pToken[0] == '+' && pToken[1] == '.')
-		)
+		if ((nTokenLen == 4 && pToken[0] == '.') || (nTokenLen == 5 && pToken[0] == '+' && pToken[1] == '.'))
 		{
 			auto pInf = pToken + nTokenLen - 3;
-			if
-			(
-				(pInf[0] == 'i' && pInf[1] == 'n' && pInf[2] == 'f')
-				|| (pInf[0] == 'I' && pInf[1] == 'n' && pInf[2] == 'f')
-				|| (pInf[0] == 'I' && pInf[1] == 'N' && pInf[2] == 'F')
-			)
+			if ((pInf[0] == 'i' && pInf[1] == 'n' && pInf[2] == 'f') || (pInf[0] == 'I' && pInf[1] == 'n' && pInf[2] == 'f') || (pInf[0] == 'I' && pInf[1] == 'N' && pInf[2] == 'F'))
 			{
 				o_Value = fp64::fs_Inf();
 				return;
@@ -553,5 +543,5 @@ namespace NMib::NEncoding::NYaml
 	}
 
 	template <typename tf_CValue, typename tf_CParseContext>
-	void fg_ParseYamlNode(tf_CValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors);
+	void fg_ParseYamlNode(tf_CValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context, TCYamlAnchors<tf_CValue> &_Anchors);
 }

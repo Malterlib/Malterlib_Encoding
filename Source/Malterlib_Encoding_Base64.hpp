@@ -42,9 +42,7 @@ namespace NMib::NEncoding
 		mp_bCurrentDirty = false;
 
 		if (mp_OpenFlags == NFile::EFileOpen_Write)
-		{
 			mp_FilePos = 0;
-		}
 		else if (mp_OpenFlags == NFile::EFileOpen_Read)
 		{
 			mp_FilePos = 0;
@@ -61,22 +59,20 @@ namespace NMib::NEncoding
 			mp_pStream->f_SetPosition(0);
 		}
 		else
-		{
 			DMibErrorFile("You must open the file either with read or write access not both at the same time");
-		}
 	}
 
 	template <typename t_CStreamType>
 	void TCBinaryStream_Base64<t_CStreamType>::fp_WriteDirty()
 	{
-		mp_pStream->f_SetPosition((mp_CurrentLoaded/3)*4);
+		mp_pStream->f_SetPosition((mp_CurrentLoaded / 3) * 4);
 		uint8 Temp[EChunkSizeBase64];
 
 		// 111111110000000011111111
 		// 111111000000111111000000
-		Temp[0] = g_Base64EncodingTable[mp_DecryptedData[0]>>2];
-		Temp[1] = g_Base64EncodingTable[((mp_DecryptedData[0]<<4) | (mp_DecryptedData[1]>>4)) & 0x3f];
-		Temp[2] = g_Base64EncodingTable[((mp_DecryptedData[1]<<2) | (mp_DecryptedData[2]>>6)) & 0x3f];
+		Temp[0] = g_Base64EncodingTable[mp_DecryptedData[0] >> 2];
+		Temp[1] = g_Base64EncodingTable[((mp_DecryptedData[0] << 4) | (mp_DecryptedData[1] >> 4)) & 0x3f];
+		Temp[2] = g_Base64EncodingTable[((mp_DecryptedData[1] << 2) | (mp_DecryptedData[2] >> 6)) & 0x3f];
 		Temp[3] = g_Base64EncodingTable[mp_DecryptedData[2] & 0x3f];
 
 		if ((mp_FileLen - mp_CurrentLoaded) <= 2)
@@ -91,20 +87,16 @@ namespace NMib::NEncoding
 	template <typename t_CStreamType>
 	umint TCBinaryStream_Base64<t_CStreamType>::fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite)
 	{
-		if (mp_CurrentLoaded >= 0 && _Pos >=  mp_CurrentLoaded && _Pos < mp_CurrentLoaded + EChunkSizeData)
-		{
+		if (mp_CurrentLoaded >= 0 && _Pos >= mp_CurrentLoaded && _Pos < mp_CurrentLoaded + EChunkSizeData)
 			return _Pos - mp_CurrentLoaded;
-		}
 
 		if (mp_bCurrentDirty)
-		{
 			fp_WriteDirty();
-		}
 
-		mp_CurrentLoaded = (_Pos / 3)*3;
+		mp_CurrentLoaded = (_Pos / 3) * 3;
 		NStream::CFilePos BlockPos = (_Pos / 3) * 4;
 
-		if ((BlockPos+4) > mp_pStream->f_GetLength())
+		if ((BlockPos + 4) > mp_pStream->f_GetLength())
 		{
 			if (_bWrite)
 				NMemory::fg_SecureMemClear(mp_DecryptedData);
@@ -128,9 +120,7 @@ namespace NMib::NEncoding
 			{
 				mp_DecryptedData[1] = (Table1 & 0xf) << 4 | (Table2 >> 2);
 				if (Table3 != 64)
-				{
 					mp_DecryptedData[2] = (Table2 & 0x3) << 6 | Table3;
-				}
 			}
 		}
 
@@ -138,12 +128,12 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	void TCBinaryStream_Base64<t_CStreamType>::f_FeedBytes(const void *_pMem, umint _nBytes)
+	void TCBinaryStream_Base64<t_CStreamType>::f_FeedBytes(void const *_pMem, umint _nBytes)
 	{
 		if (!(mp_OpenFlags & NFile::EFileOpen_Write))
 			DMibErrorFile("File was not opened for write.");
 
-		const uint8 *pMem = (const uint8 *)_pMem;
+		uint8 const *pMem = (uint8 const *)_pMem;
 		while (_nBytes)
 		{
 			umint Pos = fp_PrepareBlock(mp_FilePos, true);
@@ -205,7 +195,7 @@ namespace NMib::NEncoding
 	template <typename t_CStreamType>
 	void TCBinaryStream_Base64<t_CStreamType>::f_SetPositionFromEnd(NStream::CFilePos _Pos)
 	{
-		mp_FilePos = (mp_pStream->f_GetLength()/4)*3 - _Pos;
+		mp_FilePos = (mp_pStream->f_GetLength() / 4) * 3 - _Pos;
 	}
 
 	template <typename t_CStreamType>
@@ -225,18 +215,18 @@ namespace NMib::NEncoding
 	{
 		return mp_pStream->f_Flush(_bLocalCacheOnly);
 	}
+
 	template <typename t_CStreamType>
 	void TCBinaryStream_Base64<t_CStreamType>::f_SetCacheSize(umint _CacheSize)
 	{
 		return mp_pStream->f_SetCacheSize(_CacheSize);
 	}
 
-
 	template <typename t_CStreamType>
 	NStream::CFilePos TCBinaryStream_Base64<t_CStreamType>::f_GetLength() const
 	{
 		if (mp_OpenFlags == NFile::EFileOpen_Write)
-			return fg_Max((mp_pStream->f_GetLength()/4)*3, fg_Max(mp_CurrentLoaded, mp_FilePos));
+			return fg_Max((mp_pStream->f_GetLength() / 4) * 3, fg_Max(mp_CurrentLoaded, mp_FilePos));
 		else
 			return mp_FileLen;
 	}

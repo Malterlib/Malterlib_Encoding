@@ -37,8 +37,8 @@ namespace NMib::NEncoding
 			bool bKeepScalarMetadata = OldType == f_Type();
 			if (!OldTagResolved.f_IsEmpty())
 			{
-				bKeepScalarMetadata =
-					(OldTagResolved == "tag:yaml.org,2002:str" && f_IsString())
+				bKeepScalarMetadata
+					= (OldTagResolved == "tag:yaml.org,2002:str" && f_IsString())
 					|| (OldTagResolved == "tag:yaml.org,2002:int" && f_IsInteger())
 					|| (OldTagResolved == "tag:yaml.org,2002:float" && f_IsFloat())
 					|| (OldTagResolved == "tag:yaml.org,2002:bool" && f_IsBoolean())
@@ -60,7 +60,6 @@ namespace NMib::NEncoding
 	{
 		auto &Object = f_Object();
 		(
-
 			[&]
 			{
 				DMibCheck(!Object.f_GetMember(p_Values.m_Key));
@@ -107,7 +106,7 @@ namespace NMib::NEncoding
 	{
 		try
 		{
-			constexpr static auto c_Flags = EJsonDialectFlag_AllowUndefined | EJsonDialectFlag_AllowInvalidFloat | EJsonDialectFlag_TrimWhitespace;
+			static constexpr auto c_Flags = EJsonDialectFlag_AllowUndefined | EJsonDialectFlag_AllowInvalidFloat | EJsonDialectFlag_TrimWhitespace;
 
 			if (_Options.m_LocalOptions.m_PrettySeparator[0])
 				o_FormatInto += static_cast<CValue const &>(*this).f_ToString(_Options.m_LocalOptions.m_PrettySeparator, c_Flags);
@@ -178,7 +177,7 @@ namespace NMib::NEncoding
 		if constexpr (mc_bOrdered)
 		{
 			mp_ObjectTree.f_Clear();
-			for (auto iIter = mp_Objects.f_GetIterator(); iIter; )
+			for (auto iIter = mp_Objects.f_GetIterator(); iIter;)
 				_fOnObject(CObjectEntryHandle(iIter.f_ExtractNode()));
 		}
 		else
@@ -472,12 +471,12 @@ namespace NMib::NEncoding::NPrivate
 	{
 	}
 
-	inline_always CJsonBoolean::operator bool const &() const
+	inline_always CJsonBoolean::operator bool const & () const
 	{
 		return m_bValue;
 	}
 
-	inline_always CJsonBoolean::operator bool &()
+	inline_always CJsonBoolean::operator bool & ()
 	{
 		return m_bValue;
 	}

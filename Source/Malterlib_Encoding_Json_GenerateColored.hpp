@@ -40,7 +40,7 @@ namespace NMib::NEncoding
 				auto const *pTrivia = _Trivia.f_GetStr();
 				bool bOpenLineComment = false;
 
-				for (umint i = 0; i < _Trivia.f_GetLen(); )
+				for (umint i = 0; i < _Trivia.f_GetLen();)
 				{
 					if (pTrivia[i] == '/' && i + 1 < _Trivia.f_GetLen() && pTrivia[i + 1] == '/')
 					{
@@ -526,15 +526,9 @@ namespace NMib::NEncoding
 
 				switch (JsonValue.f_Type())
 				{
-				case EJsonType_String:
-					o_String += f_GenerateJsonString(JsonValue.f_String());
-					break;
-				case EJsonType_Integer:
-					o_String += f_GenerateJsonInteger(JsonValue.f_Integer());
-					break;
-				case EJsonType_Float:
-					o_String += f_GenerateJsonFloat(JsonValue.f_Float());
-					break;
+				case EJsonType_String: o_String += f_GenerateJsonString(JsonValue.f_String()); break;
+				case EJsonType_Integer: o_String += f_GenerateJsonInteger(JsonValue.f_Integer()); break;
+				case EJsonType_Float: o_String += f_GenerateJsonFloat(JsonValue.f_Float()); break;
 				case EJsonType_Object:
 					{
 						auto OldFlags = m_Flags;
@@ -559,9 +553,7 @@ namespace NMib::NEncoding
 						f_GenerateJsonArray(o_String, _Value.f_Array(), _Depth, _pPrettySeparator);
 					}
 					break;
-				case EJsonType_Null:
-					o_String += f_Color("null", ESyntaxColor::ESyntaxColor_Constant);
-					break;
+				case EJsonType_Null: o_String += f_Color("null", ESyntaxColor::ESyntaxColor_Constant); break;
 				case EJsonType_Boolean:
 					if (JsonValue.f_Boolean())
 						o_String += f_Color("true", ESyntaxColor::ESyntaxColor_Constant);
@@ -575,9 +567,7 @@ namespace NMib::NEncoding
 						break;
 					}
 					[[fallthrough]];
-				default:
-					DMibError("Invalid JSON type in value node");
-				break;
+				default: DMibError("Invalid JSON type in value node"); break;
 				}
 			}
 
@@ -601,13 +591,7 @@ namespace NMib::NEncoding
 					}
 				}
 
-				if
-					(
-						_pPrettySeparator
-						&& !(m_Flags & EJsonDialectFlag_TrimWhitespace)
-						&& !bWroteRootTrailing
-						&& !(tf_CJson::mc_bPreserveComments && t_CParseContext::mc_bAllowComments)
-					)
+				if (_pPrettySeparator && !(m_Flags & EJsonDialectFlag_TrimWhitespace) && !bWroteRootTrailing && !(tf_CJson::mc_bPreserveComments && t_CParseContext::mc_bAllowComments))
 					Return += "\n";
 
 				return Return;

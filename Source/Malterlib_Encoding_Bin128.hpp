@@ -54,7 +54,7 @@ namespace NMib::NEncoding
 	template <typename t_CStreamType>
 	void TCBinaryStream_Bin128<t_CStreamType>::fp_WriteDirty()
 	{
-		mp_pStream->f_SetPosition(mp_ParentFilePos + (mp_CurrentLoaded/7)*8);
+		mp_pStream->f_SetPosition(mp_ParentFilePos + (mp_CurrentLoaded / 7) * 8);
 
 		umint nBytes = (fg_Min(mp_WriteFileLen - mp_CurrentLoaded, NStream::CFilePos(EChunkSizeData)) * 8 + 6) / 7;
 
@@ -62,7 +62,7 @@ namespace NMib::NEncoding
 		NMemory::fg_MemCopy(&ByteData, mp_DecryptedData, EChunkSizeData);
 		ByteData = fg_ByteSwapBE(ByteData);
 
-		umint Shift = 7*7 + 8;
+		umint Shift = 7 * 7 + 8;
 		uint8 Temp[EChunkSizeBin128];
 
 		for (umint iByte = 0; iByte < nBytes; ++iByte)
@@ -79,10 +79,8 @@ namespace NMib::NEncoding
 	template <typename t_CStreamType>
 	umint TCBinaryStream_Bin128<t_CStreamType>::fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite)
 	{
-		if (mp_CurrentLoaded >= 0 && _Pos >=  mp_CurrentLoaded && _Pos < mp_CurrentLoaded + EChunkSizeData)
-		{
+		if (mp_CurrentLoaded >= 0 && _Pos >= mp_CurrentLoaded && _Pos < mp_CurrentLoaded + EChunkSizeData)
 			return _Pos - mp_CurrentLoaded;
-		}
 
 		if (mp_bCurrentDirty)
 			fp_WriteDirty();
@@ -126,12 +124,12 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CStreamType>
-	void TCBinaryStream_Bin128<t_CStreamType>::f_FeedBytes(const void *_pMem, umint _nBytes)
+	void TCBinaryStream_Bin128<t_CStreamType>::f_FeedBytes(void const *_pMem, umint _nBytes)
 	{
 		if (!(mp_OpenFlags & NFile::EFileOpen_Write))
 			DMibErrorFile("File was not opened for write.");
 
-		const uint8 *pMem = (const uint8 *)_pMem;
+		uint8 const *pMem = (uint8 const *)_pMem;
 		while (_nBytes)
 		{
 			umint Pos = fp_PrepareBlock(mp_FilePos, true);
@@ -203,7 +201,7 @@ namespace NMib::NEncoding
 	template <typename t_CStreamType>
 	void TCBinaryStream_Bin128<t_CStreamType>::f_SetPositionFromEnd(NStream::CFilePos _Pos)
 	{
-		mp_FilePos = ((mp_pStream->f_GetLength() - mp_ParentFilePos)/8)*7 - _Pos;
+		mp_FilePos = ((mp_pStream->f_GetLength() - mp_ParentFilePos) / 8) * 7 - _Pos;
 	}
 
 	template <typename t_CStreamType>
@@ -216,9 +214,7 @@ namespace NMib::NEncoding
 	bool TCBinaryStream_Bin128<t_CStreamType>::f_IsValidReadPosition(NStream::CFilePos _Pos) const
 	{
 		if (mp_ParentLength >= 0)
-		{
 			return _Pos >= 0 && _Pos < f_GetLength();
-		}
 
 		return mp_pStream->f_IsValidReadPosition(mp_ParentFilePos + ((_Pos * 8) / 7));
 	}

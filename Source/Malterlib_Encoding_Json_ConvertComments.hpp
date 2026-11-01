@@ -406,7 +406,13 @@ namespace NMib::NEncoding::NPrivate
 				fg_RecordJsonCommentsAsYaml<t_bDstOrdered>(SrcArray[i], NStr::CStr(), false, o_Records);
 		}
 
-		if constexpr (requires { _Src.f_UserType(); })
+		if constexpr
+		(
+			requires
+			{
+				_Src.f_UserType();
+			}
+		)
 		{
 			if (_Src.f_IsUserType())
 				fg_RecordJsonCommentsAsYaml<t_bDstOrdered>(_Src.f_UserType().m_Value, NStr::CStr(), false, o_Records);
@@ -561,7 +567,13 @@ namespace NMib::NEncoding::NPrivate
 			}
 		}
 
-		if constexpr (requires { _Src.f_UserType(); })
+		if constexpr
+		(
+			requires
+			{
+				_Src.f_UserType();
+			}
+		)
 		{
 			if (_Src.f_IsUserType())
 				fg_RecordYamlCommentsAsJson<t_bDstOrdered>(_Src.f_UserType().m_Value, _Depth, NStr::CStr(), NStr::CStr(), NStr::CStr(), o_Records);
@@ -596,9 +608,8 @@ namespace NMib::NEncoding::NPrivate
 	}
 
 	template <typename t_CDstValue, typename t_CSrcValue>
-	constexpr bool gc_JsonNeedsCommentConversion =
-		(t_CDstValue::mc_bPreserveYamlMetadata && t_CSrcValue::mc_bPreserveComments)
-		|| (t_CDstValue::mc_bPreserveComments && t_CSrcValue::mc_bPreserveYamlMetadata)
+	constexpr bool gc_JsonNeedsCommentConversion
+		= (t_CDstValue::mc_bPreserveYamlMetadata && t_CSrcValue::mc_bPreserveComments) || (t_CDstValue::mc_bPreserveComments && t_CSrcValue::mc_bPreserveYamlMetadata)
 	;
 
 	template <typename t_CDstValue, typename t_CSrcValue>
@@ -660,7 +671,13 @@ namespace NMib::NEncoding::NPrivate
 				fg_ApplyConvertedComments(DstArray[i], _Records, _iRecord);
 		}
 
-		if constexpr (requires { o_Dst.f_UserType(); })
+		if constexpr
+		(
+			requires
+			{
+				o_Dst.f_UserType();
+			}
+		)
 		{
 			if (o_Dst.f_IsUserType())
 				fg_ApplyConvertedComments(o_Dst.f_UserType().m_Value, _Records, _iRecord);

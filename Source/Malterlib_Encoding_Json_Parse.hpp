@@ -16,15 +16,8 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <typename tf_CParseContext>
-	inline NStr::CParseLocation CParseContext::fs_GetLocation
-		(
-			NStr::CStr const &_FileName
-			, uint32 _StartLine
-			, uint32 _StartColumn
-			, uint32 _StartCharacter
-			, uch8 const *_pStartParse
-			, uch8 const *_pParse
-		)
+	inline auto CParseContext::fs_GetLocation(NStr::CStr const &_FileName, uint32 _StartLine, uint32 _StartColumn, uint32 _StartCharacter, uch8 const *_pStartParse, uch8 const *_pParse)
+		-> NStr::CParseLocation
 	{
 		using namespace NStr;
 		CParseLocation Location;
@@ -148,14 +141,10 @@ namespace NMib::NEncoding::NJson
 
 	inline bool fg_IsJson5LineTerminator(uch8 const *_pParse)
 	{
-		return
-			_pParse[0] == '\n'
-			|| _pParse[0] == '\r'
-			|| (_pParse[0] == 0xE2 && _pParse[1] == 0x80 && (_pParse[2] == 0xA8 || _pParse[2] == 0xA9))
-		;
+		return _pParse[0] == '\n' || _pParse[0] == '\r' || (_pParse[0] == 0xE2 && _pParse[1] == 0x80 && (_pParse[2] == 0xA8 || _pParse[2] == 0xA9));
 	}
 
-	inline bool fg_ParseJson5LineTerminator(uch8 const *&o_pParse)
+	inline bool fg_ParseJson5LineTerminator(uch8 const * &o_pParse)
 	{
 		if (o_pParse[0] == '\r')
 		{
@@ -188,8 +177,7 @@ namespace NMib::NEncoding::NJson
 		case '\n':
 		case '\r':
 			return true;
-		case 0xC2:
-			return _pParse[1] == 0xA0;
+		case 0xC2: return _pParse[1] == 0xA0;
 		case 0xE1:
 			if (!_pParse[1])
 				return false;
@@ -208,29 +196,24 @@ namespace NMib::NEncoding::NJson
 			if (!_pParse[1])
 				return false;
 			return _pParse[1] == 0xBB && _pParse[2] == 0xBF;
-		default:
-			return false;
+		default: return false;
 		}
 	}
 
-	inline void fg_ParseJson5WhiteSpace(uch8 const *&o_pParse)
+	inline void fg_ParseJson5WhiteSpace(uch8 const * &o_pParse)
 	{
 		while (*o_pParse && fg_IsJson5WhiteSpace(o_pParse))
 		{
 			switch (o_pParse[0])
 			{
-			case 0xC2:
-				o_pParse += 2;
-				break;
+			case 0xC2: o_pParse += 2; break;
 			case 0xE1:
 			case 0xE2:
 			case 0xE3:
 			case 0xEF:
 				o_pParse += 3;
 				break;
-			default:
-				++o_pParse;
-				break;
+			default: ++o_pParse; break;
 			}
 		}
 	}
@@ -245,7 +228,7 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <typename tf_CParseContext>
-	inline bool fg_ParseJsonLineTerminator(uch8 const *&o_pParse)
+	inline bool fg_ParseJsonLineTerminator(uch8 const * &o_pParse)
 	{
 		if constexpr (tf_CParseContext::mc_bAllowExtendedWhitespace)
 			return fg_ParseJson5LineTerminator(o_pParse);
@@ -263,7 +246,7 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <typename tf_CParseContext>
-	inline void fg_ParseJsonWhiteSpace(uch8 const *&o_pParse)
+	inline void fg_ParseJsonWhiteSpace(uch8 const * &o_pParse)
 	{
 		if constexpr (tf_CParseContext::mc_bAllowExtendedWhitespace)
 			fg_ParseJson5WhiteSpace(o_pParse);
@@ -310,12 +293,10 @@ namespace NMib::NEncoding::NJson
 		umint iNextComment = 0;
 		umint NumComments = m_Comments.f_GetLen();
 
-		for (umint i = 0; i < Length; )
+		for (umint i = 0; i < Length;)
 		{
 			while (iNextComment < NumComments && (!m_Comments[iNextComment].m_bIsBlock || m_Comments[iNextComment].m_End <= i))
-			{
 				++iNextComment;
-			}
 
 			if (iNextComment < NumComments && i >= m_Comments[iNextComment].m_Start)
 			{
@@ -364,7 +345,7 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <typename tf_CParseContext, typename tf_CCommentSink>
-	inline_always void fg_ParseWhiteSpaceAndComments(uch8 const *&o_pParse, tf_CParseContext &_Context, tf_CCommentSink &_Sink)
+	inline_always void fg_ParseWhiteSpaceAndComments(uch8 const * &o_pParse, tf_CParseContext &_Context, tf_CCommentSink &_Sink)
 	{
 		using namespace NStr;
 
@@ -465,7 +446,7 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <typename tf_CParseContext>
-	void CParseContext::f_ParseKey(NStr::CStr &o_Key, uch8 const *&o_pParse)
+	void CParseContext::f_ParseKey(NStr::CStr &o_Key, uch8 const * &o_pParse)
 	{
 		using namespace NStr;
 
@@ -553,7 +534,7 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static void fg_ParseJsonArray(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	static void fg_ParseJsonArray(tf_COutValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
 		using CSink = TCConditional<tf_CParseContext::mc_bRecordComments, CCommentSink, CDiscardCommentSink>;
@@ -645,7 +626,7 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static void fg_ParseJsonObject(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	static void fg_ParseJsonObject(tf_COutValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
 		using CSink = TCConditional<tf_CParseContext::mc_bRecordComments, CCommentSink, CDiscardCommentSink>;
@@ -765,7 +746,7 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <uch8 t_QuoteCharacter, EParseJsonStringFlag t_Flags, typename tf_CParseContext, typename tf_FExtraParse>
-	static bool fg_ParseJsonString(NStr::CStr &o_String, uch8 const *&o_pParse, tf_CParseContext &_Context, tf_FExtraParse &&_fExtraParse)
+	static bool fg_ParseJsonString(NStr::CStr &o_String, uch8 const * &o_pParse, tf_CParseContext &_Context, tf_FExtraParse &&_fExtraParse)
 	{
 		using namespace NStr;
 		uch8 const *pParse = o_pParse;
@@ -775,9 +756,9 @@ namespace NMib::NEncoding::NJson
 				o_pParse = pParse;
 				switch (t_QuoteCharacter)
 				{
-					case '\"': o_String.f_SetUserData(EJsonStringType_DoubleQuote); break;
-					case '\'': o_String.f_SetUserData(EJsonStringType_SingleQuote); break;
-					default: o_String.f_SetUserData(EJsonStringType_Custom); break;
+				case '\"': o_String.f_SetUserData(EJsonStringType_DoubleQuote); break;
+				case '\'': o_String.f_SetUserData(EJsonStringType_SingleQuote); break;
+				default: o_String.f_SetUserData(EJsonStringType_Custom); break;
 				}
 			}
 		;
@@ -834,7 +815,7 @@ namespace NMib::NEncoding::NJson
 				else
 					return true;
 			}
-			else if(*pParse == '\\')
+			else if (*pParse == '\\')
 			{
 				++pParse;
 				if constexpr (tf_CParseContext::mc_bAllowExtendedEscapes)
@@ -908,16 +889,7 @@ namespace NMib::NEncoding::NJson
 						ToParse[2] = 0;
 						uch8 const *pParseHex = ToParse;
 						bool bFailed = false;
-						auto HexDigit = fg_StrToIntParse
-							(
-								pParseHex
-								, uint16(0)
-								, (uch8 const *)nullptr
-								, false
-								, EStrToIntParseMode_Hex
-								, &bFailed
-							)
-						;
+						auto HexDigit = fg_StrToIntParse(pParseHex, uint16(0), (uch8 const *)nullptr, false, EStrToIntParseMode_Hex, &bFailed);
 						if (bFailed || *pParseHex)
 							fg_ThrowJsonParseError<tf_CParseContext>(_Context, "Invalid escaped hex value", pStart);
 						pParse += 2;
@@ -953,16 +925,7 @@ namespace NMib::NEncoding::NJson
 
 							uch8 const *pParseHex = ToParse;
 
-							ch16 HexDigit = fg_StrToIntParse
-								(
-									pParseHex
-									, uint16(0)
-									, (uch8 const *)nullptr
-									, false
-									, EStrToIntParseMode_Hex
-									, &bFailed
-								)
-							;
+							ch16 HexDigit = fg_StrToIntParse(pParseHex, uint16(0), (uch8 const *)nullptr, false, EStrToIntParseMode_Hex, &bFailed);
 
 							if (bFailed || *pParseHex)
 								fg_ThrowJsonParseError<tf_CParseContext>(_Context, "Invalid escaped UTF16 value", pParseStart);
@@ -1001,11 +964,11 @@ namespace NMib::NEncoding::NJson
 					}
 					break;
 				default:
-				if constexpr (tf_CParseContext::mc_bAllowExtendedEscapes)
-				{
-					if (!*pParse || fg_CharIsNumber(*pParse) || *pParse == 'u' || *pParse == 'x' || fg_IsJsonLineTerminator<tf_CParseContext>(pParse))
-						fg_ThrowJsonParseError<tf_CParseContext>(_Context, "Invalid escape value", pParse);
-					fAddChar(*pParse);
+					if constexpr (tf_CParseContext::mc_bAllowExtendedEscapes)
+					{
+						if (!*pParse || fg_CharIsNumber(*pParse) || *pParse == 'u' || *pParse == 'x' || fg_IsJsonLineTerminator<tf_CParseContext>(pParse))
+							fg_ThrowJsonParseError<tf_CParseContext>(_Context, "Invalid escape value", pParse);
+						fAddChar(*pParse);
 						++pParse;
 					}
 					else
@@ -1063,7 +1026,7 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static inline_always bool fg_TryParseJson5SpecialNumber(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	static inline_always bool fg_TryParseJson5SpecialNumber(tf_COutValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
 
@@ -1116,19 +1079,19 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static inline_always bool fg_TryParseJsonNumber(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	static inline_always bool fg_TryParseJsonNumber(tf_COutValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
 		auto pStart = o_pParse;
 
 		if constexpr
-			(
-				!tf_CParseContext::mc_bAllowComments
-				&& !tf_CParseContext::mc_bAllowExtendedWhitespace
-				&& !tf_CParseContext::mc_bAllowHexNumbers
-				&& !tf_CParseContext::mc_bAllowLeadingDecimal
-				&& !tf_CParseContext::mc_bAllowSignAndSpecial
-			)
+		(
+			!tf_CParseContext::mc_bAllowComments
+			&& !tf_CParseContext::mc_bAllowExtendedWhitespace
+			&& !tf_CParseContext::mc_bAllowHexNumbers
+			&& !tf_CParseContext::mc_bAllowLeadingDecimal
+			&& !tf_CParseContext::mc_bAllowSignAndSpecial
+		)
 		{
 			auto pFastEnd = pStart;
 			bool bFastFloat = false;
@@ -1201,15 +1164,7 @@ namespace NMib::NEncoding::NJson
 				else
 				{
 					uch8 const *pTryParse = pStart;
-					fp64 FloatNumber = fg_StrToFloatParse
-						(
-							pTryParse
-							, fp64::fs_Inf()
-							, tf_CParseContext::mc_ConstantEndCharacters
-							, false
-							, "."
-						)
-					;
+					fp64 FloatNumber = fg_StrToFloatParse(pTryParse, fp64::fs_Inf(), tf_CParseContext::mc_ConstantEndCharacters, false, ".");
 
 					if (FloatNumber != fp64::fs_Inf() && pTryParse == pFastEnd)
 					{
@@ -1381,7 +1336,7 @@ namespace NMib::NEncoding::NJson
 	}
 
 	template <typename tf_COutValue, typename tf_CParseContext>
-	static void fg_ParseJsonValue(tf_COutValue &o_Value, uch8 const *&o_pParse, tf_CParseContext &_Context)
+	static void fg_ParseJsonValue(tf_COutValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context)
 	{
 		using namespace NStr;
 		using CSink = TCConditional<tf_CParseContext::mc_bRecordComments, CCommentSink, CDiscardCommentSink>;
@@ -1673,15 +1628,10 @@ namespace NMib::NEncoding
 {
 	template <typename t_CParent>
 	template <typename t_CParseContext>
-	auto TCJsonValue<t_CParent>::fs_FromString(NStr::CStr const & _String, NStr::CStr const & _FileName, EJsonDialectFlag _Flags) -> CValue
+	auto TCJsonValue<t_CParent>::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, EJsonDialectFlag _Flags) -> CValue
 	{
 		using namespace NStr;
-		static_assert
-			(
-				!t_CParseContext::mc_bRecordComments || CValue::mc_bPreserveComments
-				, "recording JSON5 comments requires a comment-preserving alias (e.g. CJsonOrderedWithComments)"
-			)
-		;
+		static_assert(!t_CParseContext::mc_bRecordComments || CValue::mc_bPreserveComments, "recording JSON5 comments requires a comment-preserving alias (e.g. CJsonOrderedWithComments)");
 		CValue Output;
 		CStr ToParse = _String;
 
@@ -1720,19 +1670,19 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJsonValue<t_CParent>::fs_FromString(NStr::CStr const & _String, NStr::CStr const & _FileName, EJsonDialectFlag _Flags) -> CValue
+	auto TCJsonValue<t_CParent>::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, EJsonDialectFlag _Flags) -> CValue
 	{
 		return fs_FromString<NJson::CParseContext>(_String, _FileName, _Flags);
 	}
 
 	template <typename t_CParent>
-	auto TCJsonValue<t_CParent>::fs_FromStringStrict(NStr::CStr const & _String, NStr::CStr const & _FileName, EJsonDialectFlag _Flags) -> CValue
+	auto TCJsonValue<t_CParent>::fs_FromStringStrict(NStr::CStr const &_String, NStr::CStr const &_FileName, EJsonDialectFlag _Flags) -> CValue
 	{
 		return fs_FromString<NJson::CStrictParseContext>(_String, _FileName, _Flags);
 	}
 
 	template <typename t_CParent>
-	auto TCJsonValue<t_CParent>::fs_FromStringJsonC(NStr::CStr const & _String, NStr::CStr const & _FileName, EJsonDialectFlag _Flags) -> CValue
+	auto TCJsonValue<t_CParent>::fs_FromStringJsonC(NStr::CStr const &_String, NStr::CStr const &_FileName, EJsonDialectFlag _Flags) -> CValue
 	{
 		if constexpr (CValue::mc_bPreserveComments)
 			return fs_FromString<NJson::CJsonCRecordingParseContext>(_String, _FileName, _Flags);
@@ -1741,7 +1691,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJsonValue<t_CParent>::fs_FromStringJson5(NStr::CStr const & _String, NStr::CStr const & _FileName, EJsonDialectFlag _Flags) -> CValue
+	auto TCJsonValue<t_CParent>::fs_FromStringJson5(NStr::CStr const &_String, NStr::CStr const &_FileName, EJsonDialectFlag _Flags) -> CValue
 	{
 		if constexpr (CValue::mc_bPreserveComments)
 			return fs_FromString<NJson::CJson5RecordingParseContext>(_String, _FileName, _Flags);
