@@ -776,7 +776,7 @@ namespace NMib::NEncoding::NYaml
 			return;
 		}
 
-		auto fParseCompactMappingEntry = [&](auto _LeadingComment) -> bool
+		auto fParseCompactMappingEntry = [&](auto &&_LeadingComment) -> bool
 			{
 				auto pKeyStart = pParse;
 				auto pColon = pParse;
