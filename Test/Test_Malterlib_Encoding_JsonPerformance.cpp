@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 #ifdef DMalterlibEnableThirdPartyComparisonTests
-#define RAPIDJSON_USE_MEMBERSMAP 1
+#define RAPIDJSON_USE_MEMBERSMAP 1 // NOLINT(malterlib-macro-naming)
 
 #include <Mib/Encoding/Json>
 #include <Mib/Encoding/JsonImpl>
