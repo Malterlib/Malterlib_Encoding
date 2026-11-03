@@ -40,7 +40,7 @@ namespace NMib::NEncoding
 
 	NStr::CStr fg_Base64Encode(NStr::CStr const &_String)
 	{
-		NStream::CBinaryStreamMemoryPtr<> Stream;
+		NStream::TCBinaryStreamMemoryPtr<> Stream;
 		int FLen = ((_String.f_GetLen() + 2) / 3) * 4;
 		NStr::CStr Ret;
 		Stream.f_OpenReadWrite(Ret.f_GetStr(FLen + 1), FLen);
@@ -55,7 +55,7 @@ namespace NMib::NEncoding
 
 	NStr::CStr fg_Base64Decode(NStr::CStr const &_String)
 	{
-		NStream::CBinaryStreamMemoryPtr<> Stream;
+		NStream::TCBinaryStreamMemoryPtr<> Stream;
 		Stream.f_OpenRead(_String.f_GetStr(), _String.f_GetLen());
 		NStr::CStr Ret;
 		{
@@ -70,7 +70,7 @@ namespace NMib::NEncoding
 
 	NStr::CStr fg_Base64Encode(NContainer::CByteVector const &_Data)
 	{
-		NStream::CBinaryStreamMemoryPtr<> Stream;
+		NStream::TCBinaryStreamMemoryPtr<> Stream;
 		int FLen = ((_Data.f_GetLen() + 2) / 3) * 4;
 		NStr::CStr Ret;
 		Stream.f_OpenReadWrite(Ret.f_GetStr(FLen + 1), FLen);
@@ -87,7 +87,7 @@ namespace NMib::NEncoding
 	{
 		if (_String.f_IsEmpty())
 			return;
-		NStream::CBinaryStreamMemoryPtr<> Stream;
+		NStream::TCBinaryStreamMemoryPtr<> Stream;
 		Stream.f_OpenRead(_String.f_GetStr(), _String.f_GetLen());
 		{
 			TCBinaryStream_Base64<> Base64;
@@ -100,7 +100,7 @@ namespace NMib::NEncoding
 
 	NStr::CStrSecure fg_Base64Encode(NContainer::CSecureByteVector const &_Data)
 	{
-		NStream::CBinaryStreamMemoryPtr<> Stream;
+		NStream::TCBinaryStreamMemoryPtr<> Stream;
 		int FLen = ((_Data.f_GetLen() + 2) / 3) * 4;
 		NStr::CStrSecure Ret;
 		Stream.f_OpenReadWrite(Ret.f_GetStr(FLen + 1), FLen);
@@ -117,7 +117,7 @@ namespace NMib::NEncoding
 	{
 		if (_String.f_IsEmpty())
 			return;
-		NStream::CBinaryStreamMemoryPtr<> Stream;
+		NStream::TCBinaryStreamMemoryPtr<> Stream;
 		Stream.f_OpenRead(_String.f_GetStr(), _String.f_GetLen());
 		{
 			TCBinaryStream_Base64<> Base64;

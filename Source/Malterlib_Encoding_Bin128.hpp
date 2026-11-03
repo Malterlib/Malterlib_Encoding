@@ -56,14 +56,14 @@ namespace NMib::NEncoding
 	{
 		mp_pStream->f_SetPosition(mp_ParentFilePos + (mp_CurrentLoaded / 7) * 8);
 
-		umint nBytes = (fg_Min(mp_WriteFileLen - mp_CurrentLoaded, NStream::CFilePos(EChunkSizeData)) * 8 + 6) / 7;
+		umint nBytes = (fg_Min(mp_WriteFileLen - mp_CurrentLoaded, NStream::CFilePos(mc_ChunkSizeData)) * 8 + 6) / 7;
 
 		uint64 ByteData = 0;
-		NMemory::fg_MemCopy(&ByteData, mp_DecryptedData, EChunkSizeData);
+		NMemory::fg_MemCopy(&ByteData, mp_DecryptedData, mc_ChunkSizeData);
 		ByteData = fg_ByteSwapBE(ByteData);
 
 		umint Shift = 7 * 7 + 8;
-		uint8 Temp[EChunkSizeBin128];
+		uint8 Temp[mc_ChunkSizeBin128];
 
 		for (umint iByte = 0; iByte < nBytes; ++iByte)
 		{
@@ -79,7 +79,7 @@ namespace NMib::NEncoding
 	template <typename t_CStreamType>
 	umint TCBinaryStream_Bin128<t_CStreamType>::fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite)
 	{
-		if (mp_CurrentLoaded >= 0 && _Pos >= mp_CurrentLoaded && _Pos < mp_CurrentLoaded + EChunkSizeData)
+		if (mp_CurrentLoaded >= 0 && _Pos >= mp_CurrentLoaded && _Pos < mp_CurrentLoaded + mc_ChunkSizeData)
 			return _Pos - mp_CurrentLoaded;
 
 		if (mp_bCurrentDirty)
@@ -101,10 +101,10 @@ namespace NMib::NEncoding
 		else
 		{
 			mp_pStream->f_SetPosition(mp_ParentFilePos + BlockPos);
-			umint nBytesIn = fg_Min(ParentLength - BlockPos, NStream::CFilePos(EChunkSizeBin128));
+			umint nBytesIn = fg_Min(ParentLength - BlockPos, NStream::CFilePos(mc_ChunkSizeBin128));
 			umint nBytesOut = (nBytesIn * 7) / 8;
 
-			uint8 InBytes[EChunkSizeBin128] = {0};
+			uint8 InBytes[mc_ChunkSizeBin128] = {0};
 			mp_pStream->f_ConsumeBytes(InBytes, nBytesIn);
 			umint Shift = 64;
 			uint64 ByteDataOut = 0;
@@ -133,7 +133,7 @@ namespace NMib::NEncoding
 		while (_nBytes)
 		{
 			umint Pos = fp_PrepareBlock(mp_FilePos, true);
-			umint ThisTime = fg_Min(_nBytes, (umint)EChunkSizeData - Pos);
+			umint ThisTime = fg_Min(_nBytes, (umint)mc_ChunkSizeData - Pos);
 			NMemory::fg_MemCopy(mp_DecryptedData + Pos, pMem, ThisTime);
 			mp_bCurrentDirty = true;
 
@@ -159,7 +159,7 @@ namespace NMib::NEncoding
 			if (mp_FilePos >= mp_WriteFileLen)
 				DMibErrorFile("Read past end of file");
 
-			umint ThisTime = fg_Min(_nBytes, (umint)EChunkSizeData - Pos);
+			umint ThisTime = fg_Min(_nBytes, (umint)mc_ChunkSizeData - Pos);
 			NMemory::fg_MemCopy(pMem, mp_DecryptedData + Pos, ThisTime);
 
 			mp_FilePos += ThisTime;

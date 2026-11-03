@@ -66,7 +66,7 @@ namespace NMib::NEncoding
 	void TCBinaryStream_Base64<t_CStreamType>::fp_WriteDirty()
 	{
 		mp_pStream->f_SetPosition((mp_CurrentLoaded / 3) * 4);
-		uint8 Temp[EChunkSizeBase64];
+		uint8 Temp[mc_ChunkSizeBase64];
 
 		// 111111110000000011111111
 		// 111111000000111111000000
@@ -80,14 +80,14 @@ namespace NMib::NEncoding
 		if ((mp_FileLen - mp_CurrentLoaded) <= 1)
 			Temp[2] = g_Base64EncodingTable[64];
 
-		mp_pStream->f_FeedBytes(Temp, EChunkSizeBase64);
+		mp_pStream->f_FeedBytes(Temp, mc_ChunkSizeBase64);
 		mp_bCurrentDirty = false;
 	}
 
 	template <typename t_CStreamType>
 	umint TCBinaryStream_Base64<t_CStreamType>::fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite)
 	{
-		if (mp_CurrentLoaded >= 0 && _Pos >= mp_CurrentLoaded && _Pos < mp_CurrentLoaded + EChunkSizeData)
+		if (mp_CurrentLoaded >= 0 && _Pos >= mp_CurrentLoaded && _Pos < mp_CurrentLoaded + mc_ChunkSizeData)
 			return _Pos - mp_CurrentLoaded;
 
 		if (mp_bCurrentDirty)
@@ -106,8 +106,8 @@ namespace NMib::NEncoding
 		else
 		{
 			mp_pStream->f_SetPosition(BlockPos);
-			uint8 Temp[EChunkSizeBase64];
-			mp_pStream->f_ConsumeBytes(Temp, EChunkSizeBase64);
+			uint8 Temp[mc_ChunkSizeBase64];
+			mp_pStream->f_ConsumeBytes(Temp, mc_ChunkSizeBase64);
 			int Table0 = g_Base64EncodingTableReverse[Temp[0]];
 			int Table1 = g_Base64EncodingTableReverse[Temp[1]];
 			int Table2 = g_Base64EncodingTableReverse[Temp[2]];
@@ -137,7 +137,7 @@ namespace NMib::NEncoding
 		while (_nBytes)
 		{
 			umint Pos = fp_PrepareBlock(mp_FilePos, true);
-			umint ThisTime = fg_Min(_nBytes, (umint)EChunkSizeData - Pos);
+			umint ThisTime = fg_Min(_nBytes, (umint)mc_ChunkSizeData - Pos);
 			NMemory::fg_MemCopy(mp_DecryptedData + Pos, pMem, ThisTime);
 			mp_bCurrentDirty = true;
 
@@ -159,7 +159,7 @@ namespace NMib::NEncoding
 		while (_nBytes)
 		{
 			umint Pos = fp_PrepareBlock(mp_FilePos, false);
-			umint ThisTime = fg_Min(_nBytes, (umint)EChunkSizeData - Pos);
+			umint ThisTime = fg_Min(_nBytes, (umint)mc_ChunkSizeData - Pos);
 			NMemory::fg_MemCopy(pMem, mp_DecryptedData + Pos, ThisTime);
 
 			mp_FilePos += ThisTime;

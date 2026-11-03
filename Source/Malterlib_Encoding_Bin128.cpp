@@ -7,7 +7,7 @@ namespace NMib::NEncoding
 {
 	NContainer::CByteVector fg_Bin128Encode(NContainer::CByteVector const &_Data, bool _bUseUpper)
 	{
-		NStream::CBinaryStreamMemory<> Stream;
+		NStream::TCBinaryStreamMemory<> Stream;
 		{
 			TCBinaryStream_Bin128<> Bin128(_bUseUpper);
 			Bin128.f_Open(&Stream, NFile::EFileOpen_Write);
@@ -18,7 +18,7 @@ namespace NMib::NEncoding
 
 	NContainer::CSecureByteVector fg_Bin128Encode(NContainer::CSecureByteVector const &_Data, bool _bUseUpper)
 	{
-		NStream::CBinaryStreamMemory<NStream::CBinaryStreamDefault, NContainer::CSecureByteVector> Stream;
+		NStream::TCBinaryStreamMemory<NStream::CBinaryStreamDefault, NContainer::CSecureByteVector> Stream;
 		{
 			TCBinaryStream_Bin128<> Bin128(_bUseUpper);
 			Bin128.f_Open(&Stream, NFile::EFileOpen_Write);
@@ -29,7 +29,7 @@ namespace NMib::NEncoding
 
 	NContainer::CByteVector fg_Bin128Decode(NContainer::CByteVector const &_Data, bool _bUseUpper)
 	{
-		NStream::CBinaryStreamMemoryPtr<> Stream;
+		NStream::TCBinaryStreamMemoryPtr<> Stream;
 		Stream.f_OpenRead(_Data);
 		NContainer::CByteVector Ret;
 		{
@@ -43,7 +43,7 @@ namespace NMib::NEncoding
 
 	NContainer::CSecureByteVector fg_Bin128Decode(NContainer::CSecureByteVector const &_Data, bool _bUseUpper)
 	{
-		NStream::CBinaryStreamMemoryPtr<> Stream;
+		NStream::TCBinaryStreamMemoryPtr<> Stream;
 		Stream.f_OpenRead(_Data);
 		NContainer::CSecureByteVector Ret;
 		{
