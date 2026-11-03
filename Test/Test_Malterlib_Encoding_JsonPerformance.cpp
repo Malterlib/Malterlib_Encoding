@@ -102,6 +102,8 @@ namespace
 		static constexpr umint mc_TestDataLength = 512 * 1024;
 		static constexpr umint mc_ArrayLength = 512 * 1024;
 #endif
+
+	private:
 		CStr fp_GenerateTestData(bool _bFloat, CCoordinate &o_Average)
 		{
 			CJsonSorted Data;
@@ -1530,6 +1532,7 @@ namespace
 			};
 		}
 
+	public:
 		void f_DoTests()
 		{
 			fp_TestParse<false>("Parse");

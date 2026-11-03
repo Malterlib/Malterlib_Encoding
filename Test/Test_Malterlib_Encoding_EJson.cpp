@@ -326,25 +326,6 @@ namespace
 			;
 		}
 
-		void fp_TestParseError(NStr::CStr const &_ToParse, NStr::CStr const &_ExpectedError)
-		{
-			fg_TestAddCleanupPath(mp_TestFilePath);
-
-			NFile::CFile::fs_WriteStringToFile(mp_TestFilePath, _ToParse);
-			NException::CException Exception = fg_Move(DMibErrorInstance(""));
-			try
-			{
-				CEJsonSorted::fs_FromString(_ToParse, mp_TestFilePath);
-			}
-			catch (NException::CException const &_Exception)
-			{
-				Exception = _Exception;
-			}
-
-			auto ErrorStr = Exception.f_GetErrorStr();
-			DMibExpect(ErrorStr, ==, _ExpectedError);
-		}
-
 		void f_DoTests()
 		{
 			using namespace NMib;
@@ -880,6 +861,25 @@ namespace
 		}
 
 	private:
+		void fp_TestParseError(NStr::CStr const &_ToParse, NStr::CStr const &_ExpectedError)
+		{
+			fg_TestAddCleanupPath(mp_TestFilePath);
+
+			NFile::CFile::fs_WriteStringToFile(mp_TestFilePath, _ToParse);
+			NException::CException Exception = fg_Move(DMibErrorInstance(""));
+			try
+			{
+				CEJsonSorted::fs_FromString(_ToParse, mp_TestFilePath);
+			}
+			catch (NException::CException const &_Exception)
+			{
+				Exception = _Exception;
+			}
+
+			auto ErrorStr = Exception.f_GetErrorStr();
+			DMibExpect(ErrorStr, ==, _ExpectedError);
+		}
+
 		NStr::CStr mp_TestFilePath;
 	};
 

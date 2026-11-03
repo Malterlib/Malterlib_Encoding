@@ -8,7 +8,7 @@ namespace
 {
 	// Helper to count elements in an iterator with operator bool() and operator++()
 	template <typename t_CIterator>
-	aint fsg_IteratorCount(t_CIterator _Iterator)
+	aint fg_IteratorCount(t_CIterator _Iterator)
 	{
 		aint nCount = 0;
 		for (; _Iterator; ++_Iterator)
@@ -865,7 +865,7 @@ namespace
 					;
 
 					DMibExpectTrue(Source.f_Object().f_IsEmpty());
-					DMibExpect(fsg_IteratorCount(Dest.f_Object().f_OrderedIterator()), ==, 3u);
+					DMibExpect(fg_IteratorCount(Dest.f_Object().f_OrderedIterator()), ==, 3u);
 					DMibExpect(Dest["a"].f_Integer(), ==, 1);
 					DMibExpect(Dest["b"].f_Integer(), ==, 2);
 					DMibExpect(Dest["c"].f_Integer(), ==, 3);
@@ -911,7 +911,7 @@ namespace
 					;
 
 					DMibExpectTrue(Source.f_Object().f_IsEmpty());
-					DMibExpect(fsg_IteratorCount(Dest.f_Object().f_OrderedIterator()), ==, 3u);
+					DMibExpect(fg_IteratorCount(Dest.f_Object().f_OrderedIterator()), ==, 3u);
 					// a should be replaced
 					DMibExpect(Dest["a"].f_Integer(), ==, 100);
 					// b should be added
@@ -978,7 +978,7 @@ namespace
 					;
 
 					DMibExpectTrue(Source.f_Object().f_IsEmpty());
-					DMibExpect(fsg_IteratorCount(Dest.f_Object().f_OrderedIterator()), ==, 3u);
+					DMibExpect(fg_IteratorCount(Dest.f_Object().f_OrderedIterator()), ==, 3u);
 					DMibExpect(Dest["keep1"].f_Integer(), ==, 1);
 					DMibExpect(Dest["keep3"].f_Integer(), ==, 3);
 					DMibExpect(Dest["keep5"].f_Integer(), ==, 5);
