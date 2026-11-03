@@ -5,8 +5,21 @@
 
 namespace
 {
-	class CBin128_Tests : public NMib::NTest::CTest
+	struct CBin128_Tests : public NMib::NTest::CTest
 	{
+		void f_DoTests()
+		{
+			DMibTestSuite("Roundtrip")
+			{
+				fp_TestRoundtrip(false);
+			};
+			DMibTestSuite("Roundtrip Use Upper")
+			{
+				fp_TestRoundtrip(true);
+			};
+		}
+
+	private:
 		void fp_TestRoundtrip(bool _bUseUpper)
 		{
 			NMib::NContainer::CByteVector ToEncode;
@@ -19,19 +32,6 @@ namespace
 
 				ToEncode.f_Insert(uint8(i));
 			}
-		}
-
-	public:
-		void f_DoTests()
-		{
-			DMibTestSuite("Roundtrip")
-			{
-				fp_TestRoundtrip(false);
-			};
-			DMibTestSuite("Roundtrip Use Upper")
-			{
-				fp_TestRoundtrip(true);
-			};
 		}
 	};
 

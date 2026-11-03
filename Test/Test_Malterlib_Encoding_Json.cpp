@@ -44,9 +44,8 @@ namespace
 		static constexpr bool mc_bConvertNullToSpace = true;
 	};
 
-	class CJson_Tests : public NTest::CTest
+	struct CJson_Tests : public NTest::CTest
 	{
-	public:
 		static NStr::CExceptionParse fs_MakeParseException(NStr::CStr const &_Error, uint32 _Line, uint32 _Column, uint32 _Character)
 		{
 			NContainer::TCVector<NStr::CParseError> Errors;

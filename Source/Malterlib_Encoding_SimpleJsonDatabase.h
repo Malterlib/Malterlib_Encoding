@@ -9,7 +9,6 @@ namespace NMib::NEncoding
 {
 	struct CSimpleJsonDatabase
 	{
-	public:
 		CSimpleJsonDatabase(NStr::CStr const &_FileName);
 		~CSimpleJsonDatabase();
 

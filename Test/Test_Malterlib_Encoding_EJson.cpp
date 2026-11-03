@@ -12,11 +12,8 @@ namespace
 {
 	using namespace NMib;
 	using namespace NMib::NEncoding;
-	class CEJson_Tests : public NTest::CTest
+	struct CEJson_Tests : public NTest::CTest
 	{
-		NStr::CStr mp_TestFilePath;
-
-	public:
 		static umint fs_CountForegroundColorChanges(NStr::CStr const &_Text)
 		{
 			umint nForegroundColors = 0;
@@ -881,6 +878,9 @@ namespace
 				DMibExpect(ToJson, ==, OriginalJson);
 			};
 		}
+
+	private:
+		NStr::CStr mp_TestFilePath;
 	};
 
 	DMibTestRegister(CEJson_Tests, Malterlib::Encoding);

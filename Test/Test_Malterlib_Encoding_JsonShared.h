@@ -17,9 +17,8 @@ namespace
 	}
 
 	template <typename t_CJson>
-	class TCJsonTests
+	struct TCJsonTests
 	{
-	public:
 		TCJsonTests
 			(
 				t_CJson const &_Reference

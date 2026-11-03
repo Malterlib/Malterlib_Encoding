@@ -5,9 +5,8 @@
 
 namespace
 {
-	class CBase64_Tests : public NMib::NTest::CTest
+	struct CBase64_Tests : public NMib::NTest::CTest
 	{
-	public:
 		void f_DoTests()
 		{
 			DMibTestSuite("Roundtrip")

@@ -93,9 +93,8 @@ namespace
 	using namespace NMib::NEncoding;
 	using namespace NMib::NStr;
 
-	class CJsonPerformance_Tests : public NTest::CTest
+	struct CJsonPerformance_Tests : public NTest::CTest
 	{
-	public:
 #if defined(DMibDebug) || defined(DMibSanitizerEnabled)
 		static constexpr umint mc_TestDataLength = 16 * 1024;
 		static constexpr umint mc_ArrayLength = 16 * 1024;

@@ -190,7 +190,6 @@ namespace NMib::NEncoding::NPrivate
 
 		struct CCompare
 		{
-		public:
 			inline_small NStr::CStr const &operator () (CObjectEntryBase const &_Node) const
 			{
 				return _Node.mp_Name;

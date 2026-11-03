@@ -8,34 +8,8 @@
 namespace NMib::NEncoding
 {
 	template <typename t_CStreamType = NStream::CBinaryStreamDefault>
-	class TCBinaryStream_Bin128 : public t_CStreamType
+	struct TCBinaryStream_Bin128 : public t_CStreamType
 	{
-	private:
-		void fp_WriteDirty();
-		umint fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite);
-
-		NStream::CBinaryStream *mp_pStream;
-		NFile::EFileOpen mp_OpenFlags;
-
-		enum
-		{
-			EChunkSizeBin128 = 8
-			, EChunkSizeData = 7
-		};
-
-		NStream::CFilePos mp_ParentFilePos;
-		NStream::CFilePos mp_FilePos;
-		NStream::CFilePos mp_ParentLength;
-		NStream::CFilePos mp_CurrentLoaded;
-		NStream::CFilePos mp_WriteFileLen;
-		uint8 mp_DecryptedData[EChunkSizeData] = {0};
-		uint8 mp_Offset;
-		bool mp_bCurrentDirty;
-
-	protected:
-		DMibStreamImplementProtected(TCBinaryStream_Bin128);
-
-	public:
 		DMibStreamImplementOperators(TCBinaryStream_Bin128);
 
 	public:
@@ -60,6 +34,31 @@ namespace NMib::NEncoding
 		{
 			DMibError("Not supported");
 		}
+
+	private:
+		void fp_WriteDirty();
+		umint fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite);
+
+		NStream::CBinaryStream *mp_pStream;
+		NFile::EFileOpen mp_OpenFlags;
+
+		enum
+		{
+			EChunkSizeBin128 = 8
+			, EChunkSizeData = 7
+		};
+
+		NStream::CFilePos mp_ParentFilePos;
+		NStream::CFilePos mp_FilePos;
+		NStream::CFilePos mp_ParentLength;
+		NStream::CFilePos mp_CurrentLoaded;
+		NStream::CFilePos mp_WriteFileLen;
+		uint8 mp_DecryptedData[EChunkSizeData] = {0};
+		uint8 mp_Offset;
+		bool mp_bCurrentDirty;
+
+	protected:
+		DMibStreamImplementProtected(TCBinaryStream_Bin128);
 	};
 
 	NContainer::CByteVector fg_Bin128Encode(NContainer::CByteVector const &_Data, bool _bUseUpper = false);

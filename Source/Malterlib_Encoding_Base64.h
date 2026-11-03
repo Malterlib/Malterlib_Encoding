@@ -11,31 +11,8 @@ namespace NMib::NEncoding
 	extern int8 g_Base64EncodingTableReverse[256];
 
 	template <typename t_CStreamType = NStream::CBinaryStreamDefault>
-	class TCBinaryStream_Base64 : public t_CStreamType
+	struct TCBinaryStream_Base64 : public t_CStreamType
 	{
-	private:
-		void fp_WriteDirty();
-		umint fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite);
-
-		NStream::CBinaryStream *mp_pStream;
-		NFile::EFileOpen mp_OpenFlags;
-
-		enum
-		{
-			EChunkSizeBase64 = 4
-			, EChunkSizeData = 3
-		};
-
-		NStream::CFilePos mp_FilePos;
-		NStream::CFilePos mp_CurrentLoaded;
-		NStream::CFilePos mp_FileLen;
-		uint8 mp_DecryptedData[EChunkSizeData];
-		bool mp_bCurrentDirty;
-
-	protected:
-		DMibStreamImplementProtected(TCBinaryStream_Base64);
-
-	public:
 		DMibStreamImplementOperators(TCBinaryStream_Base64);
 
 	//private:
@@ -62,6 +39,28 @@ namespace NMib::NEncoding
 		{
 			DMibError("Not supported");
 		}
+
+	private:
+		void fp_WriteDirty();
+		umint fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite);
+
+		NStream::CBinaryStream *mp_pStream;
+		NFile::EFileOpen mp_OpenFlags;
+
+		enum
+		{
+			EChunkSizeBase64 = 4
+			, EChunkSizeData = 3
+		};
+
+		NStream::CFilePos mp_FilePos;
+		NStream::CFilePos mp_CurrentLoaded;
+		NStream::CFilePos mp_FileLen;
+		uint8 mp_DecryptedData[EChunkSizeData];
+		bool mp_bCurrentDirty;
+
+	protected:
+		DMibStreamImplementProtected(TCBinaryStream_Base64);
 	};
 
 	NStr::CStr fg_Base64Encode(NStr::CStr const &_String);
