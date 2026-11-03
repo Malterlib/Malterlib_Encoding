@@ -150,8 +150,8 @@ namespace NMib::NEncoding::NPrivate
 
 namespace NMib::NEncoding
 {
-	template <typename t_CJsonObject>
-	bool fg_ValidateType(t_CJsonObject const *_pObject, EJsonType _Type)
+	template <typename tf_CJsonObject>
+	bool fg_ValidateType(tf_CJsonObject const *_pObject, EJsonType _Type)
 	{
 		return _pObject && _pObject->f_Type() == _Type;
 	}

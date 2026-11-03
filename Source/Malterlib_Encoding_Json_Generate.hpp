@@ -17,7 +17,7 @@ namespace NMib::NEncoding::NJson
 			o_String.f_AddString(_pPrettySeparator, SeparatorLength);
 	}
 
-	template <ch8 t_QuoteCharacter, typename tf_CParseContext, bool tf_bAddQuotes, typename tf_CStr, typename tf_CSourceString>
+	template <ch8 tf_QuoteCharacter, typename tf_CParseContext, bool tf_bAddQuotes, typename tf_CStr, typename tf_CSourceString>
 	static void fg_GenerateJsonString(tf_CStr &o_String, tf_CSourceString const &_Value)
 	{
 		using namespace NStr;
@@ -25,7 +25,7 @@ namespace NMib::NEncoding::NJson
 		umint StartOfLine = o_String.f_GetStrLen();
 
 		if constexpr (tf_bAddQuotes)
-			o_String += t_QuoteCharacter;
+			o_String += tf_QuoteCharacter;
 		else
 			--StartOfLine;
 
@@ -81,9 +81,9 @@ namespace NMib::NEncoding::NJson
 			auto UnsignedChar = fg_Unsigned(*pParse);
 			switch (UnsignedChar)
 			{
-			case t_QuoteCharacter:
+			case tf_QuoteCharacter:
 				o_String += '\\';
-				o_String += t_QuoteCharacter;
+				o_String += tf_QuoteCharacter;
 				break;
 			case '\\': o_String += "\\\\"; break;
 			case 0x08: o_String += "\\b"; break;
@@ -102,10 +102,10 @@ namespace NMib::NEncoding::NJson
 						o_String += "\\n";
 						++pParse;
 					}
-					o_String += t_QuoteCharacter;
+					o_String += tf_QuoteCharacter;
 					o_String += "\\\n";
 					fAddPreWhitespace();
-					o_String += t_QuoteCharacter;
+					o_String += tf_QuoteCharacter;
 				}
 				break;
 			case 0x09: o_String += "\\t"; break;
@@ -123,7 +123,7 @@ namespace NMib::NEncoding::NJson
 		}
 
 		if constexpr (tf_bAddQuotes)
-			o_String += t_QuoteCharacter;
+			o_String += tf_QuoteCharacter;
 	}
 
 	template <typename tf_CParseContext>
@@ -669,7 +669,7 @@ namespace NMib::NEncoding::NJson
 namespace NMib::NEncoding
 {
 	template <typename t_CParent>
-	template <typename t_CParseContext>
+	template <typename tf_CParseContext>
 	NStr::CStr TCJsonValue<t_CParent>::f_ToString(ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags) const
 	{
 		using namespace NStr;
@@ -678,22 +678,22 @@ namespace NMib::NEncoding
 		{
 			CStr::CAppender StringAppender(Return);
 
-			if constexpr (CValue::mc_bPreserveComments && t_CParseContext::mc_bAllowComments)
-				NJson::fg_AppendJsonTrivia<t_CParseContext>(StringAppender, this->f_Trivia().f_Leading(), false);
+			if constexpr (CValue::mc_bPreserveComments && tf_CParseContext::mc_bAllowComments)
+				NJson::fg_AppendJsonTrivia<tf_CParseContext>(StringAppender, this->f_Trivia().f_Leading(), false);
 
-			NJson::fg_GenerateJsonValue<t_CParseContext>(StringAppender, *this, 0, _pPrettySeparator, _Flags);
+			NJson::fg_GenerateJsonValue<tf_CParseContext>(StringAppender, *this, 0, _pPrettySeparator, _Flags);
 
 			bool bWroteRootTrailing = false;
-			if constexpr (CValue::mc_bPreserveComments && t_CParseContext::mc_bAllowComments)
+			if constexpr (CValue::mc_bPreserveComments && tf_CParseContext::mc_bAllowComments)
 			{
 				if (this->f_Trivia().f_IsTrailingSet())
 				{
-					NJson::fg_AppendJsonTrivia<t_CParseContext>(StringAppender, this->f_Trivia().f_Trailing(), true);
+					NJson::fg_AppendJsonTrivia<tf_CParseContext>(StringAppender, this->f_Trivia().f_Trailing(), true);
 					bWroteRootTrailing = true;
 				}
 			}
 
-			if (_pPrettySeparator && !(_Flags & EJsonDialectFlag_TrimWhitespace) && !bWroteRootTrailing && !(CValue::mc_bPreserveComments && t_CParseContext::mc_bAllowComments))
+			if (_pPrettySeparator && !(_Flags & EJsonDialectFlag_TrimWhitespace) && !bWroteRootTrailing && !(CValue::mc_bPreserveComments && tf_CParseContext::mc_bAllowComments))
 				StringAppender += "\n";
 		}
 		return Return;
@@ -724,10 +724,10 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	template <typename t_CParseContext>
+	template <typename tf_CParseContext>
 	NStr::CStr TCJsonValue<t_CParent>::f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags) const
 	{
-		return NPrivate::fg_JsonGenerateColored<t_CParseContext>(*this, _pPrettySeparator, _AnsiFlags, _Flags);
+		return NPrivate::fg_JsonGenerateColored<tf_CParseContext>(*this, _pPrettySeparator, _AnsiFlags, _Flags);
 	}
 
 	template <typename t_CParent>

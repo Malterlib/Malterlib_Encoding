@@ -308,8 +308,8 @@ namespace NMib::NEncoding::NPrivate
 		}
 	}
 
-	template <typename t_CSrcValue>
-	bool fg_YamlCommentValueIsNonEmptyContainer(t_CSrcValue const &_Src)
+	template <typename tf_CSrcValue>
+	bool fg_YamlCommentValueIsNonEmptyContainer(tf_CSrcValue const &_Src)
 	{
 		if (_Src.f_IsObject())
 			return !_Src.f_Object().f_IsEmpty();
@@ -328,8 +328,8 @@ namespace NMib::NEncoding::NPrivate
 		NStr::CStr m_ValueTrailing;
 	};
 
-	template <bool t_bDstOrdered, typename t_CSrcValue>
-	void fg_RecordJsonCommentsAsYaml(t_CSrcValue const &_Src, NStr::CStr &&_KeyLeading, bool _bSkipValueLeading, NContainer::TCVector<CJsonConvertedComments> &o_Records)
+	template <bool tf_bDstOrdered, typename tf_CSrcValue>
+	void fg_RecordJsonCommentsAsYaml(tf_CSrcValue const &_Src, NStr::CStr &&_KeyLeading, bool _bSkipValueLeading, NContainer::TCVector<CJsonConvertedComments> &o_Records)
 	{
 		{
 			auto &Record = o_Records.f_Insert();
@@ -386,7 +386,7 @@ namespace NMib::NEncoding::NPrivate
 								fg_JsonTriviaAppendYamlComments(Appender, SrcEntry.f_Value().f_Trivia().f_Leading());
 						}
 
-						fg_RecordJsonCommentsAsYaml<t_bDstOrdered>(SrcEntry.f_Value(), fg_Move(KeyLeading), true, o_Records);
+						fg_RecordJsonCommentsAsYaml<tf_bDstOrdered>(SrcEntry.f_Value(), fg_Move(KeyLeading), true, o_Records);
 
 						++_iSrc;
 					}
@@ -394,7 +394,7 @@ namespace NMib::NEncoding::NPrivate
 			;
 
 			constexpr bool c_bSrcOrdered = NTraits::TCRemoveReferenceAndQualifiers<decltype(SrcObject)>::mc_bOrdered;
-			if constexpr (c_bSrcOrdered && !t_bDstOrdered)
+			if constexpr (c_bSrcOrdered && !tf_bDstOrdered)
 				fRecordEntries(SrcObject.f_SortedIterator());
 			else
 				fRecordEntries(SrcObject.f_OrderedIterator());
@@ -403,7 +403,7 @@ namespace NMib::NEncoding::NPrivate
 		{
 			auto const &SrcArray = _Src.f_Array();
 			for (umint i = 0; i < SrcArray.f_GetLen(); ++i)
-				fg_RecordJsonCommentsAsYaml<t_bDstOrdered>(SrcArray[i], NStr::CStr(), false, o_Records);
+				fg_RecordJsonCommentsAsYaml<tf_bDstOrdered>(SrcArray[i], NStr::CStr(), false, o_Records);
 		}
 
 		if constexpr
@@ -415,14 +415,14 @@ namespace NMib::NEncoding::NPrivate
 		)
 		{
 			if (_Src.f_IsUserType())
-				fg_RecordJsonCommentsAsYaml<t_bDstOrdered>(_Src.f_UserType().m_Value, NStr::CStr(), false, o_Records);
+				fg_RecordJsonCommentsAsYaml<tf_bDstOrdered>(_Src.f_UserType().m_Value, NStr::CStr(), false, o_Records);
 		}
 	}
 
-	template <bool t_bDstOrdered, typename t_CSrcValue>
+	template <bool tf_bDstOrdered, typename tf_CSrcValue>
 	void fg_RecordYamlCommentsAsJson
 		(
-			t_CSrcValue const &_Src
+			tf_CSrcValue const &_Src
 			, umint _Depth
 			, NStr::CStr &&_KeyLeading
 			, NStr::CStr &&_ValueLeading
@@ -506,13 +506,13 @@ namespace NMib::NEncoding::NPrivate
 							}
 						}
 
-						fg_RecordYamlCommentsAsJson<t_bDstOrdered>(SrcValue, _Depth + 1, fg_Move(KeyLeadingTrivia), NStr::CStr(), fg_Move(TrailingTrivia), o_Records);
+						fg_RecordYamlCommentsAsJson<tf_bDstOrdered>(SrcValue, _Depth + 1, fg_Move(KeyLeadingTrivia), NStr::CStr(), fg_Move(TrailingTrivia), o_Records);
 					}
 				}
 			;
 
 			constexpr bool c_bSrcOrdered = NTraits::TCRemoveReferenceAndQualifiers<decltype(SrcObject)>::mc_bOrdered;
-			if constexpr (c_bSrcOrdered && !t_bDstOrdered)
+			if constexpr (c_bSrcOrdered && !tf_bDstOrdered)
 				fRecordEntries(SrcObject.f_SortedIterator());
 			else
 				fRecordEntries(SrcObject.f_OrderedIterator());
@@ -563,7 +563,7 @@ namespace NMib::NEncoding::NPrivate
 					}
 				}
 
-				fg_RecordYamlCommentsAsJson<t_bDstOrdered>(SrcElement, _Depth + 1, NStr::CStr(), fg_Move(LeadingTrivia), fg_Move(TrailingTrivia), o_Records);
+				fg_RecordYamlCommentsAsJson<tf_bDstOrdered>(SrcElement, _Depth + 1, NStr::CStr(), fg_Move(LeadingTrivia), fg_Move(TrailingTrivia), o_Records);
 			}
 		}
 
@@ -576,12 +576,12 @@ namespace NMib::NEncoding::NPrivate
 		)
 		{
 			if (_Src.f_IsUserType())
-				fg_RecordYamlCommentsAsJson<t_bDstOrdered>(_Src.f_UserType().m_Value, _Depth, NStr::CStr(), NStr::CStr(), NStr::CStr(), o_Records);
+				fg_RecordYamlCommentsAsJson<tf_bDstOrdered>(_Src.f_UserType().m_Value, _Depth, NStr::CStr(), NStr::CStr(), NStr::CStr(), o_Records);
 		}
 	}
 
-	template <bool t_bDstOrdered, typename t_CSrcValue>
-	void fg_RecordYamlCommentsAsJsonRoot(t_CSrcValue const &_Src, NContainer::TCVector<CJsonConvertedComments> &o_Records)
+	template <bool tf_bDstOrdered, typename tf_CSrcValue>
+	void fg_RecordYamlCommentsAsJsonRoot(tf_CSrcValue const &_Src, NContainer::TCVector<CJsonConvertedComments> &o_Records)
 	{
 		auto SrcYaml = _Src.f_Yaml();
 
@@ -604,7 +604,7 @@ namespace NMib::NEncoding::NPrivate
 			Appender += '\n';
 		}
 
-		fg_RecordYamlCommentsAsJson<t_bDstOrdered>(_Src, 0, NStr::CStr(), fg_Move(LeadingTrivia), fg_Move(TrailingTrivia), o_Records);
+		fg_RecordYamlCommentsAsJson<tf_bDstOrdered>(_Src, 0, NStr::CStr(), fg_Move(LeadingTrivia), fg_Move(TrailingTrivia), o_Records);
 	}
 
 	template <typename t_CDstValue, typename t_CSrcValue>
@@ -612,22 +612,22 @@ namespace NMib::NEncoding::NPrivate
 		= (t_CDstValue::mc_bPreserveYamlMetadata && t_CSrcValue::mc_bPreserveComments) || (t_CDstValue::mc_bPreserveComments && t_CSrcValue::mc_bPreserveYamlMetadata)
 	;
 
-	template <typename t_CDstValue, typename t_CSrcValue>
-	void fg_RecordCompatibleComments(t_CSrcValue const &_Src, NContainer::TCVector<CJsonConvertedComments> &o_Records)
+	template <typename tf_CDstValue, typename tf_CSrcValue>
+	void fg_RecordCompatibleComments(tf_CSrcValue const &_Src, NContainer::TCVector<CJsonConvertedComments> &o_Records)
 	{
-		if constexpr (t_CDstValue::mc_bPreserveYamlMetadata && t_CSrcValue::mc_bPreserveComments)
-			fg_RecordJsonCommentsAsYaml<t_CDstValue::mc_bOrdered>(_Src, NStr::CStr(), false, o_Records);
-		else if constexpr (t_CDstValue::mc_bPreserveComments && t_CSrcValue::mc_bPreserveYamlMetadata)
-			fg_RecordYamlCommentsAsJsonRoot<t_CDstValue::mc_bOrdered>(_Src, o_Records);
+		if constexpr (tf_CDstValue::mc_bPreserveYamlMetadata && tf_CSrcValue::mc_bPreserveComments)
+			fg_RecordJsonCommentsAsYaml<tf_CDstValue::mc_bOrdered>(_Src, NStr::CStr(), false, o_Records);
+		else if constexpr (tf_CDstValue::mc_bPreserveComments && tf_CSrcValue::mc_bPreserveYamlMetadata)
+			fg_RecordYamlCommentsAsJsonRoot<tf_CDstValue::mc_bOrdered>(_Src, o_Records);
 	}
 
-	template <typename t_CDstValue>
-	void fg_ApplyConvertedComments(t_CDstValue &o_Dst, NContainer::TCVector<CJsonConvertedComments> &_Records, umint &_iRecord)
+	template <typename tf_CDstValue>
+	void fg_ApplyConvertedComments(tf_CDstValue &o_Dst, NContainer::TCVector<CJsonConvertedComments> &_Records, umint &_iRecord)
 	{
 		auto &Record = _Records[_iRecord];
 		++_iRecord;
 
-		if constexpr (t_CDstValue::mc_bPreserveYamlMetadata)
+		if constexpr (tf_CDstValue::mc_bPreserveYamlMetadata)
 		{
 			auto DstYaml = o_Dst.f_Yaml();
 			if (!Record.m_ValueLeading.f_IsEmpty())
@@ -655,7 +655,7 @@ namespace NMib::NEncoding::NPrivate
 				auto &ChildRecord = _Records[_iRecord];
 				if (!ChildRecord.m_KeyLeading.f_IsEmpty())
 				{
-					if constexpr (t_CDstValue::mc_bPreserveYamlMetadata)
+					if constexpr (tf_CDstValue::mc_bPreserveYamlMetadata)
 						DstEntry.f_KeyYaml().f_SetLeadingComment(fg_Move(ChildRecord.m_KeyLeading));
 					else
 						DstEntry.f_KeyTrivia().f_SetLeading(fg_Move(ChildRecord.m_KeyLeading), false);
@@ -684,20 +684,20 @@ namespace NMib::NEncoding::NPrivate
 		}
 	}
 
-	template <typename t_CDstValue>
-	void fg_ApplyCompatibleComments(t_CDstValue &o_Dst, NContainer::TCVector<CJsonConvertedComments> &_Records)
+	template <typename tf_CDstValue>
+	void fg_ApplyCompatibleComments(tf_CDstValue &o_Dst, NContainer::TCVector<CJsonConvertedComments> &_Records)
 	{
 		umint iRecord = 0;
 		fg_ApplyConvertedComments(o_Dst, _Records, iRecord);
 	}
 
-	template <typename t_CDstValue, typename t_CSrcValue>
-	void fg_ConvertCompatibleComments(t_CDstValue &o_Dst, t_CSrcValue const &_Src)
+	template <typename tf_CDstValue, typename tf_CSrcValue>
+	void fg_ConvertCompatibleComments(tf_CDstValue &o_Dst, tf_CSrcValue const &_Src)
 	{
-		if constexpr (gc_JsonNeedsCommentConversion<t_CDstValue, t_CSrcValue>)
+		if constexpr (gc_JsonNeedsCommentConversion<tf_CDstValue, tf_CSrcValue>)
 		{
 			NContainer::TCVector<CJsonConvertedComments> Records;
-			fg_RecordCompatibleComments<t_CDstValue>(_Src, Records);
+			fg_RecordCompatibleComments<tf_CDstValue>(_Src, Records);
 			fg_ApplyCompatibleComments(o_Dst, Records);
 		}
 	}

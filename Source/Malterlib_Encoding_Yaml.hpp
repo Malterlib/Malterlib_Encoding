@@ -21,25 +21,25 @@
 namespace NMib::NEncoding
 {
 	template <typename t_CParent>
-	template <typename t_CParseContext>
+	template <typename tf_CParseContext>
 	auto TCJsonValue<t_CParent>::fs_FromStringYaml(NStr::CStr const &_String, NStr::CStr const &_FileName, EJsonDialectFlag _Flags) -> CValue
 	{
-		using CMetadataString = TCConditional<CValue::mc_bPreserveYamlMetadata && t_CParseContext::mc_bRecordYamlMetadata, NStr::CStr, CEmpty>;
+		using CMetadataString = TCConditional<CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata, NStr::CStr, CEmpty>;
 
 		static_assert
 			(
-				!t_CParseContext::mc_bRecordYamlMetadata || CValue::mc_bPreserveYamlMetadata
+				!tf_CParseContext::mc_bRecordYamlMetadata || CValue::mc_bPreserveYamlMetadata
 				, "recording YAML metadata requires a YAML-metadata-preserving alias (e.g. CJsonOrderedYaml)"
 			)
 		;
 
-		NYaml::fg_AssertExclusiveRecording<t_CParseContext>();
+		NYaml::fg_AssertExclusiveRecording<tf_CParseContext>();
 
 		CValue Output;
 		NStr::CStr ToParse = _String;
 		uch8 const *pParse = reinterpret_cast<uch8 const *>(ToParse.f_GetStr());
 
-		t_CParseContext Context;
+		tf_CParseContext Context;
 		Context.m_pStartParse = pParse;
 		Context.m_FileName = _FileName;
 		Context.m_Flags = _Flags;
@@ -63,7 +63,7 @@ namespace NMib::NEncoding
 		CMetadataString TrailingComment;
 		NYaml::fg_ParseYamlWhiteSpaceAndComments(pParse, Context, TrailingComment);
 
-		if constexpr (CValue::mc_bPreserveYamlMetadata && t_CParseContext::mc_bRecordYamlMetadata)
+		if constexpr (CValue::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bRecordYamlMetadata)
 		{
 			if (!LeadingComment.f_IsEmpty())
 				Output.f_Yaml().f_SetLeadingComment(fg_Move(LeadingComment));
@@ -122,13 +122,13 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	template <typename t_CParseContext>
+	template <typename tf_CParseContext>
 	NStr::CStr TCJsonValue<t_CParent>::f_ToStringYamlContext(ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags) const
 	{
 		NStr::CStr Return;
 		{
 			NStr::CStr::CAppender Appender(Return);
-			NYaml::fg_GenerateYamlDocument<t_CParseContext>(Appender, static_cast<CValue const &>(*this), _pPrettySeparator, _Flags);
+			NYaml::fg_GenerateYamlDocument<tf_CParseContext>(Appender, static_cast<CValue const &>(*this), _pPrettySeparator, _Flags);
 		}
 		return Return;
 	}

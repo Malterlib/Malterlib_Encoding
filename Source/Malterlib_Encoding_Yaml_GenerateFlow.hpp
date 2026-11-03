@@ -347,18 +347,18 @@ namespace NMib::NEncoding::NYaml
 			o_String += _Value;
 	}
 
-	template <typename tf_CJson>
+	template <typename t_CJson>
 	struct TCYamlGenerationAnchor
 	{
 		NStr::CStr m_Name;
-		tf_CJson m_Value;
+		t_CJson m_Value;
 		umint m_Position = 0;
 	};
 
-	template <typename tf_CJson>
+	template <typename t_CJson>
 	struct TCYamlGenerationState
 	{
-		NContainer::TCMap<NStr::CStr, NContainer::TCVector<TCYamlGenerationAnchor<tf_CJson>>> m_Anchors;
+		NContainer::TCMap<NStr::CStr, NContainer::TCVector<TCYamlGenerationAnchor<t_CJson>>> m_Anchors;
 		NContainer::TCMap<NStr::CStr, NStr::CStr> const *m_pDocumentTagHandles = nullptr;
 		umint m_Position = 0;
 	};
@@ -696,12 +696,12 @@ namespace NMib::NEncoding::NYaml
 
 			if constexpr
 			(
-				requires (tf_CJson const &Value)
+				requires (tf_CJson const &_Json)
 				{
-					Value.f_EType();
-					Value.f_UserType();
-					Value.f_Binary();
-					Value.f_Date();
+					_Json.f_EType();
+					_Json.f_UserType();
+					_Json.f_Binary();
+					_Json.f_Date();
 				}
 			)
 			{
@@ -995,10 +995,10 @@ namespace NMib::NEncoding::NYaml
 		default:
 			if constexpr
 			(
-				requires (tf_CJson const &Value)
+				requires (tf_CJson const &_Json)
 				{
-					Value.f_EType();
-					Value.f_Binary();
+					_Json.f_EType();
+					_Json.f_Binary();
 				}
 			)
 			{

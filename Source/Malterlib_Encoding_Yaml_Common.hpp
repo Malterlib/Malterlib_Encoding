@@ -743,9 +743,9 @@ namespace NMib::NEncoding::NYaml
 		{
 			if constexpr
 			(
-				requires (tf_CValue &Value)
+				requires (tf_CValue &_Value)
 				{
-					Value.f_Binary();
+					_Value.f_Binary();
 				}
 			)
 			{
@@ -778,9 +778,9 @@ namespace NMib::NEncoding::NYaml
 		{
 			if constexpr
 			(
-				requires (tf_CValue &Value)
+				requires (tf_CValue &_Value)
 				{
-					Value.f_Date();
+					_Value.f_Date();
 				}
 			)
 			{
@@ -817,9 +817,9 @@ namespace NMib::NEncoding::NYaml
 		{
 			if constexpr
 			(
-				requires (tf_CValue &Value)
+				requires (tf_CValue &_Value)
 				{
-					Value.f_UserType();
+					_Value.f_UserType();
 				}
 			)
 			{

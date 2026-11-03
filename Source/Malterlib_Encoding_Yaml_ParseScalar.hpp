@@ -509,16 +509,16 @@ namespace NMib::NEncoding::NYaml
 			fg_ThrowYamlParseError(_Context, "YAML mapping key must be a string", _pLocation);
 	}
 
-	template <typename tf_CValue>
+	template <typename t_CValue>
 	struct TCYamlAnchor
 	{
 		NStr::CStr m_Name;
-		tf_CValue m_Value;
+		t_CValue m_Value;
 		bool m_bOpen = false;
 	};
 
-	template <typename tf_CValue>
-	using TCYamlAnchors = NContainer::TCVector<TCYamlAnchor<tf_CValue>>;
+	template <typename t_CValue>
+	using TCYamlAnchors = NContainer::TCVector<TCYamlAnchor<t_CValue>>;
 
 	template <typename tf_CValue>
 	TCYamlAnchor<tf_CValue> *fg_FindAnchor(TCYamlAnchors<tf_CValue> &_Anchors, NStr::CStr const &_Name)

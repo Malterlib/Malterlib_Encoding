@@ -697,7 +697,7 @@ namespace NMib::NEncoding
 		struct CJsonEqualsVisitor
 		{
 			template <typename tf_CTypeLeft, typename tf_CTypeRight>
-			bool operator () (tf_CTypeLeft const &, tf_CTypeRight const &)
+			bool operator () (tf_CTypeLeft const &_Left, tf_CTypeRight const &_Right)
 			{
 				return false;
 			}
@@ -727,7 +727,7 @@ namespace NMib::NEncoding
 		struct CJsonSpaceshipVisitor
 		{
 			template <typename tf_CTypeLeft, typename tf_CTypeRight>
-			COrdering_Partial operator () (tf_CTypeLeft const &, tf_CTypeRight const &)
+			COrdering_Partial operator () (tf_CTypeLeft const &_Left, tf_CTypeRight const &_Right)
 			{
 				return COrdering_Partial::unordered;
 			}

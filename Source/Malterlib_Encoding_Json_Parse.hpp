@@ -58,15 +58,15 @@ namespace NMib::NEncoding::NJson
 	{
 	}
 
-	inline void CDiscardCommentSink::f_AppendVerbatim(uch8 const *, uch8 const *)
+	inline void CDiscardCommentSink::f_AppendVerbatim(uch8 const *_pStart, uch8 const *_pEnd)
 	{
 	}
 
-	inline void CDiscardCommentSink::f_AppendComment(uch8 const *, uch8 const *, bool)
+	inline void CDiscardCommentSink::f_AppendComment(uch8 const *_pStart, uch8 const *_pEnd, bool _bIsBlock)
 	{
 	}
 
-	inline void CDiscardCommentSink::f_AppendChar(ch8)
+	inline void CDiscardCommentSink::f_AppendChar(ch8 _Char)
 	{
 	}
 
@@ -745,7 +745,7 @@ namespace NMib::NEncoding::NJson
 		}
 	}
 
-	template <uch8 t_QuoteCharacter, EParseJsonStringFlag t_Flags, typename tf_CParseContext, typename tf_FExtraParse>
+	template <uch8 tf_QuoteCharacter, EParseJsonStringFlag tf_Flags, typename tf_CParseContext, typename tf_FExtraParse>
 	static bool fg_ParseJsonString(NStr::CStr &o_String, uch8 const * &o_pParse, tf_CParseContext &_Context, tf_FExtraParse &&_fExtraParse)
 	{
 		using namespace NStr;
@@ -754,7 +754,7 @@ namespace NMib::NEncoding::NJson
 		auto Cleanup = g_OnScopeExit / [&]
 			{
 				o_pParse = pParse;
-				switch (t_QuoteCharacter)
+				switch (tf_QuoteCharacter)
 				{
 				case '\"': o_String.f_SetUserData(EJsonStringType_DoubleQuote); break;
 				case '\'': o_String.f_SetUserData(EJsonStringType_SingleQuote); break;
@@ -763,9 +763,9 @@ namespace NMib::NEncoding::NJson
 			}
 		;
 
-		if constexpr ((t_Flags & EParseJsonStringFlag_NoQuotes) == EParseJsonStringFlag_None)
+		if constexpr ((tf_Flags & EParseJsonStringFlag_NoQuotes) == EParseJsonStringFlag_None)
 		{
-			DMibRequire(*pParse == t_QuoteCharacter);
+			DMibRequire(*pParse == tf_QuoteCharacter);
 			++pParse;
 		}
 
@@ -796,16 +796,16 @@ namespace NMib::NEncoding::NJson
 
 		while (*pParse)
 		{
-			if (*pParse == t_QuoteCharacter)
+			if (*pParse == tf_QuoteCharacter)
 			{
 				++pParse;
-				if constexpr (t_Flags & EParseJsonStringFlag_AllowMultiLine)
+				if constexpr (tf_Flags & EParseJsonStringFlag_AllowMultiLine)
 				{
 					if (*pParse == '\\')
 					{
 						++pParse;
 						fg_ParseJsonWhiteSpace<tf_CParseContext>(pParse);
-						if (*pParse != t_QuoteCharacter)
+						if (*pParse != tf_QuoteCharacter)
 							fg_ThrowJsonParseError<tf_CParseContext>(_Context, "Expected continuation of string", pParse);
 						++pParse;
 					}
@@ -827,7 +827,7 @@ namespace NMib::NEncoding::NJson
 				{
 				case '\\':
 				case '/':
-				case t_QuoteCharacter:
+				case tf_QuoteCharacter:
 					fAddChar(*pParse);
 					++pParse;
 					break;
@@ -1019,7 +1019,7 @@ namespace NMib::NEncoding::NJson
 			}
 		}
 
-		if constexpr ((t_Flags & EParseJsonStringFlag_NoQuotes) != EParseJsonStringFlag_None)
+		if constexpr ((tf_Flags & EParseJsonStringFlag_NoQuotes) != EParseJsonStringFlag_None)
 			return true;
 		else
 			return false;
@@ -1627,26 +1627,26 @@ namespace NMib::NEncoding::NJson
 namespace NMib::NEncoding
 {
 	template <typename t_CParent>
-	template <typename t_CParseContext>
+	template <typename tf_CParseContext>
 	auto TCJsonValue<t_CParent>::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, EJsonDialectFlag _Flags) -> CValue
 	{
 		using namespace NStr;
-		static_assert(!t_CParseContext::mc_bRecordComments || CValue::mc_bPreserveComments, "recording JSON5 comments requires a comment-preserving alias (e.g. CJsonOrderedWithComments)");
+		static_assert(!tf_CParseContext::mc_bRecordComments || CValue::mc_bPreserveComments, "recording JSON5 comments requires a comment-preserving alias (e.g. CJsonOrderedWithComments)");
 		CValue Output;
 		CStr ToParse = _String;
 
 		uch8 const *pParse = reinterpret_cast<uch8 const *>(ToParse.f_GetStr());
 
-		t_CParseContext Context;
+		tf_CParseContext Context;
 		Context.m_pStartParse = pParse;
 		Context.m_FileName = _FileName;
 		Context.m_Flags = _Flags;
 
-		using CSink = TCConditional<t_CParseContext::mc_bRecordComments, NJson::CCommentSink, NJson::CDiscardCommentSink>;
+		using CSink = TCConditional<tf_CParseContext::mc_bRecordComments, NJson::CCommentSink, NJson::CDiscardCommentSink>;
 		CSink Sink;
 		Sink.f_Reset();
 		NJson::fg_ParseWhiteSpaceAndComments(pParse, Context, Sink);
-		if constexpr (t_CParseContext::mc_bRecordComments)
+		if constexpr (tf_CParseContext::mc_bRecordComments)
 		{
 			auto Leading = Sink.f_TakeAndClear();
 			Output.f_Trivia().f_SetLeading(fg_Move(Leading.m_Text), Leading.m_bHasComma);
@@ -1657,14 +1657,14 @@ namespace NMib::NEncoding
 
 		Sink.f_Reset();
 		NJson::fg_ParseWhiteSpaceAndComments(pParse, Context, Sink);
-		if constexpr (t_CParseContext::mc_bRecordComments)
+		if constexpr (tf_CParseContext::mc_bRecordComments)
 		{
 			auto Trailing = Sink.f_TakeAndClear();
 			Output.f_Trivia().f_SetTrailing(fg_Move(Trailing.m_Text), Trailing.m_bHasComma);
 		}
 
 		if (*pParse)
-			NJson::fg_ThrowJsonParseError<t_CParseContext>(Context, "Unexpected character after root value", pParse);
+			NJson::fg_ThrowJsonParseError<tf_CParseContext>(Context, "Unexpected character after root value", pParse);
 
 		return fg_Move(Output);
 	}

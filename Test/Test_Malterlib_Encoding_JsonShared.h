@@ -7,8 +7,8 @@
 namespace
 {
 	// Helper to count elements in an iterator with operator bool() and operator++()
-	template <typename t_CIterator>
-	aint fg_IteratorCount(t_CIterator _Iterator)
+	template <typename tf_CIterator>
+	aint fg_IteratorCount(tf_CIterator _Iterator)
 	{
 		aint nCount = 0;
 		for (; _Iterator; ++_Iterator)

@@ -58,11 +58,11 @@ namespace
 			return DMibExceptionInstanceParse(NStr::CParseError::fs_ToString(Errors), Errors);
 		}
 
-		template <typename t_CParseContext>
+		template <typename tf_CParseContext>
 		static void fs_ExpectParseError(NStr::CStr const &_Case, NStr::CStr const &_Text, NStr::CStr const &_Error, uint32 _Line, uint32 _Column, uint32 _Character)
 		{
 			DMibTestPath(_Case);
-			DMibExpectException(CJsonOrdered::fs_FromString<t_CParseContext>(_Text), fs_MakeParseException(_Error, _Line, _Column, _Character));
+			DMibExpectException(CJsonOrdered::fs_FromString<tf_CParseContext>(_Text), fs_MakeParseException(_Error, _Line, _Column, _Character));
 		}
 
 		static umint fs_CountForegroundColorChanges(NStr::CStr const &_Text)
@@ -71,7 +71,7 @@ namespace
 			NCommandLine::CAnsiEncodingParse::fs_Parse
 				(
 					_Text
-					, [](NStr::CStr const &) -> bool
+					, [](NStr::CStr const &_String) -> bool
 					{
 						return true;
 					}
@@ -91,7 +91,7 @@ namespace
 			NCommandLine::CAnsiEncodingParse::fs_Parse
 				(
 					_Text
-					, [](NStr::CStr const &) -> bool
+					, [](NStr::CStr const &_String) -> bool
 					{
 						return true;
 					}

@@ -80,13 +80,13 @@ namespace NMib::NEncoding::NPrivate
 namespace NMib::NEncoding
 {
 	template <typename t_CParent>
-	template <typename t_CParseContext>
+	template <typename tf_CParseContext>
 	NStr::CStr TCJsonValue<t_CParent>::f_ToStringColoredYamlContext(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags) const
 	{
 		NStr::CStr Return;
 		{
 			NPrivate::CYamlColorAppender Appender(Return, _AnsiFlags);
-			NYaml::fg_GenerateYamlDocument<t_CParseContext>(Appender, static_cast<CValue const &>(*this), _pPrettySeparator, _Flags);
+			NYaml::fg_GenerateYamlDocument<tf_CParseContext>(Appender, static_cast<CValue const &>(*this), _pPrettySeparator, _Flags);
 		}
 		return Return;
 	}

@@ -633,26 +633,26 @@ namespace NMib::NEncoding
 	using CEJson5RecordingParseContext = NPrivate::CEJson5RecordingParseContext;
 
 	template <typename t_CParent>
-	template <typename t_CParseContext>
+	template <typename tf_CParseContext>
 	TCEJsonValue<t_CParent> TCEJsonValue<t_CParent>::fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName, EJsonDialectFlag _Flags)
 	{
 		using namespace NStr;
-		static_assert(!t_CParseContext::mc_bRecordComments || CValue::mc_bPreserveComments, "recording JSON5 comments requires a comment-preserving alias (e.g. CEJsonOrderedWithComments)");
+		static_assert(!tf_CParseContext::mc_bRecordComments || CValue::mc_bPreserveComments, "recording JSON5 comments requires a comment-preserving alias (e.g. CEJsonOrderedWithComments)");
 		TCEJsonValue<t_CParent> Output;
 		CStr ToParse = _String;
 
 		uch8 const *pParse = reinterpret_cast<uch8 const *>(ToParse.f_GetStr());
 
-		t_CParseContext Context;
+		tf_CParseContext Context;
 		Context.m_pStartParse = pParse;
 		Context.m_FileName = _FileName;
 		Context.m_Flags = _Flags;
 
-		using CSink = TCConditional<t_CParseContext::mc_bRecordComments, NJson::CCommentSink, NJson::CDiscardCommentSink>;
+		using CSink = TCConditional<tf_CParseContext::mc_bRecordComments, NJson::CCommentSink, NJson::CDiscardCommentSink>;
 		CSink Sink;
 		Sink.f_Reset();
 		NJson::fg_ParseWhiteSpaceAndComments(pParse, Context, Sink);
-		if constexpr (t_CParseContext::mc_bRecordComments)
+		if constexpr (tf_CParseContext::mc_bRecordComments)
 		{
 			auto Leading = Sink.f_TakeAndClear();
 			Output.f_Trivia().f_SetLeading(fg_Move(Leading.m_Text), Leading.m_bHasComma);
@@ -663,14 +663,14 @@ namespace NMib::NEncoding
 
 		Sink.f_Reset();
 		NJson::fg_ParseWhiteSpaceAndComments(pParse, Context, Sink);
-		if constexpr (t_CParseContext::mc_bRecordComments)
+		if constexpr (tf_CParseContext::mc_bRecordComments)
 		{
 			auto Trailing = Sink.f_TakeAndClear();
 			Output.f_Trivia().f_SetTrailing(fg_Move(Trailing.m_Text), Trailing.m_bHasComma);
 		}
 
 		if (*pParse)
-			NJson::fg_ThrowJsonParseError<t_CParseContext>(Context, "Unexpected character after root value", pParse);
+			NJson::fg_ThrowJsonParseError<tf_CParseContext>(Context, "Unexpected character after root value", pParse);
 
 		return fg_Move(Output);
 	}

@@ -323,11 +323,11 @@ namespace NMib::NEncoding
 		static TCEJsonValue fs_FromJsonNoConvert(CJsonType const &_Json);
 		static TCEJsonValue fs_FromJsonNoConvert(CJsonType &&_Json);
 
-		template <typename t_CParseContext>
+		template <typename tf_CParseContext>
 		static TCEJsonValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
-		template <typename t_CParseContext>
+		template <typename tf_CParseContext>
 		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
-		template <typename t_CParseContext>
+		template <typename tf_CParseContext>
 		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 
 		static TCEJsonValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
@@ -471,7 +471,7 @@ namespace NMib::NEncoding
 
 	namespace NPrivate
 	{
-		template <typename tf_CUserType>
+		template <typename t_CUserType>
 		struct TCEJsonForUserType;
 
 		template <>
@@ -511,8 +511,8 @@ namespace NMib::NEncoding
 		};
 	}
 
-	template <typename tf_CUserType>
-	using TCEJsonUserTypeValueYamlType = typename NPrivate::TCEJsonForUserType<NTraits::TCRemoveReferenceAndQualifiers<tf_CUserType>>::CType;
+	template <typename t_CUserType>
+	using TCEJsonUserTypeValueYamlType = typename NPrivate::TCEJsonForUserType<NTraits::TCRemoveReferenceAndQualifiers<t_CUserType>>::CType;
 
 	template <typename tf_CUserType>
 	auto fg_GetYamlUserTypeValue(tf_CUserType const &_UserType) -> TCEJsonUserTypeValueYamlType<tf_CUserType>;

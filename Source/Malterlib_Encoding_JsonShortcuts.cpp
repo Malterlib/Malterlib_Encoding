@@ -8,10 +8,10 @@
 
 namespace NMib::NEncoding
 {
-	template <typename tf_CJson>
-	typename tf_CJson::CKey TCJsonConstants<tf_CJson>::operator () (NStr::CStr const &_Key)
+	template <typename t_CJson>
+	typename t_CJson::CKey TCJsonConstants<t_CJson>::operator () (NStr::CStr const &_Key)
 	{
-		typename tf_CJson::CKey Key;
+		typename t_CJson::CKey Key;
 		Key.m_Key = _Key;
 		return Key;
 	}

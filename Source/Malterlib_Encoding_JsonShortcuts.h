@@ -8,7 +8,7 @@
 
 namespace NMib::NEncoding
 {
-	template <typename tf_CJson>
+	template <typename t_CJson>
 	struct TCJsonConstants
 	{
 		static constexpr auto mc_Null = EJsonType_Null;
@@ -18,27 +18,27 @@ namespace NMib::NEncoding
 		static constexpr auto mc_InvalidDate = EEJsonType_Date;
 		static constexpr auto mc_EmptyBinary = EEJsonType_Binary;
 
-		static typename tf_CJson::CKey operator () (NStr::CStr const &_Key);
+		static typename t_CJson::CKey operator () (NStr::CStr const &_Key);
 
-		tf_CJson const &operator = (tf_CJson const &_Convert) const
+		t_CJson const &operator = (t_CJson const &_Convert) const
 		{
 			return _Convert;
 		}
 
-		tf_CJson &&operator = (tf_CJson &&_Convert) const
+		t_CJson &&operator = (t_CJson &&_Convert) const
 		{
 			return fg_Move(_Convert);
 		}
 
-		tf_CJson operator = (std::initializer_list<CVoidTag> const &_Initializer) const
+		t_CJson operator = (std::initializer_list<CVoidTag> const &_Initializer) const
 		{
 			return EJsonType_Object;
 		}
 
 		template <typename ...tfp_CValue>
-		tf_CJson operator [] (tfp_CValue && ...p_Values) const
+		t_CJson operator [] (tfp_CValue && ...p_Values) const
 		{
-			tf_CJson Return;
+			t_CJson Return;
 
 			auto &ReturnArray = Return.f_Array();
 			((void)ReturnArray.f_Insert(fg_Forward<tfp_CValue>(p_Values)), ...);

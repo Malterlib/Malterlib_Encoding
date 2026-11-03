@@ -18,7 +18,7 @@ namespace NMib::NEncoding::NJson
 {
 	template <typename tf_CStr>
 	static void fg_AddPrefix(tf_CStr &o_String, umint _Depth, ch8 const *_pPrettySeparator);
-	template <ch8 t_QuoteCharacter, typename tf_CParseContext, bool tf_bAddQuotes = true, typename tf_CStr, typename tf_CSourceString>
+	template <ch8 tf_QuoteCharacter, typename tf_CParseContext, bool tf_bAddQuotes = true, typename tf_CStr, typename tf_CSourceString>
 	static void fg_GenerateJsonString(tf_CStr &o_String, tf_CSourceString const &_Value);
 	template <typename tf_CParseContext, typename tf_CStr, typename tf_CJson>
 	static void fg_GenerateJsonObject(tf_CStr &o_String, tf_CJson const &_Value, umint _Depth, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags);

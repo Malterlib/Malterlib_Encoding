@@ -20,7 +20,7 @@ namespace
 			NCommandLine::CAnsiEncodingParse::fs_Parse
 				(
 					_Text
-					, [](NStr::CStr const &) -> bool
+					, [](NStr::CStr const &_String) -> bool
 					{
 						return true;
 					}
@@ -40,7 +40,7 @@ namespace
 			NCommandLine::CAnsiEncodingParse::fs_Parse
 				(
 					_Text
-					, [](NStr::CStr const &) -> bool
+					, [](NStr::CStr const &_String) -> bool
 					{
 						return true;
 					}

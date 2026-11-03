@@ -78,10 +78,10 @@ namespace NMib::NEncoding::NYaml
 	{
 		if constexpr
 		(
-			requires (tf_CJson const &Value)
+			requires (tf_CJson const &_Json)
 			{
-				Value.f_EType();
-				Value.f_UserType();
+				_Json.f_EType();
+				_Json.f_UserType();
 			}
 		)
 		{
@@ -136,10 +136,10 @@ namespace NMib::NEncoding::NYaml
 	{
 		if constexpr
 		(
-			tf_CJson::mc_bPreserveYamlMetadata && requires (tf_CJson const &Value)
+			tf_CJson::mc_bPreserveYamlMetadata && requires (tf_CJson const &_Json)
 			{
-				Value.f_EType();
-				Value.f_UserType();
+				_Json.f_EType();
+				_Json.f_UserType();
 			}
 		)
 		{
@@ -175,10 +175,10 @@ namespace NMib::NEncoding::NYaml
 
 			if constexpr
 			(
-				requires (tf_CJson const &Value)
+				requires (tf_CJson const &_Json)
 				{
-					Value.f_EType();
-					Value.f_Binary();
+					_Json.f_EType();
+					_Json.f_Binary();
 				}
 			)
 			{
@@ -652,10 +652,10 @@ namespace NMib::NEncoding::NYaml
 
 		if constexpr
 		(
-			tf_CJson::mc_bPreserveYamlMetadata && requires (tf_CJson const &Value)
+			tf_CJson::mc_bPreserveYamlMetadata && requires (tf_CJson const &_Json)
 			{
-				Value.f_EType();
-				Value.f_UserType();
+				_Json.f_EType();
+				_Json.f_UserType();
 			}
 		)
 		{
@@ -710,10 +710,10 @@ namespace NMib::NEncoding::NYaml
 		}
 		else if constexpr
 		(
-			tf_CJson::mc_bPreserveYamlMetadata && requires (tf_CJson const &Value)
+			tf_CJson::mc_bPreserveYamlMetadata && requires (tf_CJson const &_Json)
 			{
-				Value.f_EType();
-				Value.f_Binary();
+				_Json.f_EType();
+				_Json.f_Binary();
 			}
 		)
 		{
@@ -871,7 +871,7 @@ namespace NMib::NEncoding::NYaml
 		}
 	}
 
-	template <typename t_CParseContext, typename tf_CSink, typename tf_CJson>
+	template <typename tf_CParseContext, typename tf_CSink, typename tf_CJson>
 	void fg_GenerateYamlDocument(tf_CSink &o_Sink, tf_CJson const &_Value, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags)
 	{
 		TCYamlGenerationState<tf_CJson> GenerationState;
@@ -913,7 +913,7 @@ namespace NMib::NEncoding::NYaml
 		}
 
 		bool bUseFlowStyle = _pPrettySeparator == nullptr;
-		if constexpr (tf_CJson::mc_bPreserveYamlMetadata && t_CParseContext::mc_bAllowFlowStyle)
+		if constexpr (tf_CJson::mc_bPreserveYamlMetadata && tf_CParseContext::mc_bAllowFlowStyle)
 		{
 			if (_Value.f_Yaml().f_NodeStyle() == EYamlNodeStyle_Flow)
 				bUseFlowStyle = true;
@@ -921,19 +921,19 @@ namespace NMib::NEncoding::NYaml
 				bUseFlowStyle = false;
 		}
 
-		if constexpr (t_CParseContext::mc_bAllowBlockStyle)
+		if constexpr (tf_CParseContext::mc_bAllowBlockStyle)
 		{
-			if constexpr (t_CParseContext::mc_bCustomGenerate)
+			if constexpr (tf_CParseContext::mc_bCustomGenerate)
 			{
-				if (t_CParseContext::template fs_GenerateValue<t_CParseContext>(o_Sink, _Value, 0, bUseFlowStyle ? nullptr : (_pPrettySeparator ? _pPrettySeparator : "  "), _Flags))
+				if (tf_CParseContext::template fs_GenerateValue<tf_CParseContext>(o_Sink, _Value, 0, bUseFlowStyle ? nullptr : (_pPrettySeparator ? _pPrettySeparator : "  "), _Flags))
 					return;
 			}
 
 			if constexpr
 			(
-				tf_CJson::mc_bPreserveYamlMetadata || requires (tf_CJson const &Value)
+				tf_CJson::mc_bPreserveYamlMetadata || requires (tf_CJson const &_Json)
 				{
-					Value.f_EType();
+					_Json.f_EType();
 				}
 			)
 			{
@@ -952,17 +952,17 @@ namespace NMib::NEncoding::NYaml
 		}
 		else
 		{
-			if constexpr (t_CParseContext::mc_bCustomGenerate)
+			if constexpr (tf_CParseContext::mc_bCustomGenerate)
 			{
-				if (t_CParseContext::template fs_GenerateValue<t_CParseContext>(o_Sink, _Value, 0, nullptr, _Flags))
+				if (tf_CParseContext::template fs_GenerateValue<tf_CParseContext>(o_Sink, _Value, 0, nullptr, _Flags))
 					return;
 			}
 
 			if constexpr
 			(
-				tf_CJson::mc_bPreserveYamlMetadata || requires (tf_CJson const &Value)
+				tf_CJson::mc_bPreserveYamlMetadata || requires (tf_CJson const &_Json)
 				{
-					Value.f_EType();
+					_Json.f_EType();
 				}
 			)
 			{

@@ -191,7 +191,7 @@ namespace NMib::NEncoding::NJson
 	static void fg_ParseJsonArray(tf_COutValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context);
 	template <typename tf_COutValue, typename tf_CParseContext>
 	static void fg_ParseJsonObject(tf_COutValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context);
-	template <uch8 t_QuoteCharacter, EParseJsonStringFlag t_Flags, typename tf_CParseContext, typename tf_FExtraParse = bool>
+	template <uch8 tf_QuoteCharacter, EParseJsonStringFlag tf_Flags, typename tf_CParseContext, typename tf_FExtraParse = bool>
 	static bool fg_ParseJsonString(NStr::CStr &o_String, uch8 const * &o_pParse, tf_CParseContext &_Context, tf_FExtraParse &&_fExtraParse = false);
 	template <typename tf_COutValue, typename tf_CParseContext>
 	static void fg_ParseJsonValue(tf_COutValue &o_Value, uch8 const * &o_pParse, tf_CParseContext &_Context);

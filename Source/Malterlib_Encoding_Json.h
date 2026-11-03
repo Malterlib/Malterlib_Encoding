@@ -257,18 +257,18 @@ namespace NMib::NEncoding
 		// Parsing/generating
 		// ==============
 
-		template <typename t_CParseContext>
+		template <typename tf_CParseContext>
 		static CValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
-		template <typename t_CParseContext>
+		template <typename tf_CParseContext>
 		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
-		template <typename t_CParseContext>
+		template <typename tf_CParseContext>
 		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 
 		static CValue fs_FromString(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
 		static CValue fs_FromStringStrict(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
 		static CValue fs_FromStringJsonC(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
 		static CValue fs_FromStringJson5(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
-		template <typename t_CParseContext>
+		template <typename tf_CParseContext>
 		static CValue fs_FromStringYaml(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
 		static CValue fs_FromStringYaml(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
 		static CValue fs_FromStringYamlBlock(NStr::CStr const &_String, NStr::CStr const &_FileName = {}, EJsonDialectFlag _Flags = EJsonDialectFlag_None);
@@ -277,7 +277,7 @@ namespace NMib::NEncoding
 		NStr::CStr f_ToString(ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringJsonC(ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringJson5(ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
-		template <typename t_CParseContext>
+		template <typename tf_CParseContext>
 		NStr::CStr f_ToStringYamlContext(ch8 const *_pPrettySeparator = "  ", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringYaml(ch8 const *_pPrettySeparator = "  ", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringYamlFlow(ch8 const *_pPrettySeparator = nullptr, EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
@@ -285,7 +285,7 @@ namespace NMib::NEncoding
 		NStr::CStr f_ToStringColored(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringColoredJsonC(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringColoredJson5(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "\t", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
-		template <typename t_CParseContext>
+		template <typename tf_CParseContext>
 		NStr::CStr f_ToStringColoredYamlContext(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "  ", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringColoredYaml(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = "  ", EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 		NStr::CStr f_ToStringColoredYamlFlow(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = nullptr, EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
@@ -472,8 +472,8 @@ namespace NMib::NEncoding
 		TCJsonObjectEntryHandle() = default;
 		TCJsonObjectEntryHandle(TCJsonObjectEntryHandle &&_Other) noexcept;
 		TCJsonObjectEntryHandle &operator = (TCJsonObjectEntryHandle &&_Other) noexcept;
-		TCJsonObjectEntryHandle(TCJsonObjectEntryHandle const &) = delete;
-		TCJsonObjectEntryHandle &operator = (TCJsonObjectEntryHandle const &) = delete;
+		TCJsonObjectEntryHandle(TCJsonObjectEntryHandle const &_Other) = delete;
+		TCJsonObjectEntryHandle &operator = (TCJsonObjectEntryHandle const &_Other) = delete;
 
 		[[nodiscard]] bool f_IsEmpty() const noexcept;
 		[[nodiscard]] explicit operator bool () const noexcept;
@@ -506,8 +506,8 @@ namespace NMib::NEncoding
 
 	public:
 		TCJsonOrderedDestructiveIterator(TCJsonOrderedDestructiveIterator &&_Other) noexcept;
-		TCJsonOrderedDestructiveIterator(TCJsonOrderedDestructiveIterator const &) = delete;
-		TCJsonOrderedDestructiveIterator &operator = (TCJsonOrderedDestructiveIterator const &) = delete;
+		TCJsonOrderedDestructiveIterator(TCJsonOrderedDestructiveIterator const &_Other) = delete;
+		TCJsonOrderedDestructiveIterator &operator = (TCJsonOrderedDestructiveIterator const &_Other) = delete;
 		TCJsonOrderedDestructiveIterator &operator = (TCJsonOrderedDestructiveIterator &&_Other) noexcept;
 		~TCJsonOrderedDestructiveIterator();
 
@@ -545,8 +545,8 @@ namespace NMib::NEncoding
 
 	public:
 		TCJsonSortedDestructiveIterator(TCJsonSortedDestructiveIterator &&_Other) noexcept;
-		TCJsonSortedDestructiveIterator(TCJsonSortedDestructiveIterator const &) = delete;
-		TCJsonSortedDestructiveIterator &operator = (TCJsonSortedDestructiveIterator const &) = delete;
+		TCJsonSortedDestructiveIterator(TCJsonSortedDestructiveIterator const &_Other) = delete;
+		TCJsonSortedDestructiveIterator &operator = (TCJsonSortedDestructiveIterator const &_Other) = delete;
 		TCJsonSortedDestructiveIterator &operator = (TCJsonSortedDestructiveIterator &&_Other) noexcept;
 		~TCJsonSortedDestructiveIterator();
 
@@ -568,8 +568,8 @@ namespace NMib::NEncoding
 		t_CJsonObject *mp_pObject;
 	};
 
-	template <typename t_CJsonObject>
-	bool fg_ValidateType(t_CJsonObject const *_pObject, EJsonType _Type);
+	template <typename tf_CJsonObject>
+	bool fg_ValidateType(tf_CJsonObject const *_pObject, EJsonType _Type);
 
 	NStr::CStr fg_JsonTypeToString(EJsonType _Type);
 }
