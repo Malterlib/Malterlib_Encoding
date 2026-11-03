@@ -71,7 +71,7 @@ namespace NMib::NEncoding
 	template <typename tf_CParent>
 	auto TCJsonValue<t_CParent>::fs_FromCompatible(TCJsonValue<tf_CParent> &&_Other) -> TCJsonValue
 	{
-		if constexpr (NPrivate::gc_JsonNeedsCommentConversion<TCJsonValue, TCJsonValue<tf_CParent>>)
+		if constexpr (NPrivate::gc_bJsonNeedsCommentConversion<TCJsonValue, TCJsonValue<tf_CParent>>)
 		{
 			// Record comments before moving the values, which can invalidate the source metadata.
 			NContainer::TCVector<NPrivate::CJsonConvertedComments> Records;
@@ -462,7 +462,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	bool TCJsonValue<t_CParent>::f_AsBoolean(bool _Default) const
+	bool TCJsonValue<t_CParent>::f_AsBoolean(bool _bDefault) const
 	{
 		switch (f_Type())
 		{
@@ -474,7 +474,7 @@ namespace NMib::NEncoding
 		case EJsonType_Integer: return f_Integer() != 0;
 		case EJsonType_Float: return f_Float() != 0.0;
 		case EJsonType_Boolean: return f_Boolean();
-		default: return _Default;
+		default: return _bDefault;
 		}
 	}
 
@@ -554,7 +554,7 @@ namespace NMib::NEncoding
 	}
 
 	template <typename t_CParent>
-	auto TCJsonValue<t_CParent>::operator = (bool _Value) -> CValue &
+	auto TCJsonValue<t_CParent>::operator = (bool _bValue) -> CValue &
 	{
 		if constexpr (CValue::mc_bPreserveYamlMetadata)
 		{
@@ -563,7 +563,7 @@ namespace NMib::NEncoding
 				this->mp_ValueYamlMetadata.f_ClearScalarMetadata();
 		}
 
-		this->mp_Value = NPrivate::CJsonBoolean(_Value);
+		this->mp_Value = NPrivate::CJsonBoolean(_bValue);
 
 		return static_cast<CValue &>(*this);
 	}

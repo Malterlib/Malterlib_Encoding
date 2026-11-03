@@ -485,18 +485,18 @@ namespace NMib::NEncoding
 
 	// TCJsonOrderedDestructiveIterator implementations
 	template <typename t_CJsonObject>
-	TCJsonOrderedDestructiveIterator<t_CJsonObject>::TCJsonOrderedDestructiveIterator(TCJsonOrderedDestructiveIterator &&_Other) noexcept
-		: mp_Iter(fg_Move(_Other.mp_Iter))
-		, mp_pObject(fg_Exchange(_Other.mp_pObject, nullptr))
+	TCJsonOrderedDestructiveIterator<t_CJsonObject>::TCJsonOrderedDestructiveIterator(TCJsonOrderedDestructiveIterator &&_iOther) noexcept
+		: mp_Iter(fg_Move(_iOther.mp_Iter))
+		, mp_pObject(fg_Exchange(_iOther.mp_pObject, nullptr))
 	{
 	}
 
 	template <typename t_CJsonObject>
-	TCJsonOrderedDestructiveIterator<t_CJsonObject> &TCJsonOrderedDestructiveIterator<t_CJsonObject>::operator = (TCJsonOrderedDestructiveIterator &&_Other) noexcept
+	TCJsonOrderedDestructiveIterator<t_CJsonObject> &TCJsonOrderedDestructiveIterator<t_CJsonObject>::operator = (TCJsonOrderedDestructiveIterator &&_iOther) noexcept
 	{
 		fp_Clear();
-		mp_Iter = fg_Move(_Other.mp_Iter);
-		mp_pObject = fg_Exchange(_Other.mp_pObject, nullptr);
+		mp_Iter = fg_Move(_iOther.mp_Iter);
+		mp_pObject = fg_Exchange(_iOther.mp_pObject, nullptr);
 		return *this;
 	}
 
@@ -564,18 +564,18 @@ namespace NMib::NEncoding
 
 	// TCJsonSortedDestructiveIterator implementations
 	template <typename t_CJsonObject>
-	TCJsonSortedDestructiveIterator<t_CJsonObject>::TCJsonSortedDestructiveIterator(TCJsonSortedDestructiveIterator &&_Other) noexcept
-		: mp_Iter(fg_Move(_Other.mp_Iter))
-		, mp_pObject(fg_Exchange(_Other.mp_pObject, nullptr))
+	TCJsonSortedDestructiveIterator<t_CJsonObject>::TCJsonSortedDestructiveIterator(TCJsonSortedDestructiveIterator &&_iOther) noexcept
+		: mp_Iter(fg_Move(_iOther.mp_Iter))
+		, mp_pObject(fg_Exchange(_iOther.mp_pObject, nullptr))
 	{
 	}
 
 	template <typename t_CJsonObject>
-	TCJsonSortedDestructiveIterator<t_CJsonObject> &TCJsonSortedDestructiveIterator<t_CJsonObject>::operator = (TCJsonSortedDestructiveIterator &&_Other) noexcept
+	TCJsonSortedDestructiveIterator<t_CJsonObject> &TCJsonSortedDestructiveIterator<t_CJsonObject>::operator = (TCJsonSortedDestructiveIterator &&_iOther) noexcept
 	{
 		fp_Clear();
-		mp_Iter = fg_Move(_Other.mp_Iter);
-		mp_pObject = fg_Exchange(_Other.mp_pObject, nullptr);
+		mp_Iter = fg_Move(_iOther.mp_Iter);
+		mp_pObject = fg_Exchange(_iOther.mp_pObject, nullptr);
 		return *this;
 	}
 

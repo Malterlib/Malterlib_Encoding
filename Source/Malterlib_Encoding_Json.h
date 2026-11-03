@@ -165,7 +165,7 @@ namespace NMib::NEncoding
 		CValue &operator = (pfp64 _Value);
 		CValue &operator = (pfp32 _Value);
 		CValue &operator = (fp32 _Value);
-		CValue &operator = (bool _Value);
+		CValue &operator = (bool _bValue);
 		CValue &operator = (EJsonType _Type);
 		CValue &operator = (ch8 const *_pValue);
 
@@ -208,7 +208,7 @@ namespace NMib::NEncoding
 		NStr::CStr f_AsString(NStr::CStr const &_Default) const;
 		int64 f_AsInteger(int64 _Default) const;
 		fp64 f_AsFloat(fp64 _Default) const;
-		bool f_AsBoolean(bool _Default) const;
+		bool f_AsBoolean(bool _bDefault) const;
 
 		//
 		// Object helpers
@@ -505,10 +505,10 @@ namespace NMib::NEncoding
 		using CObjectEntryHandle = TCJsonObjectEntryHandle<t_CJsonObject>;
 
 	public:
-		TCJsonOrderedDestructiveIterator(TCJsonOrderedDestructiveIterator &&_Other) noexcept;
-		TCJsonOrderedDestructiveIterator(TCJsonOrderedDestructiveIterator const &_Other) = delete;
-		TCJsonOrderedDestructiveIterator &operator = (TCJsonOrderedDestructiveIterator const &_Other) = delete;
-		TCJsonOrderedDestructiveIterator &operator = (TCJsonOrderedDestructiveIterator &&_Other) noexcept;
+		TCJsonOrderedDestructiveIterator(TCJsonOrderedDestructiveIterator &&_iOther) noexcept;
+		TCJsonOrderedDestructiveIterator(TCJsonOrderedDestructiveIterator const &_iOther) = delete;
+		TCJsonOrderedDestructiveIterator &operator = (TCJsonOrderedDestructiveIterator const &_iOther) = delete;
+		TCJsonOrderedDestructiveIterator &operator = (TCJsonOrderedDestructiveIterator &&_iOther) noexcept;
 		~TCJsonOrderedDestructiveIterator();
 
 		explicit operator bool () const;
@@ -544,10 +544,10 @@ namespace NMib::NEncoding
 		using CObjectEntryHandle = TCJsonObjectEntryHandle<t_CJsonObject>;
 
 	public:
-		TCJsonSortedDestructiveIterator(TCJsonSortedDestructiveIterator &&_Other) noexcept;
-		TCJsonSortedDestructiveIterator(TCJsonSortedDestructiveIterator const &_Other) = delete;
-		TCJsonSortedDestructiveIterator &operator = (TCJsonSortedDestructiveIterator const &_Other) = delete;
-		TCJsonSortedDestructiveIterator &operator = (TCJsonSortedDestructiveIterator &&_Other) noexcept;
+		TCJsonSortedDestructiveIterator(TCJsonSortedDestructiveIterator &&_iOther) noexcept;
+		TCJsonSortedDestructiveIterator(TCJsonSortedDestructiveIterator const &_iOther) = delete;
+		TCJsonSortedDestructiveIterator &operator = (TCJsonSortedDestructiveIterator const &_iOther) = delete;
+		TCJsonSortedDestructiveIterator &operator = (TCJsonSortedDestructiveIterator &&_iOther) noexcept;
 		~TCJsonSortedDestructiveIterator();
 
 		explicit operator bool () const;

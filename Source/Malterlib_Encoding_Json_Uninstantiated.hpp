@@ -481,7 +481,7 @@ namespace NMib::NEncoding::NPrivate
 		return m_bValue;
 	}
 
-	inline_always CJsonNull::CJsonNull(CNullPtr _Value)
+	inline_always CJsonNull::CJsonNull(CNullPtr _pValue)
 	{
 	}
 

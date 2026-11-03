@@ -130,8 +130,8 @@ namespace NMib::NEncoding
 		}
 
 		template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
-		TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>::TCJsonValueBase(bool _Value)
-			: mp_Value(CJsonBoolean(_Value))
+		TCJsonValueBase<t_TCValue, t_CTypes, t_ContainerFlags>::TCJsonValueBase(bool _bValue)
+			: mp_Value(CJsonBoolean(_bValue))
 		{
 		}
 

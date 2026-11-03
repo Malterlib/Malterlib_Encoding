@@ -28,9 +28,9 @@ namespace NMib::NEncoding
 			return int64(_Value);
 	}
 
-	CEJsonSorted fg_ToJson(bool _Value)
+	CEJsonSorted fg_ToJson(bool _bValue)
 	{
-		return _Value;
+		return _bValue;
 	}
 
 	CEJsonSorted fg_ToJson(uint32 _Value)

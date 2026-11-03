@@ -25,7 +25,7 @@ namespace NMib::NEncoding::NPrivate
 	struct CJsonNull
 	{
 		CJsonNull() = default;
-		inline_always CJsonNull(CNullPtr _Value);
+		inline_always CJsonNull(CNullPtr _pValue);
 		inline_always operator CNullPtr () const;
 
 		template <typename tf_CStream>
@@ -97,7 +97,7 @@ namespace NMib::NEncoding::NPrivate
 		TCJsonValueBase(pfp64 _Value);
 		TCJsonValueBase(pfp32 _Value);
 		TCJsonValueBase(fp32 _Value);
-		TCJsonValueBase(bool _Value);
+		TCJsonValueBase(bool _bValue);
 		TCJsonValueBase();
 		~TCJsonValueBase();
 

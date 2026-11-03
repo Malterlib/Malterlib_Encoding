@@ -608,7 +608,7 @@ namespace NMib::NEncoding::NPrivate
 	}
 
 	template <typename t_CDstValue, typename t_CSrcValue>
-	constexpr bool gc_JsonNeedsCommentConversion
+	constexpr bool gc_bJsonNeedsCommentConversion
 		= (t_CDstValue::mc_bPreserveYamlMetadata && t_CSrcValue::mc_bPreserveComments) || (t_CDstValue::mc_bPreserveComments && t_CSrcValue::mc_bPreserveYamlMetadata)
 	;
 
@@ -694,7 +694,7 @@ namespace NMib::NEncoding::NPrivate
 	template <typename tf_CDstValue, typename tf_CSrcValue>
 	void fg_ConvertCompatibleComments(tf_CDstValue &o_Dst, tf_CSrcValue const &_Src)
 	{
-		if constexpr (gc_JsonNeedsCommentConversion<tf_CDstValue, tf_CSrcValue>)
+		if constexpr (gc_bJsonNeedsCommentConversion<tf_CDstValue, tf_CSrcValue>)
 		{
 			NContainer::TCVector<CJsonConvertedComments> Records;
 			fg_RecordCompatibleComments<tf_CDstValue>(_Src, Records);

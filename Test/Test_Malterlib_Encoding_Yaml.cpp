@@ -569,8 +569,8 @@ namespace
 					DMibExpect(EJsonBinaryMeta.f_Yaml().f_TagSuffix(), ==, "binary");
 					DMibExpect(EJsonBinaryMeta.f_ToStringYamlFlow(), ==, "!!binary AAECAw==");
 
-					auto FlowUserText = "!Outer {x: !Inner {y: !!timestamp 2024-01-15T12:00:00Z}, bin: !!binary AAECAw==, literal: {$date: 5}}";
-					auto JsonUser = CJsonWithoutMeta::fs_FromStringYamlFlow(FlowUserText);
+					auto pFlowUserText = "!Outer {x: !Inner {y: !!timestamp 2024-01-15T12:00:00Z}, bin: !!binary AAECAw==, literal: {$date: 5}}";
+					auto JsonUser = CJsonWithoutMeta::fs_FromStringYamlFlow(pFlowUserText);
 					DMibExpect(JsonUser.f_IsObject(), ==, true);
 					DMibExpect(JsonUser["x"].f_IsObject(), ==, true);
 					DMibExpect(JsonUser["x"]["y"].f_String(), ==, "2024-01-15T12:00:00Z");
@@ -581,7 +581,7 @@ namespace
 					else
 						DMibExpect(JsonUser.f_ToStringYamlFlow(), ==, "{bin: AAECAw==, literal: {$date: 5}, x: {y: 2024-01-15T12:00:00Z}}");
 
-					auto JsonUserMeta = CJsonWithMeta::fs_FromStringYamlFlow(FlowUserText);
+					auto JsonUserMeta = CJsonWithMeta::fs_FromStringYamlFlow(pFlowUserText);
 					DMibExpect(JsonUserMeta.f_IsObject(), ==, true);
 					DMibExpect(JsonUserMeta.f_Yaml().f_TagSuffix(), ==, "Outer");
 					DMibExpect(JsonUserMeta["x"].f_Yaml().f_TagSuffix(), ==, "Inner");
@@ -595,9 +595,9 @@ namespace
 					else
 						DMibExpect(JsonUserMeta.f_ToStringYamlFlow(), ==, "!Outer {bin: !!binary AAECAw==, literal: {$date: 5}, x: !Inner {y: !!timestamp 2024-01-15T12:00:00Z}}");
 					if constexpr (tf_bOrdered)
-						DMibExpect(JsonUserMeta.f_ToStringYamlFlow(), ==, FlowUserText);
+						DMibExpect(JsonUserMeta.f_ToStringYamlFlow(), ==, pFlowUserText);
 
-					auto EJsonUser = CEJsonWithoutMeta::fs_FromStringYamlFlow(FlowUserText);
+					auto EJsonUser = CEJsonWithoutMeta::fs_FromStringYamlFlow(pFlowUserText);
 					DMibExpect(EJsonUser.f_IsUserType(), ==, true);
 					DMibExpect(EJsonUser.f_UserType().m_Type, ==, "Outer");
 					DMibExpect(EJsonUser.f_UserType().m_Value["x"]["$type"].f_String(), ==, "Inner");
@@ -609,7 +609,7 @@ namespace
 					else
 						DMibExpect(EJsonUser.f_ToStringYamlFlow(), ==, "!Outer {bin: !!binary AAECAw==, literal: {$date: 5}, x: !Inner {y: !!timestamp 2024-01-15T12:00:00Z}}");
 
-					auto EJsonUserMeta = CEJsonWithMeta::fs_FromStringYamlFlow(FlowUserText);
+					auto EJsonUserMeta = CEJsonWithMeta::fs_FromStringYamlFlow(pFlowUserText);
 					DMibExpect(EJsonUserMeta.f_IsUserType(), ==, true);
 					DMibExpect(EJsonUserMeta.f_UserType().m_Type, ==, "Outer");
 					DMibExpect(EJsonUserMeta.f_Yaml().f_TagSuffix(), ==, "Outer");
@@ -622,7 +622,7 @@ namespace
 					else
 						DMibExpect(EJsonUserMeta.f_ToStringYamlFlow(), ==, "!Outer {bin: !!binary AAECAw==, literal: {$date: 5}, x: !Inner {y: !!timestamp 2024-01-15T12:00:00Z}}");
 					if constexpr (tf_bOrdered)
-						DMibExpect(EJsonUserMeta.f_ToStringYamlFlow(), ==, FlowUserText);
+						DMibExpect(EJsonUserMeta.f_ToStringYamlFlow(), ==, pFlowUserText);
 				};
 
 				DMibTestCategory("YamlBlockTagsProjectToJsonAndEJson")
@@ -669,7 +669,7 @@ namespace
 					DMibExpect(EJsonBinaryBlockMeta.f_Binary().f_GetLen(), ==, 4);
 					DMibExpect(EJsonBinaryBlockMeta.f_Yaml().f_TagSuffix(), ==, "binary");
 
-					auto BlockUserText =
+					auto pBlockUserText =
 						"!Outer\n"
 						"  bin: !!binary AAECAw==\n"
 						"  literal:\n"
@@ -678,14 +678,14 @@ namespace
 						"    y: !!timestamp 2024-01-15T12:00:00Z\n"
 					;
 
-					auto JsonUserBlock = CJsonWithoutMeta::fs_FromStringYamlBlock(BlockUserText);
+					auto JsonUserBlock = CJsonWithoutMeta::fs_FromStringYamlBlock(pBlockUserText);
 					DMibExpect(JsonUserBlock.f_IsObject(), ==, true);
 					DMibExpect(JsonUserBlock["x"].f_IsObject(), ==, true);
 					DMibExpect(JsonUserBlock["x"]["y"].f_String(), ==, "2024-01-15T12:00:00Z");
 					DMibExpect(JsonUserBlock["bin"].f_String(), ==, "AAECAw==");
 					DMibExpect(JsonUserBlock["literal"]["$date"].f_Integer(), ==, 5);
 
-					auto JsonUserBlockMeta = CJsonWithMeta::fs_FromStringYamlBlock(BlockUserText);
+					auto JsonUserBlockMeta = CJsonWithMeta::fs_FromStringYamlBlock(pBlockUserText);
 					DMibExpect(JsonUserBlockMeta.f_IsObject(), ==, true);
 					DMibExpect(JsonUserBlockMeta.f_Yaml().f_TagSuffix(), ==, "Outer");
 					DMibExpect(JsonUserBlockMeta["x"].f_Yaml().f_TagSuffix(), ==, "Inner");
@@ -694,9 +694,9 @@ namespace
 					DMibExpect(JsonUserBlockMeta["bin"].f_String(), ==, "AAECAw==");
 					DMibExpect(JsonUserBlockMeta["bin"].f_Yaml().f_TagSuffix(), ==, "binary");
 					DMibExpect(JsonUserBlockMeta["literal"]["$date"].f_Integer(), ==, 5);
-					DMibExpect(JsonUserBlockMeta.f_ToStringYaml(), ==, BlockUserText);
+					DMibExpect(JsonUserBlockMeta.f_ToStringYaml(), ==, pBlockUserText);
 
-					auto EJsonUserBlock = CEJsonWithoutMeta::fs_FromStringYamlBlock(BlockUserText);
+					auto EJsonUserBlock = CEJsonWithoutMeta::fs_FromStringYamlBlock(pBlockUserText);
 					DMibExpect(EJsonUserBlock.f_IsUserType(), ==, true);
 					DMibExpect(EJsonUserBlock.f_UserType().m_Type, ==, "Outer");
 					DMibExpect(EJsonUserBlock.f_UserType().m_Value["x"]["$type"].f_String(), ==, "Inner");
@@ -704,7 +704,7 @@ namespace
 					DMibExpect(EJsonUserBlock.f_UserType().m_Value["bin"]["$binary"].f_String(), ==, "AAECAw==");
 					DMibExpect(EJsonUserBlock.f_UserType().m_Value["literal"]["$escape"]["$date"].f_Integer(), ==, 5);
 
-					auto EJsonUserBlockMeta = CEJsonWithMeta::fs_FromStringYamlBlock(BlockUserText);
+					auto EJsonUserBlockMeta = CEJsonWithMeta::fs_FromStringYamlBlock(pBlockUserText);
 					DMibExpect(EJsonUserBlockMeta.f_IsUserType(), ==, true);
 					DMibExpect(EJsonUserBlockMeta.f_UserType().m_Type, ==, "Outer");
 					DMibExpect(EJsonUserBlockMeta.f_Yaml().f_TagSuffix(), ==, "Outer");
@@ -712,10 +712,10 @@ namespace
 					DMibExpect(EJsonUserBlockMeta.f_UserType().m_Value["x"]["$value"]["y"]["$date"].f_IsInteger(), ==, true);
 					DMibExpect(EJsonUserBlockMeta.f_UserType().m_Value["bin"]["$binary"].f_String(), ==, "AAECAw==");
 					DMibExpect(EJsonUserBlockMeta.f_UserType().m_Value["literal"]["$escape"]["$date"].f_Integer(), ==, 5);
-					DMibExpect(EJsonUserBlockMeta.f_ToStringYaml(), ==, BlockUserText);
-					DMibExpect(CEJsonWithMeta::fs_FromJson(EJsonUserBlockMeta.f_ToJson()).f_ToStringYaml(), ==, BlockUserText);
+					DMibExpect(EJsonUserBlockMeta.f_ToStringYaml(), ==, pBlockUserText);
+					DMibExpect(CEJsonWithMeta::fs_FromJson(EJsonUserBlockMeta.f_ToJson()).f_ToStringYaml(), ==, pBlockUserText);
 
-					auto BlockUserSeparateTagText =
+					auto pBlockUserSeparateTagText =
 						"!Outer\n"
 						"  bin: !!binary AAECAw==\n"
 						"  literal:\n"
@@ -725,26 +725,26 @@ namespace
 						"      y: !!timestamp 2024-01-15T12:00:00Z\n"
 					;
 
-					auto JsonUserBlockSeparateTagMeta = CJsonWithMeta::fs_FromStringYamlBlock(BlockUserSeparateTagText);
+					auto JsonUserBlockSeparateTagMeta = CJsonWithMeta::fs_FromStringYamlBlock(pBlockUserSeparateTagText);
 					DMibExpect(JsonUserBlockSeparateTagMeta.f_IsObject(), ==, true);
 					DMibExpect(JsonUserBlockSeparateTagMeta.f_Yaml().f_TagSuffix(), ==, "Outer");
 					DMibExpect(JsonUserBlockSeparateTagMeta["x"].f_IsObject(), ==, true);
 					DMibExpect(JsonUserBlockSeparateTagMeta["x"].f_Yaml().f_TagSuffix(), ==, "Inner");
 					DMibExpect(JsonUserBlockSeparateTagMeta["x"]["y"].f_String(), ==, "2024-01-15T12:00:00Z");
 					DMibExpect(JsonUserBlockSeparateTagMeta["x"]["y"].f_Yaml().f_TagSuffix(), ==, "timestamp");
-					DMibExpect(JsonUserBlockSeparateTagMeta.f_ToStringYaml(), ==, BlockUserSeparateTagText);
+					DMibExpect(JsonUserBlockSeparateTagMeta.f_ToStringYaml(), ==, pBlockUserSeparateTagText);
 					CJsonWithMeta JsonUserBlockSeparateTagMetaCopy = JsonUserBlockSeparateTagMeta;
-					DMibExpect(JsonUserBlockSeparateTagMetaCopy.f_ToStringYaml(), ==, BlockUserSeparateTagText);
+					DMibExpect(JsonUserBlockSeparateTagMetaCopy.f_ToStringYaml(), ==, pBlockUserSeparateTagText);
 
-					auto EJsonUserBlockSeparateTagMeta = CEJsonWithMeta::fs_FromStringYamlBlock(BlockUserSeparateTagText);
+					auto EJsonUserBlockSeparateTagMeta = CEJsonWithMeta::fs_FromStringYamlBlock(pBlockUserSeparateTagText);
 					DMibExpect(EJsonUserBlockSeparateTagMeta.f_IsUserType(), ==, true);
 					DMibExpect(EJsonUserBlockSeparateTagMeta.f_UserType().m_Type, ==, "Outer");
 					DMibExpect(EJsonUserBlockSeparateTagMeta.f_UserType().m_Value["x"]["$type"].f_String(), ==, "Inner");
 					DMibExpect(EJsonUserBlockSeparateTagMeta.f_UserType().m_Value["x"]["$value"]["y"]["$date"].f_IsInteger(), ==, true);
-					DMibExpect(EJsonUserBlockSeparateTagMeta.f_ToStringYaml(), ==, BlockUserSeparateTagText);
-					DMibExpect(CEJsonWithMeta::fs_FromJson(EJsonUserBlockSeparateTagMeta.f_ToJson()).f_ToStringYaml(), ==, BlockUserSeparateTagText);
+					DMibExpect(EJsonUserBlockSeparateTagMeta.f_ToStringYaml(), ==, pBlockUserSeparateTagText);
+					DMibExpect(CEJsonWithMeta::fs_FromJson(EJsonUserBlockSeparateTagMeta.f_ToJson()).f_ToStringYaml(), ==, pBlockUserSeparateTagText);
 
-					auto BlockUserCommentText =
+					auto pBlockUserCommentText =
 						"# outer leading\n"
 						"!Outer\n"
 						"  # bin leading\n"
@@ -760,7 +760,7 @@ namespace
 						"# outer trailing\n"
 					;
 
-					auto JsonUserBlockCommentMeta = CJsonWithMeta::fs_FromStringYamlBlock(BlockUserCommentText);
+					auto JsonUserBlockCommentMeta = CJsonWithMeta::fs_FromStringYamlBlock(pBlockUserCommentText);
 					DMibExpect(JsonUserBlockCommentMeta.f_Yaml().f_LeadingComment(), ==, "# outer leading\n");
 					DMibExpect(JsonUserBlockCommentMeta["bin"].f_Yaml().f_LeadingComment(), ==, "  # bin leading\n");
 					DMibExpect(JsonUserBlockCommentMeta["bin"].f_Yaml().f_LineComment(), ==, " # bin line");
@@ -771,17 +771,17 @@ namespace
 					DMibExpect(JsonUserBlockCommentMeta["x"].f_Yaml().f_LineComment(), ==, " # x line");
 					DMibExpect(JsonUserBlockCommentMeta["x"]["y"].f_Yaml().f_LeadingComment(), ==, "    # y leading\n");
 					DMibExpect(JsonUserBlockCommentMeta["x"]["y"].f_Yaml().f_LineComment(), ==, " # y line");
-					DMibExpect(JsonUserBlockCommentMeta.f_ToStringYaml(), ==, BlockUserCommentText);
+					DMibExpect(JsonUserBlockCommentMeta.f_ToStringYaml(), ==, pBlockUserCommentText);
 					CJsonWithMeta JsonUserBlockCommentMetaCopy = JsonUserBlockCommentMeta;
-					DMibExpect(JsonUserBlockCommentMetaCopy.f_ToStringYaml(), ==, BlockUserCommentText);
+					DMibExpect(JsonUserBlockCommentMetaCopy.f_ToStringYaml(), ==, pBlockUserCommentText);
 
-					auto EJsonUserBlockCommentMeta = CEJsonWithMeta::fs_FromStringYamlBlock(BlockUserCommentText);
+					auto EJsonUserBlockCommentMeta = CEJsonWithMeta::fs_FromStringYamlBlock(pBlockUserCommentText);
 					DMibExpect(EJsonUserBlockCommentMeta.f_IsUserType(), ==, true);
 					DMibExpect(EJsonUserBlockCommentMeta.f_UserType().m_Type, ==, "Outer");
-					DMibExpect(EJsonUserBlockCommentMeta.f_ToStringYaml(), ==, BlockUserCommentText);
-					DMibExpect(CEJsonWithMeta::fs_FromJson(EJsonUserBlockCommentMeta.f_ToJson()).f_ToStringYaml(), ==, BlockUserCommentText);
+					DMibExpect(EJsonUserBlockCommentMeta.f_ToStringYaml(), ==, pBlockUserCommentText);
+					DMibExpect(CEJsonWithMeta::fs_FromJson(EJsonUserBlockCommentMeta.f_ToJson()).f_ToStringYaml(), ==, pBlockUserCommentText);
 
-					auto BlockUserSeparateTagCommentText =
+					auto pBlockUserSeparateTagCommentText =
 						"# outer leading\n"
 						"!Outer\n"
 						"  # bin leading\n"
@@ -798,23 +798,23 @@ namespace
 						"# outer trailing\n"
 					;
 
-					auto JsonUserBlockSeparateTagCommentMeta = CJsonWithMeta::fs_FromStringYamlBlock(BlockUserSeparateTagCommentText);
+					auto JsonUserBlockSeparateTagCommentMeta = CJsonWithMeta::fs_FromStringYamlBlock(pBlockUserSeparateTagCommentText);
 					DMibExpect(JsonUserBlockSeparateTagCommentMeta.f_Yaml().f_LeadingComment(), ==, "# outer leading\n");
 					DMibExpect(JsonUserBlockSeparateTagCommentMeta["x"].f_Yaml().f_LeadingComment(), ==, "  # x leading\n");
 					DMibExpect(JsonUserBlockSeparateTagCommentMeta["x"].f_Yaml().f_LineComment(), ==, " # x line");
 					DMibExpect(JsonUserBlockSeparateTagCommentMeta["x"]["y"].f_Yaml().f_LeadingComment(), ==, "      # y leading\n");
 					DMibExpect(JsonUserBlockSeparateTagCommentMeta["x"]["y"].f_Yaml().f_LineComment(), ==, " # y line");
-					DMibExpect(JsonUserBlockSeparateTagCommentMeta.f_ToStringYaml(), ==, BlockUserSeparateTagCommentText);
+					DMibExpect(JsonUserBlockSeparateTagCommentMeta.f_ToStringYaml(), ==, pBlockUserSeparateTagCommentText);
 					CJsonWithMeta JsonUserBlockSeparateTagCommentMetaCopy = JsonUserBlockSeparateTagCommentMeta;
-					DMibExpect(JsonUserBlockSeparateTagCommentMetaCopy.f_ToStringYaml(), ==, BlockUserSeparateTagCommentText);
+					DMibExpect(JsonUserBlockSeparateTagCommentMetaCopy.f_ToStringYaml(), ==, pBlockUserSeparateTagCommentText);
 
-					auto EJsonUserBlockSeparateTagCommentMeta = CEJsonWithMeta::fs_FromStringYamlBlock(BlockUserSeparateTagCommentText);
+					auto EJsonUserBlockSeparateTagCommentMeta = CEJsonWithMeta::fs_FromStringYamlBlock(pBlockUserSeparateTagCommentText);
 					DMibExpect(EJsonUserBlockSeparateTagCommentMeta.f_IsUserType(), ==, true);
 					DMibExpect(EJsonUserBlockSeparateTagCommentMeta.f_UserType().m_Type, ==, "Outer");
-					DMibExpect(EJsonUserBlockSeparateTagCommentMeta.f_ToStringYaml(), ==, BlockUserSeparateTagCommentText);
-					DMibExpect(CEJsonWithMeta::fs_FromJson(EJsonUserBlockSeparateTagCommentMeta.f_ToJson()).f_ToStringYaml(), ==, BlockUserSeparateTagCommentText);
+					DMibExpect(EJsonUserBlockSeparateTagCommentMeta.f_ToStringYaml(), ==, pBlockUserSeparateTagCommentText);
+					DMibExpect(CEJsonWithMeta::fs_FromJson(EJsonUserBlockSeparateTagCommentMeta.f_ToJson()).f_ToStringYaml(), ==, pBlockUserSeparateTagCommentText);
 
-					auto BlockUserCommentWhitespaceText =
+					auto pBlockUserCommentWhitespaceText =
 						"                                            # outer leading\n"
 						"!Outer\n"
 						"                                            # bin leading\n"
@@ -832,25 +832,25 @@ namespace
 						"\n"
 						"                                            # outer trailing\n"
 					;
-					auto BlockUserCommentWhitespaceCommentMeta = CJsonWithMeta::fs_FromStringYamlBlock(BlockUserCommentWhitespaceText);
-					DMibExpect(BlockUserCommentWhitespaceCommentMeta.f_ToStringYaml(), ==, BlockUserCommentWhitespaceText);
-					auto BlockUserCommentWhitespaceCommentMetaEJson = CEJsonWithMeta::fs_FromStringYamlBlock(BlockUserCommentWhitespaceText);
-					DMibExpect(BlockUserCommentWhitespaceCommentMetaEJson.f_ToStringYaml(), ==, BlockUserCommentWhitespaceText);
-					auto BlockUserCommentWhitespaceCommentNoMeta = CJsonWithoutMeta::fs_FromStringYamlBlock(BlockUserCommentWhitespaceText);
-					DMibExpect(BlockUserCommentWhitespaceCommentNoMeta.f_ToStringYaml(), !=, BlockUserCommentWhitespaceText);
-					auto BlockUserCommentWhitespaceCommentNoMetaEJson = CEJsonWithoutMeta::fs_FromStringYamlBlock(BlockUserCommentWhitespaceText);
-					DMibExpect(BlockUserCommentWhitespaceCommentNoMetaEJson.f_ToStringYaml(), !=, BlockUserCommentWhitespaceText);
+					auto BlockUserCommentWhitespaceCommentMeta = CJsonWithMeta::fs_FromStringYamlBlock(pBlockUserCommentWhitespaceText);
+					DMibExpect(BlockUserCommentWhitespaceCommentMeta.f_ToStringYaml(), ==, pBlockUserCommentWhitespaceText);
+					auto BlockUserCommentWhitespaceCommentMetaEJson = CEJsonWithMeta::fs_FromStringYamlBlock(pBlockUserCommentWhitespaceText);
+					DMibExpect(BlockUserCommentWhitespaceCommentMetaEJson.f_ToStringYaml(), ==, pBlockUserCommentWhitespaceText);
+					auto BlockUserCommentWhitespaceCommentNoMeta = CJsonWithoutMeta::fs_FromStringYamlBlock(pBlockUserCommentWhitespaceText);
+					DMibExpect(BlockUserCommentWhitespaceCommentNoMeta.f_ToStringYaml(), !=, pBlockUserCommentWhitespaceText);
+					auto BlockUserCommentWhitespaceCommentNoMetaEJson = CEJsonWithoutMeta::fs_FromStringYamlBlock(pBlockUserCommentWhitespaceText);
+					DMibExpect(BlockUserCommentWhitespaceCommentNoMetaEJson.f_ToStringYaml(), !=, pBlockUserCommentWhitespaceText);
 				};
 
 				DMibTestCategory("YamlMixedTagsProjectToJsonAndEJson")
 				{
-					auto MixedText =
+					auto pMixedText =
 						"!Outer\n"
 						"  list: [!!binary AAECAw==, {$date: 5}]\n"
 						"  x: !Inner {literal: {$binary: keep}, y: !!timestamp 2024-01-15T12:00:00Z}\n"
 					;
 
-					auto JsonMixed = CJsonWithoutMeta::fs_FromStringYaml(MixedText);
+					auto JsonMixed = CJsonWithoutMeta::fs_FromStringYaml(pMixedText);
 					DMibExpect(JsonMixed.f_IsObject(), ==, true);
 					DMibExpect(JsonMixed["x"]["y"].f_String(), ==, "2024-01-15T12:00:00Z");
 					DMibExpect(JsonMixed["x"]["literal"]["$binary"].f_String(), ==, "keep");
@@ -858,7 +858,7 @@ namespace
 					DMibExpect(JsonMixed["list"][0].f_String(), ==, "AAECAw==");
 					DMibExpect(JsonMixed["list"][1]["$date"].f_Integer(), ==, 5);
 
-					auto JsonMixedMeta = CJsonWithMeta::fs_FromStringYaml(MixedText);
+					auto JsonMixedMeta = CJsonWithMeta::fs_FromStringYaml(pMixedText);
 					DMibExpect(JsonMixedMeta.f_IsObject(), ==, true);
 					DMibExpect(JsonMixedMeta.f_Yaml().f_TagSuffix(), ==, "Outer");
 					DMibExpect(JsonMixedMeta["x"].f_Yaml().f_TagSuffix(), ==, "Inner");
@@ -869,9 +869,9 @@ namespace
 					DMibExpect(JsonMixedMeta["list"][0].f_String(), ==, "AAECAw==");
 					DMibExpect(JsonMixedMeta["list"][0].f_Yaml().f_TagSuffix(), ==, "binary");
 					DMibExpect(JsonMixedMeta["list"][1]["$date"].f_Integer(), ==, 5);
-					DMibExpect(JsonMixedMeta.f_ToStringYaml(), ==, MixedText);
+					DMibExpect(JsonMixedMeta.f_ToStringYaml(), ==, pMixedText);
 
-					auto EJsonMixed = CEJsonWithoutMeta::fs_FromStringYaml(MixedText);
+					auto EJsonMixed = CEJsonWithoutMeta::fs_FromStringYaml(pMixedText);
 					DMibExpect(EJsonMixed.f_IsUserType(), ==, true);
 					DMibExpect(EJsonMixed.f_UserType().m_Type, ==, "Outer");
 					DMibExpect(EJsonMixed.f_UserType().m_Value["x"]["$type"].f_String(), ==, "Inner");
@@ -881,7 +881,7 @@ namespace
 					DMibExpect(EJsonMixed.f_UserType().m_Value["list"][0]["$binary"].f_String(), ==, "AAECAw==");
 					DMibExpect(EJsonMixed.f_UserType().m_Value["list"][1]["$escape"]["$date"].f_Integer(), ==, 5);
 
-					auto EJsonMixedMeta = CEJsonWithMeta::fs_FromStringYaml(MixedText);
+					auto EJsonMixedMeta = CEJsonWithMeta::fs_FromStringYaml(pMixedText);
 					DMibExpect(EJsonMixedMeta.f_IsUserType(), ==, true);
 					DMibExpect(EJsonMixedMeta.f_UserType().m_Type, ==, "Outer");
 					DMibExpect(EJsonMixedMeta.f_Yaml().f_TagSuffix(), ==, "Outer");
@@ -891,8 +891,8 @@ namespace
 					DMibExpect(EJsonMixedMeta.f_UserType().m_Value["list"].f_IsArray(), ==, true);
 					DMibExpect(EJsonMixedMeta.f_UserType().m_Value["list"][0]["$binary"].f_String(), ==, "AAECAw==");
 					DMibExpect(EJsonMixedMeta.f_UserType().m_Value["list"][1]["$escape"]["$date"].f_Integer(), ==, 5);
-					DMibExpect(EJsonMixedMeta.f_ToStringYaml(), ==, MixedText);
-					DMibExpect(CEJsonWithMeta::fs_FromJson(EJsonMixedMeta.f_ToJson()).f_ToStringYaml(), ==, MixedText);
+					DMibExpect(EJsonMixedMeta.f_ToStringYaml(), ==, pMixedText);
+					DMibExpect(CEJsonWithMeta::fs_FromJson(EJsonMixedMeta.f_ToJson()).f_ToStringYaml(), ==, pMixedText);
 				};
 
 				DMibTestCategory("RegressionScalarEdges")
@@ -1233,14 +1233,14 @@ namespace
 
 				DMibTestCategory("RegressionTaggedDoesNotCollapseWrapper")
 				{
-					auto OriginalText = "!Thing {$date: 5}";
-					auto Tagged = CEJsonWithMeta::fs_FromStringYamlFlow(OriginalText);
+					auto pOriginalText = "!Thing {$date: 5}";
+					auto Tagged = CEJsonWithMeta::fs_FromStringYamlFlow(pOriginalText);
 					DMibExpect(Tagged.f_IsUserType(), ==, true);
 					DMibExpect(Tagged.f_UserType().m_Type, ==, "Thing");
 					DMibExpect(Tagged.f_IsDate(), ==, false);
 
 					auto Round = Tagged.f_ToStringYamlFlow();
-					DMibExpect(Round, ==, OriginalText);
+					DMibExpect(Round, ==, pOriginalText);
 
 					auto Reparsed = CEJsonWithMeta::fs_FromStringYamlFlow(Round);
 					DMibExpect(Tagged, ==, Reparsed);
@@ -1248,34 +1248,34 @@ namespace
 					DMibExpect(Reparsed.f_UserType().m_Type, ==, "Thing");
 					DMibExpect(Reparsed.f_ToStringYamlFlow(), ==, Round);
 
-					auto FlowSequenceText = "!Thing [{$date: 5}]";
-					auto FlowSequence = CEJsonWithMeta::fs_FromStringYamlFlow(FlowSequenceText);
+					auto pFlowSequenceText = "!Thing [{$date: 5}]";
+					auto FlowSequence = CEJsonWithMeta::fs_FromStringYamlFlow(pFlowSequenceText);
 					DMibExpect(FlowSequence.f_IsUserType(), ==, true);
 					DMibExpect(FlowSequence.f_UserType().m_Value.f_IsArray(), ==, true);
 					DMibExpect(FlowSequence.f_UserType().m_Value[0].f_IsObject(), ==, true);
 
 					auto FlowSequenceRound = FlowSequence.f_ToStringYamlFlow();
-					DMibExpect(FlowSequenceRound, ==, FlowSequenceText);
+					DMibExpect(FlowSequenceRound, ==, pFlowSequenceText);
 
-					if (FlowSequenceRound == FlowSequenceText)
+					if (FlowSequenceRound == pFlowSequenceText)
 					{
 						auto FlowSequenceReparsed = CEJsonWithMeta::fs_FromStringYaml(FlowSequenceRound);
 						DMibExpect(FlowSequence, ==, FlowSequenceReparsed);
 						DMibExpect(FlowSequenceReparsed.f_ToStringYamlFlow(), ==, FlowSequenceRound);
 					}
 
-					auto BlockSequenceText =
+					auto pBlockSequenceText =
 						"!Thing\n"
 						"- {$date: 5}\n"
 					;
 
-					auto BlockSequence = CEJsonWithMeta::fs_FromStringYaml(BlockSequenceText);
+					auto BlockSequence = CEJsonWithMeta::fs_FromStringYaml(pBlockSequenceText);
 					DMibExpect(BlockSequence.f_IsUserType(), ==, true);
 					DMibExpect(BlockSequence.f_UserType().m_Value.f_IsArray(), ==, true);
 					DMibExpect(BlockSequence.f_UserType().m_Value[0].f_IsObject(), ==, true);
 
 					auto BlockSequenceRound = BlockSequence.f_ToStringYaml();
-					DMibExpect(BlockSequenceRound, ==, BlockSequenceText);
+					DMibExpect(BlockSequenceRound, ==, pBlockSequenceText);
 
 					auto BlockSequenceReparsed = CEJsonWithMeta::fs_FromStringYaml(BlockSequenceRound);
 					DMibExpect(BlockSequence, ==, BlockSequenceReparsed);
@@ -1284,24 +1284,24 @@ namespace
 
 				DMibTestCategory("EscapeRoundtrips")
 				{
-					auto OriginalText = "!Thing {$escape: 5}";
-					auto Tagged = CEJsonWithMeta::fs_FromStringYamlFlow(OriginalText);
+					auto pOriginalText = "!Thing {$escape: 5}";
+					auto Tagged = CEJsonWithMeta::fs_FromStringYamlFlow(pOriginalText);
 					auto Round = Tagged.f_ToStringYamlFlow();
-					DMibExpect(Round, ==, OriginalText);
+					DMibExpect(Round, ==, pOriginalText);
 					auto Reparsed = CEJsonWithMeta::fs_FromStringYamlFlow(Round);
 					DMibExpect(Tagged, ==, Reparsed);
 				};
 
 				DMibTestCategory("RegressionTaggedDoesNotCollapseWrapperNoMeta")
 				{
-					auto OriginalText = "!Thing {$date: 5}";
-					auto Tagged = CEJsonWithoutMeta::fs_FromStringYamlFlow(OriginalText);
+					auto pOriginalText = "!Thing {$date: 5}";
+					auto Tagged = CEJsonWithoutMeta::fs_FromStringYamlFlow(pOriginalText);
 					DMibExpect(Tagged.f_IsUserType(), ==, true);
 					DMibExpect(Tagged.f_UserType().m_Type, ==, "Thing");
 					DMibExpect(Tagged.f_IsDate(), ==, false);
 
 					auto Round = Tagged.f_ToStringYamlFlow();
-					DMibExpect(Round, ==, OriginalText);
+					DMibExpect(Round, ==, pOriginalText);
 
 					auto Reparsed = CEJsonWithoutMeta::fs_FromStringYamlFlow(Round);
 					DMibExpect(Tagged, ==, Reparsed);
@@ -1309,28 +1309,28 @@ namespace
 					DMibExpect(Reparsed.f_UserType().m_Type, ==, "Thing");
 					DMibExpect(Reparsed.f_ToStringYamlFlow(), ==, Round);
 
-					auto FlowSequenceText = "!Thing [{$date: 5}]";
-					auto FlowSequence = CEJsonWithoutMeta::fs_FromStringYamlFlow(FlowSequenceText);
+					auto pFlowSequenceText = "!Thing [{$date: 5}]";
+					auto FlowSequence = CEJsonWithoutMeta::fs_FromStringYamlFlow(pFlowSequenceText);
 					DMibExpect(FlowSequence.f_IsUserType(), ==, true);
 					DMibExpect(FlowSequence.f_UserType().m_Value.f_IsArray(), ==, true);
 					DMibExpect(FlowSequence.f_UserType().m_Value[0].f_IsObject(), ==, true);
 
 					auto FlowSequenceRound = FlowSequence.f_ToStringYamlFlow();
-					DMibExpect(FlowSequenceRound, ==, FlowSequenceText);
+					DMibExpect(FlowSequenceRound, ==, pFlowSequenceText);
 
-					if (FlowSequenceRound == FlowSequenceText)
+					if (FlowSequenceRound == pFlowSequenceText)
 					{
 						auto FlowSequenceReparsed = CEJsonWithoutMeta::fs_FromStringYaml(FlowSequenceRound);
 						DMibExpect(FlowSequence, ==, FlowSequenceReparsed);
 						DMibExpect(FlowSequenceReparsed.f_ToStringYamlFlow(), ==, FlowSequenceRound);
 					}
 
-					auto BlockSequenceText =
+					auto pBlockSequenceText =
 						"!Thing\n"
 						"- {$date: 5}\n"
 					;
 
-					auto BlockSequence = CEJsonWithoutMeta::fs_FromStringYaml(BlockSequenceText);
+					auto BlockSequence = CEJsonWithoutMeta::fs_FromStringYaml(pBlockSequenceText);
 					DMibExpect(BlockSequence.f_IsUserType(), ==, true);
 					DMibExpect(BlockSequence.f_UserType().m_Value.f_IsArray(), ==, true);
 					DMibExpect(BlockSequence.f_UserType().m_Value[0].f_IsObject(), ==, true);
@@ -1342,19 +1342,19 @@ namespace
 					DMibExpect(BlockSequence, ==, BlockSequenceReparsed);
 					DMibExpect(BlockSequenceReparsed.f_ToStringYaml(), ==, BlockSequenceRound);
 
-					auto LiteralTypeText = "!Thing {x: {$escape: {$type: Literal, $value: 5}}}";
-					auto LiteralType = CEJsonWithoutMeta::fs_FromStringYamlFlow(LiteralTypeText);
+					auto pLiteralTypeText = "!Thing {x: {$escape: {$type: Literal, $value: 5}}}";
+					auto LiteralType = CEJsonWithoutMeta::fs_FromStringYamlFlow(pLiteralTypeText);
 					auto LiteralTypeRound = LiteralType.f_ToStringYamlFlow();
-					DMibExpect(LiteralTypeRound, ==, LiteralTypeText);
+					DMibExpect(LiteralTypeRound, ==, pLiteralTypeText);
 					DMibExpect(LiteralType, ==, CEJsonWithoutMeta::fs_FromStringYamlFlow(LiteralTypeRound));
 				};
 
 				DMibTestCategory("EscapeRoundwripsNoMeta")
 				{
-					auto OriginalText = "!Thing {$escape: 5}";
-					auto Tagged = CEJsonWithoutMeta::fs_FromStringYamlFlow(OriginalText);
+					auto pOriginalText = "!Thing {$escape: 5}";
+					auto Tagged = CEJsonWithoutMeta::fs_FromStringYamlFlow(pOriginalText);
 					auto Round = Tagged.f_ToStringYamlFlow();
-					DMibExpect(Round, ==, OriginalText);
+					DMibExpect(Round, ==, pOriginalText);
 					auto Reparsed = CEJsonWithoutMeta::fs_FromStringYamlFlow(Round);
 					DMibExpect(Tagged, ==, Reparsed);
 				};

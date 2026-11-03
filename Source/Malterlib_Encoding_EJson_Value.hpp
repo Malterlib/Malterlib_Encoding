@@ -1244,7 +1244,7 @@ namespace NMib::NEncoding
 	template <typename tf_CParent>
 	auto TCEJsonValue<t_CParent>::fs_FromCompatible(TCEJsonValue<tf_CParent> &&_Other) -> TCEJsonValue
 	{
-		if constexpr (NPrivate::gc_JsonNeedsCommentConversion<TCEJsonValue, TCEJsonValue<tf_CParent>>)
+		if constexpr (NPrivate::gc_bJsonNeedsCommentConversion<TCEJsonValue, TCEJsonValue<tf_CParent>>)
 		{
 			// Record comments before moving the values, which can invalidate the source metadata.
 			NContainer::TCVector<NPrivate::CJsonConvertedComments> Records;

@@ -25,7 +25,7 @@ namespace NMib::NEncoding
 	CEJsonSorted fg_ToJson(NStr::CStr const &_Value);
 	CEJsonSorted fg_ToJson(int64 _Value);
 	CEJsonSorted fg_ToJson(uint64 _Value);
-	CEJsonSorted fg_ToJson(bool _Value);
+	CEJsonSorted fg_ToJson(bool _bValue);
 	CEJsonSorted fg_ToJson(uint32 _Value);
 	CEJsonSorted fg_ToJson(int32 _Value);
 	CEJsonSorted fg_ToJson(int16 _Value);

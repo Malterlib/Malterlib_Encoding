@@ -144,13 +144,13 @@ namespace
 			return Data.f_ToString("\t", EJsonDialectFlag_HighPrecisionFloat);
 		}
 
-		void fp_TestGenerate(CStr const &_Description, NFunction::TCFunction<CStr ()> const &_GenerateJson, bool _bFloat)
+		void fp_TestGenerate(CStr const &_Description, NFunction::TCFunction<CStr ()> const &_fGenerateJson, bool _bFloat)
 		{
 			DMibTestSuite(CTestCategory(_Description) << CTestGroup("Performance"))
 			{
 				CTestPerformance PerfTotal(0.75, false);
 
-				auto JsonString = _GenerateJson();
+				auto JsonString = _fGenerateJson();
 
 				umint nIterations = 11;
 
