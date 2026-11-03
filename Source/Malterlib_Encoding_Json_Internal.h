@@ -151,8 +151,7 @@ namespace NMib::NEncoding::NPrivate
 namespace NMib::NEncoding
 {
 	template <typename tf_CJsonObject>
-	bool fg_ValidateType(tf_CJsonObject const *_pObject, EJsonType _Type)
-	{
-		return _pObject && _pObject->f_Type() == _Type;
-	}
+	bool fg_ValidateType(tf_CJsonObject const *_pObject, EJsonType _Type);
 }
+
+#include "Malterlib_Encoding_Json_Internal.hpp"

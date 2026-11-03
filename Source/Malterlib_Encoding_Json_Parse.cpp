@@ -15,4 +15,20 @@ namespace NMib::NEncoding::NJson
 
 		DMibErrorParse(Description, _Errors);
 	}
+
+	inline_always_lto void CDiscardCommentSink::f_Reset()
+	{
+	}
+
+	inline_always_lto void CDiscardCommentSink::f_AppendVerbatim(uch8 const *_pStart, uch8 const *_pEnd)
+	{
+	}
+
+	inline_always_lto void CDiscardCommentSink::f_AppendComment(uch8 const *_pStart, uch8 const *_pEnd, bool _bIsBlock)
+	{
+	}
+
+	inline_always_lto void CDiscardCommentSink::f_AppendChar(ch8 _Char)
+	{
+	}
 }

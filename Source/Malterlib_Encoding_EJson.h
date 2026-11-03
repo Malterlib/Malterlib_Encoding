@@ -568,7 +568,7 @@ namespace NMib::NEncoding
 #	include "Malterlib_Encoding_EJson.hpp"
 #endif
 
-#include "Malterlib_Encoding_EJson_Generate.h"
+#include "Malterlib_Encoding_EJson_Generate.hpp"
 
 #ifndef DMibPNoShortCuts
 using namespace NMib::NEncoding;

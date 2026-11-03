@@ -54,22 +54,6 @@ namespace NMib::NEncoding::NJson
 		return Location;
 	}
 
-	inline void CDiscardCommentSink::f_Reset()
-	{
-	}
-
-	inline void CDiscardCommentSink::f_AppendVerbatim(uch8 const *_pStart, uch8 const *_pEnd)
-	{
-	}
-
-	inline void CDiscardCommentSink::f_AppendComment(uch8 const *_pStart, uch8 const *_pEnd, bool _bIsBlock)
-	{
-	}
-
-	inline void CDiscardCommentSink::f_AppendChar(ch8 _Char)
-	{
-	}
-
 	inline NStr::CStr::CAppender &CCommentSink::fp_GetAppender()
 	{
 		if (!mp_Appender)

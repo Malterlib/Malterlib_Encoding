@@ -20,31 +20,12 @@ namespace NMib::NEncoding
 
 		static typename t_CJson::CKey operator () (NStr::CStr const &_Key);
 
-		t_CJson const &operator = (t_CJson const &_Convert) const
-		{
-			return _Convert;
-		}
-
-		t_CJson &&operator = (t_CJson &&_Convert) const
-		{
-			return fg_Move(_Convert);
-		}
-
-		t_CJson operator = (std::initializer_list<CVoidTag> const &_Initializer) const
-		{
-			return EJsonType_Object;
-		}
+		t_CJson const &operator = (t_CJson const &_Convert) const;
+		t_CJson &&operator = (t_CJson &&_Convert) const;
+		t_CJson operator = (std::initializer_list<CVoidTag> const &_Initializer) const;
 
 		template <typename ...tfp_CValue>
-		t_CJson operator [] (tfp_CValue && ...p_Values) const
-		{
-			t_CJson Return;
-
-			auto &ReturnArray = Return.f_Array();
-			((void)ReturnArray.f_Insert(fg_Forward<tfp_CValue>(p_Values)), ...);
-
-			return Return;
-		}
+		t_CJson operator [] (tfp_CValue && ...p_Values) const;
 	};
 
 	extern template CEJsonOrdered::CKey TCJsonConstants<CEJsonOrdered>::operator () (NStr::CStr const &_Key);
@@ -70,3 +51,5 @@ constexpr NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CJsonSorted> _j;
 #ifndef DMibPNoShortCuts
 using namespace NMib::NEncoding;
 #endif
+
+#include "Malterlib_Encoding_JsonShortcuts.hpp"

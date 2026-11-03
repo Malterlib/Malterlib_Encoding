@@ -192,6 +192,32 @@ namespace NMib::NEncoding
 			;
 		}
 	}
+
+#ifndef DDocumentation_Doxygen
+	template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
+	constexpr inline_always auto begin(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> &_JsonObject)
+	{
+		return _JsonObject.f_OrderedIterator();
+	}
+
+	template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
+	constexpr inline_always NContainer::CIteratorEndSentinel end(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> &_JsonObject)
+	{
+		return NContainer::CIteratorEndSentinel();
+	}
+
+	template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
+	constexpr inline_always auto begin(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> const &_JsonObject)
+	{
+		return _JsonObject.f_OrderedIterator();
+	}
+
+	template <typename tf_CJsonValue, EJsonContainerFlag tf_ContainerFlags>
+	constexpr inline_always NContainer::CIteratorEndSentinel end(TCJsonObject<tf_CJsonValue, tf_ContainerFlags> const &_JsonObject)
+	{
+		return NContainer::CIteratorEndSentinel();
+	}
+#endif
 }
 
 namespace NMib::NEncoding::NPrivate

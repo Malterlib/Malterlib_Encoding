@@ -3,7 +3,7 @@
 
 #include "Malterlib_Encoding_EJson.h"
 #include "Malterlib_Encoding_EJson.hpp"
-#include "Malterlib_Encoding_EJson_Generate.h"
+#include "Malterlib_Encoding_EJson_Generate.hpp"
 #include "Malterlib_Encoding_EJson_Parse.h"
 
 namespace NMib::NEncoding

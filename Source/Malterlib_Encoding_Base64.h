@@ -35,10 +35,7 @@ namespace NMib::NEncoding
 		void f_SetCacheSize(umint _CacheSize);
 		NStream::CFilePos f_GetLength() const;
 		umint f_ContainerLengthLimit() const;
-		void f_SetLength(NStream::CFilePos _Length)
-		{
-			DMibError("Not supported");
-		}
+		void f_SetLength(NStream::CFilePos _Length);
 
 	private:
 		void fp_WriteDirty();

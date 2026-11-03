@@ -190,10 +190,7 @@ namespace NMib::NEncoding::NPrivate
 
 		struct CCompare
 		{
-			inline_small NStr::CStr const &operator () (CObjectEntryBase const &_Node) const
-			{
-				return _Node.mp_Name;
-			}
+			inline_small NStr::CStr const &operator () (CObjectEntryBase const &_Node) const;
 		};
 	};
 
@@ -283,3 +280,5 @@ namespace NMib::NEncoding::NPrivate
 		static constexpr bool mc_Value = true;
 	};
 }
+
+#include "Malterlib_Encoding_Json_InternalBase.hpp"

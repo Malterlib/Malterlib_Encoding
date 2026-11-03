@@ -236,4 +236,10 @@ namespace NMib::NEncoding
 	{
 		return NStream::fg_CapLengthLimit(f_GetLength() - f_GetPosition());
 	}
+
+	template <typename t_CStreamType>
+	void TCBinaryStream_Base64<t_CStreamType>::f_SetLength(NStream::CFilePos _Length)
+	{
+		DMibError("Not supported");
+	}
 }
