@@ -8,12 +8,6 @@
 
 namespace NMib::NEncoding
 {
-	constinit NStr::CStr const CEJsonConstStrings::mc_Date = NStr::gc_Str<"$date">;
-	constinit NStr::CStr const CEJsonConstStrings::mc_Binary = NStr::gc_Str<"$binary">;
-	constinit NStr::CStr const CEJsonConstStrings::mc_Type = NStr::gc_Str<"$type">;
-	constinit NStr::CStr const CEJsonConstStrings::mc_Value = NStr::gc_Str<"$value">;
-	constinit NStr::CStr const CEJsonConstStrings::mc_Escape = NStr::gc_Str<"$escape">;
-
 	CEJsonUserTypeOrdered::CEJsonUserTypeOrdered() = default;
 
 	CEJsonUserTypeOrdered::CEJsonUserTypeOrdered(NStr::CStr const &_Type, CJsonOrdered const &_Value)

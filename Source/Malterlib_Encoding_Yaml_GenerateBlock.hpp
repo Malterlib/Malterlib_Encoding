@@ -21,7 +21,7 @@ namespace NMib::NEncoding::NYaml
 		}
 		else
 		{
-			for (umint i = 0; i < _Depth; ++i)
+			for (umint iDepth = 0; iDepth < _Depth; ++iDepth)
 				o_String += _pPrettySeparator;
 		}
 	}

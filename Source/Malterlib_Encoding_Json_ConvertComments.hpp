@@ -12,7 +12,7 @@ namespace NMib::NEncoding::NPrivate
 
 	inline void fg_JsonCommentAppendIndent(NStr::CStr::CAppender &o_Trivia, umint _Depth)
 	{
-		for (umint i = 0; i < _Depth; ++i)
+		for (umint iDepth = 0; iDepth < _Depth; ++iDepth)
 			o_Trivia += '\t';
 	}
 
@@ -402,8 +402,8 @@ namespace NMib::NEncoding::NPrivate
 		else if (_Src.f_IsArray())
 		{
 			auto const &SrcArray = _Src.f_Array();
-			for (umint i = 0; i < SrcArray.f_GetLen(); ++i)
-				fg_RecordJsonCommentsAsYaml<tf_bDstOrdered>(SrcArray[i], NStr::CStr(), false, o_Records);
+			for (umint iElement = 0; iElement < SrcArray.f_GetLen(); ++iElement)
+				fg_RecordJsonCommentsAsYaml<tf_bDstOrdered>(SrcArray[iElement], NStr::CStr(), false, o_Records);
 		}
 
 		if constexpr
@@ -522,12 +522,12 @@ namespace NMib::NEncoding::NPrivate
 			auto const &SrcArray = _Src.f_Array();
 
 			auto Count = SrcArray.f_GetLen();
-			for (umint i = 0; i < Count; ++i)
+			for (umint iElement = 0; iElement < Count; ++iElement)
 			{
-				auto const &SrcElement = SrcArray[i];
+				auto const &SrcElement = SrcArray[iElement];
 				auto SrcElementYaml = SrcElement.f_Yaml();
 
-				bool bLast = i + 1 == Count;
+				bool bLast = iElement + 1 == Count;
 				bool bContainerValue = fg_YamlCommentValueIsNonEmptyContainer(SrcElement);
 
 				NStr::CStr LeadingComment = SrcElementYaml.f_LeadingComment();
@@ -667,8 +667,8 @@ namespace NMib::NEncoding::NPrivate
 		else if (o_Dst.f_IsArray())
 		{
 			auto &DstArray = o_Dst.f_Array();
-			for (umint i = 0; i < DstArray.f_GetLen(); ++i)
-				fg_ApplyConvertedComments(DstArray[i], _Records, _iRecord);
+			for (umint iElement = 0; iElement < DstArray.f_GetLen(); ++iElement)
+				fg_ApplyConvertedComments(DstArray[iElement], _Records, _iRecord);
 		}
 
 		if constexpr

@@ -293,28 +293,28 @@ namespace NMib::NEncoding::NJson
 		umint iNextComment = 0;
 		umint NumComments = m_Comments.f_GetLen();
 
-		for (umint i = 0; i < Length;)
+		for (umint iChar = 0; iChar < Length;)
 		{
-			while (iNextComment < NumComments && (!m_Comments[iNextComment].m_bIsBlock || m_Comments[iNextComment].m_End <= i))
+			while (iNextComment < NumComments && (!m_Comments[iNextComment].m_bIsBlock || m_Comments[iNextComment].m_End <= iChar))
 				++iNextComment;
 
-			if (iNextComment < NumComments && i >= m_Comments[iNextComment].m_Start)
+			if (iNextComment < NumComments && iChar >= m_Comments[iNextComment].m_Start)
 			{
-				i = m_Comments[iNextComment].m_End;
+				iChar = m_Comments[iNextComment].m_End;
 				++iNextComment;
 				continue;
 			}
 
-			if (pData[i] == '\n' || pData[i] == '\r')
+			if (pData[iChar] == '\n' || pData[iChar] == '\r')
 			{
-				iPartition = i;
-				if (pData[i] == '\r' && i + 1 < Length && pData[i + 1] == '\n')
+				iPartition = iChar;
+				if (pData[iChar] == '\r' && iChar + 1 < Length && pData[iChar + 1] == '\n')
 				{
-					i += 2;
+					iChar += 2;
 					continue;
 				}
 			}
-			++i;
+			++iChar;
 		}
 
 		if (iPartition == Length)
@@ -880,11 +880,11 @@ namespace NMib::NEncoding::NJson
 						auto pStart = pParse;
 						++pParse;
 						uch8 ToParse[3];
-						for (umint i = 0; i < 2; ++i)
+						for (umint iDigit = 0; iDigit < 2; ++iDigit)
 						{
-							if (!pParse[i])
+							if (!pParse[iDigit])
 								fg_ThrowJsonParseError<tf_CParseContext>(_Context, "Too short escaped hex value", pStart);
-							ToParse[i] = pParse[i];
+							ToParse[iDigit] = pParse[iDigit];
 						}
 						ToParse[2] = 0;
 						uch8 const *pParseHex = ToParse;

@@ -42,15 +42,15 @@ namespace NMib::NEncoding
 		NStream::CBinaryStream *mp_pStream;
 		NFile::EFileOpen mp_OpenFlags;
 
-		static constexpr aint mc_ChunkSizeBin128 = 8;
-		static constexpr aint mc_ChunkSizeData = 7;
+		static constexpr aint mcp_ChunkSizeBin128 = 8;
+		static constexpr aint mcp_ChunkSizeData = 7;
 
 		NStream::CFilePos mp_ParentFilePos;
 		NStream::CFilePos mp_FilePos;
 		NStream::CFilePos mp_ParentLength;
 		NStream::CFilePos mp_CurrentLoaded;
 		NStream::CFilePos mp_WriteFileLen;
-		uint8 mp_DecryptedData[mc_ChunkSizeData] = {0};
+		uint8 mp_DecryptedData[mcp_ChunkSizeData] = {0};
 		uint8 mp_Offset;
 		bool mp_bCurrentDirty;
 

@@ -57,11 +57,11 @@ namespace NMib::NEncoding::NYaml
 		;
 
 		o_Value = 0;
-		for (aint i = 0; i < _nDigits; ++i)
+		for (aint iDigit = 0; iDigit < _nDigits; ++iDigit)
 		{
-			if (pParse[i] < '0' || pParse[i] > '9')
+			if (pParse[iDigit] < '0' || pParse[iDigit] > '9')
 				return false;
-			o_Value = o_Value * 10 + (pParse[i] - '0');
+			o_Value = o_Value * 10 + (pParse[iDigit] - '0');
 		}
 		pParse += _nDigits;
 

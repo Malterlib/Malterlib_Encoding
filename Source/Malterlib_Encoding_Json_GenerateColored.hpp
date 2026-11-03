@@ -31,7 +31,7 @@ namespace NMib::NEncoding
 
 			void f_AddPrefix(NStr::CStr &o_String, umint _Depth, ch8 const *_pPrettySeparator)
 			{
-				for (umint i = 0; i < _Depth; ++i)
+				for (umint iDepth = 0; iDepth < _Depth; ++iDepth)
 					o_String += _pPrettySeparator;
 			}
 
@@ -40,40 +40,40 @@ namespace NMib::NEncoding
 				auto const *pTrivia = _Trivia.f_GetStr();
 				bool bOpenLineComment = false;
 
-				for (umint i = 0; i < _Trivia.f_GetLen();)
+				for (umint iChar = 0; iChar < _Trivia.f_GetLen();)
 				{
-					if (pTrivia[i] == '/' && i + 1 < _Trivia.f_GetLen() && pTrivia[i + 1] == '/')
+					if (pTrivia[iChar] == '/' && iChar + 1 < _Trivia.f_GetLen() && pTrivia[iChar + 1] == '/')
 					{
-						umint iStart = i;
-						i += 2;
-						while (i < _Trivia.f_GetLen() && !NJson::fg_IsJsonLineTerminator<t_CParseContext>(reinterpret_cast<uch8 const *>(pTrivia + i)))
-							++i;
+						umint iStart = iChar;
+						iChar += 2;
+						while (iChar < _Trivia.f_GetLen() && !NJson::fg_IsJsonLineTerminator<t_CParseContext>(reinterpret_cast<uch8 const *>(pTrivia + iChar)))
+							++iChar;
 
-						bOpenLineComment = i == _Trivia.f_GetLen();
-						o_String += f_Color(NStr::CStr(pTrivia + iStart, i - iStart), ESyntaxColor::ESyntaxColor_Comment);
+						bOpenLineComment = iChar == _Trivia.f_GetLen();
+						o_String += f_Color(NStr::CStr(pTrivia + iStart, iChar - iStart), ESyntaxColor::ESyntaxColor_Comment);
 						continue;
 					}
 
-					if (pTrivia[i] == '/' && i + 1 < _Trivia.f_GetLen() && pTrivia[i + 1] == '*')
+					if (pTrivia[iChar] == '/' && iChar + 1 < _Trivia.f_GetLen() && pTrivia[iChar + 1] == '*')
 					{
-						umint iStart = i;
-						i += 2;
-						while (i + 1 < _Trivia.f_GetLen() && !(pTrivia[i] == '*' && pTrivia[i + 1] == '/'))
-							++i;
+						umint iStart = iChar;
+						iChar += 2;
+						while (iChar + 1 < _Trivia.f_GetLen() && !(pTrivia[iChar] == '*' && pTrivia[iChar + 1] == '/'))
+							++iChar;
 
-						bool bClosed = i + 1 < _Trivia.f_GetLen();
+						bool bClosed = iChar + 1 < _Trivia.f_GetLen();
 						if (bClosed)
-							i += 2;
+							iChar += 2;
 
-						NStr::CStr Comment(pTrivia + iStart, i - iStart);
+						NStr::CStr Comment(pTrivia + iStart, iChar - iStart);
 						if (!bClosed)
 							Comment += "*/";
 						o_String += f_Color(Comment, ESyntaxColor::ESyntaxColor_Comment);
 						continue;
 					}
 
-					o_String.f_AddChar(pTrivia[i]);
-					++i;
+					o_String.f_AddChar(pTrivia[iChar]);
+					++iChar;
 				}
 
 				if (bOpenLineComment && !_bNextStartsWithLineTerminator)

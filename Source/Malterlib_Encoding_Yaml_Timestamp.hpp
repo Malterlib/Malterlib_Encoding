@@ -29,7 +29,7 @@ namespace NMib::NEncoding::NYaml
 		auto pWrite = Buffer + _Width;
 		*pWrite = 0;
 
-		for (umint i = 0; i < _Width; ++i)
+		for (umint iDigit = 0; iDigit < _Width; ++iDigit)
 		{
 			*--pWrite = ch8('0' + (_Value % 10));
 			_Value /= 10;
@@ -45,9 +45,9 @@ namespace NMib::NEncoding::NYaml
 	inline void fg_FormatYamlTimestamp(tf_CStr &o_String, NTime::CTime const &_Time)
 	{
 		NTime::CTime RoundedTime = _Time;
-		constexpr uint64 Billion = 1'000'000'000;
-		constexpr uint64 Divisor = NTime::NPrivate::CConst::mc_FractionDividend / Billion;
-		uint64 Fraction = (_Time.f_GetFractionInt() + Divisor / 2) / Divisor;
+		constexpr uint64 c_Billion = 1'000'000'000;
+		constexpr uint64 c_Divisor = NTime::NPrivate::CConst::mc_FractionDividend / c_Billion;
+		uint64 Fraction = (_Time.f_GetFractionInt() + c_Divisor / 2) / c_Divisor;
 		if (Fraction == 1'000'000'000)
 		{
 			RoundedTime.f_SetSeconds(_Time.f_GetSeconds() + 1);
@@ -72,9 +72,9 @@ namespace NMib::NEncoding::NYaml
 		{
 			ch8 FractionString[10];
 			FractionString[9] = 0;
-			for (umint i = 9; i > 0; --i)
+			for (umint iDigit = 9; iDigit > 0; --iDigit)
 			{
-				FractionString[i - 1] = ch8('0' + (Fraction % 10));
+				FractionString[iDigit - 1] = ch8('0' + (Fraction % 10));
 				Fraction /= 10;
 			}
 

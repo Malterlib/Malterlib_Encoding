@@ -11,10 +11,10 @@ namespace
 		{
 			DMibTestSuite("Roundtrip")
 			{
-				for (auto i = 0; i < 4096 + 1024; ++i)
+				for (auto nBytes = 0; nBytes < 4096 + 1024; ++nBytes)
 				{
 					NMib::NContainer::CByteVector ToEncode;
-					ToEncode.f_SetLen(i);
+					ToEncode.f_SetLen(nBytes);
 
 					NMib::NStr::CStr Encoded = NMib::NEncoding::fg_Base64Encode(ToEncode);
 					Encoded += "\n";

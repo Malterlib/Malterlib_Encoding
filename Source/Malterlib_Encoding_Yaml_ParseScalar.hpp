@@ -155,7 +155,7 @@ namespace NMib::NEncoding::NYaml
 		auto fParseHex = [&](umint _Digits) -> uint32
 			{
 				uint32 Value = 0;
-				for (umint i = 0; i < _Digits; ++i)
+				for (umint iDigit = 0; iDigit < _Digits; ++iDigit)
 				{
 					uint32 Digit = 0;
 

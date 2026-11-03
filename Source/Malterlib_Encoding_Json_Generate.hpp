@@ -13,7 +13,7 @@ namespace NMib::NEncoding::NJson
 	static void fg_AddPrefix(tf_CStr &o_String, umint _Depth, ch8 const *_pPrettySeparator)
 	{
 		umint SeparatorLength = NStr::fg_StrLen(_pPrettySeparator);
-		for (umint i = 0; i < _Depth; ++i)
+		for (umint iDepth = 0; iDepth < _Depth; ++iDepth)
 			o_String.f_AddString(_pPrettySeparator, SeparatorLength);
 	}
 
@@ -131,42 +131,42 @@ namespace NMib::NEncoding::NJson
 	{
 		auto TrailingLen = _Trailing.f_GetLen();
 		auto const *pParse = _Trailing.f_GetStr();
-		for (umint i = 0; i < TrailingLen; ++i)
+		for (umint iChar = 0; iChar < TrailingLen; ++iChar)
 		{
-			if (pParse[i] == '/' && pParse[i + 1] == '/')
+			if (pParse[iChar] == '/' && pParse[iChar + 1] == '/')
 			{
-				i += 2;
-				while (i < TrailingLen && !fg_IsJsonLineTerminator<tf_CParseContext>(reinterpret_cast<uch8 const *>(pParse + i)))
-					++i;
-				--i;
+				iChar += 2;
+				while (iChar < TrailingLen && !fg_IsJsonLineTerminator<tf_CParseContext>(reinterpret_cast<uch8 const *>(pParse + iChar)))
+					++iChar;
+				--iChar;
 				continue;
 			}
-			if (pParse[i] == '/' && pParse[i + 1] == '*')
+			if (pParse[iChar] == '/' && pParse[iChar + 1] == '*')
 			{
-				i += 2;
-				while (i + 1 < TrailingLen && !(pParse[i] == '*' && pParse[i + 1] == '/'))
-					++i;
-				++i;
+				iChar += 2;
+				while (iChar + 1 < TrailingLen && !(pParse[iChar] == '*' && pParse[iChar + 1] == '/'))
+					++iChar;
+				++iChar;
 				continue;
 			}
-			if (pParse[i] == '\"' || pParse[i] == '\'')
+			if (pParse[iChar] == '\"' || pParse[iChar] == '\'')
 			{
-				auto Quote = pParse[i++];
-				while (i < TrailingLen)
+				auto Quote = pParse[iChar++];
+				while (iChar < TrailingLen)
 				{
-					if (pParse[i] == '\\')
+					if (pParse[iChar] == '\\')
 					{
-						++i;
+						++iChar;
 						continue;
 					}
-					if (pParse[i] == Quote)
+					if (pParse[iChar] == Quote)
 						break;
-					++i;
+					++iChar;
 				}
 				continue;
 			}
-			if (pParse[i] == ',')
-				return smint(i);
+			if (pParse[iChar] == ',')
+				return smint(iChar);
 		}
 		return -1;
 	}
@@ -180,40 +180,40 @@ namespace NMib::NEncoding::NJson
 		auto TriviaLen = _Trivia.f_GetLen();
 
 		auto const *pParse = _Trivia.f_GetStr();
-		for (umint i = 0; i < TriviaLen; ++i)
+		for (umint iChar = 0; iChar < TriviaLen; ++iChar)
 		{
 			if (o_bLineComment)
 			{
-				auto pLineTerminator = reinterpret_cast<uch8 const *>(pParse + i);
+				auto pLineTerminator = reinterpret_cast<uch8 const *>(pParse + iChar);
 				if (fg_ParseJsonLineTerminator<tf_CParseContext>(pLineTerminator))
 				{
 					o_bLineComment = false;
-					i = (reinterpret_cast<ch8 const *>(pLineTerminator) - pParse) - 1;
+					iChar = (reinterpret_cast<ch8 const *>(pLineTerminator) - pParse) - 1;
 				}
 				continue;
 			}
 
 			if (o_bBlockComment)
 			{
-				if (pParse[i] == '*' && i + 1 < TriviaLen && pParse[i + 1] == '/')
+				if (pParse[iChar] == '*' && iChar + 1 < TriviaLen && pParse[iChar + 1] == '/')
 				{
 					o_bBlockComment = false;
-					++i;
+					++iChar;
 				}
 				continue;
 			}
 
-			if (pParse[i] == '/' && i + 1 < TriviaLen)
+			if (pParse[iChar] == '/' && iChar + 1 < TriviaLen)
 			{
-				if (pParse[i + 1] == '/')
+				if (pParse[iChar + 1] == '/')
 				{
 					o_bLineComment = true;
-					++i;
+					++iChar;
 				}
-				else if (pParse[i + 1] == '*')
+				else if (pParse[iChar + 1] == '*')
 				{
 					o_bBlockComment = true;
-					++i;
+					++iChar;
 				}
 			}
 		}

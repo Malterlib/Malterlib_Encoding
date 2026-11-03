@@ -59,11 +59,13 @@ NMib::NEncoding::CJsonOrdered::CKey operator ""_jo (char const *_pStr, std::size
 NMib::NEncoding::CEJsonSorted::CKey operator ""_ (char const *_pStr, std::size_t _Len);
 NMib::NEncoding::CJsonSorted::CKey operator ""_j (char const *_pStr, std::size_t _Len);
 
+// NOLINTBEGIN(malterlib-variable-naming): JSON shorthand syntax, named like the ""_o, ""_, ""_jo and ""_j literal operators
 constexpr NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CEJsonOrdered> _o;
 constexpr NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CEJsonSorted> _;
 
 constexpr NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CJsonOrdered> _jo;
 constexpr NMib::NEncoding::TCJsonConstants<NMib::NEncoding::CJsonSorted> _j;
+// NOLINTEND(malterlib-variable-naming)
 
 #ifndef DMibPNoShortCuts
 using namespace NMib::NEncoding;

@@ -108,7 +108,7 @@ namespace
 		{
 			CJsonSorted Data;
 			auto &OutArray = Data["coordinates"].f_Array();
-			for (umint i = 0; i < mc_TestDataLength; ++i)
+			for (umint iEntry = 0; iEntry < mc_TestDataLength; ++iEntry)
 			{
 				auto &Entry = OutArray.f_Insert();
 				Entry["name"] = "{} {}"_f << NCryptography::fg_RandomID(6) << (NMisc::fg_Random().f_GetValue<uint32>() % 10000);
@@ -159,7 +159,7 @@ namespace
 					auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("MibStream");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -178,7 +178,7 @@ namespace
 					Document.Parse<rapidjson::kParseFullPrecisionFlag>(JsonString.f_GetStr());
 
 					CTestPerformanceMeasure Measure("RapidJson");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -202,7 +202,7 @@ namespace
 					auto Document = nlohmann::json::parse(JsonStringView);
 
 					CTestPerformanceMeasure Measure("NlohmannJson");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -220,7 +220,7 @@ namespace
 					auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("Mib");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -238,7 +238,7 @@ namespace
 					auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("MibP");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -256,7 +256,7 @@ namespace
 					auto const Document = NEncoding::CJsonSorted::fs_FromStringJsonC(JsonString);
 
 					CTestPerformanceMeasure Measure("MibJsonC");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -274,7 +274,7 @@ namespace
 					auto const Document = NEncoding::CJsonSorted::fs_FromStringJsonC(JsonString);
 
 					CTestPerformanceMeasure Measure("MibJsonCP");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -292,7 +292,7 @@ namespace
 					auto const Document = NEncoding::CJsonSortedWithComments::fs_FromStringJsonC(JsonString);
 
 					CTestPerformanceMeasure Measure("MibJsonCPre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -310,7 +310,7 @@ namespace
 					auto const Document = NEncoding::CJsonSorted::fs_FromStringJson5(JsonString);
 
 					CTestPerformanceMeasure Measure("MibJson5");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -328,7 +328,7 @@ namespace
 					auto const Document = NEncoding::CJsonSorted::fs_FromStringJson5(JsonString);
 
 					CTestPerformanceMeasure Measure("MibJson5P");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -346,7 +346,7 @@ namespace
 					auto const Document = NEncoding::CJsonSortedWithComments::fs_FromStringJson5(JsonString);
 
 					CTestPerformanceMeasure Measure("MibJson5Pre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -364,7 +364,7 @@ namespace
 					auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("MibEJson");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -382,7 +382,7 @@ namespace
 					auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("MibEJsonP");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -400,7 +400,7 @@ namespace
 					auto const Document = NEncoding::CEJsonSorted::fs_FromStringJsonC(JsonString);
 
 					CTestPerformanceMeasure Measure("MibEJsonC");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -418,7 +418,7 @@ namespace
 					auto const Document = NEncoding::CEJsonSorted::fs_FromStringJsonC(JsonString);
 
 					CTestPerformanceMeasure Measure("MibEJsonCP");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -436,7 +436,7 @@ namespace
 					auto const Document = NEncoding::CEJsonSortedWithComments::fs_FromStringJsonC(JsonString);
 
 					CTestPerformanceMeasure Measure("MibEJsonCPre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -454,7 +454,7 @@ namespace
 					auto const Document = NEncoding::CEJsonSorted::fs_FromStringJson5(JsonString);
 
 					CTestPerformanceMeasure Measure("MibEJson5");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -472,7 +472,7 @@ namespace
 					auto const Document = NEncoding::CEJsonSorted::fs_FromStringJson5(JsonString);
 
 					CTestPerformanceMeasure Measure("MibEJson5P");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -490,7 +490,7 @@ namespace
 					auto const Document = NEncoding::CEJsonSortedWithComments::fs_FromStringJson5(JsonString);
 
 					CTestPerformanceMeasure Measure("MibEJson5Pre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -508,7 +508,7 @@ namespace
 					auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("MibYaml");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -526,7 +526,7 @@ namespace
 					auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("MibYamlFlow");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -544,7 +544,7 @@ namespace
 					auto const Document = NEncoding::CJsonSortedYaml::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("MibYamlPre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -562,7 +562,7 @@ namespace
 					auto const Document = NEncoding::CJsonSortedYaml::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("MibYamlFlowPre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -580,7 +580,7 @@ namespace
 					auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("MibEYaml");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -598,7 +598,7 @@ namespace
 					auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("MibEYamlFlow");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -616,7 +616,7 @@ namespace
 					auto const Document = NEncoding::CEJsonSortedYaml::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("MibEYamlPre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -635,7 +635,7 @@ namespace
 					auto const Document = NEncoding::CEJsonSortedYaml::fs_FromString(JsonString);
 
 					CTestPerformanceMeasure Measure("MibEYamlFlowPre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						[&]() inline_never
@@ -701,7 +701,7 @@ namespace
 				CCoordinate RapidJsonResult;
 				{
 					CTestPerformanceMeasure Measure("RapidJson");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						RapidJsonResult = [&]() inline_never -> CCoordinate
@@ -715,9 +715,9 @@ namespace
 									auto const &Coordinates = Document["coordinates"];
 									auto Length = Coordinates.Size();
 
-									for (rapidjson::SizeType i = 0; i < Length; i++)
+									for (rapidjson::SizeType iCoordinate = 0; iCoordinate < Length; iCoordinate++)
 									{
-										auto const &Coordinate = Coordinates[i];
+										auto const &Coordinate = Coordinates[iCoordinate];
 										SumCoordinate.m_CoordinateX += Coordinate["x"].GetDouble();
 										SumCoordinate.m_CoordinateY += Coordinate["y"].GetDouble();
 										SumCoordinate.m_CoordinateZ += Coordinate["z"].GetDouble();
@@ -737,7 +737,7 @@ namespace
 				CCoordinate RapidJsonInaccurateResult;
 				{
 					CTestPerformanceMeasure Measure("RapidJsonInaccurate");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						RapidJsonInaccurateResult = [&]() inline_never -> CCoordinate
@@ -751,9 +751,9 @@ namespace
 									rapidjson::Value const &Coordinates = Document["coordinates"];
 									auto Length = Coordinates.Size();
 
-									for (rapidjson::SizeType i = 0; i < Length; i++)
+									for (rapidjson::SizeType iCoordinate = 0; iCoordinate < Length; iCoordinate++)
 									{
-										auto const &Coordinate = Coordinates[i];
+										auto const &Coordinate = Coordinates[iCoordinate];
 										SumCoordinate.m_CoordinateX += Coordinate["x"].GetDouble();
 										SumCoordinate.m_CoordinateY += Coordinate["y"].GetDouble();
 										SumCoordinate.m_CoordinateZ += Coordinate["z"].GetDouble();
@@ -773,7 +773,7 @@ namespace
 				if constexpr (tf_bDoCalculation)
 				{
 					CTestPerformanceMeasure Measure("DawJsonLink");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
 
@@ -806,7 +806,7 @@ namespace
 				CCoordinate NlohmannJsonResult;
 				{
 					CTestPerformanceMeasure Measure("NlohmannJson");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
 
@@ -842,7 +842,7 @@ namespace
 				CCoordinate MalterlibResult;
 				{
 					CTestPerformanceMeasure Measure("Mib");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibResult = [&]() inline_never -> CCoordinate
@@ -878,7 +878,7 @@ namespace
 					auto const DocumentStream = NStream::fg_ToByteVector(NEncoding::CJsonSorted::fs_FromString(JsonString));
 
 					CTestPerformanceMeasure Measure("MibStream");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibStreamResult = [&]() inline_never -> CCoordinate
@@ -913,7 +913,7 @@ namespace
 				CCoordinate MalterlibJsonCResult;
 				{
 					CTestPerformanceMeasure Measure("MibJsonC");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibJsonCResult = [&]() inline_never -> CCoordinate
@@ -947,7 +947,7 @@ namespace
 				CCoordinate MalterlibJsonCWithCommentsResult;
 				{
 					CTestPerformanceMeasure Measure("MibJsonCPre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibJsonCWithCommentsResult = [&]() inline_never -> CCoordinate
@@ -981,7 +981,7 @@ namespace
 				CCoordinate MalterlibJson5Result;
 				{
 					CTestPerformanceMeasure Measure("MibJson5");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibJson5Result = [&]() inline_never -> CCoordinate
@@ -1015,7 +1015,7 @@ namespace
 				CCoordinate MalterlibJson5WithCommentsResult;
 				{
 					CTestPerformanceMeasure Measure("MibJson5Pre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibJson5WithCommentsResult = [&]() inline_never -> CCoordinate
@@ -1049,7 +1049,7 @@ namespace
 				CCoordinate MalterlibEJsonResult;
 				{
 					CTestPerformanceMeasure Measure("MibEJson");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibEJsonResult = [&]() inline_never -> CCoordinate
@@ -1084,7 +1084,7 @@ namespace
 				CCoordinate MalterlibEJsonCResult;
 				{
 					CTestPerformanceMeasure Measure("MibEJsonC");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibEJsonCResult = [&]() inline_never -> CCoordinate
@@ -1119,7 +1119,7 @@ namespace
 				CCoordinate MalterlibEJsonCWithCommentsResult;
 				{
 					CTestPerformanceMeasure Measure("MibEJsonCPre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibEJsonCWithCommentsResult = [&]() inline_never -> CCoordinate
@@ -1154,7 +1154,7 @@ namespace
 				CCoordinate MalterlibEJson5Result;
 				{
 					CTestPerformanceMeasure Measure("MibEJson5");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibEJson5Result = [&]() inline_never -> CCoordinate
@@ -1189,7 +1189,7 @@ namespace
 				CCoordinate MalterlibEJson5WithCommentsResult;
 				{
 					CTestPerformanceMeasure Measure("MibEJson5Pre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibEJson5WithCommentsResult = [&]() inline_never -> CCoordinate
@@ -1224,7 +1224,7 @@ namespace
 				CCoordinate MalterlibYamlResult;
 				{
 					CTestPerformanceMeasure Measure("MibYaml");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibYamlResult = [&]() inline_never -> CCoordinate
@@ -1259,7 +1259,7 @@ namespace
 				CCoordinate MalterlibYamlPreResult;
 				{
 					CTestPerformanceMeasure Measure("MibYamlPre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibYamlPreResult = [&]() inline_never -> CCoordinate
@@ -1294,7 +1294,7 @@ namespace
 				CCoordinate MalterlibEYamlResult;
 				{
 					CTestPerformanceMeasure Measure("MibEYaml");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibEYamlResult = [&]() inline_never -> CCoordinate
@@ -1329,7 +1329,7 @@ namespace
 				CCoordinate MalterlibEYamlPreResult;
 				{
 					CTestPerformanceMeasure Measure("MibEYamlPre");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibEYamlPreResult = [&]() inline_never -> CCoordinate
@@ -1364,7 +1364,7 @@ namespace
 				CCoordinate MalterlibYamlBlockResult;
 				{
 					CTestPerformanceMeasure Measure("MibYamlB");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibYamlBlockResult = [&]() inline_never -> CCoordinate
@@ -1399,7 +1399,7 @@ namespace
 				CCoordinate MalterlibYamlPreBlockResult;
 				{
 					CTestPerformanceMeasure Measure("MibYamlPreB");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibYamlPreBlockResult = [&]() inline_never -> CCoordinate
@@ -1434,7 +1434,7 @@ namespace
 				CCoordinate MalterlibEYamlBlockResult;
 				{
 					CTestPerformanceMeasure Measure("MibEYamlB");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibEYamlBlockResult = [&]() inline_never -> CCoordinate
@@ -1469,7 +1469,7 @@ namespace
 				CCoordinate MalterlibEYamlPreBlockResult;
 				{
 					CTestPerformanceMeasure Measure("MibEYamlPreB");
-					for (umint i = 0; i < nIterations; ++i)
+					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 					{
 						Measure.f_Start();
 						MalterlibEYamlPreBlockResult = [&]() inline_never -> CCoordinate

@@ -228,11 +228,11 @@ namespace NMib::NEncoding
 
 	struct CEJsonConstStrings
 	{
-		static NStr::CStr const mc_Date;
-		static NStr::CStr const mc_Binary;
-		static NStr::CStr const mc_Type;
-		static NStr::CStr const mc_Value;
-		static NStr::CStr const mc_Escape;
+		static constexpr NStr::CStr mc_Date = NStr::gc_Str<"$date">;
+		static constexpr NStr::CStr mc_Binary = NStr::gc_Str<"$binary">;
+		static constexpr NStr::CStr mc_Type = NStr::gc_Str<"$type">;
+		static constexpr NStr::CStr mc_Value = NStr::gc_Str<"$value">;
+		static constexpr NStr::CStr mc_Escape = NStr::gc_Str<"$escape">;
 	};
 
 	template <typename t_CParent>
