@@ -37,24 +37,24 @@ namespace NMib::NEncoding
 		umint f_ContainerLengthLimit() const;
 		void f_SetLength(NStream::CFilePos _Length);
 
+	protected:
+		DMibStreamImplementProtected(TCBinaryStream_Base64);
+
 	private:
 		void fp_WriteDirty();
 		umint fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite);
 
-		NStream::CBinaryStream *mp_pStream;
-		NFile::EFileOpen mp_OpenFlags;
-
 		static constexpr aint mcp_ChunkSizeBase64 = 4;
 		static constexpr aint mcp_ChunkSizeData = 3;
+
+		NStream::CBinaryStream *mp_pStream;
+		NFile::EFileOpen mp_OpenFlags;
 
 		NStream::CFilePos mp_FilePos;
 		NStream::CFilePos mp_CurrentLoaded;
 		NStream::CFilePos mp_FileLen;
 		uint8 mp_DecryptedData[mcp_ChunkSizeData];
 		bool mp_bCurrentDirty;
-
-	protected:
-		DMibStreamImplementProtected(TCBinaryStream_Base64);
 	};
 
 	NStr::CStr fg_Base64Encode(NStr::CStr const &_String);

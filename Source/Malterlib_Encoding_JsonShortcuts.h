@@ -11,13 +11,6 @@ namespace NMib::NEncoding
 	template <typename t_CJson>
 	struct TCJsonConstants
 	{
-		static constexpr auto mc_Null = EJsonType_Null;
-		static constexpr auto mc_EmptyString = EJsonType_String;
-		static constexpr auto mc_EmptyObject = EJsonType_Object;
-		static constexpr auto mc_EmptyArray = EJsonType_Array;
-		static constexpr auto mc_InvalidDate = EEJsonType_Date;
-		static constexpr auto mc_EmptyBinary = EEJsonType_Binary;
-
 		static typename t_CJson::CKey operator () (NStr::CStr const &_Key);
 
 		t_CJson const &operator = (t_CJson const &_Convert) const;
@@ -26,6 +19,13 @@ namespace NMib::NEncoding
 
 		template <typename ...tfp_CValue>
 		t_CJson operator [] (tfp_CValue && ...p_Values) const;
+
+		static constexpr auto mc_Null = EJsonType_Null;
+		static constexpr auto mc_EmptyString = EJsonType_String;
+		static constexpr auto mc_EmptyObject = EJsonType_Object;
+		static constexpr auto mc_EmptyArray = EJsonType_Array;
+		static constexpr auto mc_InvalidDate = EEJsonType_Date;
+		static constexpr auto mc_EmptyBinary = EEJsonType_Binary;
 	};
 
 	extern template CEJsonOrdered::CKey TCJsonConstants<CEJsonOrdered>::operator () (NStr::CStr const &_Key);

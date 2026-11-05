@@ -70,14 +70,13 @@ namespace NMib::NEncoding::NPrivate
 	template <template <typename t_CParent> class t_TCValue, typename t_CTypes, EJsonContainerFlag t_ContainerFlags>
 	struct TCJsonValueBase
 	{
-		static constexpr EJsonContainerFlag mc_ContainerFlags = t_ContainerFlags;
-		static constexpr bool mc_bOrdered = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bOrdered;
-		static constexpr bool mc_bPreserveComments = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveComments;
-		static constexpr bool mc_bPreserveYamlMetadata = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveYamlMetadata;
-		static constexpr bool mc_bHasDefaultTypes = NMeta::gc_TypeList_Len<typename t_CTypes::CTypes> == 0;
-
 		using CValue = t_TCValue<TCJsonValueBase>;
 		using CVariantType = typename NPrivate::TCGetJsonValueVariant<CValue, t_ContainerFlags, typename t_CTypes::CTypes>::CType;
+
+		// NOLINTNEXTLINE(malterlib-member-order): the requires clauses of f_Trivia use it
+		static constexpr bool mc_bPreserveComments = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveComments;
+		// NOLINTNEXTLINE(malterlib-member-order): the requires clauses of f_Yaml use it
+		static constexpr bool mc_bPreserveYamlMetadata = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveYamlMetadata;
 
 		template <typename tf_CType>
 		TCJsonValueBase(tf_CType &&_Value)
@@ -119,6 +118,10 @@ namespace NMib::NEncoding::NPrivate
 		TCYamlConstView<TCJsonValueBase> f_Yaml() const
 			requires (mc_bPreserveYamlMetadata)
 		;
+
+		static constexpr EJsonContainerFlag mc_ContainerFlags = t_ContainerFlags;
+		static constexpr bool mc_bOrdered = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bOrdered;
+		static constexpr bool mc_bHasDefaultTypes = NMeta::gc_TypeList_Len<typename t_CTypes::CTypes> == 0;
 
 	protected:
 		template <typename t_CParent2>

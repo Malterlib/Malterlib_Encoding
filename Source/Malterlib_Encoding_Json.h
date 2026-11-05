@@ -93,12 +93,18 @@ namespace NMib::NEncoding
 	struct TCJsonValue : public t_CParent
 	{
 	protected:
+		template <typename t_CJsonValue2, EJsonContainerFlag t_ContainerFlags2>
+		friend struct TCJsonObject;
+
+		template <template <typename t_CParent2> class t_TCValue2, typename t_CTypes2, EJsonContainerFlag t_ContainerFlags2>
+		friend struct NPrivate::TCJsonValueBase;
+
 		using CValue = typename t_CParent::CValue;
 		struct CDummy
 		{
 		};
 
-	public:
+	public: // NOLINT(malterlib-member-order): the public declarations use CValue and CDummy
 		using CObject = TCJsonObject<CValue, t_CParent::mc_ContainerFlags>;
 		using CArray = NContainer::TCVector<CValue>;
 
@@ -112,13 +118,19 @@ namespace NMib::NEncoding
 		{
 			CKey();
 			CKey(CKey &&_Other);
-			NStr::CStr m_Key;
 			inline_always CKeyValue operator = (CValue &&_Value) &&;
 			inline_always CKeyValue operator = (CValue const &_Value) &&;
 			inline_always CKeyValue operator = (std::initializer_list<CVoidTag> const &_Initializer) &&;
 
+			NStr::CStr m_Key;
+
 		private:
 			CKey(CKey const &_Other);
+		};
+
+		struct CFormatOptions
+		{
+			ch8 m_PrettySeparator[32] = "\t";
 		};
 
 		template <typename tf_CType>
@@ -243,11 +255,6 @@ namespace NMib::NEncoding
 		// Formatting
 		// ==============
 
-		struct CFormatOptions
-		{
-			ch8 m_PrettySeparator[32] = "\t";
-		};
-
 		template <typename tf_COption>
 		bool f_FormatParseOption(CFormatOptions &_Options, tf_COption &_Option) const;
 		template <typename tf_CFormatInto, typename tf_CFormatOptions>
@@ -291,12 +298,6 @@ namespace NMib::NEncoding
 		NStr::CStr f_ToStringColoredYamlFlow(NCommandLine::EAnsiEncodingFlag _AnsiFlags, ch8 const *_pPrettySeparator = nullptr, EJsonDialectFlag _Flags = EJsonDialectFlag_None) const;
 
 	protected:
-		template <typename t_CJsonValue2, EJsonContainerFlag t_ContainerFlags2>
-		friend struct TCJsonObject;
-
-		template <template <typename t_CParent2> class t_TCValue2, typename t_CTypes2, EJsonContainerFlag t_ContainerFlags2>
-		friend struct NPrivate::TCJsonValueBase;
-
 		template <typename tf_CParent>
 		explicit TCJsonValue(TCJsonValue<tf_CParent> const &_Other);
 		template <typename tf_CParent>
@@ -311,21 +312,45 @@ namespace NMib::NEncoding
 	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
 	struct TCJsonObject
 	{
+		using CObjectEntry = NPrivate::TCObjectEntry<t_CJsonValue, t_ContainerFlags>;
+
 		static constexpr EJsonContainerFlag mc_ContainerFlags = t_ContainerFlags;
 		static constexpr bool mc_bOrdered = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bOrdered;
 		static constexpr bool mc_bPreserveComments = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveComments;
 		static constexpr bool mc_bPreserveYamlMetadata = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveYamlMetadata;
 
-	public:
-		using CObjectEntry = NPrivate::TCObjectEntry<t_CJsonValue, t_ContainerFlags>;
-
 	private:
+		template <typename t_CJsonValue2, EJsonContainerFlag t_ContainerFlags2>
+		friend struct TCJsonObject;
+
+		template <typename> friend struct TCJsonObjectEntryHandle;
+		template <typename> friend struct TCJsonOrderedDestructiveIterator;
+		template <typename> friend struct TCJsonSortedDestructiveIterator;
+
 		using CCompare = typename NPrivate::CObjectEntryBase::CCompare;
 
 		using CObjects = TCConditional<mc_bOrdered, NContainer::TCLinkedList<CObjectEntry>, NContainer::TCMap<NStr::CStr, CObjectEntry>>;
 		using CObjectsTree = TCConditional<mc_bOrdered, NIntrusive::TCAVLTree<&NPrivate::CObjectEntryBase::mp_Link, CCompare, NMemory::CDefaultAllocator, CObjectEntry>, CEmpty>;
 
-	public:
+	public: // NOLINT(malterlib-member-order): the public declarations use CCompare and CObjects
+			// Type aliases for destructive iteration
+			// Ordered mode: custom types that manage linked list + AVL tree
+		using CObjectEntryHandle = TCConditional<mc_bOrdered, TCJsonObjectEntryHandle<TCJsonObject>, typename NContainer::TCMap<NStr::CStr, CObjectEntry>::CNodeHandle>;
+		using COrderedDestructiveIterator = TCConditional
+			<
+				mc_bOrdered
+				, TCJsonOrderedDestructiveIterator<TCJsonObject>
+				, typename NContainer::TCMap<NStr::CStr, CObjectEntry>::CKeyValueIteratorBidirectionalDestructive
+			>
+		;
+		using CSortedDestructiveIterator = TCConditional
+			<
+				mc_bOrdered
+				, TCJsonSortedDestructiveIterator<TCJsonObject>
+				, typename NContainer::TCMap<NStr::CStr, CObjectEntry>::CKeyValueIteratorBidirectionalDestructive
+			>
+		;
+
 		TCJsonObject();
 		~TCJsonObject();
 		TCJsonObject(TCJsonObject const &_Other);
@@ -383,24 +408,6 @@ namespace NMib::NEncoding
 			requires (!mc_bPreserveComments)
 		;
 
-		// Type aliases for destructive iteration
-		// Ordered mode: custom types that manage linked list + AVL tree
-		using CObjectEntryHandle = TCConditional<mc_bOrdered, TCJsonObjectEntryHandle<TCJsonObject>, typename NContainer::TCMap<NStr::CStr, CObjectEntry>::CNodeHandle>;
-		using COrderedDestructiveIterator = TCConditional
-			<
-				mc_bOrdered
-				, TCJsonOrderedDestructiveIterator<TCJsonObject>
-				, typename NContainer::TCMap<NStr::CStr, CObjectEntry>::CKeyValueIteratorBidirectionalDestructive
-			>
-		;
-		using CSortedDestructiveIterator = TCConditional
-			<
-				mc_bOrdered
-				, TCJsonSortedDestructiveIterator<TCJsonObject>
-				, typename NContainer::TCMap<NStr::CStr, CObjectEntry>::CKeyValueIteratorBidirectionalDestructive
-			>
-		;
-
 		// Destructive iterator accessors (rvalue-qualified)
 		COrderedDestructiveIterator f_OrderedDestructiveIterator() &&;
 		CSortedDestructiveIterator f_SortedDestructiveIterator() &&;
@@ -412,14 +419,7 @@ namespace NMib::NEncoding
 		t_CJsonValue &f_InsertOrAssign(CObjectEntryHandle &&_Handle);
 
 	private:
-		template <typename t_CJsonValue2, EJsonContainerFlag t_ContainerFlags2>
-		friend struct TCJsonObject;
-
 		using CJsonValue = t_CJsonValue;
-
-		template <typename> friend struct TCJsonObjectEntryHandle;
-		template <typename> friend struct TCJsonOrderedDestructiveIterator;
-		template <typename> friend struct TCJsonSortedDestructiveIterator;
 
 		CObjects mp_Objects;
 		DMibNoUniqueAddress CObjectsTree mp_ObjectTree;
@@ -452,15 +452,14 @@ namespace NMib::NEncoding
 		template <typename> friend struct TCJsonSortedDestructiveIterator;
 		friend t_CJsonObject;
 
-		using CObjects = typename t_CJsonObject::CObjects;
-		using CListHandle = typename CObjects::CNodeHandle;
 		using CJsonValue = typename t_CJsonObject::CJsonValue;
 
-	public:
+	public: // NOLINT(malterlib-member-order): the public declarations use CJsonValue
 		TCJsonObjectEntryHandle() = default;
 		TCJsonObjectEntryHandle(TCJsonObjectEntryHandle &&_Other) noexcept;
-		TCJsonObjectEntryHandle &operator = (TCJsonObjectEntryHandle &&_Other) noexcept;
 		TCJsonObjectEntryHandle(TCJsonObjectEntryHandle const &_Other) = delete;
+
+		TCJsonObjectEntryHandle &operator = (TCJsonObjectEntryHandle &&_Other) noexcept;
 		TCJsonObjectEntryHandle &operator = (TCJsonObjectEntryHandle const &_Other) = delete;
 
 		[[nodiscard]] bool f_IsEmpty() const noexcept;
@@ -474,6 +473,9 @@ namespace NMib::NEncoding
 		CJsonValue const &f_Value() const noexcept;
 
 	private:
+		using CObjects = typename t_CJsonObject::CObjects;
+		using CListHandle = typename CObjects::CNodeHandle;
+
 		TCJsonObjectEntryHandle(CListHandle &&_ListHandle);
 
 		CListHandle mp_ListHandle;
@@ -486,18 +488,16 @@ namespace NMib::NEncoding
 	private:
 		friend t_CJsonObject;
 
-		using CObjects = typename t_CJsonObject::CObjects;
-		using CObjectsTree = typename t_CJsonObject::CObjectsTree;
 		using CObjectEntry = typename t_CJsonObject::CObjectEntry;
-		using CInnerIterator = typename CObjects::CIterator;
 		using CObjectEntryHandle = TCJsonObjectEntryHandle<t_CJsonObject>;
 
-	public:
+	public: // NOLINT(malterlib-member-order): the public declarations use CObjectEntry and CObjectEntryHandle
 		TCJsonOrderedDestructiveIterator(TCJsonOrderedDestructiveIterator &&_iOther) noexcept;
 		TCJsonOrderedDestructiveIterator(TCJsonOrderedDestructiveIterator const &_iOther) = delete;
+		~TCJsonOrderedDestructiveIterator();
+
 		TCJsonOrderedDestructiveIterator &operator = (TCJsonOrderedDestructiveIterator const &_iOther) = delete;
 		TCJsonOrderedDestructiveIterator &operator = (TCJsonOrderedDestructiveIterator &&_iOther) noexcept;
-		~TCJsonOrderedDestructiveIterator();
 
 		explicit operator bool () const;
 		CObjectEntry *f_GetCurrent() const;
@@ -510,6 +510,10 @@ namespace NMib::NEncoding
 		CObjectEntryHandle f_ExtractNode();
 
 	private:
+		using CObjects = typename t_CJsonObject::CObjects;
+		using CObjectsTree = typename t_CJsonObject::CObjectsTree;
+		using CInnerIterator = typename CObjects::CIterator;
+
 		TCJsonOrderedDestructiveIterator(t_CJsonObject &_Object);
 
 		void fp_Clear();
@@ -525,18 +529,16 @@ namespace NMib::NEncoding
 	private:
 		friend t_CJsonObject;
 
-		using CObjects = typename t_CJsonObject::CObjects;
-		using CObjectsTree = typename t_CJsonObject::CObjectsTree;
 		using CObjectEntry = typename t_CJsonObject::CObjectEntry;
-		using CInnerIterator = typename CObjectsTree::CIterator;
 		using CObjectEntryHandle = TCJsonObjectEntryHandle<t_CJsonObject>;
 
-	public:
+	public: // NOLINT(malterlib-member-order): the public declarations use CObjectEntry and CObjectEntryHandle
 		TCJsonSortedDestructiveIterator(TCJsonSortedDestructiveIterator &&_iOther) noexcept;
 		TCJsonSortedDestructiveIterator(TCJsonSortedDestructiveIterator const &_iOther) = delete;
+		~TCJsonSortedDestructiveIterator();
+
 		TCJsonSortedDestructiveIterator &operator = (TCJsonSortedDestructiveIterator const &_iOther) = delete;
 		TCJsonSortedDestructiveIterator &operator = (TCJsonSortedDestructiveIterator &&_iOther) noexcept;
-		~TCJsonSortedDestructiveIterator();
 
 		explicit operator bool () const;
 		CObjectEntry *f_GetCurrent() const;
@@ -548,6 +550,10 @@ namespace NMib::NEncoding
 		CObjectEntryHandle f_ExtractNode();
 
 	private:
+		using CObjects = typename t_CJsonObject::CObjects;
+		using CObjectsTree = typename t_CJsonObject::CObjectsTree;
+		using CInnerIterator = typename CObjectsTree::CIterator;
+
 		TCJsonSortedDestructiveIterator(t_CJsonObject &_Object);
 
 		void fp_Clear();

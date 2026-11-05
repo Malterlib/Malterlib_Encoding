@@ -304,14 +304,14 @@ namespace NMib::NEncoding::NYaml
 {
 	struct CParseContext : public NJson::CParseContext
 	{
-		NContainer::TCMap<NStr::CStr, NStr::CStr> m_TagHandles;
-		NContainer::TCMap<NStr::CStr, NStr::CStr> m_DocumentTagHandles;
-		umint m_nFlowDepth = 0;
-
 		static constexpr bool mc_bRecordYamlMetadata = false;
 		static constexpr bool mc_bAllowBlockStyle = true;
 		static constexpr bool mc_bAllowFlowStyle = true;
 		static constexpr bool mc_bAllowDuplicateKeys = false;
+
+		NContainer::TCMap<NStr::CStr, NStr::CStr> m_TagHandles;
+		NContainer::TCMap<NStr::CStr, NStr::CStr> m_DocumentTagHandles;
+		umint m_nFlowDepth = 0;
 	};
 
 	struct CRecordingParseContext : public CParseContext

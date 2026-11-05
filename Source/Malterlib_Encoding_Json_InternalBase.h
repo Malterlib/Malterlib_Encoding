@@ -177,35 +177,31 @@ namespace NMib::NEncoding::NPrivate
 
 	struct CObjectEntryBase
 	{
+	protected:
 		template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
 		friend struct NEncoding::TCJsonObject;
-
-	protected:
-		NStr::CStr mp_Name;
-		NIntrusive::TCAVLLink<> mp_Link;
-
-		CObjectEntryBase();
-		CObjectEntryBase(CObjectEntryBase const &_Other);
-		CObjectEntryBase(CObjectEntryBase &&_Other);
 
 		struct CCompare
 		{
 			inline_small NStr::CStr const &operator () (CObjectEntryBase const &_Node) const;
 		};
+
+		CObjectEntryBase();
+		CObjectEntryBase(CObjectEntryBase const &_Other);
+		CObjectEntryBase(CObjectEntryBase &&_Other);
+
+		NStr::CStr mp_Name;
+		NIntrusive::TCAVLLink<> mp_Link;
 	};
 
 	template <typename t_CJsonValue, EJsonContainerFlag t_ContainerFlags>
 	struct TCObjectEntry : public TCConditional<TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bOrdered, CObjectEntryBase, CEmpty>
 	{
-		static constexpr EJsonContainerFlag mc_ContainerFlags = t_ContainerFlags;
-		static constexpr bool mc_bOrdered = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bOrdered;
+		// NOLINTNEXTLINE(malterlib-member-order): the requires clauses of f_KeyTrivia use it
 		static constexpr bool mc_bPreserveComments = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveComments;
+		// NOLINTNEXTLINE(malterlib-member-order): the requires clauses of f_KeyYaml use it
 		static constexpr bool mc_bPreserveYamlMetadata = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bPreserveYamlMetadata;
 
-		template <typename t_CJsonValue2, EJsonContainerFlag t_ContainerFlags2>
-		friend struct NEncoding::TCJsonObject;
-
-	public:
 		TCObjectEntry();
 		~TCObjectEntry() = default;
 
@@ -236,7 +232,13 @@ namespace NMib::NEncoding::NPrivate
 		template <typename tf_CStream>
 		void f_Consume(tf_CStream &_Stream);
 
+		static constexpr EJsonContainerFlag mc_ContainerFlags = t_ContainerFlags;
+		static constexpr bool mc_bOrdered = TCJsonContainerFlagTraits<t_ContainerFlags>::mc_bOrdered;
+
 	protected:
+		template <typename t_CJsonValue2, EJsonContainerFlag t_ContainerFlags2>
+		friend struct NEncoding::TCJsonObject;
+
 		template <typename t_CObjectEntry2>
 		friend struct NEncoding::TCJsonKeyTriviaConstView;
 		template <typename t_CObjectEntry2>
