@@ -41,15 +41,15 @@ namespace NMib::NEncoding
 	NStr::CStr fg_Base64Encode(NStr::CStr const &_String)
 	{
 		NStream::TCBinaryStreamMemoryPtr<> Stream;
-		int FLen = ((_String.f_GetLen() + 2) / 3) * 4;
+		int EncodedLength = ((_String.f_GetLen() + 2) / 3) * 4;
 		NStr::CStr Ret;
-		Stream.f_OpenReadWrite(Ret.f_GetStr(FLen + 1), FLen);
+		Stream.f_OpenReadWrite(Ret.f_GetStr(EncodedLength + 1), EncodedLength);
 		{
 			TCBinaryStream_Base64<> Base64;
 			Base64.f_Open(&Stream, NFile::EFileOpen_Write);
 			Base64.f_FeedBytes(_String.f_GetStr(), _String.f_GetLen());
 		}
-		Ret.f_SetAt(FLen, 0);
+		Ret.f_SetAt(EncodedLength, 0);
 		return Ret;
 	}
 
@@ -61,9 +61,9 @@ namespace NMib::NEncoding
 		{
 			TCBinaryStream_Base64<> Base64;
 			Base64.f_Open(&Stream, NFile::EFileOpen_Read);
-			umint FLen = Base64.f_GetLength();
-			Base64.f_ConsumeBytes(Ret.f_GetStr(FLen + 1), FLen);
-			Ret.f_SetAt(FLen, 0);
+			umint DecodedLength = Base64.f_GetLength();
+			Base64.f_ConsumeBytes(Ret.f_GetStr(DecodedLength + 1), DecodedLength);
+			Ret.f_SetAt(DecodedLength, 0);
 		}
 		return Ret;
 	}
@@ -71,15 +71,15 @@ namespace NMib::NEncoding
 	NStr::CStr fg_Base64Encode(NContainer::CByteVector const &_Data)
 	{
 		NStream::TCBinaryStreamMemoryPtr<> Stream;
-		int FLen = ((_Data.f_GetLen() + 2) / 3) * 4;
+		int EncodedLength = ((_Data.f_GetLen() + 2) / 3) * 4;
 		NStr::CStr Ret;
-		Stream.f_OpenReadWrite(Ret.f_GetStr(FLen + 1), FLen);
+		Stream.f_OpenReadWrite(Ret.f_GetStr(EncodedLength + 1), EncodedLength);
 		{
 			TCBinaryStream_Base64<> Base64;
 			Base64.f_Open(&Stream, NFile::EFileOpen_Write);
 			Base64.f_FeedBytes(_Data.f_GetArray(), _Data.f_GetLen());
 		}
-		Ret.f_SetAt(FLen, 0);
+		Ret.f_SetAt(EncodedLength, 0);
 		return Ret;
 	}
 
@@ -92,24 +92,24 @@ namespace NMib::NEncoding
 		{
 			TCBinaryStream_Base64<> Base64;
 			Base64.f_Open(&Stream, NFile::EFileOpen_Read);
-			umint FLen = Base64.f_GetLength();
-			_Data.f_SetLen(FLen);
-			Base64.f_ConsumeBytes(_Data.f_GetArray(), FLen);
+			umint DecodedLength = Base64.f_GetLength();
+			_Data.f_SetLen(DecodedLength);
+			Base64.f_ConsumeBytes(_Data.f_GetArray(), DecodedLength);
 		}
 	}
 
 	NStr::CStrSecure fg_Base64Encode(NContainer::CSecureByteVector const &_Data)
 	{
 		NStream::TCBinaryStreamMemoryPtr<> Stream;
-		int FLen = ((_Data.f_GetLen() + 2) / 3) * 4;
+		int EncodedLength = ((_Data.f_GetLen() + 2) / 3) * 4;
 		NStr::CStrSecure Ret;
-		Stream.f_OpenReadWrite(Ret.f_GetStr(FLen + 1), FLen);
+		Stream.f_OpenReadWrite(Ret.f_GetStr(EncodedLength + 1), EncodedLength);
 		{
 			TCBinaryStream_Base64<> Base64;
 			Base64.f_Open(&Stream, NFile::EFileOpen_Write);
 			Base64.f_FeedBytes(_Data.f_GetArray(), _Data.f_GetLen());
 		}
-		Ret.f_SetAt(FLen, 0);
+		Ret.f_SetAt(EncodedLength, 0);
 		return Ret;
 	}
 
@@ -122,9 +122,9 @@ namespace NMib::NEncoding
 		{
 			TCBinaryStream_Base64<> Base64;
 			Base64.f_Open(&Stream, NFile::EFileOpen_Read);
-			umint FLen = Base64.f_GetLength();
-			_Data.f_SetLen(FLen);
-			Base64.f_ConsumeBytes(_Data.f_GetArray(), FLen);
+			umint DecodedLength = Base64.f_GetLength();
+			_Data.f_SetLen(DecodedLength);
+			Base64.f_ConsumeBytes(_Data.f_GetArray(), DecodedLength);
 		}
 	}
 }
