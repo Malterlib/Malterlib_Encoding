@@ -46,16 +46,16 @@ namespace NMib::NEncoding
 		else if (mp_OpenFlags == NFile::EFileOpen_Read)
 		{
 			mp_FilePos = 0;
-			NStream::CFilePos FLen = mp_pStream->f_GetLength();
+			NStream::CFilePos EncodedLength = mp_pStream->f_GetLength();
 			mp_pStream->f_SetPositionFromEnd(-2);
 			uint8 Bytes[2];
 			mp_pStream->f_ConsumeBytes(Bytes, 2);
 			if (g_Base64EncodingTableReverse[Bytes[0]] == 64)
-				mp_FileLen = ((FLen / 4) * 3) - 2;
+				mp_FileLen = ((EncodedLength / 4) * 3) - 2;
 			else if (g_Base64EncodingTableReverse[Bytes[1]] == 64)
-				mp_FileLen = ((FLen / 4) * 3) - 1;
+				mp_FileLen = ((EncodedLength / 4) * 3) - 1;
 			else
-				mp_FileLen = ((FLen / 4) * 3);
+				mp_FileLen = ((EncodedLength / 4) * 3);
 			mp_pStream->f_SetPosition(0);
 		}
 		else
