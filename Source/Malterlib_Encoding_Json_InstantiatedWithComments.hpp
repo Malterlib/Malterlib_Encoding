@@ -7,7 +7,6 @@
 
 namespace NMib::NEncoding
 {
-	// NOLINTBEGIN(malterlib-parameter-naming): the check asks for parameter names in explicit instantiations, which have none
 #ifdef DMibEncodingJsonExternTemplate
 	extern template struct NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_Ordered | EJsonContainerFlag::mc_PreserveComments>;
 	extern template struct TCJsonValue<NPrivate::TCJsonValueBase<TCJsonValue, NPrivate::CJsonExtraTypes, EJsonContainerFlag::mc_Ordered | EJsonContainerFlag::mc_PreserveComments>>;
@@ -256,5 +255,4 @@ namespace NMib::NEncoding
 		const
 	;
 #endif
-	// NOLINTEND(malterlib-parameter-naming)
 }
