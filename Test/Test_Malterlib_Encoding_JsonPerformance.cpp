@@ -35,37 +35,42 @@
 
 struct CCoordinate
 {
+	template <typename tf_CStr>
+	void f_Format(tf_CStr &o_String) const;
+	CCoordinate operator / (smint _Length) const;
+	auto operator == (CCoordinate const &_Right) const noexcept;
+
 	double m_CoordinateX;
 	double m_CoordinateY;
 	double m_CoordinateZ;
-
-	template <typename tf_CStr>
-	void f_Format(tf_CStr &o_String) const
-	{
-		o_String
-			+= typename tf_CStr::CFormat("\n   x: {ffs,fdb} Mantissa {nfh}\n   y: {ffs,fdb} Mantissa {nfh}\n   z: {ffs,fdb} Mantissa {nfh}\n")
-			<< m_CoordinateX
-			<< fp64(m_CoordinateX).f_GetMantissa()
-			<< m_CoordinateY
-			<< fp64(m_CoordinateY).f_GetMantissa()
-			<< m_CoordinateZ
-			<< fp64(m_CoordinateZ).f_GetMantissa()
-		;
-	}
-
-	CCoordinate operator / (smint _Length) const
-	{
-		return {m_CoordinateX / double(_Length), m_CoordinateY / double(_Length), m_CoordinateZ / double(_Length)};
-	}
-
-	auto operator == (CCoordinate const &_Right) const noexcept
-	{
-		return fp64(m_CoordinateX).f_AlmostEqual(fp64(_Right.m_CoordinateX), 2)
-			&& fp64(m_CoordinateY).f_AlmostEqual(fp64(_Right.m_CoordinateY), 2)
-			&& fp64(m_CoordinateZ).f_AlmostEqual(fp64(_Right.m_CoordinateZ), 2)
-		;
-	}
 };
+
+template <typename tf_CStr>
+void CCoordinate::f_Format(tf_CStr &o_String) const
+{
+	o_String
+		+= typename tf_CStr::CFormat("\n   x: {ffs,fdb} Mantissa {nfh}\n   y: {ffs,fdb} Mantissa {nfh}\n   z: {ffs,fdb} Mantissa {nfh}\n")
+		<< m_CoordinateX
+		<< fp64(m_CoordinateX).f_GetMantissa()
+		<< m_CoordinateY
+		<< fp64(m_CoordinateY).f_GetMantissa()
+		<< m_CoordinateZ
+		<< fp64(m_CoordinateZ).f_GetMantissa()
+	;
+}
+
+CCoordinate CCoordinate::operator / (smint _Length) const
+{
+	return {m_CoordinateX / double(_Length), m_CoordinateY / double(_Length), m_CoordinateZ / double(_Length)};
+}
+
+auto CCoordinate::operator == (CCoordinate const &_Right) const noexcept
+{
+	return fp64(m_CoordinateX).f_AlmostEqual(fp64(_Right.m_CoordinateX), 2)
+		&& fp64(m_CoordinateY).f_AlmostEqual(fp64(_Right.m_CoordinateY), 2)
+		&& fp64(m_CoordinateZ).f_AlmostEqual(fp64(_Right.m_CoordinateZ), 2)
+	;
+}
 
 struct CCoordinates
 {
@@ -95,6 +100,8 @@ namespace
 
 	struct CJsonPerformance_Tests : public NTest::CTest
 	{
+		void f_DoTests();
+
 #if defined(DMibDebug) || defined(DMibSanitizerEnabled)
 		static constexpr umint mc_TestDataLength = 16 * 1024;
 		static constexpr umint mc_ArrayLength = 16 * 1024;
@@ -104,1463 +111,1467 @@ namespace
 #endif
 
 	private:
-		CStr fp_GenerateTestData(bool _bFloat, CCoordinate &o_Average)
-		{
-			CJsonSorted Data;
-			auto &OutArray = Data["coordinates"].f_Array();
-			for (umint iEntry = 0; iEntry < mc_TestDataLength; ++iEntry)
-			{
-				auto &Entry = OutArray.f_Insert();
-				Entry["name"] = "{} {}"_f << NCryptography::fg_RandomID(6) << (NMisc::fg_Random().f_GetValue<uint32>() % 10000);
-				Entry["opts"]["1"].f_Array() = {1, true};
-				if (_bFloat)
-				{
-					Entry["x"] = NMisc::fg_GetRandomFloatFullPrecision() * -10e-30;
-					Entry["y"] = NMisc::fg_GetRandomFloatFullPrecision() * 10e30;
-					Entry["z"] = NMisc::fg_GetRandomFloatFullPrecision();
-				}
-				else
-				{
-					Entry["x"] = NMisc::fg_GetRandomUnsigned();
-					Entry["y"] = NMisc::fg_GetRandomUnsigned();
-					Entry["z"] = NMisc::fg_GetRandomUnsigned();
-				}
-			}
+		CStr fp_GenerateTestData(bool _bFloat, CCoordinate &o_Average);
+		void fp_TestGenerate(CStr const &_Description, NFunction::TCFunction<CStr ()> const &_fGenerateJson, bool _bFloat);
+		template <bool tf_bDoCalculation>
+		void fp_TestParse(CStr const &_Description);
+	};
 
+	void CJsonPerformance_Tests::f_DoTests()
+	{
+		fp_TestParse<false>("Parse");
+		fp_TestParse<true>("Parse Calculate");
+		fp_TestGenerate
+			(
+				"Generate Float"
+				, [&]
+				{
+					CCoordinate Dummy;
+					return fp_GenerateTestData(true, Dummy);
+				}
+				, true
+			)
+		;
+		fp_TestGenerate
+			(
+				"Generate Integer"
+				, [&]
+				{
+					CCoordinate Dummy;
+					return fp_GenerateTestData(false, Dummy);
+				}
+				, false
+			)
+		;
+	}
+
+	CStr CJsonPerformance_Tests::fp_GenerateTestData(bool _bFloat, CCoordinate &o_Average)
+	{
+		CJsonSorted Data;
+		auto &OutArray = Data["coordinates"].f_Array();
+		for (umint iEntry = 0; iEntry < mc_TestDataLength; ++iEntry)
+		{
+			auto &Entry = OutArray.f_Insert();
+			Entry["name"] = "{} {}"_f << NCryptography::fg_RandomID(6) << (NMisc::fg_Random().f_GetValue<uint32>() % 10000);
+			Entry["opts"]["1"].f_Array() = {1, true};
 			if (_bFloat)
 			{
-				CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
+				Entry["x"] = NMisc::fg_GetRandomFloatFullPrecision() * -10e-30;
+				Entry["y"] = NMisc::fg_GetRandomFloatFullPrecision() * 10e30;
+				Entry["z"] = NMisc::fg_GetRandomFloatFullPrecision();
+			}
+			else
+			{
+				Entry["x"] = NMisc::fg_GetRandomUnsigned();
+				Entry["y"] = NMisc::fg_GetRandomUnsigned();
+				Entry["z"] = NMisc::fg_GetRandomUnsigned();
+			}
+		}
 
-				for (auto &Coordinate : OutArray)
-				{
-					SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-					SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-					SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-				}
+		if (_bFloat)
+		{
+			CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-				o_Average = SumCoordinate / OutArray.f_GetLen();
+			for (auto &Coordinate : OutArray)
+			{
+				SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+				SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+				SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 			}
 
-			return Data.f_ToString("\t", EJsonDialectFlag_HighPrecisionFloat);
+			o_Average = SumCoordinate / OutArray.f_GetLen();
 		}
 
-		void fp_TestGenerate(CStr const &_Description, NFunction::TCFunction<CStr ()> const &_fGenerateJson, bool _bFloat)
+		return Data.f_ToString("\t", EJsonDialectFlag_HighPrecisionFloat);
+	}
+
+	void CJsonPerformance_Tests::fp_TestGenerate(CStr const &_Description, NFunction::TCFunction<CStr ()> const &_fGenerateJson, bool _bFloat)
+	{
+		DMibTestSuite(CTestCategory(_Description) << CTestGroup("Performance"))
 		{
-			DMibTestSuite(CTestCategory(_Description) << CTestGroup("Performance"))
+			CTestPerformance PerfTotal(0.75, false);
+
+			auto JsonString = _fGenerateJson();
+
+			umint nIterations = 11;
+
+			umint MalterlibStreamLen = 0;
 			{
-				CTestPerformance PerfTotal(0.75, false);
+				auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
 
-				auto JsonString = _fGenerateJson();
-
-				umint nIterations = 11;
-
-				umint MalterlibStreamLen = 0;
+				CTestPerformanceMeasure Measure("MibStream");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
-
-					CTestPerformanceMeasure Measure("MibStream");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto Output = NStream::fg_ToByteVector(Document);
-							MalterlibStreamLen = Output.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto Output = NStream::fg_ToByteVector(Document);
+						MalterlibStreamLen = Output.f_GetLen();
 					}
-					PerfTotal.f_AddBaseline(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint RapidJsonLen = 0;
+				PerfTotal.f_AddBaseline(Measure);
+			}
+			umint RapidJsonLen = 0;
+			{
+				rapidjson::Document Document;
+				Document.Parse<rapidjson::kParseFullPrecisionFlag>(JsonString.f_GetStr());
+
+				CTestPerformanceMeasure Measure("RapidJson");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					rapidjson::Document Document;
-					Document.Parse<rapidjson::kParseFullPrecisionFlag>(JsonString.f_GetStr());
-
-					CTestPerformanceMeasure Measure("RapidJson");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							rapidjson::StringBuffer Buffer;
+						rapidjson::StringBuffer Buffer;
 
-							rapidjson::Writer<rapidjson::StringBuffer> Writer(Buffer);
-							Document.Accept(Writer);
+						rapidjson::Writer<rapidjson::StringBuffer> Writer(Buffer);
+						Document.Accept(Writer);
 
-							Buffer.GetString();
-							RapidJsonLen = Buffer.GetLength();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						Buffer.GetString();
+						RapidJsonLen = Buffer.GetLength();
 					}
-					PerfTotal.f_AddBaseline(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint NlohmannJsonLen = 0;
-				{
-					auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
-					auto Document = nlohmann::json::parse(JsonStringView);
+				PerfTotal.f_AddBaseline(Measure);
+			}
+			umint NlohmannJsonLen = 0;
+			{
+				auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
+				auto Document = nlohmann::json::parse(JsonStringView);
 
-					CTestPerformanceMeasure Measure("NlohmannJson");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("NlohmannJson");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto Dump = Document.dump();
-							NlohmannJsonLen = Dump.length();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto Dump = Document.dump();
+						NlohmannJsonLen = Dump.length();
 					}
-					PerfTotal.f_AddReference(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibLen = 0;
-				{
-					auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
+				PerfTotal.f_AddReference(Measure);
+			}
+			umint MalterlibLen = 0;
+			{
+				auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
 
-					CTestPerformanceMeasure Measure("Mib");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("Mib");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToString(nullptr);
-							MalterlibLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToString(nullptr);
+						MalterlibLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibPLen = 0;
-				{
-					auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibPLen = 0;
+			{
+				auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
 
-					CTestPerformanceMeasure Measure("MibP");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibP");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToString();
-							MalterlibPLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToString();
+						MalterlibPLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibJsonCLen = 0;
-				{
-					auto const Document = NEncoding::CJsonSorted::fs_FromStringJsonC(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibJsonCLen = 0;
+			{
+				auto const Document = NEncoding::CJsonSorted::fs_FromStringJsonC(JsonString);
 
-					CTestPerformanceMeasure Measure("MibJsonC");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibJsonC");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringJsonC(nullptr);
-							MalterlibJsonCLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringJsonC(nullptr);
+						MalterlibJsonCLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibJsonCPLen = 0;
-				{
-					auto const Document = NEncoding::CJsonSorted::fs_FromStringJsonC(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibJsonCPLen = 0;
+			{
+				auto const Document = NEncoding::CJsonSorted::fs_FromStringJsonC(JsonString);
 
-					CTestPerformanceMeasure Measure("MibJsonCP");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibJsonCP");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringJsonC();
-							MalterlibJsonCPLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringJsonC();
+						MalterlibJsonCPLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibJsonCWithCommentsLen = 0;
-				{
-					auto const Document = NEncoding::CJsonSortedWithComments::fs_FromStringJsonC(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibJsonCWithCommentsLen = 0;
+			{
+				auto const Document = NEncoding::CJsonSortedWithComments::fs_FromStringJsonC(JsonString);
 
-					CTestPerformanceMeasure Measure("MibJsonCPre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibJsonCPre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringJsonC();
-							MalterlibJsonCWithCommentsLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringJsonC();
+						MalterlibJsonCWithCommentsLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibJson5Len = 0;
-				{
-					auto const Document = NEncoding::CJsonSorted::fs_FromStringJson5(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibJson5Len = 0;
+			{
+				auto const Document = NEncoding::CJsonSorted::fs_FromStringJson5(JsonString);
 
-					CTestPerformanceMeasure Measure("MibJson5");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibJson5");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringJson5(nullptr);
-							MalterlibJson5Len = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringJson5(nullptr);
+						MalterlibJson5Len = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibJson5PLen = 0;
-				{
-					auto const Document = NEncoding::CJsonSorted::fs_FromStringJson5(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibJson5PLen = 0;
+			{
+				auto const Document = NEncoding::CJsonSorted::fs_FromStringJson5(JsonString);
 
-					CTestPerformanceMeasure Measure("MibJson5P");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibJson5P");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringJson5();
-							MalterlibJson5PLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringJson5();
+						MalterlibJson5PLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibJson5WithCommentsLen = 0;
-				{
-					auto const Document = NEncoding::CJsonSortedWithComments::fs_FromStringJson5(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibJson5WithCommentsLen = 0;
+			{
+				auto const Document = NEncoding::CJsonSortedWithComments::fs_FromStringJson5(JsonString);
 
-					CTestPerformanceMeasure Measure("MibJson5Pre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibJson5Pre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringJson5();
-							MalterlibJson5WithCommentsLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringJson5();
+						MalterlibJson5WithCommentsLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibEJsonLen = 0;
-				{
-					auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibEJsonLen = 0;
+			{
+				auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
 
-					CTestPerformanceMeasure Measure("MibEJson");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibEJson");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToString(nullptr);
-							MalterlibEJsonLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToString(nullptr);
+						MalterlibEJsonLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibEJsonPLen = 0;
-				{
-					auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibEJsonPLen = 0;
+			{
+				auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
 
-					CTestPerformanceMeasure Measure("MibEJsonP");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibEJsonP");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToString();
-							MalterlibEJsonPLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToString();
+						MalterlibEJsonPLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibEJsonCLen = 0;
-				{
-					auto const Document = NEncoding::CEJsonSorted::fs_FromStringJsonC(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibEJsonCLen = 0;
+			{
+				auto const Document = NEncoding::CEJsonSorted::fs_FromStringJsonC(JsonString);
 
-					CTestPerformanceMeasure Measure("MibEJsonC");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibEJsonC");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringJsonC(nullptr);
-							MalterlibEJsonCLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringJsonC(nullptr);
+						MalterlibEJsonCLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibEJsonCPLen = 0;
-				{
-					auto const Document = NEncoding::CEJsonSorted::fs_FromStringJsonC(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibEJsonCPLen = 0;
+			{
+				auto const Document = NEncoding::CEJsonSorted::fs_FromStringJsonC(JsonString);
 
-					CTestPerformanceMeasure Measure("MibEJsonCP");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibEJsonCP");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringJsonC();
-							MalterlibEJsonCPLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringJsonC();
+						MalterlibEJsonCPLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibEJsonCWithCommentsLen = 0;
-				{
-					auto const Document = NEncoding::CEJsonSortedWithComments::fs_FromStringJsonC(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibEJsonCWithCommentsLen = 0;
+			{
+				auto const Document = NEncoding::CEJsonSortedWithComments::fs_FromStringJsonC(JsonString);
 
-					CTestPerformanceMeasure Measure("MibEJsonCPre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibEJsonCPre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringJsonC();
-							MalterlibEJsonCWithCommentsLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringJsonC();
+						MalterlibEJsonCWithCommentsLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibEJson5Len = 0;
-				{
-					auto const Document = NEncoding::CEJsonSorted::fs_FromStringJson5(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibEJson5Len = 0;
+			{
+				auto const Document = NEncoding::CEJsonSorted::fs_FromStringJson5(JsonString);
 
-					CTestPerformanceMeasure Measure("MibEJson5");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibEJson5");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringJson5(nullptr);
-							MalterlibEJson5Len = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringJson5(nullptr);
+						MalterlibEJson5Len = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibEJson5PLen = 0;
-				{
-					auto const Document = NEncoding::CEJsonSorted::fs_FromStringJson5(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibEJson5PLen = 0;
+			{
+				auto const Document = NEncoding::CEJsonSorted::fs_FromStringJson5(JsonString);
 
-					CTestPerformanceMeasure Measure("MibEJson5P");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibEJson5P");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringJson5();
-							MalterlibEJson5PLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringJson5();
+						MalterlibEJson5PLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibEJson5WithCommentsLen = 0;
-				{
-					auto const Document = NEncoding::CEJsonSortedWithComments::fs_FromStringJson5(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibEJson5WithCommentsLen = 0;
+			{
+				auto const Document = NEncoding::CEJsonSortedWithComments::fs_FromStringJson5(JsonString);
 
-					CTestPerformanceMeasure Measure("MibEJson5Pre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibEJson5Pre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringJson5();
-							MalterlibEJson5WithCommentsLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringJson5();
+						MalterlibEJson5WithCommentsLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibYamlLen = 0;
-				{
-					auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibYamlLen = 0;
+			{
+				auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
 
-					CTestPerformanceMeasure Measure("MibYaml");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibYaml");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringYaml();
-							MalterlibYamlLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringYaml();
+						MalterlibYamlLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibYamlFlowLen = 0;
-				{
-					auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibYamlFlowLen = 0;
+			{
+				auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
 
-					CTestPerformanceMeasure Measure("MibYamlFlow");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibYamlFlow");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringYamlFlow();
-							MalterlibYamlFlowLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringYamlFlow();
+						MalterlibYamlFlowLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibYamlPreLen = 0;
-				{
-					auto const Document = NEncoding::CJsonSortedYaml::fs_FromString(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibYamlPreLen = 0;
+			{
+				auto const Document = NEncoding::CJsonSortedYaml::fs_FromString(JsonString);
 
-					CTestPerformanceMeasure Measure("MibYamlPre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibYamlPre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringYaml();
-							MalterlibYamlPreLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringYaml();
+						MalterlibYamlPreLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibYamlFlowPreLen = 0;
-				{
-					auto const Document = NEncoding::CJsonSortedYaml::fs_FromString(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibYamlFlowPreLen = 0;
+			{
+				auto const Document = NEncoding::CJsonSortedYaml::fs_FromString(JsonString);
 
-					CTestPerformanceMeasure Measure("MibYamlFlowPre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibYamlFlowPre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringYamlFlow();
-							MalterlibYamlFlowPreLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringYamlFlow();
+						MalterlibYamlFlowPreLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibEYamlLen = 0;
-				{
-					auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibEYamlLen = 0;
+			{
+				auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
 
-					CTestPerformanceMeasure Measure("MibEYaml");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibEYaml");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringYaml();
-							MalterlibEYamlLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringYaml();
+						MalterlibEYamlLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibEYamlFlowLen = 0;
-				{
-					auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibEYamlFlowLen = 0;
+			{
+				auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
 
-					CTestPerformanceMeasure Measure("MibEYamlFlow");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				CTestPerformanceMeasure Measure("MibEYamlFlow");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringYamlFlow();
-							MalterlibEYamlFlowLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringYamlFlow();
+						MalterlibEYamlFlowLen = String.f_GetLen();
 					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				umint MalterlibEYamlPreLen = 0;
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibEYamlPreLen = 0;
+			{
+				auto const Document = NEncoding::CEJsonSortedYaml::fs_FromString(JsonString);
+
+				CTestPerformanceMeasure Measure("MibEYamlPre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					auto const Document = NEncoding::CEJsonSortedYaml::fs_FromString(JsonString);
-
-					CTestPerformanceMeasure Measure("MibEYamlPre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringYaml();
-							MalterlibEYamlPreLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
+						auto String = Document.f_ToStringYaml();
+						MalterlibEYamlPreLen = String.f_GetLen();
 					}
-
-					PerfTotal.f_Add(Measure);
-				}
-				umint MalterlibEYamlFlowPreLen = 0;
-				{
-					auto const Document = NEncoding::CEJsonSortedYaml::fs_FromString(JsonString);
-
-					CTestPerformanceMeasure Measure("MibEYamlFlowPre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						[&]() inline_never
-						{
-							auto String = Document.f_ToStringYamlFlow();
-							MalterlibEYamlFlowPreLen = String.f_GetLen();
-						}
-						();
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+					();
+					Measure.f_Stop(mc_ArrayLength);
 				}
 
-				auto fDiff = [&](fp64 _Value0, fp64 _Value1)
+				PerfTotal.f_Add(Measure);
+			}
+			umint MalterlibEYamlFlowPreLen = 0;
+			{
+				auto const Document = NEncoding::CEJsonSortedYaml::fs_FromString(JsonString);
+
+				CTestPerformanceMeasure Measure("MibEYamlFlowPre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					[&]() inline_never
 					{
-						return (_Value0 - _Value1).f_Abs() / _Value1;
+						auto String = Document.f_ToStringYamlFlow();
+						MalterlibEYamlFlowPreLen = String.f_GetLen();
 					}
-				;
+					();
+					Measure.f_Stop(mc_ArrayLength);
+				}
+				PerfTotal.f_Add(Measure);
+			}
 
-				DMibExpectTrue(PerfTotal);
+			auto fDiff = [&](fp64 _Value0, fp64 _Value1)
+				{
+					return (_Value0 - _Value1).f_Abs() / _Value1;
+				}
+			;
 
-				DMibExpect(fDiff(RapidJsonLen, NlohmannJsonLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibLen, NlohmannJsonLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibJsonCLen, NlohmannJsonLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibJson5Len, NlohmannJsonLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibEJsonLen, NlohmannJsonLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibEJsonCLen, NlohmannJsonLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibEJson5Len, NlohmannJsonLen), <, 0.04);
+			DMibExpectTrue(PerfTotal);
 
-				DMibExpect(fDiff(MalterlibJsonCPLen, MalterlibPLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibJson5PLen, MalterlibPLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibEJsonPLen, MalterlibPLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibEJsonCPLen, MalterlibPLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibEJson5PLen, MalterlibPLen), <, 0.04);
+			DMibExpect(fDiff(RapidJsonLen, NlohmannJsonLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibLen, NlohmannJsonLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibJsonCLen, NlohmannJsonLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibJson5Len, NlohmannJsonLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibEJsonLen, NlohmannJsonLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibEJsonCLen, NlohmannJsonLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibEJson5Len, NlohmannJsonLen), <, 0.04);
 
-				DMibExpect(fDiff(MalterlibJson5WithCommentsLen, MalterlibJsonCWithCommentsLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibEJsonCWithCommentsLen, MalterlibJsonCWithCommentsLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibEJson5WithCommentsLen, MalterlibJsonCWithCommentsLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibJsonCPLen, MalterlibPLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibJson5PLen, MalterlibPLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibEJsonPLen, MalterlibPLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibEJsonCPLen, MalterlibPLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibEJson5PLen, MalterlibPLen), <, 0.04);
 
-				DMibExpect(fDiff(MalterlibYamlFlowPreLen, MalterlibYamlFlowLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibEYamlFlowLen, MalterlibYamlFlowLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibEYamlFlowPreLen, MalterlibYamlFlowLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibJson5WithCommentsLen, MalterlibJsonCWithCommentsLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibEJsonCWithCommentsLen, MalterlibJsonCWithCommentsLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibEJson5WithCommentsLen, MalterlibJsonCWithCommentsLen), <, 0.04);
 
-				DMibExpect(fDiff(MalterlibYamlPreLen, MalterlibYamlLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibEYamlLen, MalterlibYamlLen), <, 0.04);
-				DMibExpect(fDiff(MalterlibEYamlPreLen, MalterlibYamlLen), <, 0.04);
-			};
-		}
+			DMibExpect(fDiff(MalterlibYamlFlowPreLen, MalterlibYamlFlowLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibEYamlFlowLen, MalterlibYamlFlowLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibEYamlFlowPreLen, MalterlibYamlFlowLen), <, 0.04);
 
-		template <bool tf_bDoCalculation>
-		void fp_TestParse(CStr const &_Description)
+			DMibExpect(fDiff(MalterlibYamlPreLen, MalterlibYamlLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibEYamlLen, MalterlibYamlLen), <, 0.04);
+			DMibExpect(fDiff(MalterlibEYamlPreLen, MalterlibYamlLen), <, 0.04);
+		};
+	}
+
+	template <bool tf_bDoCalculation>
+	void CJsonPerformance_Tests::fp_TestParse(CStr const &_Description)
+	{
+		DMibTestSuite(CTestCategory(_Description) << CTestGroup("Performance"))
 		{
-			DMibTestSuite(CTestCategory(_Description) << CTestGroup("Performance"))
+			CTestPerformance PerfTotal(0.75, false);
+
+			CCoordinate ExpectedAverage;
+			auto JsonString = fp_GenerateTestData(true, ExpectedAverage);
+			auto JamlString = NEncoding::CJsonSorted::fs_FromStringYaml(JsonString).f_ToStringYaml();
+
+			umint nIterations = 11;
+
+			CCoordinate RapidJsonResult;
 			{
-				CTestPerformance PerfTotal(0.75, false);
-
-				CCoordinate ExpectedAverage;
-				auto JsonString = fp_GenerateTestData(true, ExpectedAverage);
-				auto JamlString = NEncoding::CJsonSorted::fs_FromStringYaml(JsonString).f_ToStringYaml();
-
-				umint nIterations = 11;
-
-				CCoordinate RapidJsonResult;
+				CTestPerformanceMeasure Measure("RapidJson");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("RapidJson");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						RapidJsonResult = [&]() inline_never -> CCoordinate
-							{
-								rapidjson::Document Document;
-								Document.Parse<rapidjson::kParseFullPrecisionFlag>(JsonString.f_GetStr());
+					Measure.f_Start();
+					RapidJsonResult = [&]() inline_never -> CCoordinate
+						{
+							rapidjson::Document Document;
+							Document.Parse<rapidjson::kParseFullPrecisionFlag>(JsonString.f_GetStr());
 
-								if constexpr (tf_bDoCalculation)
-								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-									auto const &Coordinates = Document["coordinates"];
-									auto Length = Coordinates.Size();
-
-									for (rapidjson::SizeType iCoordinate = 0; iCoordinate < Length; iCoordinate++)
-									{
-										auto const &Coordinate = Coordinates[iCoordinate];
-										SumCoordinate.m_CoordinateX += Coordinate["x"].GetDouble();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].GetDouble();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].GetDouble();
-									}
-
-									return SumCoordinate / Length;
-								}
-								else
-									return {};
-							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_AddBaseline(Measure);
-				}
-				CCoordinate RapidJsonInaccurateResult;
-				{
-					CTestPerformanceMeasure Measure("RapidJsonInaccurate");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						RapidJsonInaccurateResult = [&]() inline_never -> CCoordinate
-							{
-								rapidjson::Document Document;
-								Document.Parse(JsonString.f_GetStr());
-
-								if constexpr (tf_bDoCalculation)
-								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-									rapidjson::Value const &Coordinates = Document["coordinates"];
-									auto Length = Coordinates.Size();
-
-									for (rapidjson::SizeType iCoordinate = 0; iCoordinate < Length; iCoordinate++)
-									{
-										auto const &Coordinate = Coordinates[iCoordinate];
-										SumCoordinate.m_CoordinateX += Coordinate["x"].GetDouble();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].GetDouble();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].GetDouble();
-									}
-									return SumCoordinate / Length;
-								}
-								else
-									return {};
-							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_AddBaseline(Measure);
-				}
-				[[maybe_unused]] CCoordinate DawJsonLinkResult;
-				if constexpr (tf_bDoCalculation)
-				{
-					CTestPerformanceMeasure Measure("DawJsonLink");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
-
-						using CRange = daw::json::json_array_range<CCoordinate>;
-
-						Measure.f_Start();
-						DawJsonLinkResult = [&]() inline_never -> CCoordinate
+							if constexpr (tf_bDoCalculation)
 							{
 								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-								auto Length = 0;
+								auto const &Coordinates = Document["coordinates"];
+								auto Length = Coordinates.Size();
 
-								auto Coordinates = CRange(JsonStringView, "coordinates");
-
-								for (auto Coordinate : Coordinates)
+								for (rapidjson::SizeType iCoordinate = 0; iCoordinate < Length; iCoordinate++)
 								{
-									++Length;
-									SumCoordinate.m_CoordinateX += Coordinate.m_CoordinateX;
-									SumCoordinate.m_CoordinateY += Coordinate.m_CoordinateY;
-									SumCoordinate.m_CoordinateZ += Coordinate.m_CoordinateZ;
+									auto const &Coordinate = Coordinates[iCoordinate];
+									SumCoordinate.m_CoordinateX += Coordinate["x"].GetDouble();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].GetDouble();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].GetDouble();
 								}
 
 								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_AddBaseline(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate NlohmannJsonResult;
+				PerfTotal.f_AddBaseline(Measure);
+			}
+			CCoordinate RapidJsonInaccurateResult;
+			{
+				CTestPerformanceMeasure Measure("RapidJsonInaccurate");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("NlohmannJson");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
+					Measure.f_Start();
+					RapidJsonInaccurateResult = [&]() inline_never -> CCoordinate
+						{
+							rapidjson::Document Document;
+							Document.Parse(JsonString.f_GetStr());
 
-						Measure.f_Start();
-						NlohmannJsonResult = [&]() inline_never -> CCoordinate
+							if constexpr (tf_bDoCalculation)
 							{
-								auto Document = nlohmann::json::parse(JsonStringView);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
+								rapidjson::Value const &Coordinates = Document["coordinates"];
+								auto Length = Coordinates.Size();
 
-								if constexpr (tf_bDoCalculation)
+								for (rapidjson::SizeType iCoordinate = 0; iCoordinate < Length; iCoordinate++)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-									auto Length = 0;
-
-									auto &Coordinates = Document["coordinates"];
-									for (auto &Coordinate : Coordinates)
-									{
-										++Length;
-										SumCoordinate.m_CoordinateX += Coordinate["x"].get<double>();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].get<double>();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].get<double>();
-									}
-									return SumCoordinate / Length;
+									auto const &Coordinate = Coordinates[iCoordinate];
+									SumCoordinate.m_CoordinateX += Coordinate["x"].GetDouble();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].GetDouble();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].GetDouble();
 								}
-								else
-									return {};
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_AddReference(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibResult;
+				PerfTotal.f_AddBaseline(Measure);
+			}
+			[[maybe_unused]] CCoordinate DawJsonLinkResult;
+			if constexpr (tf_bDoCalculation)
+			{
+				CTestPerformanceMeasure Measure("DawJsonLink");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("Mib");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibResult = [&]() inline_never -> CCoordinate
+					auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
+
+					using CRange = daw::json::json_array_range<CCoordinate>;
+
+					Measure.f_Start();
+					DawJsonLinkResult = [&]() inline_never -> CCoordinate
+						{
+							CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
+							auto Length = 0;
+
+							auto Coordinates = CRange(JsonStringView, "coordinates");
+
+							for (auto Coordinate : Coordinates)
 							{
-								auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
-
-								if constexpr (tf_bDoCalculation)
-								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-									return SumCoordinate / Length;
-								}
-								else
-									return {};
+								++Length;
+								SumCoordinate.m_CoordinateX += Coordinate.m_CoordinateX;
+								SumCoordinate.m_CoordinateY += Coordinate.m_CoordinateY;
+								SumCoordinate.m_CoordinateZ += Coordinate.m_CoordinateZ;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
-				}
-				CCoordinate MalterlibStreamResult;
-				{
-					auto const DocumentStream = NStream::fg_ToByteVector(NEncoding::CJsonSorted::fs_FromString(JsonString));
 
-					CTestPerformanceMeasure Measure("MibStream");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibStreamResult = [&]() inline_never -> CCoordinate
+							return SumCoordinate / Length;
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
+				}
+				PerfTotal.f_AddBaseline(Measure);
+			}
+			CCoordinate NlohmannJsonResult;
+			{
+				CTestPerformanceMeasure Measure("NlohmannJson");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					auto const JsonStringView = std::string_view(JsonString.f_GetStr(), JsonString.f_GetLen());
+
+					Measure.f_Start();
+					NlohmannJsonResult = [&]() inline_never -> CCoordinate
+						{
+							auto Document = nlohmann::json::parse(JsonStringView);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NStream::fg_FromByteVector<NEncoding::CJsonSorted>(DocumentStream);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
+								auto Length = 0;
 
-								if constexpr (tf_bDoCalculation)
+								auto &Coordinates = Document["coordinates"];
+								for (auto &Coordinate : Coordinates)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-									return SumCoordinate / Length;
+									++Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].get<double>();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].get<double>();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].get<double>();
 								}
-								else
-									return {};
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_AddBaseline(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-
-				CCoordinate MalterlibJsonCResult;
+				PerfTotal.f_AddReference(Measure);
+			}
+			CCoordinate MalterlibResult;
+			{
+				CTestPerformanceMeasure Measure("Mib");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibJsonC");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibJsonCResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CJsonSorted::fs_FromString(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CJsonSorted::fs_FromStringJsonC(JsonString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibJsonCWithCommentsResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibStreamResult;
+			{
+				auto const DocumentStream = NStream::fg_ToByteVector(NEncoding::CJsonSorted::fs_FromString(JsonString));
+
+				CTestPerformanceMeasure Measure("MibStream");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibJsonCPre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibJsonCWithCommentsResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibStreamResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NStream::fg_FromByteVector<NEncoding::CJsonSorted>(DocumentStream);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CJsonSortedWithComments::fs_FromStringJsonC(JsonString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibJson5Result;
+				PerfTotal.f_AddBaseline(Measure);
+			}
+
+			CCoordinate MalterlibJsonCResult;
+			{
+				CTestPerformanceMeasure Measure("MibJsonC");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibJson5");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibJson5Result = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibJsonCResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CJsonSorted::fs_FromStringJsonC(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CJsonSorted::fs_FromStringJson5(JsonString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibJson5WithCommentsResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibJsonCWithCommentsResult;
+			{
+				CTestPerformanceMeasure Measure("MibJsonCPre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibJson5Pre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibJson5WithCommentsResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibJsonCWithCommentsResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CJsonSortedWithComments::fs_FromStringJsonC(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CJsonSortedWithComments::fs_FromStringJson5(JsonString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibEJsonResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibJson5Result;
+			{
+				CTestPerformanceMeasure Measure("MibJson5");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibEJson");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibEJsonResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibJson5Result = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CJsonSorted::fs_FromStringJson5(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibEJsonCResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibJson5WithCommentsResult;
+			{
+				CTestPerformanceMeasure Measure("MibJson5Pre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibEJsonC");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibEJsonCResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibJson5WithCommentsResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CJsonSortedWithComments::fs_FromStringJson5(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CEJsonSorted::fs_FromStringJsonC(JsonString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibEJsonCWithCommentsResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibEJsonResult;
+			{
+				CTestPerformanceMeasure Measure("MibEJson");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibEJsonCPre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibEJsonCWithCommentsResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibEJsonResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CEJsonSorted::fs_FromString(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CEJsonSortedWithComments::fs_FromStringJsonC(JsonString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibEJson5Result;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibEJsonCResult;
+			{
+				CTestPerformanceMeasure Measure("MibEJsonC");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibEJson5");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibEJson5Result = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibEJsonCResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CEJsonSorted::fs_FromStringJsonC(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CEJsonSorted::fs_FromStringJson5(JsonString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibEJson5WithCommentsResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibEJsonCWithCommentsResult;
+			{
+				CTestPerformanceMeasure Measure("MibEJsonCPre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibEJson5Pre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibEJson5WithCommentsResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibEJsonCWithCommentsResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CEJsonSortedWithComments::fs_FromStringJsonC(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CEJsonSortedWithComments::fs_FromStringJson5(JsonString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibYamlResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibEJson5Result;
+			{
+				CTestPerformanceMeasure Measure("MibEJson5");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibYaml");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibYamlResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibEJson5Result = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CEJsonSorted::fs_FromStringJson5(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CJsonSorted::fs_FromStringYaml(JsonString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibYamlPreResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibEJson5WithCommentsResult;
+			{
+				CTestPerformanceMeasure Measure("MibEJson5Pre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibYamlPre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibYamlPreResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibEJson5WithCommentsResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CEJsonSortedWithComments::fs_FromStringJson5(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CJsonSortedYaml::fs_FromStringYaml(JsonString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibEYamlResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibYamlResult;
+			{
+				CTestPerformanceMeasure Measure("MibYaml");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibEYaml");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibEYamlResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibYamlResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CJsonSorted::fs_FromStringYaml(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CEJsonSorted::fs_FromStringYaml(JsonString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibEYamlPreResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibYamlPreResult;
+			{
+				CTestPerformanceMeasure Measure("MibYamlPre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibEYamlPre");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibEYamlPreResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibYamlPreResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CJsonSortedYaml::fs_FromStringYaml(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CEJsonSortedYaml::fs_FromStringYaml(JsonString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibYamlBlockResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibEYamlResult;
+			{
+				CTestPerformanceMeasure Measure("MibEYaml");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibYamlB");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibYamlBlockResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibEYamlResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CEJsonSorted::fs_FromStringYaml(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CJsonSorted::fs_FromStringYaml(JamlString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibYamlPreBlockResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibEYamlPreResult;
+			{
+				CTestPerformanceMeasure Measure("MibEYamlPre");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibYamlPreB");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibYamlPreBlockResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibEYamlPreResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CEJsonSortedYaml::fs_FromStringYaml(JsonString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CJsonSortedYaml::fs_FromStringYaml(JamlString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibEYamlBlockResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibYamlBlockResult;
+			{
+				CTestPerformanceMeasure Measure("MibYamlB");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibEYamlB");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibEYamlBlockResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibYamlBlockResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CJsonSorted::fs_FromStringYaml(JamlString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CEJsonSorted::fs_FromStringYaml(JamlString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-				CCoordinate MalterlibEYamlPreBlockResult;
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibYamlPreBlockResult;
+			{
+				CTestPerformanceMeasure Measure("MibYamlPreB");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					CTestPerformanceMeasure Measure("MibEYamlPreB");
-					for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
-					{
-						Measure.f_Start();
-						MalterlibEYamlPreBlockResult = [&]() inline_never -> CCoordinate
+					Measure.f_Start();
+					MalterlibYamlPreBlockResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CJsonSortedYaml::fs_FromStringYaml(JamlString);
+
+							if constexpr (tf_bDoCalculation)
 							{
-								auto const Document = NEncoding::CEJsonSortedYaml::fs_FromStringYaml(JamlString);
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
 
-								if constexpr (tf_bDoCalculation)
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
 								{
-									CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
-
-									auto &Array = Document["coordinates"].f_Array();
-									auto Length = Array.f_GetLen();
-
-									for (auto &Coordinate : Array)
-									{
-										SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
-										SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
-									}
-
-									return SumCoordinate / Length;
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
 								}
-								else
-									return {};
+
+								return SumCoordinate / Length;
 							}
-							()
-						;
-						Measure.f_Stop(mc_ArrayLength);
-					}
-					PerfTotal.f_Add(Measure);
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
 				}
-
-				DMibExpectTrue(PerfTotal);
-
-				if constexpr (tf_bDoCalculation)
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibEYamlBlockResult;
+			{
+				CTestPerformanceMeasure Measure("MibEYamlB");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
 				{
-					DMibExpect(NlohmannJsonResult, ==, ExpectedAverage);
-					DMibExpect(RapidJsonResult, ==, ExpectedAverage);
-					DMibExpect(RapidJsonInaccurateResult, ==, ExpectedAverage);
-					DMibExpect(DawJsonLinkResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibStreamResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibJsonCResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibJsonCWithCommentsResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibJson5Result, ==, ExpectedAverage);
-					DMibExpect(MalterlibJson5WithCommentsResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibEJsonResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibEJsonCResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibEJsonCWithCommentsResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibEJson5Result, ==, ExpectedAverage);
-					DMibExpect(MalterlibEJson5WithCommentsResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibYamlResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibYamlPreResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibEYamlResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibEYamlPreResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibYamlBlockResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibYamlPreBlockResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibEYamlBlockResult, ==, ExpectedAverage);
-					DMibExpect(MalterlibEYamlPreBlockResult, ==, ExpectedAverage);
-				}
-			};
-		}
+					Measure.f_Start();
+					MalterlibEYamlBlockResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CEJsonSorted::fs_FromStringYaml(JamlString);
 
-	public:
-		void f_DoTests()
-		{
-			fp_TestParse<false>("Parse");
-			fp_TestParse<true>("Parse Calculate");
-			fp_TestGenerate
-				(
-					"Generate Float"
-					, [&]
-					{
-						CCoordinate Dummy;
-						return fp_GenerateTestData(true, Dummy);
-					}
-					, true
-				)
-			;
-			fp_TestGenerate
-				(
-					"Generate Integer"
-					, [&]
-					{
-						CCoordinate Dummy;
-						return fp_GenerateTestData(false, Dummy);
-					}
-					, false
-				)
-			;
-		}
-	};
+							if constexpr (tf_bDoCalculation)
+							{
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
+
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
+								{
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
+								}
+
+								return SumCoordinate / Length;
+							}
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
+				}
+				PerfTotal.f_Add(Measure);
+			}
+			CCoordinate MalterlibEYamlPreBlockResult;
+			{
+				CTestPerformanceMeasure Measure("MibEYamlPreB");
+				for (umint iIteration = 0; iIteration < nIterations; ++iIteration)
+				{
+					Measure.f_Start();
+					MalterlibEYamlPreBlockResult = [&]() inline_never -> CCoordinate
+						{
+							auto const Document = NEncoding::CEJsonSortedYaml::fs_FromStringYaml(JamlString);
+
+							if constexpr (tf_bDoCalculation)
+							{
+								CCoordinate SumCoordinate = {0.0, 0.0, 0.0};
+
+								auto &Array = Document["coordinates"].f_Array();
+								auto Length = Array.f_GetLen();
+
+								for (auto &Coordinate : Array)
+								{
+									SumCoordinate.m_CoordinateX += Coordinate["x"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateY += Coordinate["y"].f_Float().f_Get();
+									SumCoordinate.m_CoordinateZ += Coordinate["z"].f_Float().f_Get();
+								}
+
+								return SumCoordinate / Length;
+							}
+							else
+								return {};
+						}
+						()
+					;
+					Measure.f_Stop(mc_ArrayLength);
+				}
+				PerfTotal.f_Add(Measure);
+			}
+
+			DMibExpectTrue(PerfTotal);
+
+			if constexpr (tf_bDoCalculation)
+			{
+				DMibExpect(NlohmannJsonResult, ==, ExpectedAverage);
+				DMibExpect(RapidJsonResult, ==, ExpectedAverage);
+				DMibExpect(RapidJsonInaccurateResult, ==, ExpectedAverage);
+				DMibExpect(DawJsonLinkResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibStreamResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibJsonCResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibJsonCWithCommentsResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibJson5Result, ==, ExpectedAverage);
+				DMibExpect(MalterlibJson5WithCommentsResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibEJsonResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibEJsonCResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibEJsonCWithCommentsResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibEJson5Result, ==, ExpectedAverage);
+				DMibExpect(MalterlibEJson5WithCommentsResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibYamlResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibYamlPreResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibEYamlResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibEYamlPreResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibYamlBlockResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibYamlPreBlockResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibEYamlBlockResult, ==, ExpectedAverage);
+				DMibExpect(MalterlibEYamlPreBlockResult, ==, ExpectedAverage);
+			}
+		};
+	}
 
 	DMibTestRegister(CJsonPerformance_Tests, Malterlib::Encoding);
 }

@@ -32,15 +32,18 @@ namespace NMib::NEncoding
 		umint f_ContainerLengthLimit() const;
 		void f_SetLength(NStream::CFilePos _Length);
 
+	protected:
+		DMibStreamImplementProtected(TCBinaryStream_Bin128);
+
 	private:
 		void fp_WriteDirty();
 		umint fp_PrepareBlock(NStream::CFilePos _Pos, bool _bWrite);
 
-		NStream::CBinaryStream *mp_pStream;
-		NFile::EFileOpen mp_OpenFlags;
-
 		static constexpr aint mcp_ChunkSizeBin128 = 8;
 		static constexpr aint mcp_ChunkSizeData = 7;
+
+		NStream::CBinaryStream *mp_pStream;
+		NFile::EFileOpen mp_OpenFlags;
 
 		NStream::CFilePos mp_ParentFilePos;
 		NStream::CFilePos mp_FilePos;
@@ -50,9 +53,6 @@ namespace NMib::NEncoding
 		uint8 mp_DecryptedData[mcp_ChunkSizeData] = {0};
 		uint8 mp_Offset;
 		bool mp_bCurrentDirty;
-
-	protected:
-		DMibStreamImplementProtected(TCBinaryStream_Bin128);
 	};
 
 	NContainer::CByteVector fg_Bin128Encode(NContainer::CByteVector const &_Data, bool _bUseUpper = false);

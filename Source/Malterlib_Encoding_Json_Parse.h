@@ -46,14 +46,6 @@ namespace NMib::NEncoding::NJson
 
 		void f_ThrowErrors(NContainer::TCVector<NStr::CParseError> const &_Errors) const;
 
-		NStr::CStr m_FileName;
-		uint32 m_StartLine = 0;
-		uint32 m_StartColumn = 0;
-		uint32 m_StartCharacter = 0;
-		umint m_ObjectArrayParseDepth = 0;
-		uch8 const *m_pStartParse;
-		EJsonDialectFlag m_Flags = EJsonDialectFlag_None;
-
 		static constexpr bool mc_bCustomParse = false;
 		static constexpr bool mc_bCustomGenerate = false;
 		static constexpr bool mc_bAllowSingleQuote = false;
@@ -73,6 +65,14 @@ namespace NMib::NEncoding::NJson
 		static inline constexpr ch8 mc_AllowedControlCharacters[] = "";
 		static inline constexpr ch8 mc_AllowedKeyWithoutQuoteCharacters[] = "$_";
 		static inline constexpr ch8 mc_ConstantEndCharacters[] = ",}]";
+
+		NStr::CStr m_FileName;
+		uint32 m_StartLine = 0;
+		uint32 m_StartColumn = 0;
+		uint32 m_StartCharacter = 0;
+		umint m_ObjectArrayParseDepth = 0;
+		uch8 const *m_pStartParse;
+		EJsonDialectFlag m_Flags = EJsonDialectFlag_None;
 	};
 
 	struct CStrictParseContext : public CParseContext
@@ -155,13 +155,13 @@ namespace NMib::NEncoding::NJson
 		smint m_iSeparatorComma = -1;
 
 	private:
+		NStr::CStr::CAppender &fp_GetAppender();
+		void fp_CommitAppender();
+
 		// Lazy-constructed CAppender that batches writes into m_Buffer. Lifetime
 		// must end before any operation that mutates m_Buffer outside the
 		// appender (clear, move) so the appender's cached pointers don't go stale.
 		NStorage::TCOptional<NStr::CStr::CAppender> mp_Appender;
-
-		NStr::CStr::CAppender &fp_GetAppender();
-		void fp_CommitAppender();
 	};
 
 	bool fg_IsJson5WhiteSpace(uch8 const *_pParse);

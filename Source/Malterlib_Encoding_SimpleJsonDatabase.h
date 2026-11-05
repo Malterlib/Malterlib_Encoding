@@ -18,9 +18,9 @@ namespace NMib::NEncoding
 
 		NStr::CStr const &f_GetFileName() const;
 
-		CEJsonSortedYaml m_Data;
-
 		NConcurrency::TCUnsafeFuture<void> f_Destroy() &&;
+
+		CEJsonSortedYaml m_Data;
 
 	private:
 		NStr::CStr mp_FileName;

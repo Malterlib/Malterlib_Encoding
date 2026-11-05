@@ -13,11 +13,6 @@ namespace NMib::NEncoding::NPrivate
 	{
 		using CJsonContext = NJson::CParseContext;
 
-		static constexpr bool mc_bCustomParse = true;
-		static constexpr bool mc_bCustomGenerate = true;
-
-		NContainer::TCVector<umint> m_InEscapeParseDepth;
-
 		template <typename tf_CParseContext, typename tf_CJson, typename tf_CStr>
 		static bool fs_GenerateValue(tf_CStr &o_String, tf_CJson const &_Value, umint _Depth, ch8 const *_pPrettySeparator, EJsonDialectFlag _Flags);
 
@@ -49,6 +44,11 @@ namespace NMib::NEncoding::NPrivate
 
 		template <typename tf_CParseContext, typename tf_CJson>
 		void f_ParseAfterValue(tf_CJson &o_Value, uch8 const * &o_pParse);
+
+		static constexpr bool mc_bCustomParse = true;
+		static constexpr bool mc_bCustomGenerate = true;
+
+		NContainer::TCVector<umint> m_InEscapeParseDepth;
 
 	private:
 		static bool fsp_HasComment(NStr::CStr const &_Trivia);

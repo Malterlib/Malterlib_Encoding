@@ -359,14 +359,14 @@ namespace NMib::NEncoding
 		template <template <typename t_CParent2> class t_TCValue2, typename t_CTypes2, EJsonContainerFlag t_ContainerFlags2>
 		friend struct NPrivate::TCJsonValueBase;
 
+		using CSemanticTrivia = TCConditional<CValue::mc_bPreserveComments, NStr::CStr, CEmpty>;
+
 		template <typename tf_CParent>
 		explicit TCEJsonValue(TCEJsonValue<tf_CParent> const &_Other);
 		template <typename tf_CParent>
 		explicit TCEJsonValue(TCEJsonValue<tf_CParent> &&_Other);
 		template <typename tf_CParent>
 		explicit TCEJsonValue(TCEJsonValue<tf_CParent> const &&_Other);
-
-		using CSemanticTrivia = TCConditional<CValue::mc_bPreserveComments, NStr::CStr, CEmpty>;
 
 		void fp_PromoteEType(EEJsonType _Type);
 
