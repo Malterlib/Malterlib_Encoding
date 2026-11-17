@@ -62,6 +62,8 @@ namespace NMib::NEncoding::NJson
 		static constexpr bool mc_bAllowDuplicateKeys = true;
 		static constexpr bool mc_bRecordStringMap = false;
 		static constexpr bool mc_bConvertNullToSpace = false;
+		static constexpr bool mc_bUnsignedIntegersAsSigned = false;  // Integers above int64 that fit in uint64 become the int64 with the same bits
+		static constexpr bool mc_bOutOfRangeIntegersAsFloat = false; // Integers that fit neither int64 nor the conversion above become fp64
 		static inline constexpr ch8 mc_AllowedControlCharacters[] = "";
 		static inline constexpr ch8 mc_AllowedKeyWithoutQuoteCharacters[] = "$_";
 		static inline constexpr ch8 mc_ConstantEndCharacters[] = ",}]";

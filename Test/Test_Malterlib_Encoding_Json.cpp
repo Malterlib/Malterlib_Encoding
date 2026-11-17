@@ -44,6 +44,38 @@ namespace
 		static constexpr bool mc_bConvertNullToSpace = true;
 	};
 
+	struct CJsonUnsignedAsSignedParseContext : public NJson::CParseContext
+	{
+		static constexpr bool mc_bUnsignedIntegersAsSigned = true;
+	};
+
+	struct CJsonOutOfRangeAsFloatParseContext : public NJson::CParseContext
+	{
+		static constexpr bool mc_bOutOfRangeIntegersAsFloat = true;
+	};
+
+	struct CJsonOutOfRangeIntegersParseContext : public NJson::CParseContext
+	{
+		static constexpr bool mc_bUnsignedIntegersAsSigned = true;
+		static constexpr bool mc_bOutOfRangeIntegersAsFloat = true;
+	};
+
+	struct CJson5UnsignedAsSignedParseContext : public CJson5ParseContext
+	{
+		static constexpr bool mc_bUnsignedIntegersAsSigned = true;
+	};
+
+	struct CJson5OutOfRangeAsFloatParseContext : public CJson5ParseContext
+	{
+		static constexpr bool mc_bOutOfRangeIntegersAsFloat = true;
+	};
+
+	struct CJson5OutOfRangeIntegersParseContext : public CJson5ParseContext
+	{
+		static constexpr bool mc_bUnsignedIntegersAsSigned = true;
+		static constexpr bool mc_bOutOfRangeIntegersAsFloat = true;
+	};
+
 	struct CJson_Tests : public NTest::CTest
 	{
 		static NStr::CExceptionParse fs_MakeParseException(NStr::CStr const &_Error, uint32 _Line, uint32 _Column, uint32 _Character);
@@ -616,6 +648,69 @@ namespace
 			fs_ExpectParseError<CJsonExtendedWhitespaceOnlyParseContext>("ExtendedWhitespaceOnlyComment", "// comment\n{}", "Invalid literal starting with: // c", 1, 1, 0);
 			auto ExtendedEscapesOnlyJson = CJsonOrdered::fs_FromString<CJsonExtendedEscapesOnlyParseContext>("{\"a\":\"before" "\xE2" "\x80" "\xA8" "after\"}");
 			DMibExpect(ExtendedEscapesOnlyJson["a"].f_String(), ==, "before" "\xE2" "\x80" "\xA8" "after");
+		};
+		DMibTestSuite("Out Of Range Integers")
+		{
+			{
+				DMibTestPath("Default");
+				fs_ExpectParseError<NJson::CParseContext>("DefaultDecimalOverflow", "{\"a\":9223372036854775808}", "Number out of range", 1, 6, 5);
+				fs_ExpectParseError<NJson::CParseContext>("DefaultUnsignedMax", "{\"a\":18446744073709551615}", "Number out of range", 1, 6, 5);
+			}
+			{
+				DMibTestPath("Unsigned as signed");
+				auto Json = CJsonOrdered::fs_FromString<CJsonUnsignedAsSignedParseContext>
+					(
+						"{\"max\":9223372036854775807,\"above\":9223372036854775808,\"unsignedMax\":18446744073709551615,\"min\":-9223372036854775808}"
+					)
+				;
+				DMibExpect(Json["max"].f_Integer(), ==, TCLimitsInt<int64>::mc_Max);
+				DMibExpect(Json["above"].f_Integer(), ==, TCLimitsInt<int64>::mc_Min);
+				DMibExpect(Json["unsignedMax"].f_Integer(), ==, int64(-1));
+				DMibExpect(Json["min"].f_Integer(), ==, TCLimitsInt<int64>::mc_Min);
+				fs_ExpectParseError<CJsonUnsignedAsSignedParseContext>("UnsignedAsSignedBeyondUnsigned", "{\"a\":18446744073709551616}", "Number out of range", 1, 6, 5);
+				fs_ExpectParseError<CJsonUnsignedAsSignedParseContext>("UnsignedAsSignedNegative", "{\"a\":-9223372036854775809}", "Number out of range", 1, 6, 5);
+			}
+			{
+				DMibTestPath("Float");
+				auto Json = CJsonOrdered::fs_FromString<CJsonOutOfRangeAsFloatParseContext>
+					(
+						"{\"max\":9223372036854775807,\"unsignedMax\":18446744073709551615,\"negative\":-9223372036854775809,\"large\":100000000000000000000}"
+					)
+				;
+				DMibExpect(Json["max"].f_Integer(), ==, TCLimitsInt<int64>::mc_Max);
+				DMibExpectTrue(Json["unsignedMax"].f_IsFloat());
+				DMibExpect(Json["unsignedMax"].f_Float(), ==, 18446744073709551615.0);
+				DMibExpect(Json["negative"].f_Float(), ==, -9223372036854775809.0);
+				DMibExpect(Json["large"].f_Float(), ==, 1e20);
+			}
+			{
+				DMibTestPath("Unsigned as signed and float");
+				auto Json = CJsonOrdered::fs_FromString<CJsonOutOfRangeIntegersParseContext>
+					(
+						"{\"unsignedMax\":18446744073709551615,\"beyondUnsigned\":18446744073709551616,\"negative\":-9223372036854775809}"
+					)
+				;
+				DMibExpect(Json["unsignedMax"].f_Integer(), ==, int64(-1));
+				DMibExpect(Json["beyondUnsigned"].f_Float(), ==, 18446744073709551616.0);
+				DMibExpect(Json["negative"].f_Float(), ==, -9223372036854775809.0);
+			}
+			{
+				DMibTestPath("Hex");
+				auto SignedJson = CJsonOrdered::fs_FromString<CJson5UnsignedAsSignedParseContext>("{a: 0xFFFFFFFFFFFFFFFF, b: 0x8000000000000000}");
+				DMibExpect(SignedJson["a"].f_Integer(), ==, int64(-1));
+				DMibExpect(SignedJson["b"].f_Integer(), ==, TCLimitsInt<int64>::mc_Min);
+				fs_ExpectParseError<CJson5UnsignedAsSignedParseContext>("HexBeyondUnsigned", "{a: 0x10000000000000000}", "Number out of range", 1, 5, 4);
+				fs_ExpectParseError<CJson5UnsignedAsSignedParseContext>("HexNegative", "{a: -0x8000000000000001}", "Number out of range", 1, 5, 4);
+
+				auto FloatJson = CJsonOrdered::fs_FromString<CJson5OutOfRangeAsFloatParseContext>("{a: 0xFFFFFFFFFFFFFFFF, b: -0x8000000000000001}");
+				DMibExpect(FloatJson["a"].f_Float(), ==, 18446744073709551615.0);
+				DMibExpect(FloatJson["b"].f_Float(), ==, -9223372036854775809.0);
+
+				auto BothJson = CJsonOrdered::fs_FromString<CJson5OutOfRangeIntegersParseContext>("{a: 0xFFFFFFFFFFFFFFFF, b: 0x10000000000000000, c: 0x100000000000000000000}");
+				DMibExpect(BothJson["a"].f_Integer(), ==, int64(-1));
+				DMibExpect(BothJson["b"].f_Float(), ==, 18446744073709551616.0);
+				DMibExpect(BothJson["c"].f_Float(), ==, 1208925819614629174706176.0);
+			}
 		};
 		DMibTestSuite("Comments")
 		{

@@ -322,6 +322,10 @@ NStr::CStr ColoredJson = Json.f_ToStringColored(EAnsiEncodingFlag_AllFeatures);
 - The module uses custom memory management with Malterlib allocators
 - All string operations use `NStr::CStr` instead of `std::string`
 - JSON parsing supports various dialects through `EJsonDialectFlag`
+- Integers that don't fit in `int64` are a parse error. For JSON you don't control, derive a parse context from
+  `NJson::CParseContext` (or `CJson5ParseContext`) and pass it to `fs_FromString<tf_CParseContext>`:
+  `mc_bUnsignedIntegersAsSigned` keeps integers that fit in `uint64` as the `int64` with the same bits, and
+  `mc_bOutOfRangeIntegersAsFloat` turns the integers that are still out of range into `fp64`
 - Binary streams support Base64 encoding transparently
 - Thread safety is not guaranteed for individual JSON objects - use appropriate locking or `CSimpleJsonDatabase` for concurrent access
 - Performance comparison tests against external libraries are available when enabled

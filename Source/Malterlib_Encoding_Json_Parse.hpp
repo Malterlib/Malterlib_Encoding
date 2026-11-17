@@ -429,6 +429,28 @@ namespace NMib::NEncoding::NJson
 		return true;
 	}
 
+	// The digits after an optional sign; false when they don't fit in uint64
+	inline bool fg_TryParseJsonDecimalMagnitude(uch8 const *_pStart, uch8 const *_pEnd, uint64 &o_Magnitude) noexcept
+	{
+		auto pParse = _pStart;
+		if (*pParse == '+' || *pParse == '-')
+			++pParse;
+
+		uint64 Value = 0;
+		while (pParse != _pEnd)
+		{
+			uint64 Digit = uint64(*pParse - '0');
+			if (Value > (TCLimitsInt<uint64>::mc_Max - Digit) / 10)
+				return false;
+
+			Value = Value * 10 + Digit;
+			++pParse;
+		}
+
+		o_Magnitude = Value;
+		return true;
+	}
+
 	template <typename tf_CParseContext>
 	void CParseContext::f_ParseKey(NStr::CStr &o_Key, uch8 const * &o_pParse)
 	{
@@ -1187,6 +1209,25 @@ namespace NMib::NEncoding::NJson
 			++pParse;
 		}
 
+		// Integers that fit no int64 are out of range unless the context chooses how to keep them
+		auto fStoreOutOfRangeInteger = [&](bool _bFitsUnsigned, uint64 _Magnitude, auto &&_fStoreFloat) -> bool
+			{
+				if constexpr (tf_CParseContext::mc_bUnsignedIntegersAsSigned)
+				{
+					if (_bFitsUnsigned && !bNegative)
+					{
+						o_Value = int64(_Magnitude);
+						return true;
+					}
+				}
+
+				if constexpr (tf_CParseContext::mc_bOutOfRangeIntegersAsFloat)
+					return _fStoreFloat();
+				else
+					return fReject("Number out of range");
+			}
+		;
+
 		if (*pParse == '.')
 		{
 			if constexpr (!tf_CParseContext::mc_bAllowLeadingDecimal)
@@ -1204,15 +1245,38 @@ namespace NMib::NEncoding::NJson
 				return fReject("Hex literal must contain at least one digit");
 
 			uint64 Number = 0;
+			[[maybe_unused]] bool bBeyondUnsigned = false;
 			while (fg_IsJsonHexDigit(*pParse))
 			{
 				auto Digit = uint64(fg_JsonHexValue(*pParse));
 
 				if (Number > (TCLimitsInt<uint64>::mc_Max - Digit) / 16)
-					return fReject("Number out of range");
+				{
+					if constexpr (tf_CParseContext::mc_bOutOfRangeIntegersAsFloat)
+					{
+						bBeyondUnsigned = true;
+						break;
+					}
+					else
+						return fReject("Number out of range");
+				}
 
 				Number = Number * 16 + Digit;
 				++pParse;
+			}
+
+			[[maybe_unused]] double FloatMagnitude = 0.0;
+			if constexpr (tf_CParseContext::mc_bOutOfRangeIntegersAsFloat)
+			{
+				if (bBeyondUnsigned)
+				{
+					FloatMagnitude = double(Number); // Multiplying by 16 is exact
+					while (fg_IsJsonHexDigit(*pParse))
+					{
+						FloatMagnitude = FloatMagnitude * 16.0 + double(fg_JsonHexValue(*pParse));
+						++pParse;
+					}
+				}
 			}
 
 			if (!fg_IsValueTerminator<tf_CParseContext>(pParse))
@@ -1225,8 +1289,26 @@ namespace NMib::NEncoding::NJson
 
 			constexpr uint64 c_MaxPositive = uint64(TCLimitsInt<int64>::mc_Max);
 			constexpr uint64 c_MaxNegative = c_MaxPositive + 1;
-			if ((!bNegative && Number > c_MaxPositive) || (bNegative && Number > c_MaxNegative))
-				return fReject("Number out of range");
+			if (bBeyondUnsigned || (!bNegative && Number > c_MaxPositive) || (bNegative && Number > c_MaxNegative))
+			{
+				bool bStored = fStoreOutOfRangeInteger
+					(
+						!bBeyondUnsigned
+						, Number
+						, [&]() -> bool
+						{
+							double Magnitude = bBeyondUnsigned ? FloatMagnitude : double(Number);
+							o_Value = fp64(bNegative ? -Magnitude : Magnitude);
+							return true;
+						}
+					)
+				;
+				if (!bStored)
+					return false;
+
+				o_pParse = pParse;
+				return true;
+			}
 
 			o_pParse = pParse;
 			if (bNegative)
@@ -1298,25 +1380,53 @@ namespace NMib::NEncoding::NJson
 		NStr::CStrPtr NumberString;
 		NumberString.f_SetConstPtr((ch8 const *)pStart, pParse - pStart);
 		o_pParse = pParse;
-		if (!bHasFraction && !bHasExponent)
-		{
-			int64 IntegerValue = 0;
-			if (!fg_TryParseJsonDecimalInteger(pStart, pParse, bNegative, IntegerValue))
-				return fReject("Number out of range");
 
+		auto fParseFloat = [&]() -> bool
+			{
+				auto FloatValue = NumberString.f_ToFloat(fp64::fs_SNan());
+				if constexpr (!tf_CParseContext::mc_bAllowSignAndSpecial)
+				{
+					if (FloatValue.f_IsInvalid() && !(_Context.m_Flags & EJsonDialectFlag_AllowInvalidFloat))
+						return fReject("Invalid float value");
+				}
+				o_Value = FloatValue;
+				return true;
+			}
+		;
+
+		if (bHasFraction || bHasExponent)
+			return fParseFloat();
+
+		int64 IntegerValue = 0;
+		if (fg_TryParseJsonDecimalInteger(pStart, pParse, bNegative, IntegerValue))
+		{
 			o_Value = IntegerValue;
+			return true;
+		}
+
+		if constexpr (tf_CParseContext::mc_bUnsignedIntegersAsSigned || tf_CParseContext::mc_bOutOfRangeIntegersAsFloat)
+		{
+			uint64 Magnitude = 0;
+			bool bFitsUnsigned = fg_TryParseJsonDecimalMagnitude(pStart, pParse, Magnitude);
+			return fStoreOutOfRangeInteger
+				(
+					bFitsUnsigned
+					, Magnitude
+					, [&]() -> bool
+					{
+						if (!bFitsUnsigned)
+							return fParseFloat();
+
+						// Rounds to the nearest fp64, which parsing the text doesn't always do
+						double FloatMagnitude = double(Magnitude);
+						o_Value = fp64(bNegative ? -FloatMagnitude : FloatMagnitude);
+						return true;
+					}
+				)
+			;
 		}
 		else
-		{
-			auto FloatValue = NumberString.f_ToFloat(fp64::fs_SNan());
-			if constexpr (!tf_CParseContext::mc_bAllowSignAndSpecial)
-			{
-				if (FloatValue.f_IsInvalid() && !(_Context.m_Flags & EJsonDialectFlag_AllowInvalidFloat))
-					return fReject("Invalid float value");
-			}
-			o_Value = FloatValue;
-		}
-		return true;
+			return fReject("Number out of range");
 	}
 
 	template <typename tf_COutValue, typename tf_CParseContext>
