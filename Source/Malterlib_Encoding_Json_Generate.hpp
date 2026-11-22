@@ -17,17 +17,28 @@ namespace NMib::NEncoding::NJson
 			o_String.f_AddString(_pPrettySeparator, SeparatorLength);
 	}
 
+	// Without its quotes, the string continues one whose quote is the last character of o_String
 	template <ch8 tf_QuoteCharacter, typename tf_CParseContext, bool tf_bAddQuotes, typename tf_CStr, typename tf_CSourceString>
 	static void fg_GenerateJsonString(tf_CStr &o_String, tf_CSourceString const &_Value)
 	{
+		umint iQuote = o_String.f_GetStrLen();
+		if constexpr (!tf_bAddQuotes)
+			--iQuote;
+
+		fg_GenerateJsonString<tf_QuoteCharacter, tf_CParseContext, tf_bAddQuotes>(o_String, _Value, iQuote);
+	}
+
+	// _iQuote is where the quote of the string is in o_String, which the lines that a multi-line string breaks start under. Without
+	// its quotes the string continues a string with that quote, as the text of an eval string after one of its expressions does.
+	template <ch8 tf_QuoteCharacter, typename tf_CParseContext, bool tf_bAddQuotes, typename tf_CStr, typename tf_CSourceString>
+	static void fg_GenerateJsonString(tf_CStr &o_String, tf_CSourceString const &_Value, umint _iQuote)
+	{
 		using namespace NStr;
 
-		umint StartOfLine = o_String.f_GetStrLen();
+		umint const StartOfLine = _iQuote;
 
 		if constexpr (tf_bAddQuotes)
 			o_String += tf_QuoteCharacter;
-		else
-			--StartOfLine;
 
 		ch8 const *pParse = _Value;
 
